@@ -1,328 +1,254 @@
 /* src/app/detalles/detalles.component.css */
 
-
-
-/* El main-content de tu layout principal debe tener padding y margin en 0 */
-/* Esto es crucial para que el router-outlet ocupe todo el espacio */
-/* NOTA: Estos estilos deberían estar en el CSS del layout principal (ej. styles.css o app.component.css)
-   pero los mantengo aquí para asegurar que se sobrescriban si es necesario. */
-.main-content {
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100%;
-    /* overflow-y: auto; Si quieres scroll solo en el contenido principal */
-    /* background-color: #f8f9fa; */
-}
-
-/* Eliminar la limitación de ancho y márgenes del .container si se usa */
-.container {
-    max-width: none;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-}
+/*
+  Este CSS ha sido minimizado.
+  Depende en gran medida de las clases de Bootstrap 5.
+  Asegúrate de que Bootstrap CSS esté correctamente importado en tu proyecto.
+*/
 
 /* Contenedor principal del detalle del producto */
+/*
+  Este estilo es para limitar el ancho máximo de tu contenido y centrarlo.
+  Podrías incluso llevarlo a un layout global si aplica a varias páginas.
+*/
 .product-detail-full-width {
-    background-color: #fff;
-    border-radius: 0; /* Sin bordes redondeados como en tu captura */
-    box-shadow: none; /* Elimina la sombra para un aspecto más "plano" como en la captura */
-    max-width: 1600px; /* Define el ancho máximo de tu contenido (ej. 1200px o el que prefieras) */
-    margin: 0 auto; /* Centra el contenedor horizontalmente */
-
-    padding: 0px; /* Elimina el padding del contenedor principal, el espaciado será interno */
-    min-height: calc(100vh - var(--header-height, 0px) - var(--footer-height, 0px));
-    box-sizing: border-box; /* Asegura que el padding no añada ancho extra */
-}
-
-
-/* Ajustes para las columnas de Bootstrap - asegurar que no agreguen padding */
-.row {
-    margin-left: 0;
-    margin-right: 0;
-}
-.col-lg-6 {
-    padding-left: 0;
-    padding-right: 0;
+    max-width: 1600px;
+    margin: 0 auto;
 }
 
 /* GALERÍA DE IMÁGENES */
-.product-gallery-full {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centra el contenido horizontalmente */
-    padding: 30px 20px 30px 50px; /* top, right, bottom, left */
-}
-
 .main-image-wrapper {
-    width: 100%;
-    max-width: 550px; /* **AUMENTADO: Limita el ancho máximo del contenedor de la imagen principal** */
-    height: 450px; /* **AUMENTADO: ¡ALTURA FIJA PARA LA IMAGEN!** */
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-bottom: 20px;
-    /* Para centrar la imagen dentro del wrapper, si el ancho es menor al max-width */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #fdfdfd; /* Un fondo claro para el contenedor de la imagen */
+    max-width: 550px; /* Limita el ancho máximo del contenedor de la imagen principal */
+    height: 450px; /* ALTURA FIJA PARA LA IMAGEN */
+    overflow: hidden; /* Asegura que la imagen no se desborde si es más grande */
 }
 .main-product-image {
     width: 100%;
-    height: 100%; /* La imagen ocupa el 100% del alto fijo de su wrapper */
+    height: 100%;
     object-fit: contain; /* Asegura que la imagen completa se vea dentro del contenedor fijo */
-    display: block;
-    /* transition: transform 0.3s ease; /* Opcional: Pequeña transición */ 
 }
-/* .main-product-image:hover { /* Opcional: Efecto al pasar el ratón */
-/* transform: scale(1.02); */
-/* } */
 
-.thumbnail-gallery {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
 .thumbnail-image-wrapper {
     width: 80px;
     height: 80px;
-    border: 1px solid #e0e0e0;
-    border-radius: 5px;
     overflow: hidden;
     cursor: pointer;
     transition: border-color 0.2s ease;
-    /* Centrar imagen dentro de la miniatura */
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
-.thumbnail-image-wrapper:hover,
 .thumbnail-image-wrapper.active {
-    border-color: #007bff;
+    border-color: var(--bs-primary); /* Usar variable de Bootstrap para el color primario */
+    box-shadow: 0 0 0 2px rgba(var(--bs-primary-rgb), 0.25);
 }
 .thumbnail-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: block;
 }
 
 /* SECCIÓN DE INFORMACIÓN DEL PRODUCTO */
-.product-info-section-full {
-    padding: 30px 50px 30px 40px; /* top, right, bottom, left */
-}
+/*
+  Los tamaños de fuente específicos se mantienen ya que no siempre hay una clase Bootstrap exacta.
+  Los colores específicos para "Precio" y "Disponibilidad" también se mantienen.
+*/
 .product-title {
-    font-size: 2.5em;
-    font-weight: 700;
-    margin-bottom: 15px;
-    color: #333;
+    font-size: 2.5em; /* Tamaño de fuente específico */
 }
 .product-price {
-    font-size: 2.2em;
-    font-weight: 700;
-    color: #dc3545; /* Rojo, para coincidir con la captura de pantalla */
-    margin-bottom: 15px;
-}
-.product-availability {
-    font-size: 1.1em;
-    color: #28a745;
-    font-weight: 600;
-    margin-bottom: 25px;
+    font-size: 2.2em; /* Tamaño de fuente específico */
+    color: #dc3545; /* Rojo específico */
 }
 .product-availability.low-stock {
-    color: #ffc107;
+    color: var(--bs-warning); /* Color amarillo de Bootstrap */
 }
 .product-availability.out-of-stock {
-    color: #dc3545;
+    color: var(--bs-danger); /* Color rojo de Bootstrap */
 }
-.rating-section {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-}
-.stars i {
-    margin-right: 5px;
-    color: #ffc107; /* Color amarillo para las estrellas */
-}
-.review-count {
-    margin-left: 10px;
-    color: #666;
-    font-size: 0.95em; /* Ajuste para el texto de la valoración */
-}
-.product-option-group {
-    margin-bottom: 20px;
-    display: flex; /* Para alinear label y valores */
-    align-items: center;
-    gap: 10px;
-}
-.option-label {
-    font-weight: 600;
-    /* margin-right: 10px; REMOVED - using gap */
+.rating-section .bi-star-fill, .rating-section .bi-star { /* Usando iconos de Bootstrap Icons */
+    color: var(--bs-warning); /* Color amarillo de Bootstrap para las estrellas */
 }
 .color-swatch {
-    width: 24px; /* Tamaño ligeramente más grande */
+    width: 24px;
     height: 24px;
-    border: 1px solid #ccc;
     border-radius: 50%;
-    display: inline-block;
-    /* margin-right: 5px; REMOVED - using gap */
-    vertical-align: middle;
     cursor: pointer;
     transition: all 0.2s ease;
 }
-.color-swatch.active {
-    border: 2px solid #007bff; /* Borde azul para el color activo como en la referencia */
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Efecto de "anillo" para el activo */
+/* La clase 'active' se maneja mejor desde el HTML o un JS/TS simple */
+
+/* SECCIÓN DE PROPIEDADES DEL PRODUCTO */
+/* Mantener padding y margen si son muy específicos fuera de las utilidades de Bootstrap */
+.propiedadesProducto-section {
+    max-width: 1600px;
+    margin: 0 auto;
 }
-.color-name {
-    vertical-align: middle;
+/* El section-title usa ahora variables de Bootstrap para el color */
+.section-title {
+    border-bottom: 2px solid var(--bs-primary);
 }
-.quantity-selector {
-    margin-bottom: 20px;
-    display: flex; /* Para alinear label y input */
-    align-items: center;
-    gap: 10px;
+
+/* Estilos específicos para la tabla de Especificaciones */
+/* Si necesitas padding o fuente más pequeños que table-sm, mantenlos */
+.product-specifications .table th,
+.product-specifications .table td {
+    padding: 8px 10px;
+    font-size: 0.85em;
 }
-.action-buttons {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 30px;
-    flex-wrap: wrap; /* Permite que los botones se envuelvan en pantallas pequeñas */
+
+/* Estilos para los listados de Atributos y Características */
+.product-list li {
+    font-size: 0.9em;
+    line-height: 1.4;
 }
-.add-to-cart-btn {
-    background-color: #007bff; /* Azul primario, como en la captura */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 15px 25px;
-    font-size: 1.1em;
-    font-weight: 600;
-    transition: background-color 0.2s ease;
+
+/* ===================================== */
+/* Sección de Productos Similares / Carrusel */
+/* ===================================== */
+.similar-products-section {
+    max-width: 1600px;
+    margin: 0 auto;
+    overflow: hidden; /* Oculta el scrollbar principal de la sección */
 }
-.add-to-cart-btn:hover {
-    background-color: #0056b3;
+
+.carousel-wrapper {
+    position: relative;
 }
-.whatsapp-btn {
-    background-color: #25d366; /* Verde WhatsApp, como en la captura */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 15px 25px;
-    font-size: 1.1em;
-    font-weight: 600;
-    transition: background-color 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
+
+.carousel-container {
+    overflow-x: auto; /* Permite el desplazamiento horizontal */
+    scroll-behavior: smooth; /* Desplazamiento suave */
+    -webkit-overflow-scrolling: touch; /* Mejorar scroll táctil */
+    scrollbar-width: none; /* Ocultar scrollbar para Firefox */
+    -ms-overflow-style: none; /* Ocultar scrollbar para IE/Edge */
+    cursor: grab; /* Indica que se puede arrastrar */
+    user-select: none; /* Evita que se seleccione texto al arrastrar */
 }
-.whatsapp-btn:hover {
-    background-color: #1da851;
+
+/* Ocultar scrollbar para Webkit (Chrome, Safari) */
+.carousel-container::-webkit-scrollbar {
+    display: none;
 }
-.whatsapp-btn i {
+
+.product-card {
+    flex: 0 0 auto; /* No crecer, no encoger, basa el tamaño en el contenido */
+    width: 250px; /* Ancho fijo para cada tarjeta de producto */
+}
+
+.product-image-wrapper {
+    height: 200px; /* Altura fija para la imagen */
+    overflow: hidden;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/*
+  Los tamaños de fuente específicos del carrusel se mantienen si no coinciden
+  con las utilidades fs-* de Bootstrap.
+*/
+.product-name {
+    font-size: 1.2em;
+    min-height: 2.4em; /* Espacio para dos líneas de texto */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.product-price {
     font-size: 1.3em;
-}
-.product-meta {
-    font-size: 1em;
-    color: #666;
-    margin-bottom: 30px;
-    border-top: 1px solid #eee; /* Añadido para el separador visual */
-    padding-top: 20px; /* Espacio superior después del borde */
-}
-.product-meta span {
-    display: block;
-    margin-bottom: 8px;
+    color: var(--bs-success); /* Verde de Bootstrap */
 }
 
-/* SECCIÓN DE DESCRIPCIÓN */
-.product-description-section-full {
-    margin-top: 50px;
-    border-top: 1px solid #eee;
-    padding: 40px 50px 30px 50px;
-    text-align: left;
+.product-availability-text {
+    font-size: 0.9em;
+    min-height: 1.2em; /* Para mantener la altura consistente */
 }
-.description-title {
-    font-size: 2em;
-    font-weight: 600;
-    margin-bottom: 25px;
-    color: #333;
+.product-availability-text.in-stock {
+    color: var(--bs-success);
 }
-.description-content ul { /* Asegura que las listas se vean bien si las hay */
-    list-style: disc;
-    padding-left: 30px;
-    color: #555;
-    margin-bottom: 1em;
+.product-availability-text.low-stock {
+    color: var(--bs-warning);
 }
-.description-content ul li {
-    margin-bottom: 10px;
-    line-height: 1.6;
+.product-availability-text.out-of-stock {
+    color: var(--bs-danger);
 }
 
-/* Responsive adjustments */
-@media (max-width: 991.98px) { /* Usar 991.98px para coincidir con el breakpoint `lg` de Bootstrap */
-    .product-detail-full-width {
-        padding: 20px;
-    }
+
+/*
+  Las media queries personalizadas se mantienen solo para ajustes finos
+  que no puedan ser logrados con las clases de breakpoint de Bootstrap.
+  Idealmente, intenta evitarlas lo más posible.
+*/
+@media (max-width: 991.98px) {
     .product-gallery-full {
         padding-right: 0;
         padding-left: 0;
-        border-bottom: 1px solid #eee; /* Añade borde inferior cuando se apila */
+        border-bottom: 1px solid var(--bs-border-color); /* Borde de Bootstrap */
     }
     .product-info-section-full {
         padding-left: 0;
         padding-right: 0;
-        margin-top: 30px;
-    }
-    .product-description-section-full {
-        padding: 30px 0;
-    }
-    .action-buttons {
-        flex-direction: column; /* Apila los botones en columna */
-        gap: 10px;
+        margin-top: var(--bs-spacer-5); /* Margen de Bootstrap (ej. 3rem) */
     }
     .add-to-cart-btn, .whatsapp-btn {
-        width: 100%; /* Haz que los botones ocupen todo el ancho disponible */
-        justify-content: center; /* Centra el texto y el icono en los botones */
+        width: 100%;
+        justify-content: center;
     }
 }
-@media (max-width: 767.98px) { /* Breakpoint para tablets (md) */
-    .product-detail-full-width {
-        padding: 15px;
+
+@media (max-width: 767.98px) {
+    .main-image-wrapper {
+        height: 400px;
     }
-    .product-title {
+    /* Usa utilidades de padding de Bootstrap p-3, p-2, p-1 */
+    .product-title, .product-price {
         font-size: 2em;
-    }
-    .product-price {
-        font-size: 2em;
-    }
-    .thumbnail-gallery {
-        gap: 8px;
     }
     .thumbnail-image-wrapper {
         width: 70px;
         height: 70px;
     }
-    .product-gallery-full, .product-info-section-full, .product-description-section-full {
-        padding: 15px;
+    .carousel-nav-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 1.3em;
     }
-    .main-image-wrapper {
-        height: 400px; /* **Ajuste de altura para pantallas medianas** */
+    .product-card {
+        width: 220px;
     }
-}
-@media (max-width: 575.98px) { /* Breakpoint para móviles (sm) */
-    .product-detail-full-width {
-        padding: 10px;
+    .product-image-wrapper {
+        height: 180px;
     }
-    .product-title {
-        font-size: 1.8em;
+    .product-name {
+        font-size: 1.1em;
     }
     .product-price {
-        font-size: 1.8em;
+        font-size: 1.2em;
     }
-    .thumbnail-gallery {
-        gap: 5px;
+    .add-to-cart-btn-sm {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+    .product-specifications .table th,
+    .product-specifications .table td {
+        padding: 6px 8px;
+        font-size: 0.8em;
+    }
+    .product-list li {
+        font-size: 0.85em;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .main-image-wrapper {
+        height: 300px;
+    }
+    .product-title, .product-price {
+        font-size: 1.8em;
     }
     .thumbnail-image-wrapper {
         width: 60px;
@@ -332,147 +258,30 @@
         padding: 10px 15px;
         font-size: 0.9em;
     }
-    .main-image-wrapper {
-        height: 300px; /* **Altura para móviles** */
+    .carousel-wrapper {
+        padding: 0;
     }
-}
-
-
-
-/* ===================================== */
-/* Sección de Propiedades del Producto   */
-/* ===================================== */
-.propiedadesProducto-section {
-    margin-top: 50px;
-    padding: 40px 50px 30px 50px; /* Consistencia con otras secciones de contenido */
-    border-top: 1px solid #eee; /* Separador visual */
-    background-color: #fcfcfc; /* Ligero color de fondo para la sección */
-    border-radius: 8px; /* Bordes redondeados */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03); /* Sombra sutil */
-    max-width: 1600px; /* Mismo ancho máximo que el contenedor principal */
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.section-title {
-    font-size: 2em;
-    font-weight: 600;
-    margin-bottom: 25px;
-    color: #333;
-    text-align: left;
-    border-bottom: 2px solid #007bff; /* Línea decorativa debajo del título */
-    padding-bottom: 10px; /* Espacio entre título y línea */
-    display: inline-block; /* Para que la línea se ajuste al ancho del texto */
-}
-
-/* Estilos para la tabla de Especificaciones */
-.product-specifications .table {
-    width: 100%;
-    margin-bottom: 25px;
-    border-collapse: collapse; /* Para que los bordes de las celdas se unan */
-}
-
-.product-specifications .table th,
-.product-specifications .table td {
-    padding: 8px 10px; /* **Más pequeño el padding** */
-    text-align: left;
-    border-bottom: 1px solid #dee2e6;
-    font-size: 0.85em; /* **Más pequeño el tamaño de la fuente** */
-}
-
-.product-specifications .table th {
-    background-color: #e9ecef; /* Fondo para encabezados de tabla */
-    color: #495057;
-    font-weight: 600;
-    border-top: 1px solid #dee2e6;
-}
-
-/* Striped rows (como en Bootstrap table-striped) */
-.product-specifications .table tbody tr:nth-of-type(odd) {
-    background-color: rgba(0, 0, 0, 0.03); /* Color alterno para filas */
-}
-
-.product-specifications .table tbody tr:hover {
-    background-color: rgba(0, 0, 0, 0.05); /* Efecto hover en filas */
-}
-
-/* Estilos para los listados de Atributos y Características (MODIFICADOS) */
-.product-list {
-    list-style: disc; /* **Usar viñetas de disco por defecto** */
-    padding-left: 20px; /* **Espaciado para las viñetas** */
-    margin-bottom: 25px;
-}
-
-.product-list li {
-    /* **Quitado background, padding, border-radius, display: flex, align-items** */
-    margin-bottom: 5px; /* **Margen más pequeño entre ítems** */
-    font-size: 0.9em; /* **Más pequeño el tamaño de la fuente** */
-    color: #444;
-    line-height: 1.4; /* Mejorar legibilidad */
-}
-
-.product-list li strong {
-    font-weight: bold;
-    margin-right: 5px;
-    color: #333; /* Asegurar que el nombre esté resaltado */
-}
-
-/* Quitar el pseudo-elemento ::before ya que list-style: disc se encarga de la viñeta */
-/* .product-list li::before {
-    content: "\2022";
-    color: #007bff;
-    font-weight: bold;
-    display: inline-block;
-    width: 1em;
-    margin-left: -1em;
-    margin-right: 10px;
-} */
-
-
-/* Responsive adjustments for properties section */
-@media (max-width: 991.98px) {
-    .propiedadesProducto-section {
-        padding: 20px;
+    .carousel-nav-btn {
+        display: none;
     }
-    .section-title {
-        font-size: 1.8em;
+    .product-card {
+        width: 160px;
     }
-}
-
-@media (max-width: 767.98px) {
-    .propiedadesProducto-section {
-        padding: 15px;
-        margin-top: 30px;
+    .product-image-wrapper {
+        height: 120px;
     }
-    .section-title {
-        font-size: 1.6em;
-        margin-bottom: 20px;
+    .product-name {
+        font-size: 0.95em;
+        min-height: auto;
+    }
+    .product-price {
+        font-size: 1em;
     }
     .product-specifications .table th,
     .product-specifications .table td {
-        padding: 6px 8px; /* **Más pequeño para móviles** */
-        font-size: 0.8em; /* **Más pequeño para móviles** */
+        font-size: 0.75em;
     }
     .product-list li {
-        font-size: 0.85em; /* **Más pequeño para tablets/móviles** */
-        padding: 0; /* Sin padding interno si es solo lista con viñeta */
-    }
-}
-
-@media (max-width: 575.98px) {
-    .propiedadesProducto-section {
-        padding: 10px;
-        margin-top: 20px;
-    }
-    .section-title {
-        font-size: 1.4em;
-        margin-bottom: 15px;
-    }
-    .product-specifications .table th,
-    .product-specifications .table td {
-        font-size: 0.75em; /* **Aún más pequeño para móviles** */
-    }
-    .product-list li {
-        font-size: 0.8em; /* **Aún más pequeño para móviles** */
+        font-size: 0.8em;
     }
 }
