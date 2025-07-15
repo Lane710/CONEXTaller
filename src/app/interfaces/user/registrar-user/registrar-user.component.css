@@ -1,0 +1,14 @@
+/* registrar-user.component.css */
+
+/* Solo si necesitas algún ajuste fino que Bootstrap no maneja directamente */
+
+/* Si prefieres que el color del título sea diferente al default de Bootstrap, puedes especificarlo aquí.
+   De lo contrario, 'text-primary' en el HTML es suficiente. */
+/* .register-title {
+  color: #333;
+} */
+
+/* Pequeño ajuste para el span requerido, si es necesario */
+.text-danger {
+  font-weight: bold; /* Hacer el asterisco más visible si se desea */
+}

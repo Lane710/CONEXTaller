@@ -1,0 +1,263 @@
+<div class="container my-5">
+  <div class="card shadow p-4 mx-auto" style="max-width: 800px;">
+    <h1 class="text-center mb-4 text-primary">Nuevo Usuario</h1>
+
+    <div *ngIf="errorMessage" class="alert alert-danger mb-3" role="alert">
+      {{ errorMessage }}
+    </div>
+    <div *ngIf="successMessage" class="alert alert-success mb-3" role="alert">
+      {{ successMessage }}
+    </div>
+
+    <form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="username" class="form-label">Usuario <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            id="username"
+            class="form-control"
+            placeholder="Ingrese su nombre de usuario"
+            formControlName="username"
+            [class.is-invalid]="usuarioForm.get('username')?.invalid && usuarioForm.get('username')?.touched"
+          />
+          <div *ngIf="usuarioForm.get('username')?.invalid && usuarioForm.get('username')?.touched" class="invalid-feedback">
+            <div *ngIf="usuarioForm.get('username')?.errors?.['required']">El nombre de usuario es obligatorio.</div>
+            <div *ngIf="usuarioForm.get('username')?.errors?.['minlength']">Mínimo 5 caracteres.</div>
+            <div *ngIf="usuarioForm.get('username')?.errors?.['maxlength']">Máximo 20 caracteres.</div>
+            <div *ngIf="usuarioForm.get('username')?.errors?.['pattern']">Solo letras, números y guiones bajos.</div>
+            <div *ngIf="usuarioForm.get('username')?.errors?.['exists']">Este nombre de usuario ya está en uso.</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label for="email" class="form-label">Correo electrónico <span class="text-danger">*</span></label>
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            placeholder="Ingrese su correo electrónico"
+            formControlName="email"
+            [class.is-invalid]="usuarioForm.get('email')?.invalid && usuarioForm.get('email')?.touched"
+          />
+          <div *ngIf="usuarioForm.get('email')?.invalid && usuarioForm.get('email')?.touched" class="invalid-feedback">
+            <div *ngIf="usuarioForm.get('email')?.errors?.['required']">El email es obligatorio.</div>
+            <div *ngIf="usuarioForm.get('email')?.errors?.['email']">Formato de email inválido.</div>
+            <div *ngIf="usuarioForm.get('email')?.errors?.['pattern']">Solo se permiten correos de Gmail.</div>
+            <div *ngIf="usuarioForm.get('email')?.errors?.['exists']">Este correo electrónico ya está registrado.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="password" class="form-label">Contraseña <span class="text-danger">*</span></label>
+          <input
+            type="password"
+            id="password"
+            class="form-control"
+            placeholder="Ingrese su contraseña"
+            formControlName="password"
+            [class.is-invalid]="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched"
+          />
+          <div *ngIf="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched" class="invalid-feedback">
+            <div *ngIf="usuarioForm.get('password')?.errors?.['required']">La contraseña es obligatoria.</div>
+            <div *ngIf="usuarioForm.get('password')?.errors?.['minlength']">Mínimo 8 caracteres.</div>
+            <div *ngIf="usuarioForm.get('password')?.errors?.['pattern']">Debe contener al menos una mayúscula, una minúscula y un número.</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label for="confirmPassword" class="form-label">Repetir Contraseña <span class="text-danger">*</span></label>
+          <input
+            type="password"
+            id="confirmPassword"
+            class="form-control"
+            placeholder="Repita su contraseña"
+            formControlName="confirmPassword"
+            [class.is-invalid]="(usuarioForm.get('confirmPassword')?.invalid && usuarioForm.get('confirmPassword')?.touched) || usuarioForm.errors?.['passwordMismatch']"
+          />
+          <div *ngIf="(usuarioForm.get('confirmPassword')?.invalid && usuarioForm.get('confirmPassword')?.touched) || usuarioForm.errors?.['passwordMismatch']" class="invalid-feedback">
+            <div *ngIf="usuarioForm.get('confirmPassword')?.errors?.['required']">Debe confirmar la contraseña.</div>
+            <div *ngIf="usuarioForm.errors?.['passwordMismatch']">Las contraseñas no coinciden.</div>
+          </div>
+        </div>
+      </div>
+
+      <hr>
+      <div formGroupName="persona">
+        <h3 class="mb-3 text-secondary">Datos Personales</h3>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              id="nombre"
+              class="form-control"
+              placeholder="Ingrese su nombre"
+              formControlName="nombre" [class.is-invalid]="usuarioForm.get('persona.nombre')?.invalid && usuarioForm.get('persona.nombre')?.touched"
+            />
+            <div *ngIf="usuarioForm.get('persona.nombre')?.invalid && usuarioForm.get('persona.nombre')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.nombre')?.errors?.['required']">El nombre es obligatorio.</div>
+              <div *ngIf="usuarioForm.get('persona.nombre')?.errors?.['minlength']">Mínimo 3 caracteres.</div>
+              <div *ngIf="usuarioForm.get('persona.nombre')?.errors?.['maxlength']">Máximo 50 caracteres.</div>
+              <div *ngIf="usuarioForm.get('persona.nombre')?.errors?.['pattern']">Solo letras y espacios.</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="apellidoPaterno" class="form-label">Apellido Paterno <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              id="apellidoPaterno"
+              class="form-control"
+              placeholder="Ingrese su apellido paterno"
+              formControlName="apellidoPaterno" [class.is-invalid]="usuarioForm.get('persona.apellidoPaterno')?.invalid && usuarioForm.get('persona.apellidoPaterno')?.touched"
+            />
+            <div *ngIf="usuarioForm.get('persona.apellidoPaterno')?.invalid && usuarioForm.get('persona.apellidoPaterno')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.apellidoPaterno')?.errors?.['required']">El apellido paterno es obligatorio.</div>
+              <div *ngIf="usuarioForm.get('persona.apellidoPaterno')?.errors?.['minlength']">Mínimo 3 caracteres.</div>
+              <div *ngIf="usuarioForm.get('persona.apellidoPaterno')?.errors?.['maxlength']">Máximo 50 caracteres.</div>
+              <div *ngIf="usuarioForm.get('persona.apellidoPaterno')?.errors?.['pattern']">Solo letras y espacios.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="apellidoMaterno" class="form-label">Apellido Materno</label>
+            <input
+              type="text"
+              id="apellidoMaterno"
+              class="form-control"
+              placeholder="Ingrese su apellido materno"
+              formControlName="apellidoMaterno" [class.is-invalid]="usuarioForm.get('persona.apellidoMaterno')?.invalid && usuarioForm.get('persona.apellidoMaterno')?.touched"
+            />
+            <div *ngIf="usuarioForm.get('persona.apellidoMaterno')?.invalid && usuarioForm.get('persona.apellidoMaterno')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.apellidoMaterno')?.errors?.['minlength']">Mínimo 3 caracteres.</div>
+              <div *ngIf="usuarioForm.get('persona.apellidoMaterno')?.errors?.['maxlength']">Máximo 50 caracteres.</div>
+              <div *ngIf="usuarioForm.get('persona.apellidoMaterno')?.errors?.['pattern']">Solo letras y espacios.</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="ci" class="form-label">CI <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              id="ci"
+              class="form-control"
+              placeholder="Ingrese su ci"
+              formControlName="ci" [class.is-invalid]="usuarioForm.get('persona.ci')?.invalid && usuarioForm.get('persona.ci')?.touched"
+            />
+            <div *ngIf="usuarioForm.get('persona.ci')?.invalid && usuarioForm.get('persona.ci')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.ci')?.errors?.['required']">El ci es obligatorio.</div>
+              <div *ngIf="usuarioForm.get('persona.ci')?.errors?.['pattern']">El ci debe contener solo números (7-10 dígitos).</div>
+              <div *ngIf="usuarioForm.get('persona.ci')?.errors?.['exists']">Este ci ya está registrado.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="telefono" class="form-label">Teléfono <span class="text-danger">*</span></label>
+            <input
+              type="tel"
+              id="telefono"
+              class="form-control"
+              placeholder="Ingrese su teléfono"
+              formControlName="telefono" [class.is-invalid]="usuarioForm.get('persona.telefono')?.invalid && usuarioForm.get('persona.telefono')?.touched"
+            />
+            <div *ngIf="usuarioForm.get('persona.telefono')?.invalid && usuarioForm.get('persona.telefono')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.telefono')?.errors?.['required']">El teléfono es obligatorio.</div>
+              <div *ngIf="usuarioForm.get('persona.telefono')?.errors?.['pattern']">El teléfono debe contener solo números (6-15 dígitos).</div>
+              <div *ngIf="usuarioForm.get('persona.telefono')?.errors?.['exists']">Este número de teléfono ya está registrado.</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="direccion" class="form-label">Dirección <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              id="direccion"
+              class="form-control"
+              placeholder="Ingrese su dirección"
+              formControlName="direccion" [class.is-invalid]="usuarioForm.get('persona.direccion')?.invalid && usuarioForm.get('persona.direccion')?.touched"
+            />
+            <div *ngIf="usuarioForm.get('persona.direccion')?.invalid && usuarioForm.get('persona.direccion')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.direccion')?.errors?.['required']">La dirección es obligatoria.</div>
+              <div *ngIf="usuarioForm.get('persona.direccion')?.errors?.['maxlength']">Máximo 100 caracteres.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="ciudad" class="form-label">Ciudad <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              id="ciudad"
+              class="form-control"
+              placeholder="Ingrese su ciudad"
+              formControlName="ciudad" [class.is-invalid]="usuarioForm.get('persona.ciudad')?.invalid && usuarioForm.get('persona.ciudad')?.touched"
+            />
+            <div *ngIf="usuarioForm.get('persona.ciudad')?.invalid && usuarioForm.get('persona.ciudad')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.ciudad')?.errors?.['required']">La ciudad es obligatoria.</div>
+              <div *ngIf="usuarioForm.get('persona.ciudad')?.errors?.['maxlength']">Máximo 50 caracteres.</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="pais" class="form-label">País <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              id="pais"
+              class="form-control"
+              placeholder="Ingrese su país"
+              formControlName="pais" [class.is-invalid]="usuarioForm.get('persona.pais')?.invalid && usuarioForm.get('persona.pais')?.touched"
+            />
+            <div *ngIf="usuarioForm.get('persona.pais')?.invalid && usuarioForm.get('persona.pais')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.pais')?.errors?.['required']">El país es obligatorio.</div>
+              <div *ngIf="usuarioForm.get('persona.pais')?.errors?.['maxlength']">Máximo 50 caracteres.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento <span class="text-danger">*</span></label>
+            <input
+              type="date"
+              id="fechaNacimiento"
+              class="form-control"
+              formControlName="fechaNacimiento"
+              [max]="maxDateAllowed" 
+              [class.is-invalid]="usuarioForm.get('persona.fechaNacimiento')?.invalid && usuarioForm.get('persona.fechaNacimiento')?.touched"
+            />
+            <div *ngIf="usuarioForm.get('persona.fechaNacimiento')?.invalid && usuarioForm.get('persona.fechaNacimiento')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.fechaNacimiento')?.errors?.['required']">La fecha de nacimiento es obligatoria.</div>
+              <div *ngIf="usuarioForm.get('persona.fechaNacimiento')?.errors?.['dateInFuture']">La fecha de nacimiento no puede ser en el futuro.</div>
+              <div *ngIf="usuarioForm.get('persona.fechaNacimiento')?.errors?.['minAge']">Debe ser mayor de 18 años.</div>
+            </div>
+            <small class="form-text text-muted">Seleccione una fecha anterior o igual a {{ maxDateAllowed }} (mayor de 18 años).</small>
+          </div>
+          <div class="col-md-6">
+            <label for="genero" class="form-label">Género <span class="text-danger">*</span></label>
+            <select
+              id="genero"
+              class="form-select"
+              formControlName="genero" [class.is-invalid]="usuarioForm.get('persona.genero')?.invalid && usuarioForm.get('persona.genero')?.touched"
+            >
+              <option value="" disabled>Seleccione su género</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Femenino">Femenino</option>
+              <option value="Otro">Otro</option>
+            </select>
+            <div *ngIf="usuarioForm.get('persona.genero')?.invalid && usuarioForm.get('persona.genero')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.genero')?.errors?.['required']">El género es obligatorio.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
+
+      <div class="d-flex justify-content-center gap-3 mt-4">
+        <button type="submit" class="btn btn-primary btn-lg px-5" >Registrar</button>
+        <button type="button" class="btn btn-secondary btn-lg px-5" (click)="goToLogin()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>

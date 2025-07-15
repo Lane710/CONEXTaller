@@ -1,0 +1,383 @@
+/* --- ESTILOS GENERALES DE CATEGORÍA Y TARJETAS --- */
+
+/* Título de la categoría */
+h2.category-title {
+    color: #d41616; /* Color rojo vibrante */
+    font-weight: 700; /* Negrita */
+    border-bottom: 1px solid #eee; /* Línea divisoria sutil */
+    padding-bottom: 0.2rem; /* Espacio debajo de la línea */
+    margin-bottom: 1.5rem; /* Margen inferior para separar de los productos */
+}
+
+/* Estilos para las tarjetas de producto */
+.card {
+    border: none; /* Sin borde por defecto */
+    text-align: center; /* Texto centrado */
+    font-size: 0.875rem; /* Tamaño de fuente base más pequeño */
+    margin-bottom: 2rem; /* Espacio inferior entre tarjetas */
+    display: flex; /* Usa Flexbox para controlar el diseño interno */
+    flex-direction: column; /* Organiza los elementos en columna */
+    justify-content: space-between; /* Distribuye el espacio entre los elementos para que el botón esté siempre abajo */
+    height: 100%; /* Asegura que la tarjeta ocupe toda la altura disponible en su contenedor */
+}
+
+/* Imagen superior de la tarjeta */
+.card-img-top {
+    width: 100%; /* Ocupa todo el ancho del contenedor */
+    height: 200px; /* Altura fija para consistencia visual */
+    object-fit: contain; /* Ajusta la imagen dentro del área sin recortar, mostrando el contenido completo */
+    margin-bottom: 0.5rem; /* Espacio debajo de la imagen */
+}
+
+/* Precio del producto */
+.price {
+    font-weight: 700; /* Negrita */
+    font-size: 1.1rem; /* Tamaño de fuente para el precio */
+    margin: 0.3rem 0; /* Margen vertical */
+}
+
+/* Mensaje de stock */
+.stock-msg {
+    font-size: 0.9rem; /* Tamaño de fuente */
+    color: #298a0f; /* Color verde para indicar stock */
+    margin-bottom: 0.3rem; /* Margen inferior */
+    font-weight: 600; /* Seminegrita */
+}
+
+/* Marca del producto */
+.brand {
+    font-weight: 600; /* Seminegrita */
+    font-size: 0.85rem; /* Tamaño de fuente */
+    color: #555; /* Color gris oscuro */
+    margin-bottom: 0.7rem; /* Margen inferior */
+}
+
+/* Botón "Agregar al Carrito" o similar */
+.btn-cart,
+.btn-select-options { /* Agrupados ya que comparten muchos estilos */
+    background-color: #d41616; /* Fondo rojo */
+    border: none; /* Sin borde */
+    font-size: 0.85rem; /* Tamaño de fuente */
+    color: white; /* Texto blanco */
+    padding: 0.4rem 0.8rem; /* Relleno interno */
+    margin-bottom: 0.4rem; /* Margen inferior */
+    width: 100%; /* Ocupa todo el ancho disponible */
+    border-radius: 0.2rem; /* Bordes ligeramente redondeados */
+    transition: background-color 0.3s ease; /* Transición suave para el hover */
+}
+
+.btn-cart:hover,
+.btn-select-options:hover {
+    background-color: #af1212; /* Fondo rojo más oscuro al pasar el ratón */
+}
+
+/* Botón de WhatsApp */
+.btn-whatsapp {
+    background-color: #27ae60; /* Fondo verde de WhatsApp */
+    border: none; /* Sin borde */
+    font-size: 0.85rem; /* Tamaño de fuente */
+    color: white; /* Texto blanco */
+    padding: 0.35rem 0.8rem; /* Relleno interno */
+    width: 100%; /* Ocupa todo el ancho */
+    border-radius: 0.2rem; /* Bordes ligeramente redondeados */
+    display: flex; /* Usa Flexbox para centrar contenido */
+    align-items: center; /* Centra verticalmente los elementos */
+    justify-content: center; /* Centra horizontalmente los elementos */
+    gap: 0.3rem; /* Espacio entre el ícono y el texto */
+    text-decoration: none; /* Sin subrayado para el enlace */
+    transition: background-color 0.3s ease; /* Transición suave para el hover */
+}
+
+.btn-whatsapp:hover {
+    background-color: #1e7e44; /* Fondo verde más oscuro al pasar el ratón */
+    color: white; /* Asegura el texto blanco al pasar el ratón */
+    text-decoration: none; /* Asegura sin subrayado al pasar el ratón */
+}
+
+/* Cuadrados de selección de color */
+.color-squares {
+    display: flex; /* Usa Flexbox para alinear los cuadrados */
+    justify-content: center; /* Centra los cuadrados horizontalmente */
+    gap: 0.25rem; /* Espacio entre los cuadrados */
+    margin: 0.3rem 0; /* Margen vertical */
+}
+
+.color-square {
+    width: 16px; /* Ancho del cuadrado */
+    height: 16px; /* Altura del cuadrado */
+    border-radius: 2px; /* Ligeramente redondeado */
+    border: 1px solid #ccc; /* Borde gris sutil */
+    cursor: pointer; /* Indica que es interactivo */
+    transition: transform 0.2s ease, border-color 0.2s ease; /* Transición suave para hover */
+}
+
+.color-square:hover {
+    transform: scale(1.2); /* Aumenta ligeramente el tamaño al pasar el ratón */
+    border-color: #d41616; /* Cambia el color del borde a rojo */
+}
+
+/* --- ESTILOS PARA EL CARRUSEL PRINCIPAL DE HERO (Clase 'slide1' en tu HTML) --- */
+
+.carousel.slide1 {
+    position: relative; /* Necesario para posicionar los indicadores */
+    padding-bottom: 40px; /* Espacio para los indicadores en la parte inferior */
+    /* Las propiedades de redondeado y sombra se gestionan en .carousel-inner para una aplicación más consistente */
+}
+
+/* Estilo para el contenedor interno de las imágenes del carrusel de hero */
+/* Eliminé la redundancia de .carousel-inner global para centrarme en el de hero */
+.carousel.slide1 .carousel-inner {
+    border-radius: 0.5rem; /* Esquinas redondeadas, asumiendo que `rounded-lg` de Tailwind es 0.5rem */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Sombra */
+}
+
+/* Asegura que las imágenes dentro del carrusel de hero se muestren correctamente */
+.carousel.slide1 .carousel-item img {
+    border-radius: inherit; /* Hereda el border-radius de .carousel-inner */
+    /* Las clases d-block y w-100 ya las maneja Bootstrap */
+}
+
+/* Estilos para las leyendas del carrusel de hero */
+.carousel.slide1 .carousel-caption {
+    color: #fff; /* Texto blanco */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6); /* Sombra para mejor legibilidad */
+}
+
+.carousel.slide1 .carousel-caption h5 {
+    font-size: 1.5rem; /* Tamaño del título */
+    font-weight: 700; /* Negrita */
+    margin-bottom: 0.5rem;
+}
+
+.carousel.slide1 .carousel-caption p {
+    font-size: 1rem; /* Tamaño del párrafo */
+    margin-bottom: 0;
+}
+
+/* Indicadores del carrusel de hero */
+.carousel.slide1 .carousel-indicators {
+    position: absolute;
+    bottom: 0; /* Posiciona en la parte inferior del padding */
+    left: 0;
+    right: 0;
+    margin: 0;
+    justify-content: center;
+    z-index: 15;
+    padding: 0;
+    list-style: none;
+    height: 40px; /* Altura para el espacio de los indicadores */
+    align-items: center;
+}
+
+.carousel.slide1 .carousel-indicators button {
+    background-color: #d41616; /* Color rojo */
+    border-radius: 50%; /* Circular */
+    width: 10px;
+    height: 10px;
+    margin: 0 4px;
+    border: 0;
+    opacity: 0.5;
+    transition: opacity 0.3s ease, background-color 0.3s ease;
+    flex: 0 1 auto;
+    padding: 0;
+}
+
+.carousel.slide1 .carousel-indicators .active {
+    background-color: #a30f0f; /* Rojo más oscuro para el activo */
+    opacity: 1;
+}
+
+
+/* --- ESTILOS PARA EL CARRUSEL DE PRODUCTOS (Clase 'slide' global) --- */
+
+.carousel.slide {
+    position: relative;
+    padding-bottom: 40px; /* Espacio para los indicadores */
+    padding-left: 40px; /* Espacio para la flecha izquierda */
+    padding-right: 40px; /* Espacio para la flecha derecha */
+    cursor: grab; /* Cursor por defecto para indicar arrastre */
+    /* Eliminada la redundancia con .carousel.slide1 */
+}
+
+.carousel.slide.active-grab {
+    cursor: grabbing; /* Cursor cuando el usuario está arrastrando */
+}
+
+/* Asegura que los elementos dentro del carrusel no impidan el arrastre */
+.carousel.slide .carousel-inner,
+.carousel.slide .carousel-item,
+.carousel.slide .carousel-item .row,
+.carousel.slide .carousel-item .col {
+    user-select: none; /* Evita la selección de texto al arrastrar */
+    -webkit-user-drag: none; /* Evita el arrastre de imágenes en WebKit */
+}
+
+/* Contenedor interno del carrusel de productos */
+/* Nota: Si este .carousel-inner es diferente al del carrusel de hero,
+   deberías usar una clase más específica para evitar conflictos.
+   Por ahora, asumo que es para el carrusel de productos */
+.carousel.slide .carousel-inner {
+    padding-bottom: 1rem;
+    display: flex; /* Asegura que los carousel-items se alineen horizontalmente */
+    /* Eliminado border-radius y box-shadow si solo aplican al carrusel de hero */
+}
+
+.carousel.slide .carousel-item {
+    width: 100%; /* Cada item ocupa el ancho completo */
+}
+
+.carousel.slide .carousel-inner .row {
+    display: flex;
+    flex-wrap: wrap; /* Permite que los productos se envuelvan */
+    justify-content: center; /* Centra los productos */
+    width: 100%;
+    margin-left: 1px; /* Mantiene un margen pequeño si es necesario */
+}
+
+/* Reglas de responsividad para el número de productos por vista */
+.carousel.slide .carousel-inner .row > .col {
+    flex: 0 0 auto; /* No permite que el flex-item crezca ni se encoja */
+    width: 20%; /* 5 productos por vista en pantallas extra grandes (>= 1200px) */
+    padding: 0 10px; /* Espacio entre productos */
+    box-sizing: border-box; /* Incluye el padding en el ancho total */
+}
+
+@media (max-width: 1199.98px) {
+    .carousel.slide .carousel-inner .row > .col {
+        width: 25%; /* 4 productos por vista */
+    }
+}
+
+@media (max-width: 991.98px) {
+    .carousel.slide .carousel-inner .row > .col {
+        width: 33.333%; /* 3 productos por vista */
+    }
+}
+
+@media (max-width: 767.98px) {
+    .carousel.slide {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    .carousel.slide .carousel-inner .row > .col {
+        width: 50%; /* 2 productos por vista en móvil */
+    }
+    /* Ajuste de flechas en móviles */
+    .carousel.slide .carousel-control-prev,
+    .carousel.slide .carousel-control-next {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .carousel.slide {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .carousel.slide .carousel-inner .row > .col {
+        width: 100%; /* 1 producto por vista */
+    }
+}
+
+/* Flechas de navegación del carrusel de productos - ESTILOS MEJORADOS */
+.carousel.slide .carousel-control-prev,
+.carousel.slide .carousel-control-next {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 251, 255, 0.7); /* Azul cian semitransparente */
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    opacity: 0.8;
+    transition: opacity 0.2s ease, background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.carousel.slide .carousel-control-prev:hover,
+.carousel.slide .carousel-control-next:hover {
+    opacity: 1;
+    background-color: rgba(0, 251, 255, 0.9); /* Más opaco al pasar el ratón */
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+.carousel.slide .carousel-control-prev {
+    left: 0;
+}
+
+.carousel.slide .carousel-control-next {
+    right: 0;
+}
+
+.carousel.slide .carousel-control-prev-icon,
+.carousel.slide .carousel-control-next-icon {
+    filter: invert(100%); /* Icono blanco, simplificado */
+    font-size: 1.5rem;
+}
+
+/* Indicadores del carrusel de productos */
+/* Nota: Si quieres que los indicadores de este carrusel sean diferentes a los del carrusel de hero,
+   deberías usar una clase más específica para este. Por ahora, se mantiene el mismo estilo. */
+.carousel.slide .carousel-indicators {
+    position: absolute;
+    bottom: -30px; /* Ajusta la posición de los indicadores debajo del carrusel */
+    left: 0;
+    right: 0;
+    margin: 0;
+    justify-content: center;
+    z-index: 15;
+    padding: 0;
+}
+
+.carousel.slide .carousel-indicators button {
+    background-color: #d41616;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    margin: 0 4px;
+    border: 0;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+.carousel.slide .carousel-indicators .active {
+    background-color: #a30f0f;
+    opacity: 1;
+}
+
+
+/* --- ESTILO PARA EL CONTENEDOR DE IMAGEN DE ANUNCIO DE PRODUCTO --- */
+
+.product-ad-image-container {
+    width: 100%;
+    max-width: 500px; /* Ancho máximo para el contenedor */
+    height: 350px; /* Altura fija para el contenedor */
+    overflow: hidden; /* Oculta el contenido que se desborda */
+    border-radius: 10px; /* Esquinas redondeadas */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Sombra sutil */
+    display: flex; /* Usa Flexbox para centrar la imagen */
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+}
+
+.product-ad-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Recorta la imagen para cubrir el contenedor sin distorsión */
+    display: block; /* Elimina espacio extra */
+    border-radius: inherit; /* Hereda las esquinas redondeadas */
+}
+
+/* Media query para pantallas más pequeñas (móviles) */
+@media (max-width: 767.98px) {
+    .product-ad-image-container {
+        max-width: 100%;
+        height: 250px; /* Ajusta la altura para pantallas más pequeñas */
+    }
+}

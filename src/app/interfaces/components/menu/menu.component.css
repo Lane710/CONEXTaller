@@ -1,0 +1,156 @@
+/* menu.component.css */
+
+.sidebar-container {
+  width: 220px; /* Reducido de 250px */
+  background-color: #f0f2f5;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+
+  /* === CAMBIOS CLAVE === */
+  position: absolute; /* Mantenemos absolute */
+  top: 0; /* Empieza en la parte superior del content-wrapper */
+  bottom: 0; /* IMPORTANTE: Se extiende hasta la parte inferior del content-wrapper */
+  left: 0;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 999;
+  /* height: 100%;  <-- Puedes eliminar esto si usas top: 0; bottom: 0; */
+  box-sizing: border-box;
+  overflow-y: auto; /* Permite scroll interno si el menú es muy largo */
+}
+
+.sidebar-container.active {
+  transform: translateX(0);
+}
+
+
+.sidebar-header {
+  background-color: #007bff;
+  color: white;
+  padding: 15px; /* Reducido de 20px */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px; /* Reducido de 120px */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-picture {
+  width: 50px; /* Reducido de 60px */
+  height: 50px; /* Reducido de 60px */
+  border-radius: 50%;
+  border: 2px solid white;
+  object-fit: cover;
+  margin-bottom: 8px; /* Reducido de 10px */
+}
+
+.profile-name {
+  margin: 0;
+  font-size: 16px; /* Reducido de 18px */
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.user-role {
+  font-size: 13px; /* Nuevo tamaño para el rol */
+}
+
+.sidebar-nav {
+  flex-grow: 1;
+  padding-top: 5px; /* Reducido de 10px */
+  overflow-y: auto;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-link-sidebar {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px; /* Reducido de 12px 20px */
+  text-decoration: none;
+  color: #333;
+  font-size: 15px; /* Reducido de 16px */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  gap: 10px; /* Reducido de 15px */
+  justify-content: space-between;
+}
+
+.nav-link-sidebar .icon {
+  font-size: 18px; /* Reducido de 20px */
+  width: 22px; /* Reducido de 25px */
+  text-align: center;
+  color: #555;
+}
+
+.nav-link-sidebar .text {
+  flex-grow: 1;
+}
+
+.nav-link-sidebar:hover {
+  background-color: #e0e0e0;
+  color: #007bff;
+}
+
+.nav-link-sidebar.active {
+  background-color: #e0e0e0;
+  color: #007bff;
+  font-weight: bold;
+  border-left: 4px solid #007bff; /* Reducido de 5px */
+  padding-left: 11px; /* Ajustado para compensar el borde */
+}
+
+.dropdown-menu {
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  background-color: #e9ecef;
+  width: 100%;
+  position: static !important;
+  transform: none !important;
+  top: auto !important;
+  left: auto !important;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+  visibility: hidden;
+  opacity: 0;
+  transition: max-height 0.3s ease-in-out, visibility 0s 0.3s, opacity 0.3s ease-in-out;
+}
+
+.nav-item-sidebar.dropdown:hover .dropdown-menu {
+  max-height: 300px;
+  visibility: visible;
+  opacity: 1;
+  transition: max-height 0.3s ease-in-out, visibility 0s 0s, opacity 0.3s ease-in-out;
+}
+
+.dropdown-item {
+  padding: 7px 15px 7px 40px; /* Reducido de 8px 20px 8px 45px */
+  font-size: 14px; /* Reducido de 15px */
+  color: #444;
+  background-color: transparent;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: #d8dee4;
+  color: #0056b3;
+}
+
+.sidebar-footer {
+  padding: 15px; /* Reducido de 20px */
+  text-align: center;
+  font-size: 13px; /* Reducido de 14px */
+  color: #777;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}

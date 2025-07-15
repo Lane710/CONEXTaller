@@ -1,0 +1,67 @@
+<!-- src/app/components/login/login.component.html -->
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-branding">
+      <h1 class="branding-title">
+        TIENDA CONEX <br />
+        TECNOLOGÍA Y MÁS
+      </h1>
+      <img src="/CONEX/CONEX.jpg" alt="Logo de CONEX" class="branding-logo" />
+    </div>
+    <div class="login-form-area">
+      <h2 class="welcome-title">Bienvenido de nuevo</h2>
+
+      <!-- Mensajes de Estado -->
+      <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+        {{ errorMessage }}
+      </div>
+      <div *ngIf="successMessage" class="alert alert-success" role="alert">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="throttlingMessage" class="alert alert-warning" role="alert">
+        {{ throttlingMessage }}
+        <span *ngIf="remainingTime > 0"> ({{ remainingTime }} segundos restantes)</span>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="login()" class="login-form">
+        <div class="form-group">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Nombre de Usuario"
+            formControlName="username"
+            [class.is-invalid]="f['username'].invalid && f['username'].touched"
+          />
+          <div *ngIf="f['username'].invalid && f['username'].touched" class="invalid-feedback">
+            El nombre de usuario es obligatorio.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <input
+            type="password"
+            class="form-control"
+            placeholder="Contraseña"
+            formControlName="password"
+            [class.is-invalid]="f['password'].invalid && f['password'].touched"
+          />
+          <div *ngIf="f['password'].invalid && f['password'].touched" class="invalid-feedback">
+            La contraseña es obligatoria.
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary login-btn"
+          [disabled]="isLoading || loginForm.invalid || remainingTime > 0"
+        >
+          <span *ngIf="!isLoading">Login</span>
+          <span *ngIf="isLoading">Cargando...</span>
+        </button>
+      </form>
+
+      <a routerLink="/verificable" class="forgot-password-link" routerLink="/verificacion">Olvidé mi contraseña</a>
+      <button class="btn btn-secondary register-btn" routerLink="/registrar">Registrarse</button>
+    </div>
+  </div>
+</div>

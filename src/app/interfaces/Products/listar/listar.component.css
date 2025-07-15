@@ -1,0 +1,165 @@
+.loading-message, .error-message, .no-data-message {
+  text-align: center;
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.loading-message {
+  background-color: #e0f2f7; /* Azul claro */
+  color: #0277bd; /* Azul oscuro */
+  border: 1px solid #81d4fa;
+}
+
+.error-message {
+  background-color: #ffebee; /* Rojo claro */
+  color: #c62828; /* Rojo oscuro */
+  border: 1px solid #ef9a9a;
+}
+
+.no-data-message {
+  background-color: #f0f0f0;
+  color: #555;
+  border: 1px solid #ccc;
+}
+
+
+/* Estos estilos sobrescribirían los de Bootstrap si son más específicos. */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px; /* Ya manejado por Bootstrap con mb-4 en el card */
+}
+
+th, td {
+  /* Bootstrap ya maneja los bordes y padding para .table */
+  /* border: 1px solid #ddd; */
+  /* padding: 8px; */
+  text-align: left;
+}
+
+th {
+  /* Bootstrap ya maneja el background-color para thead en .table */
+  /* background-color: #f2f2f2; */
+  color: #333; /* Puedes ajustar el color del texto si lo deseas */
+  font-weight: bold;
+}
+
+/* Estilo para la imagen del producto en la tabla */
+.product-image {
+  width: 50px; /* Tamaño de la imagen */
+  height: 50px;
+  object-fit: cover; /* Asegura que la imagen se vea bien dentro del contenedor */
+  border-radius: 5px; /* Bordes ligeramente redondeados */
+}
+
+
+/* Estilos para los botones de acción */
+.actions-column {
+  white-space: nowrap; /* Evita que los botones se envuelvan */
+}
+
+.product-detail-image {
+  width: 150px; /* Ajusta según tu preferencia */
+  height: 150px;
+  object-fit: cover;
+  border: 2px solid #007bff; /* Borde azul para destacar */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* --- Media Queries para responsividad --- */
+@media (max-width: 768px) {
+  /* .content-container { padding: 10px; } */
+
+  /* Estilos para tabla responsiva en móviles */
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  tr {
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  td {
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 50%;
+    text-align: right;
+  }
+
+  td:last-child {
+    border-bottom: 0;
+  }
+
+  td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    width: calc(50% - 20px);
+    padding-right: 10px;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: bold;
+    color: #555;
+  }
+
+  /* Ajustes específicos para la imagen en móvil */
+  td[data-label="Foto"] {
+    text-align: center;
+    padding-left: 10px;
+  }
+  td[data-label="Foto"]::before {
+    display: none;
+  }
+  .product-image {
+    margin: 5px auto;
+    display: block;
+  }
+
+  /* Ajustes específicos para los botones de acción en móvil */
+  .actions-column {
+    display: flex; /* Usa flexbox para los botones de acción */
+    flex-wrap: nowrap; /* Evita que los botones se envuelvan a la siguiente línea */
+    justify-content: flex-end; /* Alinea los botones a la derecha */
+    gap: 0.5rem; /* Espacio entre botones */
+    padding-top: 0.75rem; /* Añade algo de relleno encima de los botones */
+    overflow-x: auto; /* Permite el desplazamiento horizontal si los botones no caben */
+    -webkit-overflow-scrolling: touch; /* Mejora el desplazamiento en iOS */
+    /* Mantén padding-left y text-align para que el data-label tenga espacio y se alinee correctamente */
+    text-align: right;
+    padding-left: 50%;
+  }
+  /* CAMBIO: Eliminar 'display: none;' para mostrar la etiqueta "Acciones" */
+
+
+  .actions-column button {
+    flex-grow: 0; /* Evita que los botones crezcan para llenar el espacio */
+    flex-shrink: 0; /* Evita que los botones se encojan demasiado */
+    min-width: unset; /* Elimina el ancho mínimo fijo que podría causar el apilamiento */
+  }
+}
+
+@media (max-width: 480px) {
+  /* Ajustes adicionales si es necesario */
+}
+
+
+/*colores de los botonees*/
+.btn-ver{
+  background-color: transparent;
+}
+
+.btn-mod{
+  background-color: transparent;
+}

@@ -1,0 +1,540 @@
+<div>
+<section aria-label="Carrusel de Imágenes Destacadas" class="mb-6">
+  <div
+    id="heroCarousel"
+    class="carousel slide"
+    data-bs-ride="carousel"
+    data-bs-interval="5000"
+  >
+    <div class="carousel-indicators">
+      <button
+        type="button"
+        data-bs-target="#heroCarousel"
+        data-bs-slide-to="0"
+        class="active"
+        aria-current="true"
+        aria-label="Slide 1"
+      ></button>
+      <button
+        type="button"
+        data-bs-target="#heroCarousel"
+        data-bs-slide-to="1"
+        aria-label="Slide 2"
+      ></button>
+      <button
+        type="button"
+        data-bs-target="#heroCarousel"
+        data-bs-slide-to="2"
+        aria-label="Slide 3"
+      ></button>
+    </div>
+    <div class="carousel-inner rounded-lg shadow-lg">
+      <div class="carousel-item active">
+        <img
+          src="https://placehold.co/1200x400/FF5733/FFFFFF?text=Producto+Destacado+1"
+          class="d-block w-100 rounded-lg"
+          alt=""
+        />
+        <div class="carousel-caption d-none d-md-block">
+          <h5 class="text-2xl font-bold">Oferta Especial de Laptops</h5>
+          <p class="text-base">
+            Descubre nuestras últimas laptops con descuentos increíbles.
+          </p>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <img
+          src="https://placehold.co/1200x400/33FF57/FFFFFF?text=Producto+Destacado+2"
+          class="d-block w-100 rounded-lg"
+          alt=""
+        />
+        <div class="carousel-caption d-none d-md-block">
+          <h5 class="text-2xl font-bold">Accesorios Imprescindibles</h5>
+          <p class="text-base">
+            Todo lo que necesitas para complementar tus dispositivos.
+          </p>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <img
+          src="https://placehold.co/1200x400/3357FF/FFFFFF?text=Producto+Destacado+3"
+          class="d-block w-100 rounded-lg"
+          alt=""
+        />
+        <div class="carousel-caption d-none d-md-block">
+          <h5 class="text-2xl font-bold">Impresoras de Última Generación</h5>
+          <p class="text-base">
+            Imprime con calidad profesional desde casa u oficina.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+  <div class="container">
+    <section
+      *ngIf="ListadoProductos1?.length"
+      aria-label="Categoría Computadoras"
+      class="mb-5"
+    >
+      <h2 class="category-title">Computadoras</h2>
+      <div
+        id="computadorasCarousel"
+        class="carousel slide"
+        data-bs-interval="false"
+      >
+        <div class="carousel-indicators">
+          <button
+            *ngFor="
+              let page of paginateProducts(ListadoProductos1, 5);
+              let i = index
+            "
+            type="button"
+            [attr.data-bs-target]="'#computadorasCarousel'"
+            [attr.data-bs-slide-to]="i"
+            [class.active]="i === 0"
+            [attr.aria-current]="i === 0 ? 'true' : null"
+            [attr.aria-label]="'Slide ' + (i + 1)"
+          ></button>
+        </div>
+
+        <div class="carousel-inner">
+          <div
+            class="carousel-item"
+            *ngFor="
+              let page of paginateProducts(ListadoProductos1, 5);
+              let i = index
+            "
+            [class.active]="i === 0"
+          >
+            <div
+              class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4 justify-content-center"
+            >
+              <div class="col" *ngFor="let stockItem of page">
+                <div class="card">
+                  <img
+                    (click)="Details(stockItem)"
+                    [src]="stockItem.producto?.imagen"
+                    alt="{{ stockItem.producto?.descripcion }}"
+                    class="card-img-top"
+                    onerror="this.onerror=null;this.src='https://placehold.co/150x120?text=Sin+imagen'"
+                  />
+                  <div class="card-body p-1">
+                    <small>{{ stockItem.producto?.nombre }}</small>
+                    <div class="stock-msg">
+                      {{ stockItem.cantidad >= 1 ? "Hay stock" : "Agotado" }}
+                    </div>
+                    <div class="price">
+                      {{ stockItem.producto?.precio }} Bs.
+                    </div>
+                    <div class="brand">
+                      Marca {{ stockItem.producto?.marca }}
+                    </div>
+                    <button
+                      class="btn-cart"
+                      type="button"
+                      (click)="AddProductCarrito(stockItem)"
+                    >
+                      Añadir al carrito
+                    </button>
+                    <a
+                      href="#"
+                      class="btn-whatsapp"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="white"
+                        class="bi bi-whatsapp"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M13.601 2.326A7.947 7.947 0 0 0 2.383 13.08L1 15l1.934-.623a7.982 7.982 0 0 0 11.657-12.051Zm-2.12 9.547c-.165.464-1.018.89-1.4.949a4.54 4.54 0 0 1-2.161-.311 2.234 2.234 0 0 1-1.326-1.306c-.311-.678-.573-1.393-.003-2.176a.487.487 0 0 1 .096-.12c.304-.303.456-.468.456-.468a.096.096 0 0 0 .017-.063c-.013-.885-.654-1.658-.654-1.658s-1.387-1.486-2.03-1.521c-.286-.023-.606-.033-.925 0a.439.439 0 0 0-.39.362c-.258 1.364.812 2.97 2.23 3.866 1.078.686 2.65 1.23 3.846 1.868.4.186.733.36.981.542a1.262 1.262 0 0 1 .463 1.494Z"
+                        />
+                      </svg>
+                      Pedir por WhatsApp
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button
+          class="carousel-control-prev"
+          type="button"
+          data-bs-target="#computadorasCarousel"
+          data-bs-slide="prev"
+          aria-label="Anterior Computadoras"
+        >
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button
+          class="carousel-control-next"
+          type="button"
+          data-bs-target="#computadorasCarousel"
+          data-bs-slide="next"
+          aria-label="Siguiente Computadoras"
+        >
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+    </section>
+
+    <section
+      *ngIf="ListadoProductos2?.length"
+      aria-label="Categoría Accesorios"
+      class="mb-5"
+    >
+      <h2 class="category-title">Accesorios</h2>
+      <div
+        id="accesoriosCarousel"
+        class="carousel slide"
+        data-bs-interval="false"
+      >
+        <div class="carousel-indicators">
+          <button
+            *ngFor="
+              let page of paginateProducts(ListadoProductos2, 5);
+              let i = index
+            "
+            type="button"
+            [attr.data-bs-target]="'#accesoriosCarousel'"
+            [attr.data-bs-slide-to]="i"
+            [class.active]="i === 0"
+            [attr.aria-current]="i === 0 ? 'true' : null"
+            [attr.aria-label]="'Slide ' + (i + 1)"
+          ></button>
+        </div>
+        <div class="carousel-inner">
+          <div
+            class="carousel-item"
+            *ngFor="
+              let page of paginateProducts(ListadoProductos2, 5);
+              let i = index
+            "
+            [class.active]="i === 0"
+          >
+            <div
+              class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4 justify-content-center"
+            >
+              <div class="col" *ngFor="let stockItem of page">
+                <div class="card">
+                  <img
+                    [src]="stockItem.producto?.imagen"
+                    alt="{{ stockItem.producto?.descripcion }}"
+                    class="card-img-top"
+                    onerror="this.onerror=null;this.src='https://placehold.co/150x120?text=Sin+imagen'"
+                  />
+                  <div class="card-body p-1">
+                    <small>{{ stockItem.producto?.nombre }}</small>
+                    <div class="stock-msg">
+                      {{ stockItem.cantidad >= 1 ? "Hay stock" : "Agotado" }}
+                    </div>
+                    <div class="price">
+                      {{ stockItem.producto?.precio }} Bs.
+                    </div>
+                    <div class="brand">
+                      Marca {{ stockItem.producto?.marca }}
+                    </div>
+                    <button
+                      class="btn-cart"
+                      type="button"
+                      (click)="AddProductCarrito(stockItem)"
+                    >
+                      Añadir al carrito
+                    </button>
+                    <a
+                      href="#"
+                      class="btn-whatsapp"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="white"
+                        class="bi bi-whatsapp"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M13.601 2.326A7.947 7.947 0 0 0 2.383 13.08L1 15l1.934-.623a7.982 7.982 0 0 0 11.657-12.051Zm-2.12 9.547c-.165.464-1.018.89-1.4.949a4.54 4.54 0 0 1-2.161-.311 2.234 2.234 0 0 1-1.326-1.306c-.311-.678-.573-1.393-.003-2.176a.487.487 0 0 1 .096-.12c.304-.303.456-.468.456-.468a.096.096 0 0 0 .017-.063c-.013-.885-.654-1.658-.654-1.658s-1.387-1.486-2.03-1.521c-.286-.023-.606-.033-.925 0a.439.439 0 0 0-.39.362c-.258 1.364.812 2.97 2.23 3.866 1.078.686 2.65 1.23 3.846 1.868.4.186.733.36.981.542a1.262 1.262 0 0 1 .463 1.494Z"
+                        />
+                      </svg>
+                      Pedir por WhatsApp
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button
+          class="carousel-control-prev"
+          type="button"
+          data-bs-target="#accesoriosCarousel"
+          data-bs-slide="prev"
+          aria-label="Anterior Accesorios"
+        >
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button
+          class="carousel-control-next"
+          type="button"
+          data-bs-target="#accesoriosCarousel"
+          data-bs-slide="next"
+          aria-label="Siguiente Accesorios"
+        >
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+    </section>
+
+    <section
+      *ngIf="ListadoProductos3?.length"
+      aria-label="Categoría Impresoras"
+      class="mb-5"
+    >
+      <h2 class="category-title">Impresoras</h2>
+      <div
+        id="impresorasCarousel"
+        class="carousel slide"
+        data-bs-interval="false"
+      >
+        <div class="carousel-indicators">
+          <button
+            *ngFor="
+              let page of paginateProducts(ListadoProductos3, 5);
+              let i = index
+            "
+            type="button"
+            [attr.data-bs-target]="'#impresorasCarousel'"
+            [attr.data-bs-slide-to]="i"
+            [class.active]="i === 0"
+            [attr.aria-current]="i === 0 ? 'true' : null"
+            [attr.aria-label]="'Slide ' + (i + 1)"
+          ></button>
+        </div>
+        <div class="carousel-inner">
+          <div
+            class="carousel-item"
+            *ngFor="
+              let page of paginateProducts(ListadoProductos3, 5);
+              let i = index
+            "
+            [class.active]="i === 0"
+          >
+            <div
+              class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4 justify-content-center"
+            >
+              <div class="col" *ngFor="let stockItem of page">
+                <div class="card">
+                  <img
+                    [src]="stockItem.producto?.imagen"
+                    alt="{{ stockItem.producto?.descripcion }}"
+                    class="card-img-top"
+                    onerror="this.onerror=null;this.src='https://placehold.co/150x120?text=Sin+imagen'"
+                  />
+                  <div class="card-body p-1">
+                    <small>{{ stockItem.producto?.nombre }}</small>
+                    <div class="stock-msg">
+                      {{ stockItem.cantidad >= 1 ? "Hay stock" : "Agotado" }}
+                    </div>
+                    <div class="price">
+                      {{ stockItem.producto?.precio }} Bs.
+                    </div>
+                    <div class="brand">
+                      Marca {{ stockItem.producto?.marca }}
+                    </div>
+                    <button
+                      class="btn-cart"
+                      type="button"
+                      (click)="AddProductCarrito(stockItem)"
+                    >
+                      Añadir al carrito
+                    </button>
+                    <a
+                      href="#"
+                      class="btn-whatsapp"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="white"
+                        class="bi bi-whatsapp"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M13.601 2.326A7.947 7.947 0 0 0 2.383 13.08L1 15l1.934-.623a7.982 7.982 0 0 0 11.657-12.051Zm-2.12 9.547c-.165.464-1.018.89-1.4.949a4.54 4.54 0 0 1-2.161-.311 2.234 2.234 0 0 1-1.326-1.306c-.311-.678-.573-1.393-.003-2.176a.487.487 0 0 1 .096-.12c.304-.303.456-.468.456-.468a.096.096 0 0 0 .017-.063c-.013-.885-.654-1.658-.654-1.658s-1.387-1.486-2.03-1.521c-.286-.023-.606-.033-.925 0a.439.439 0 0 0-.39.362c-.258 1.364.812 2.97 2.23 3.866 1.078.686 2.65 1.23 3.846 1.868.4.186.733.36.981.542a1.262 1.262 0 0 1 .463 1.494Z"
+                        />
+                      </svg>
+                      Pedir por WhatsApp
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button
+          class="carousel-control-prev"
+          type="button"
+          data-bs-target="#impresorasCarousel"
+          data-bs-slide="prev"
+          aria-label="Anterior Impresoras"
+        >
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button
+          class="carousel-control-next"
+          type="button"
+          data-bs-target="#impresorasCarousel"
+          data-bs-slide="next"
+          aria-label="Siguiente Impresoras"
+        >
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+    </section>
+
+    <section
+      *ngIf="ListadoProductos4?.length"
+      aria-label="Categoría Otros"
+      class="mb-5"
+    >
+      <h2 class="category-title">Otros</h2>
+      <div id="otrosCarousel" class="carousel slide" data-bs-interval="false">
+        <div class="carousel-indicators">
+          <button
+            *ngFor="
+              let page of paginateProducts(ListadoProductos4, 5);
+              let i = index
+            "
+            type="button"
+            [attr.data-bs-target]="'#otrosCarousel'"
+            [attr.data-bs-slide-to]="i"
+            [class.active]="i === 0"
+            [attr.aria-current]="i === 0 ? 'true' : null"
+            [attr.aria-label]="'Slide ' + (i + 1)"
+          ></button>
+        </div>
+        <div class="carousel-inner">
+          <div
+            class="carousel-item"
+            *ngFor="
+              let page of paginateProducts(ListadoProductos4, 5);
+              let i = index
+            "
+            [class.active]="i === 0"
+          >
+            <div
+              class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4 justify-content-center"
+            >
+              <div class="col" *ngFor="let stockItem of page">
+                <div class="card">
+                  <img
+                    [src]="stockItem.producto?.imagen"
+                    alt="{{ stockItem.producto?.descripcion }}"
+                    class="card-img-top"
+                    onerror="this.onerror=null;this.src='https://placehold.co/150x120?text=Sin+imagen'"
+                  />
+                  <div class="card-body p-1">
+                    <small>{{ stockItem.producto?.nombre }}</small>
+                    <div class="stock-msg">
+                      {{ stockItem.cantidad >= 1 ? "Hay stock" : "Agotado" }}
+                    </div>
+                    <div class="price">
+                      {{ stockItem.producto?.precio }} Bs.
+                    </div>
+                    <div class="brand">
+                      Marca {{ stockItem.producto?.marca }}
+                    </div>
+                    <button
+                      class="btn-cart"
+                      type="button"
+                      (click)="AddProductCarrito(stockItem)"
+                    >
+                      Añadir al carrito
+                    </button>
+                    <a
+                      href="#"
+                      class="btn-whatsapp"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="white"
+                        class="bi bi-whatsapp"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M13.601 2.326A7.947 7.947 0 0 0 2.383 13.08L1 15l1.934-.623a7.982 7.982 0 0 0 11.657-12.051Zm-2.12 9.547c-.165.464-1.018.89-1.4.949a4.54 4.54 0 0 1-2.161-.311 2.234 2.234 0 0 1-1.326-1.306c-.311-.678-.573-1.393-.003-2.176a.487.487 0 0 1 .096-.12c.304-.303.456-.468.456-.468a.096.096 0 0 0 .017-.063c-.013-.885-.654-1.658-.654-1.658s-1.387-1.486-2.03-1.521c-.286-.023-.606-.033-.925 0a.439.439 0 0 0-.39.362c-.258 1.364.812 2.97 2.23 3.866 1.078.686 2.65 1.23 3.846 1.868.4.186.733.36.981.542a1.262 1.262 0 0 1 .463 1.494Z"
+                        />
+                      </svg>
+                      Pedir por WhatsApp
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button
+          class="carousel-control-prev"
+          type="button"
+          data-bs-target="#otrosCarousel"
+          data-bs-slide="prev"
+          aria-label="Anterior Otros"
+        >
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button
+          class="carousel-control-next"
+          type="button"
+          data-bs-target="#otrosCarousel"
+          data-bs-slide="next"
+          aria-label="Siguiente Otros"
+        >
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Nueva sección de imágenes de productos -->
+   <section aria-label="Imágenes de Productos Adicionales" class="mb-5">
+    <h2 class="category-title text-center mb-4">Descubre Más Productos</h2>
+    <div class="row g-4 justify-content-center">
+        <div class="col-12 col-md-6 d-flex justify-content-center">
+            <!-- Contenedor para la primera imagen, con los estilos definidos en CSS -->
+            <div class="product-ad-image-container">
+                <img
+                    src="https://i.pinimg.com/1200x/5b/b5/2c/5bb52cc80c5fc8f809a515c7e4520e26.jpg"
+                    alt="Computadora Gaming de Alta Gama"
+                    onerror="this.onerror=null;this.src='https://placehold.co/800x600/4CAF50/FFFFFF?text=Imagen+No+Disponible'"
+                />
+            </div>
+        </div>
+        <div class="col-12 col-md-6 d-flex justify-content-center">
+            <!-- Contenedor para la segunda imagen, con los estilos definidos en CSS -->
+            <div class="product-ad-image-container">
+                <img
+                    src="https://imgs.search.brave.com/tTZUDzCS__3tMGFsxpTBngYAKe9bRmZEFZ3MrA-qS4o/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pbWcu/ZnJlZXBpay5jb20v/Zm90b3MtcHJlbWl1/bS9hY2Nlc29yaW9z/LWNvbXB1dGFkb3Jh/cy1haXNsYWRvcy1z/b2JyZS1mb25kby1i/bGFuY29fNjIxOTU1/LTQ0MDEwLmpwZz9z/ZW10PWFpc19pdGVt/c19ib29zdGVkJnc9/NzQw"
+                    alt="Laptop Ultrafina para Productividad"
+                    onerror="this.onerror=null;this.src='https://placehold.co/800x600/2196F3/FFFFFF?text=Imagen+No+Disponible'"
+                />
+            </div>
+        </div>
+    </div>
+</section>
+  </div>
+</div>

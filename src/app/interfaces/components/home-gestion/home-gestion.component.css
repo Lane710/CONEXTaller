@@ -1,0 +1,152 @@
+/* Estilos generales para el contenedor principal */
+.inicio-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Sección de Bienvenida (Hero) */
+.hero-section {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #29aaca; /* Color azul de tu marca */
+  color: white;
+  border-radius: 8px;
+  margin-bottom: 40px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.hero-section h1 {
+  font-size: 3.5em;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.hero-section .tagline {
+  font-size: 1.5em;
+  font-style: italic;
+  opacity: 0.9;
+}
+
+/* Sección "Qué es CONEX?" */
+.about-section {
+  display: flex;
+  flex-direction: column; /* Por defecto en columna para móviles */
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 60px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.about-content {
+  flex: 1;
+}
+
+.about-content h2 {
+  font-size: 2.5em;
+  color: #218cb7; /* Un tono más oscuro del azul de tu marca */
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.about-content p {
+  font-size: 1.1em;
+  margin-bottom: 15px;
+}
+
+.about-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.about-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Sección "Lo que hacemos" (Características) */
+.features-section {
+  margin-bottom: 60px;
+  text-align: center;
+}
+
+.features-section h3 {
+  font-size: 2.2em;
+  color: #218cb7;
+  margin-bottom: 40px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.feature-item {
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.feature-item h4 {
+  font-size: 1.6em;
+  color: #29aaca;
+  margin-bottom: 15px;
+}
+
+.feature-item p {
+  font-size: 1em;
+  color: #555;
+}
+
+/* Media Queries para responsividad */
+@media (min-width: 768px) {
+  .about-section {
+    flex-direction: row; /* En fila en pantallas más grandes */
+  }
+
+  .about-content,
+  .about-image {
+    flex-basis: 50%; /* Ocupan la mitad del espacio */
+  }
+
+  .about-content h2 {
+    text-align: left;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-section h1 {
+    font-size: 2.5em;
+  }
+  .hero-section .tagline {
+    font-size: 1.2em;
+  }
+  .about-content h2 {
+    font-size: 2em;
+  }
+  .about-content p {
+    font-size: 1em;
+  }
+  .feature-item h4 {
+    font-size: 1.4em;
+  }
+}

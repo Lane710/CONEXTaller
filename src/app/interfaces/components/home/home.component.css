@@ -1,0 +1,42 @@
+/* home.component.css (o styles.css si es global) */
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  /* Elimina overflow: hidden; de aquí si tienes problemas con scroll de la página completa */
+  /* Si necesitas evitar el scroll de la página completa y quieres que el scroll sea solo en .main-content,
+     entonces sí manténlo, pero primero probemos sin él para diagnosticar. */
+  /* overflow: hidden; */
+}
+
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Asegura que el layout ocupe al menos el 100% de la altura de la pantalla */
+  overflow: hidden; /* IMPORTANTE: Esto ahora va aquí para contener el scroll general si es necesario */
+}
+
+.content-wrapper {
+  display: flex; /* Para que el menú y el contenido se pongan lado a lado */
+  flex: 1; /* Esto hace que el content-wrapper ocupe todo el espacio vertical disponible entre el header y el footer */
+  /* AÑADIR: Asegura que el content-wrapper tenga un overflow propio */
+  overflow: hidden; /* Esto es crucial para que el sidebar no se "escape" */
+  position: relative; /* IMPORTANTE: Para que el sidebar posicionado absolutamente se contenga */
+}
+
+.main-content {
+  flex: 1; /* El router-outlet toma todo el espacio horizontal restante del content-wrapper */
+  
+  overflow-y: auto; /* Permite scroll solo en esta área si el contenido es largo */
+  box-sizing: border-box; /* Asegura que el padding no cause desbordamiento */
+  transition: margin-left 0.3s ease-in-out; /* Para la animación del menú */
+  /* Añadir un fondo para visualizar mejor el área del contenido */
+  
+}
+
+/* Clase para cuando el sidebar esté activo y empuje el contenido */
+.main-content.sidebar-active {
+  margin-left: 220px; /* El ancho de tu sidebar reducido */
+}

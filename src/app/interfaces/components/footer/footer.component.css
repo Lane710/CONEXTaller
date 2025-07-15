@@ -1,0 +1,257 @@
+/* src/app/footer/footer.component.css */
+
+.footer {
+  background-color: #212529;
+  color: #e0e0e0;
+  font-family: "Poppins", sans-serif;
+  width: 100%;
+  border-top: 3px solid #29aaca; /* Se mantiene este tamaño ya que es estético */
+  box-sizing: border-box;
+  flex-shrink: 0; /* ¡Crucial para que el footer no se encoja y se mantenga abajo! */
+  padding-top: 25px; /* Se mantiene este padding para el diseño */
+}
+
+.container-fluid {
+  max-width: 1100px; /* Reducido de 1200px */
+  margin: 0 auto;
+  padding: 0 15px; /* Reducido de 20px */
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 25px; /* Reducido de 40px */
+  padding-bottom: 20px; /* Reducido de 30px */
+}
+
+.footer-top-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 15px; /* Reducido de 20px */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-logo a {
+  color: #29aaca;
+  font-size: 28px; /* Reducido de 32px */
+  font-weight: 800;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-logo a:hover {
+  color: #29aaca;
+}
+
+.social-links {
+  display: flex;
+  gap: 15px; /* Reducido de 20px */
+}
+
+.social-links a {
+  color: white;
+  font-size: 20px; /* Reducido de 24px */
+  transition: transform 0.3s, color 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.social-links a:hover {
+  transform: translateY(-3px) scale(1.05); /* Efecto más sutil */
+  color: #29aaca;
+}
+
+.footer-bottom-section {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px; /* Reducido de 30px */
+}
+
+.footer-info-column,
+.footer-contact-column {
+  flex: 1;
+  min-width: 260px; /* Un poco más reducido */
+}
+
+.footer-info-column h4,
+.footer-contact-column h4 {
+  margin-bottom: 15px; /* Reducido de 20px */
+  font-size: 18px; /* Reducido de 20px */
+  color: #29aaca;
+  position: relative;
+  padding-bottom: 8px; /* Reducido de 10px */
+}
+
+.footer-info-column h4::after,
+.footer-contact-column h4::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 40px; /* Reducido de 50px */
+  height: 2px; /* Reducido de 3px */
+  background-color: #29aaca;
+  border-radius: 1px; /* Reducido de 2px */
+}
+
+.footer-info-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-info-column li {
+  margin-bottom: 8px; /* Reducido de 10px */
+}
+
+.footer-info-column a {
+  color: #e0e0e0;
+  text-decoration: none;
+  font-size: 14px; /* Reducido de 15px */
+  transition: color 0.3s, transform 0.3s;
+  display: inline-block;
+}
+
+.footer-info-column a:hover {
+  color: #29aaca;
+  transform: translateX(3px); /* Pequeño desplazamiento */
+}
+
+.footer-contact-column p {
+  margin: 8px 0; /* Reducido de 10px */
+  font-size: 14px; /* Reducido de 15px */
+  color: #e0e0e0;
+  line-height: 1.5; /* Ajustado ligeramente */
+  display: flex;
+  align-items: flex-start;
+}
+
+.footer-contact-column p i {
+  margin-right: 8px; /* Reducido de 10px */
+  color: #29aaca;
+  font-size: 16px; /* Reducido de 18px */
+  flex-shrink: 0;
+}
+
+.footer-contact-column a {
+  color: #e0e0e0;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-contact-column a:hover {
+  color: #29aaca;
+}
+
+.payment-methods {
+  font-style: italic;
+  margin-top: 15px; /* Reducido de 20px */
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 12px; /* Reducido de 15px */
+  font-size: 13px; /* Reducido */
+}
+
+.footer-copyright {
+  text-align: center;
+  padding: 15px 0; /* Reducido de 20px */
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 15px; /* Reducido de 20px */
+}
+
+.footer-copyright p {
+  margin: 0;
+  font-size: 13px; /* Reducido de 14px */
+  color: #e0e0e0;
+  opacity: 0.8;
+}
+
+/* Responsividad */
+@media (max-width: 992px) {
+  .footer-bottom-section {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .footer-info-column,
+  .footer-contact-column {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .footer-info-column h4::after,
+  .footer-contact-column h4::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .footer-info-column ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px; /* Reducido de 15px */
+  }
+
+  .footer-contact-column p {
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-top-section {
+    flex-direction: column;
+    gap: 20px; /* Reducido de 25px */
+  }
+
+  .footer-logo a {
+    font-size: 26px; /* Reducido de 28px */
+  }
+
+  .social-links {
+    gap: 12px; /* Reducido de 15px */
+  }
+
+  .social-links a {
+    font-size: 18px; /* Reducido de 22px */
+  }
+
+  .footer-content {
+    padding-bottom: 15px;
+  }
+
+  .footer-copyright {
+    padding: 10px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer {
+    padding: 20px 0 0;
+  }
+
+  .footer-content {
+    gap: 15px; /* Reducido de 20px */
+  }
+
+  .footer-info-column h4,
+  .footer-contact-column h4 {
+    font-size: 15px; /* Reducido de 16px */
+    margin-bottom: 10px;
+  }
+
+  .footer-info-column a,
+  .footer-contact-column p {
+    font-size: 12px; /* Reducido de 14px */
+  }
+  .payment-methods {
+    font-size: 12px;
+  }
+  .footer-copyright p {
+    font-size: 12px;
+  }
+}

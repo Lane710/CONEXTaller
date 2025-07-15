@@ -1,0 +1,242 @@
+<!-- src/app/components/modificar-user/modificar-user.component.html -->
+<div class="container my-5">
+  <div class="card shadow p-4 mx-auto" style="max-width: 800px">
+    <h1 class="text-center mb-4 text-warning">Modificar Usuario</h1>
+
+    <div *ngIf="isLoading" class="alert alert-info text-center" role="alert">
+      Cargando usuario...
+    </div>
+
+    <!-- Los mensajes de error/éxito principales ahora se muestran solo en el modal -->
+    <!-- Puedes eliminar estas alertas si prefieres que solo el modal maneje los mensajes -->
+    <!-- <div *ngIf="errorMessage" class="alert alert-danger mb-3" role="alert">
+      {{ errorMessage }}
+    </div>
+    <div *ngIf="successMessage" class="alert alert-success mb-3" role="alert">
+      {{ successMessage }}
+    </div> -->
+
+    <form *ngIf="usuarioForm && !isLoading" [formGroup]="usuarioForm" (ngSubmit)="onModify()">
+      <!-- Sección de Datos de la Cuenta -->
+      <fieldset class="border p-3 mb-4 rounded shadow-sm">
+        <legend class="float-none w-auto px-2 text-secondary h5">Datos de la Cuenta</legend>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="username" class="form-label">Usuario <span class="text-danger">*</span></label>
+            <input type="text" id="username" class="form-control" formControlName="username" readonly />
+          </div>
+          <div class="col-md-6">
+            <label for="email" class="form-label">Correo electrónico (Usuario) <span class="text-danger">*</span></label>
+            <input type="email" id="email" class="form-control" formControlName="email"
+              [class.is-invalid]="usuarioForm.get('email')?.invalid && usuarioForm.get('email')?.touched" />
+            <div *ngIf="usuarioForm.get('email')?.invalid && usuarioForm.get('email')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('email')?.errors?.['required']">El correo electrónico es requerido.</div>
+              <div *ngIf="usuarioForm.get('email')?.errors?.['email']">Ingrese un formato de correo electrónico válido.</div>
+              <div *ngIf="usuarioForm.get('email')?.errors?.['pattern']">Solo se permiten direcciones de Gmail.</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="password" class="form-label">Contraseña (dejar en blanco para no cambiar)</label>
+            <input type="password" id="password" class="form-control" formControlName="password"
+              placeholder="Dejar en blanco para no cambiar"
+              [class.is-invalid]="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched" />
+            <div *ngIf="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('password')?.errors?.['minlength']">La contraseña debe tener al menos 8 caracteres.</div>
+              <div *ngIf="usuarioForm.get('password')?.errors?.['pattern']">Debe contener al menos una mayúscula, una minúscula y un número.</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="confirmPassword" class="form-label">Repetir Contraseña (si cambió)
+              <span *ngIf="usuarioForm.get('password')?.value && usuarioForm.get('password')?.value.trim() !== ''" class="text-danger">*</span>
+            </label>
+            <input type="password" id="confirmPassword" class="form-control" formControlName="confirmPassword"
+              placeholder="Repita su contraseña si la cambió"
+              [class.is-invalid]="
+                (usuarioForm.get('confirmPassword')?.invalid && usuarioForm.get('confirmPassword')?.touched) ||
+                (usuarioForm.hasError('passwordMismatch') && (usuarioForm.get('password')?.touched || usuarioForm.get('confirmPassword')?.touched))
+              " />
+            <div *ngIf="
+                (usuarioForm.get('confirmPassword')?.invalid && usuarioForm.get('confirmPassword')?.touched) ||
+                (usuarioForm.hasError('passwordMismatch') && (usuarioForm.get('password')?.touched || usuarioForm.get('confirmPassword')?.touched))
+              " class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('confirmPassword')?.errors?.['required']">
+                La confirmación de la contraseña es requerida si se está cambiando la contraseña.
+              </div>
+              <div *ngIf="usuarioForm.hasError('passwordMismatch')">
+                Las contraseñas no coinciden.
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Sección de Datos Personales -->
+      <fieldset formGroupName="persona" class="border p-3 mb-4 rounded shadow-sm">
+        <legend class="float-none w-auto px-2 text-secondary h5">Datos Personales</legend>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="ci" class="form-label">CI <span class="text-danger">*</span></label>
+            <input type="text" id="ci" class="form-control" formControlName="ci" readonly />
+          </div>
+          <div class="col-md-6">
+            <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+            <input type="text" id="nombre" class="form-control" formControlName="nombre"
+              [class.is-invalid]="usuarioForm.get('persona.nombre')?.invalid && usuarioForm.get('persona.nombre')?.touched" />
+            <div *ngIf="usuarioForm.get('persona.nombre')?.invalid && usuarioForm.get('persona.nombre')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.nombre')?.errors?.['required']">El nombre es requerido.</div>
+              <div *ngIf="usuarioForm.get('persona.nombre')?.errors?.['minlength']">El nombre debe tener al menos 3 caracteres.</div>
+              <div *ngIf="usuarioForm.get('persona.nombre')?.errors?.['maxlength']">El nombre no debe exceder los 50 caracteres.</div>
+              <div *ngIf="usuarioForm.get('persona.nombre')?.errors?.['pattern']">El nombre solo puede contener letras y espacios.</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="apellidoP" class="form-label">Apellido Paterno <span class="text-danger">*</span></label>
+            <input type="text" id="apellidoP" class="form-control" formControlName="apellidoP"
+              [class.is-invalid]="usuarioForm.get('persona.apellidoP')?.invalid && usuarioForm.get('persona.apellidoP')?.touched" />
+            <div *ngIf="usuarioForm.get('persona.apellidoP')?.invalid && usuarioForm.get('persona.apellidoP')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.apellidoP')?.errors?.['required']">El apellido paterno es requerido.</div>
+              <div *ngIf="usuarioForm.get('persona.apellidoP')?.errors?.['minlength']">El apellido paterno debe tener al menos 3 caracteres.</div>
+              <div *ngIf="usuarioForm.get('persona.apellidoP')?.errors?.['maxlength']">El apellido paterno no debe exceder los 50 caracteres.</div>
+              <div *ngIf="usuarioForm.get('persona.apellidoP')?.errors?.['pattern']">El apellido paterno solo puede contener letras y espacios.</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="apellidoM" class="form-label">Apellido Materno</label>
+            <input type="text" id="apellidoM" class="form-control" formControlName="apellidoM"
+              [class.is-invalid]="usuarioForm.get('persona.apellidoM')?.invalid && usuarioForm.get('persona.apellidoM')?.touched" />
+            <div *ngIf="usuarioForm.get('persona.apellidoM')?.invalid && usuarioForm.get('persona.apellidoM')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.apellidoM')?.errors?.['minlength']">El apellido materno debe tener al menos 3 caracteres.</div>
+              <div *ngIf="usuarioForm.get('persona.apellidoM')?.errors?.['maxlength']">El apellido materno no debe exceder los 50 caracteres.</div>
+              <div *ngIf="usuarioForm.get('persona.apellidoM')?.errors?.['pattern']">El apellido materno solo puede contener letras y espacios.</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="telefono" class="form-label">Teléfono <span class="text-danger">*</span></label>
+            <input type="tel" id="telefono" class="form-control" formControlName="telefono"
+              [class.is-invalid]="usuarioForm.get('persona.telefono')?.invalid && usuarioForm.get('persona.telefono')?.touched" />
+            <div *ngIf="usuarioForm.get('persona.telefono')?.invalid && usuarioForm.get('persona.telefono')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.telefono')?.errors?.['required']">El teléfono es requerido.</div>
+              <div *ngIf="usuarioForm.get('persona.telefono')?.errors?.['pattern']">El teléfono debe contener entre 6 y 15 dígitos numéricos.</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="direccion" class="form-label">Dirección <span class="text-danger">*</span></label>
+            <input type="text" id="direccion" class="form-control" formControlName="direccion"
+              [class.is-invalid]="usuarioForm.get('persona.direccion')?.invalid && usuarioForm.get('persona.direccion')?.touched" />
+            <div *ngIf="usuarioForm.get('persona.direccion')?.invalid && usuarioForm.get('persona.direccion')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.direccion')?.errors?.['required']">La dirección es requerida.</div>
+              <div *ngIf="usuarioForm.get('persona.direccion')?.errors?.['maxlength']">La dirección no debe exceder los 100 caracteres.</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="ciudad" class="form-label">Ciudad <span class="text-danger">*</span></label>
+            <input type="text" id="ciudad" class="form-control" formControlName="ciudad"
+              [class.is-invalid]="usuarioForm.get('persona.ciudad')?.invalid && usuarioForm.get('persona.ciudad')?.touched" />
+            <div *ngIf="usuarioForm.get('persona.ciudad')?.invalid && usuarioForm.get('persona.ciudad')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.ciudad')?.errors?.['required']">La ciudad es requerida.</div>
+              <div *ngIf="usuarioForm.get('persona.ciudad')?.errors?.['maxlength']">La ciudad no debe exceder los 50 caracteres.</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="departamento" class="form-label">Departamento</label>
+            <input type="text" id="departamento" class="form-control" formControlName="departamento"
+                   placeholder="Ej: Tarija" />
+          </div>
+          <div class="col-md-6">
+            <label for="pais" class="form-label">País <span class="text-danger">*</span></label>
+            <input type="text" id="pais" class="form-control" formControlName="pais"
+              [class.is-invalid]="usuarioForm.get('persona.pais')?.invalid && usuarioForm.get('persona.pais')?.touched" />
+            <div *ngIf="usuarioForm.get('persona.pais')?.invalid && usuarioForm.get('persona.pais')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.pais')?.errors?.['required']">El país es requerido.</div>
+              <div *ngIf="usuarioForm.get('persona.pais')?.errors?.['maxlength']">Máximo 50 caracteres.</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="codigoPostal" class="form-label">Código Postal</label>
+            <input type="text" id="codigoPostal" class="form-control" formControlName="codigoPostal"
+                   placeholder="Ej: 0000" />
+          </div>
+          <div class="col-md-6">
+            <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento <span class="text-danger">*</span></label>
+            <input type="date" id="fechaNacimiento" class="form-control" formControlName="fechaNacimiento"
+              [max]="maxDateAllowed"
+              [class.is-invalid]="usuarioForm.get('persona.fechaNacimiento')?.invalid && usuarioForm.get('persona.fechaNacimiento')?.touched" />
+            <div *ngIf="usuarioForm.get('persona.fechaNacimiento')?.invalid && usuarioForm.get('persona.fechaNacimiento')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.fechaNacimiento')?.errors?.['required']">La fecha de nacimiento es obligatoria.</div>
+              <div *ngIf="usuarioForm.get('persona.fechaNacimiento')?.errors?.['dateInFuture']">La fecha de nacimiento no puede ser en el futuro.</div>
+              <div *ngIf="usuarioForm.get('persona.fechaNacimiento')?.errors?.['minAge']">Debe ser mayor de 18 años.</div>
+            </div>
+            <small class="form-text text-muted">Seleccione una fecha anterior o igual a {{ maxDateAllowed }} (mayor de 18 años).</small>
+          </div>
+          <div class="col-md-6">
+            <label for="genero" class="form-label">Género <span class="text-danger">*</span></label>
+            <select id="genero" class="form-select" formControlName="genero"
+              [class.is-invalid]="usuarioForm.get('persona.genero')?.invalid && usuarioForm.get('persona.genero')?.touched">
+              <option value="" disabled>Seleccione su género</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Femenino">Femenino</option>
+              <option value="Otro">Otro</option>
+            </select>
+            <div *ngIf="usuarioForm.get('persona.genero')?.invalid && usuarioForm.get('persona.genero')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.genero')?.errors?.['required']">El género es obligatorio.</div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Campo para la foto de perfil (solo en modificación) -->
+      <div class="mb-4">
+        <label for="profileImage" class="form-label">Imagen de Perfil</label>
+        <div>
+          <input
+            type="file"
+            id="profileImage"
+            class="form-control"
+            (change)="onFileSelected($event)"
+            accept="image/jpeg, image/png, image/gif"
+            aria-describedby="profileImageHelp"
+          />
+          <small id="profileImageHelp" class="form-text text-muted">Formatos: JPG, PNG, GIF. Tamaño máximo: 2MB. Seleccione una nueva imagen para cambiarla.</small>
+        </div>
+        
+        <div *ngIf="imageUrl" class="mt-3 text-center">
+          <img [src]="imageUrl" alt="Vista previa de la imagen de perfil" class="img-thumbnail rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+          <p class="mt-2 text-muted">Imagen actual/nueva</p>
+        </div>
+        <div *ngIf="!imageUrl && userToModify?.persona?.fotoUrl" class="mt-3 text-center">
+            <img [src]="userToModify?.persona?.fotoUrl" alt="Imagen de perfil existente" class="img-thumbnail rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+            <p class="mt-2 text-muted">Imagen de perfil existente</p>
+        </div>
+        <div *ngIf="!imageUrl && !userToModify?.persona?.fotoUrl" class="mt-3 text-center">
+            <img src="https://placehold.co/150x150/cccccc/ffffff?text=Sin+Imagen" alt="Sin imagen de perfil" class="img-thumbnail rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+            <p class="mt-2 text-muted">Sin imagen de perfil</p>
+        </div>
+      </div>
+      <div class="d-flex justify-content-center gap-3 mt-4">
+        <button type="submit" class="btn btn-warning btn-lg px-5" [disabled]="usuarioForm.pristine || usuarioForm.invalid || isLoading">Actualizar</button>
+        <button type="button" class="btn btn-secondary btn-lg px-5" (click)="goToUserList()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal para mensajes -->
+  <div class="modal fade" #messageModal id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header" [ngClass]="{'bg-success text-white': successMessage, 'bg-danger text-white': errorMessage}">
+          <h5 class="modal-title" id="messageModalLabel">
+            {{ successMessage ? 'Éxito' : 'Error' }}
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="closeMessageModalAndNavigate()"></button>
+        </div>
+        <div class="modal-body">
+          <p *ngIf="successMessage">{{ successMessage }}</p>
+          <p *ngIf="errorMessage">{{ errorMessage }}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn" [ngClass]="{'btn-success': successMessage, 'btn-danger': errorMessage}" data-bs-dismiss="modal" (click)="closeMessageModalAndNavigate()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

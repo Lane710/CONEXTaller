@@ -1,0 +1,478 @@
+/* src/app/detalles/detalles.component.css */
+
+
+
+/* El main-content de tu layout principal debe tener padding y margin en 0 */
+/* Esto es crucial para que el router-outlet ocupe todo el espacio */
+/* NOTA: Estos estilos deberían estar en el CSS del layout principal (ej. styles.css o app.component.css)
+   pero los mantengo aquí para asegurar que se sobrescriban si es necesario. */
+.main-content {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100%;
+    /* overflow-y: auto; Si quieres scroll solo en el contenido principal */
+    /* background-color: #f8f9fa; */
+}
+
+/* Eliminar la limitación de ancho y márgenes del .container si se usa */
+.container {
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* Contenedor principal del detalle del producto */
+.product-detail-full-width {
+    background-color: #fff;
+    border-radius: 0; /* Sin bordes redondeados como en tu captura */
+    box-shadow: none; /* Elimina la sombra para un aspecto más "plano" como en la captura */
+    max-width: 1600px; /* Define el ancho máximo de tu contenido (ej. 1200px o el que prefieras) */
+    margin: 0 auto; /* Centra el contenedor horizontalmente */
+
+    padding: 0px; /* Elimina el padding del contenedor principal, el espaciado será interno */
+    min-height: calc(100vh - var(--header-height, 0px) - var(--footer-height, 0px));
+    box-sizing: border-box; /* Asegura que el padding no añada ancho extra */
+}
+
+
+/* Ajustes para las columnas de Bootstrap - asegurar que no agreguen padding */
+.row {
+    margin-left: 0;
+    margin-right: 0;
+}
+.col-lg-6 {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* GALERÍA DE IMÁGENES */
+.product-gallery-full {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra el contenido horizontalmente */
+    padding: 30px 20px 30px 50px; /* top, right, bottom, left */
+}
+
+.main-image-wrapper {
+    width: 100%;
+    max-width: 550px; /* **AUMENTADO: Limita el ancho máximo del contenedor de la imagen principal** */
+    height: 450px; /* **AUMENTADO: ¡ALTURA FIJA PARA LA IMAGEN!** */
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    /* Para centrar la imagen dentro del wrapper, si el ancho es menor al max-width */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fdfdfd; /* Un fondo claro para el contenedor de la imagen */
+}
+.main-product-image {
+    width: 100%;
+    height: 100%; /* La imagen ocupa el 100% del alto fijo de su wrapper */
+    object-fit: contain; /* Asegura que la imagen completa se vea dentro del contenedor fijo */
+    display: block;
+    /* transition: transform 0.3s ease; /* Opcional: Pequeña transición */ 
+}
+/* .main-product-image:hover { /* Opcional: Efecto al pasar el ratón */
+/* transform: scale(1.02); */
+/* } */
+
+.thumbnail-gallery {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.thumbnail-image-wrapper {
+    width: 80px;
+    height: 80px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    /* Centrar imagen dentro de la miniatura */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.thumbnail-image-wrapper:hover,
+.thumbnail-image-wrapper.active {
+    border-color: #007bff;
+}
+.thumbnail-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* SECCIÓN DE INFORMACIÓN DEL PRODUCTO */
+.product-info-section-full {
+    padding: 30px 50px 30px 40px; /* top, right, bottom, left */
+}
+.product-title {
+    font-size: 2.5em;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #333;
+}
+.product-price {
+    font-size: 2.2em;
+    font-weight: 700;
+    color: #dc3545; /* Rojo, para coincidir con la captura de pantalla */
+    margin-bottom: 15px;
+}
+.product-availability {
+    font-size: 1.1em;
+    color: #28a745;
+    font-weight: 600;
+    margin-bottom: 25px;
+}
+.product-availability.low-stock {
+    color: #ffc107;
+}
+.product-availability.out-of-stock {
+    color: #dc3545;
+}
+.rating-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.stars i {
+    margin-right: 5px;
+    color: #ffc107; /* Color amarillo para las estrellas */
+}
+.review-count {
+    margin-left: 10px;
+    color: #666;
+    font-size: 0.95em; /* Ajuste para el texto de la valoración */
+}
+.product-option-group {
+    margin-bottom: 20px;
+    display: flex; /* Para alinear label y valores */
+    align-items: center;
+    gap: 10px;
+}
+.option-label {
+    font-weight: 600;
+    /* margin-right: 10px; REMOVED - using gap */
+}
+.color-swatch {
+    width: 24px; /* Tamaño ligeramente más grande */
+    height: 24px;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    display: inline-block;
+    /* margin-right: 5px; REMOVED - using gap */
+    vertical-align: middle;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.color-swatch.active {
+    border: 2px solid #007bff; /* Borde azul para el color activo como en la referencia */
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Efecto de "anillo" para el activo */
+}
+.color-name {
+    vertical-align: middle;
+}
+.quantity-selector {
+    margin-bottom: 20px;
+    display: flex; /* Para alinear label y input */
+    align-items: center;
+    gap: 10px;
+}
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap; /* Permite que los botones se envuelvan en pantallas pequeñas */
+}
+.add-to-cart-btn {
+    background-color: #007bff; /* Azul primario, como en la captura */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 15px 25px;
+    font-size: 1.1em;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+.add-to-cart-btn:hover {
+    background-color: #0056b3;
+}
+.whatsapp-btn {
+    background-color: #25d366; /* Verde WhatsApp, como en la captura */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 15px 25px;
+    font-size: 1.1em;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+.whatsapp-btn:hover {
+    background-color: #1da851;
+}
+.whatsapp-btn i {
+    font-size: 1.3em;
+}
+.product-meta {
+    font-size: 1em;
+    color: #666;
+    margin-bottom: 30px;
+    border-top: 1px solid #eee; /* Añadido para el separador visual */
+    padding-top: 20px; /* Espacio superior después del borde */
+}
+.product-meta span {
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* SECCIÓN DE DESCRIPCIÓN */
+.product-description-section-full {
+    margin-top: 50px;
+    border-top: 1px solid #eee;
+    padding: 40px 50px 30px 50px;
+    text-align: left;
+}
+.description-title {
+    font-size: 2em;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: #333;
+}
+.description-content ul { /* Asegura que las listas se vean bien si las hay */
+    list-style: disc;
+    padding-left: 30px;
+    color: #555;
+    margin-bottom: 1em;
+}
+.description-content ul li {
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) { /* Usar 991.98px para coincidir con el breakpoint `lg` de Bootstrap */
+    .product-detail-full-width {
+        padding: 20px;
+    }
+    .product-gallery-full {
+        padding-right: 0;
+        padding-left: 0;
+        border-bottom: 1px solid #eee; /* Añade borde inferior cuando se apila */
+    }
+    .product-info-section-full {
+        padding-left: 0;
+        padding-right: 0;
+        margin-top: 30px;
+    }
+    .product-description-section-full {
+        padding: 30px 0;
+    }
+    .action-buttons {
+        flex-direction: column; /* Apila los botones en columna */
+        gap: 10px;
+    }
+    .add-to-cart-btn, .whatsapp-btn {
+        width: 100%; /* Haz que los botones ocupen todo el ancho disponible */
+        justify-content: center; /* Centra el texto y el icono en los botones */
+    }
+}
+@media (max-width: 767.98px) { /* Breakpoint para tablets (md) */
+    .product-detail-full-width {
+        padding: 15px;
+    }
+    .product-title {
+        font-size: 2em;
+    }
+    .product-price {
+        font-size: 2em;
+    }
+    .thumbnail-gallery {
+        gap: 8px;
+    }
+    .thumbnail-image-wrapper {
+        width: 70px;
+        height: 70px;
+    }
+    .product-gallery-full, .product-info-section-full, .product-description-section-full {
+        padding: 15px;
+    }
+    .main-image-wrapper {
+        height: 400px; /* **Ajuste de altura para pantallas medianas** */
+    }
+}
+@media (max-width: 575.98px) { /* Breakpoint para móviles (sm) */
+    .product-detail-full-width {
+        padding: 10px;
+    }
+    .product-title {
+        font-size: 1.8em;
+    }
+    .product-price {
+        font-size: 1.8em;
+    }
+    .thumbnail-gallery {
+        gap: 5px;
+    }
+    .thumbnail-image-wrapper {
+        width: 60px;
+        height: 60px;
+    }
+    .add-to-cart-btn, .whatsapp-btn {
+        padding: 10px 15px;
+        font-size: 0.9em;
+    }
+    .main-image-wrapper {
+        height: 300px; /* **Altura para móviles** */
+    }
+}
+
+
+
+/* ===================================== */
+/* Sección de Propiedades del Producto   */
+/* ===================================== */
+.propiedadesProducto-section {
+    margin-top: 50px;
+    padding: 40px 50px 30px 50px; /* Consistencia con otras secciones de contenido */
+    border-top: 1px solid #eee; /* Separador visual */
+    background-color: #fcfcfc; /* Ligero color de fondo para la sección */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03); /* Sombra sutil */
+    max-width: 1600px; /* Mismo ancho máximo que el contenedor principal */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.section-title {
+    font-size: 2em;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: #333;
+    text-align: left;
+    border-bottom: 2px solid #007bff; /* Línea decorativa debajo del título */
+    padding-bottom: 10px; /* Espacio entre título y línea */
+    display: inline-block; /* Para que la línea se ajuste al ancho del texto */
+}
+
+/* Estilos para la tabla de Especificaciones */
+.product-specifications .table {
+    width: 100%;
+    margin-bottom: 25px;
+    border-collapse: collapse; /* Para que los bordes de las celdas se unan */
+}
+
+.product-specifications .table th,
+.product-specifications .table td {
+    padding: 8px 10px; /* **Más pequeño el padding** */
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 0.85em; /* **Más pequeño el tamaño de la fuente** */
+}
+
+.product-specifications .table th {
+    background-color: #e9ecef; /* Fondo para encabezados de tabla */
+    color: #495057;
+    font-weight: 600;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Striped rows (como en Bootstrap table-striped) */
+.product-specifications .table tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.03); /* Color alterno para filas */
+}
+
+.product-specifications .table tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.05); /* Efecto hover en filas */
+}
+
+/* Estilos para los listados de Atributos y Características (MODIFICADOS) */
+.product-list {
+    list-style: disc; /* **Usar viñetas de disco por defecto** */
+    padding-left: 20px; /* **Espaciado para las viñetas** */
+    margin-bottom: 25px;
+}
+
+.product-list li {
+    /* **Quitado background, padding, border-radius, display: flex, align-items** */
+    margin-bottom: 5px; /* **Margen más pequeño entre ítems** */
+    font-size: 0.9em; /* **Más pequeño el tamaño de la fuente** */
+    color: #444;
+    line-height: 1.4; /* Mejorar legibilidad */
+}
+
+.product-list li strong {
+    font-weight: bold;
+    margin-right: 5px;
+    color: #333; /* Asegurar que el nombre esté resaltado */
+}
+
+/* Quitar el pseudo-elemento ::before ya que list-style: disc se encarga de la viñeta */
+/* .product-list li::before {
+    content: "\2022";
+    color: #007bff;
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+    margin-right: 10px;
+} */
+
+
+/* Responsive adjustments for properties section */
+@media (max-width: 991.98px) {
+    .propiedadesProducto-section {
+        padding: 20px;
+    }
+    .section-title {
+        font-size: 1.8em;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .propiedadesProducto-section {
+        padding: 15px;
+        margin-top: 30px;
+    }
+    .section-title {
+        font-size: 1.6em;
+        margin-bottom: 20px;
+    }
+    .product-specifications .table th,
+    .product-specifications .table td {
+        padding: 6px 8px; /* **Más pequeño para móviles** */
+        font-size: 0.8em; /* **Más pequeño para móviles** */
+    }
+    .product-list li {
+        font-size: 0.85em; /* **Más pequeño para tablets/móviles** */
+        padding: 0; /* Sin padding interno si es solo lista con viñeta */
+    }
+}
+
+@media (max-width: 575.98px) {
+    .propiedadesProducto-section {
+        padding: 10px;
+        margin-top: 20px;
+    }
+    .section-title {
+        font-size: 1.4em;
+        margin-bottom: 15px;
+    }
+    .product-specifications .table th,
+    .product-specifications .table td {
+        font-size: 0.75em; /* **Aún más pequeño para móviles** */
+    }
+    .product-list li {
+        font-size: 0.8em; /* **Aún más pequeño para móviles** */
+    }
+}

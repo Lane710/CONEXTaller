@@ -1,0 +1,14 @@
+/* listar.component.css */
+
+.cart-product-img {
+    width: 80px;  /* Define el ancho fijo de la imagen */
+    height: 80px; /* Define el alto fijo de la imagen */
+    object-fit: cover; /* Asegura que la imagen cubra el área sin distorsionarse, recortando si es necesario */
+    border-radius: .25rem; /* Mantiene los bordes redondeados de Bootstrap */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Opcional: añade una pequeña sombra */
+}
+
+/* Opcional: Ajustar el padding de la celda si la imagen es muy grande y se ve apretada */
+.table td.text-center {
+    padding: .5rem; /* Reduce el padding si es necesario */
+}

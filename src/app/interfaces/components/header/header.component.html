@@ -1,0 +1,48 @@
+<div class="contenedor_header">
+  <div class="header_principal">
+    <div class="header_izquierda">
+      <button
+        *ngIf="mostrarBotonMenu"
+        class="icono_logo menu-toggle-button"
+        (click)="emitToggleSidebar()"
+      >
+        <img src="/Icon_Header/tdesign--indent-right.svg" alt="Icono Menu">
+      </button>
+      <h1 routerLink="/home/inicio">CONEX</h1>
+    </div>
+
+    <nav class="header_navegacion">
+      <a href="/home/inicio" class="nav_item">Home</a>
+      <a href="#" class="nav_item">Tienda</a>
+      <a href="#" class="nav_item">Contáctanos</a>
+    </nav>
+
+    <div class="header_derecha">
+      <div class="search-container">
+        <input type="text" class="search-input" placeholder="Buscar..." />
+        <button class="search-button">Buscar</button>
+      </div>
+      <div class="iconos_usuario">
+        <div class="dropdown">
+          <img
+            src="/Icon_Header/flowbite--user-circle-outline.svg"
+            alt="Usuario"
+            class="icono_header"
+          />
+          <div class="dropdown-content">
+            <a routerLink="/home/Gestion">Acciones de Usuario</a>
+            <a (click)="insertarModificar()"  routerLink="/home/modificarUser">Modificar</a>
+            <a (click)="logout()">Cerrar Sesión</a>
+          </div>
+        </div>
+
+        <img
+          src="/Icon_Header/cart.svg"
+          alt="Carrito"
+          class="icono_header"
+          routerLink="/home/Carrito"
+        />
+      </div>
+    </div>
+  </div>
+</div>

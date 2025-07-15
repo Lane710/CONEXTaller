@@ -1,0 +1,440 @@
+<div class="container mt-4">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">
+        Lista de Usuarios
+      </li>
+    </ol>
+  </nav>
+
+  <!-- Título principal -->
+  <h1 class="mb-4">Lista de Usuarios</h1>
+
+  <!-- Barra de herramientas superior: Botones y Filtros -->
+  <div
+    class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3"
+  >
+    <!-- Grupo de botones y búsqueda -->
+    <div class="d-flex flex-wrap gap-2 flex-grow-1">
+      <div class="col-12 col-md-auto">
+        <button
+          class="btn btn-primary rounded-pill w-100"
+          routerLink="/home/RegistrarUsuario"
+        >
+          <i class="bi bi-plus-lg me-2"></i>Añadir Usuario
+        </button>
+      </div>
+
+      <div class="col-12 col-md flex-grow-1">
+        <div class="input-group search-input-group w-100">
+          <input
+            type="text"
+            class="form-control rounded-pill-start"
+            placeholder="Buscar usuario"
+          />
+          <span class="input-group-text rounded-pill-end">
+            <i class="bi bi-search"></i>
+          </span>
+        </div>
+      </div>
+
+      <!-- Puedes añadir un filtro de fecha si es relevante para usuarios, o eliminar este div si no -->
+      <div class="col-12 col-md flex-grow-1">
+        <div class="input-group date-input-group w-100">
+          <input
+            type="text"
+            class="form-control rounded-pill-start"
+            placeholder="Filtrar por fecha"
+          />
+          <span class="input-group-text rounded-pill-end">
+            <i class="bi bi-calendar"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grupo de Dropdowns (Filtros) -->
+    <div class="d-flex flex-wrap gap-2 justify-content-end">
+      <div class="col-12 col-sm-auto">
+        <div class="dropdown w-100">
+          <button
+            class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
+            type="button"
+            id="rolDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Rol
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="rolDropdown">
+            <li><a class="dropdown-item" href="#">Administrador</a></li>
+            <li><a class="dropdown-item" href="#">Empleado</a></li>
+            <li><a class="dropdown-item" href="#">Cliente</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-auto">
+        <div class="dropdown w-100">
+          <button
+            class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
+            type="button"
+            id="estadoDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Estado
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="estadoDropdown">
+            <li><a class="dropdown-item" href="#">Activo</a></li>
+            <li><a class="dropdown-item" href="#">Inactivo</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de Usuarios -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body p-0">
+      <!-- Mensajes de carga, error o sin usuarios -->
+      <div *ngIf="isLoading" class="alert alert-info text-center py-4" role="alert">
+        Cargando usuarios y personas...
+      </div>
+      <div *ngIf="errorMessage" class="alert alert-danger text-center py-4" role="alert">
+        {{ errorMessage }}
+      </div>
+      <div *ngIf="!isLoading && usuarios.length === 0 && !errorMessage" class="alert alert-warning text-center py-4" role="alert">
+        No hay usuarios para mostrar.
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th scope="col">Foto</th>
+              <th scope="col">Nombre Completo</th>
+              <th scope="col">Usuario</th>
+              <th scope="col">Email</th>
+              <th scope="col">Rol</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Itera sobre los usuarios solo si hay datos y no hay error de carga grave -->
+            @for (user of paginatedUsers; track user.username) {
+            <!-- Protección adicional: asegúrate de que user.persona existe antes de acceder a .ci -->
+            @let persona = user.persona ? getPersonaForUser(user.persona.ci) : undefined;
+            <tr>
+              <td data-label="Foto">
+                <!-- Usa el encadenamiento opcional para fotoUrl y un placeholder -->
+                <img
+                  [src]="persona?.fotoUrl || 'https://placehold.co/50x50/cccccc/ffffff?text=User'"
+                  alt="Foto de usuario"
+                  class="img-thumbnail rounded-circle product-image"
+                  style="width: 50px; height: 50px; object-fit: cover"
+                />
+              </td>
+              <td data-label="Nombre Completo">
+                <!-- Usa el encadenamiento opcional para las propiedades de persona -->
+                {{ persona?.nombre }} {{ persona?.apellidoP }}
+                {{ persona?.apellidoM }}
+              </td>
+              <td data-label="Usuario">{{ user.username }}</td>
+              <td data-label="Email">{{ user.email }}</td>
+              <td data-label="Rol">
+                <!-- Protección para user.rol.idRol -->
+                {{ user.rol.idRol || 'N/A' }}
+              </td>
+              <td data-label="Estado">
+                <span [class]="user.estado === 1 ? 'badge bg-success' : 'badge bg-danger'">
+                  {{ user.estado === 1 ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td data-label="Acciones" class="actions-column">
+                <button class="btn btn-info btn-sm me-1" (click)="verDetallesUsuario(user)">
+                  <img
+                    src="/icon_Productos/Listar/ver_observar.svg"
+                    style="width: 30px; height: 30px; vertical-align: middle"
+                  />
+                </button>
+                <button class="btn btn-warning btn-sm me-1" (click)="goToModifyUser(user.username)">
+                  <img
+                    src="/icon_Productos/Listar/Modificar.svg"
+                    alt=""
+                    style="width: 30px; height: 30px; vertical-align: middle"
+                  />
+                </button>
+                <button
+                  [class]="user.estado === 1 ? 'btn btn-danger btn-sm' : 'btn btn-success btn-sm'"
+                  (click)="abrirModalConfirmacionUsuario(user)"
+                >
+                  <img
+                    [src]="user.estado === 1 ? '/icon_Productos/Listar/deshabilitar.svg' : '/icon_Productos/Listar/habilitar.svg'"
+                    alt="Estado del usuario"
+                    style="width: 30px; height: 30px; vertical-align: middle"
+                  />
+                </button>
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="7" class="text-center py-4 text-muted">No hay usuarios para mostrar.</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paginación -->
+  <div class="d-flex justify-content-center align-items-center flex-wrap mb-3">
+    <nav aria-label="Page navigation">
+      <ul class="pagination pagination-sm mb-0">
+        <!-- Botón Anterior -->
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button
+            class="page-link"
+            (click)="goToPage(currentPage - 1)"
+            aria-label="Previous"
+            [disabled]="currentPage === 1"
+          >
+            <span aria-hidden="true">&laquo;</span>
+          </button>
+        </li>
+        <!-- Números de Página (asume que tienes totalPages y currentPage en tu componente TS) -->
+        @for (page of [].constructor(totalPages); let i = $index; track i) {
+        <li class="page-item" [class.active]="currentPage === i + 1">
+          <button class="page-link" (click)="goToPage(i + 1)">
+            {{ i + 1 }}
+          </button>
+        </li>
+        }
+        <!-- Botón Siguiente -->
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button
+            class="page-link"
+            (click)="goToPage(currentPage + 1)"
+            aria-label="Next"
+            [disabled]="currentPage === totalPages"
+          >
+            <span aria-hidden="true">&raquo;</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<!-- Modal de Confirmación de Acción de Usuario -->
+<div
+  class="modal fade"
+  id="confirmarAccionUsuarioModal"
+  tabindex="-1"
+  aria-labelledby="confirmarAccionUsuarioModalLabel"
+  aria-hidden="true"
+  #confirmarAccionUsuarioModal
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmarAccionUsuarioModalLabel">Confirmar Acción de Usuario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        @let personaSeleccionada = usuarioSeleccionado ? getPersonaForUser(usuarioSeleccionado.persona.ci) : undefined;
+        <p *ngIf="usuarioSeleccionado">
+          ¿Estás seguro de que quieres
+          <strong>{{ usuarioSeleccionado.estado === 1 ? 'deshabilitar' : 'habilitar' }}</strong> al usuario:
+          <strong>{{ usuarioSeleccionado.username }} ({{ personaSeleccionada?.nombre }}
+            {{ personaSeleccionada?.apellidoP }})</strong
+          >
+          ?
+        </p>
+        <p *ngIf="!usuarioSeleccionado">¿Estás seguro de realizar esta acción para el usuario?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="confirmarAccionUsuario()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Mensaje General -->
+<div
+  class="modal fade"
+  [class.show]="showModal"
+  [style.display]="showModal ? 'block' : 'none'"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="messageModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div
+        class="modal-header"
+        [ngClass]="{
+          'bg-success text-white': isSuccessModal,
+          'bg-danger text-white': !isSuccessModal
+        }"
+      >
+        <h5 class="modal-title" id="messageModalLabel">{{ modalTitle }}</h5>
+      </div>
+      <div class="modal-body text-center">
+        <i
+          class="bi"
+          [ngClass]="{
+            'bi-check-circle-fill text-success': isSuccessModal,
+            'bi-x-circle-fill text-danger': !isSuccessModal
+          }"
+          style="font-size: 3rem"
+        ></i>
+        <p class="mt-3 fs-5">{{ modalMessage }}</p>
+        <ul *ngIf="modalDetails.length > 0" class="list-unstyled text-start">
+          <li *ngFor="let detail of modalDetails">
+            <i class="bi bi-info-circle me-2"></i>{{ detail }}
+          </li>
+        </ul>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button
+          type="button"
+          class="btn"
+          [ngClass]="{
+            'btn-success': isSuccessModal,
+            'btn-danger': !isSuccessModal
+          }"
+          (click)="closeModal()"
+        >
+          Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Detalles del Usuario (Nuevo, basado en el de producto) -->
+<div
+  class="modal fade"
+  id="modalDetallesUsuario"
+  tabindex="-1"
+  aria-labelledby="modalDetallesUsuarioLabel"
+  aria-hidden="true"
+  #modalDetallesUsuarioRef
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content rounded-3 shadow-lg">
+      <div class="modal-header bg-primary text-white rounded-top-3">
+        <h5 class="modal-title fw-bold" id="modalDetallesUsuarioLabel">
+          Detalles del Usuario
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="closeDetallesUsuarioModal()"
+        ></button>
+      </div>
+      <div
+        class="modal-body p-4"
+        *ngIf="usuarioSeleccionado as user"
+      >
+        @let persona = user.persona ? getPersonaForUser(user.persona.ci) : undefined;
+        <div class="row align-items-center">
+          <!-- Columna de Imagen Principal -->
+          <div class="col-md-4 text-center mb-4 mb-md-0">
+            <img
+              [src]="
+                persona?.fotoUrl ||
+                'https://placehold.co/200x200/cccccc/ffffff?text=Sin+Imagen'
+              "
+              alt="Imagen del usuario"
+              class="img-fluid rounded-3 shadow-sm product-detail-image"
+            />
+            <h4 class="fw-bold mt-3 text-primary">{{ persona?.nombre }} {{ persona?.apellidoP }}</h4>
+            <p class="text-muted small">Usuario: {{ user.username || "N/A" }}</p>
+          </div>
+          <!-- Columna de Información General -->
+          <div class="col-md-8">
+            <h5 class="mb-3 border-bottom pb-2 text-secondary">
+              Información General
+            </h5>
+            <div class="row g-2 mb-2">
+              <div class="col-sm-6"><strong>C.I.:</strong></div>
+              <div class="col-sm-6">
+                {{ persona?.ci || "No disponible" }}
+              </div>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-sm-6"><strong>Nombre Completo:</strong></div>
+              <div class="col-sm-6">
+                {{ persona?.nombre }} {{ persona?.apellidoP }} {{ persona?.apellidoM }}
+              </div>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-sm-6"><strong>Teléfono:</strong></div>
+              <div class="col-sm-6">
+                {{ persona?.telefono || "N/A" }}
+              </div>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-sm-6"><strong>Dirección:</strong></div>
+              <div class="col-sm-6">
+                {{ persona?.direccion || "N/A" }}
+              </div>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-sm-6"><strong>Email:</strong></div>
+              <div class="col-sm-6">{{ user.email || "N/A" }}</div>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-sm-6"><strong>Rol:</strong></div>
+              <div class="col-sm-6">
+                <span class="badge bg-info text-dark fs-6">{{ user.rol.idRol || "N/A" }}</span>
+              </div>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-sm-6"><strong>Estado:</strong></div>
+              <div class="col-sm-6">
+                <span
+                  [class]="
+                    user.estado === 1
+                      ? 'badge bg-success'
+                      : 'badge bg-danger'
+                  "
+                >
+                  {{ user.estado === 1 ? "Activo" : "Inactivo" }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="modal-footer justify-content-center bg-light border-top-0 rounded-bottom-3"
+      >
+        <button
+          type="button"
+          class="btn btn-secondary px-4"
+          data-bs-dismiss="modal"
+          (click)="closeDetallesUsuarioModal()"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CAMBIO: Usar el nuevo getter público para el modal-backdrop -->
+<div
+  *ngIf="showModal || isModalDetallesUsuarioShown()"
+  class="modal-backdrop fade show"
+></div>

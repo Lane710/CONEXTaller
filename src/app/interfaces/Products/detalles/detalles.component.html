@@ -1,0 +1,174 @@
+<div class="container">
+  <div
+    class="productoDetalle"
+    *ngIf="productDetails as details; else loadingOrError"
+  >
+    <div class="product-detail-full-width">
+      <div class="row g-0">
+        <div class="col-lg-6 product-gallery-full">
+          <div class="main-image-wrapper">
+            <img
+              *ngIf="details.producto.imagen"
+              [src]="details.producto.imagen"
+              [alt]="details.producto.nombre || 'Imagen del producto'"
+              class="main-product-image"
+              id="mainProductImage"
+            />
+          </div>
+          <div class="thumbnail-gallery" *ngIf="details.producto.imagen">
+            <div class="thumbnail-image-wrapper active">
+              <img
+                [src]="details.producto.imagen"
+                [alt]="details.producto.nombre || 'Miniatura del producto'"
+                class="thumbnail-image"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 product-info-section-full">
+          <h1 class="product-title">{{ details.producto.nombre }}</h1>
+
+          <div class="product-short-description-section">
+            <p class="product-short-description">
+              {{ details.producto.descripcion }}
+            </p>
+          </div>
+          <br />
+
+          <p class="product-price">561 Bs.</p>
+
+          <p
+            class="product-availability"
+            [ngClass]="{
+              'low-stock': details.cantidad > 0 && details.cantidad <= 5,
+              'in-stock': details.cantidad > 5,
+              'out-of-stock': details.cantidad === 0
+            }"
+          >
+            <ng-container *ngIf="details.cantidad > 0 && details.cantidad <= 5">
+              Solo hay {{ details.cantidad }} unidad{{
+                details.cantidad === 1 ? "" : "es"
+              }}
+              ¡Apresúrate!
+            </ng-container>
+            <ng-container *ngIf="details.cantidad > 5"
+              >Hay existencias</ng-container
+            >
+            <ng-container *ngIf="details.cantidad === 0"
+              >Sin stock</ng-container
+            >
+          </p>
+
+          <div class="product-option-group" *ngIf="details.producto.color">
+            <label class="option-label">Color:</label>
+            <div class="option-values">
+              <button
+                class="color-swatch active"
+                [style.backgroundColor]="
+                  details.producto.color === 'Negro' ? '#000' : '#fff'
+                "
+                [title]="details.producto.color"
+              ></button>
+              <span class="color-name">{{ details.producto.color }}</span>
+            </div>
+          </div>
+
+          <div class="quantity-selector">
+            <label for="productQuantity">Cantidad:</label>
+            <input
+              type="number"
+              id="productQuantity"
+              name="productQuantity"
+              min="1"
+              [max]="details.cantidad"
+              [value]="1"
+              [disabled]="details.cantidad === 0"
+              class="form-control"
+              style="width: 80px; display: inline-block; margin-left: 10px"
+            />
+          </div>
+          <br />
+          <div class="action-buttons">
+            <button
+              class="btn add-to-cart-btn"
+              [disabled]="details.cantidad === 0"
+            >
+              <i class="fas fa-cart-plus"></i> Añadir al carrito
+            </button>
+            <a
+              href="https://wa.me/yourwhatsappnumber"
+              target="_blank"
+              class="btn whatsapp-btn"
+            >
+              <i class="fab fa-whatsapp"></i> Pedir por WhatsApp
+            </a>
+          </div>
+
+          <div class="product-meta">
+            <span>SKU: N/D</span>
+            <span>Categoría: {{ details.producto.nombreCategoria }}</span>
+            <span>Estado: Nuevo</span>
+            <span>Envíos: A toda Tarija</span>
+            <span>Marca: {{ details.producto.marca }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loadingOrError>
+    <div *ngIf="isLoading" class="text-center p-4">
+      Cargando detalles del producto...
+    </div>
+    <div *ngIf="error" class="alert alert-danger p-4">{{ error }}</div>
+    <div
+      *ngIf="!isLoading && !error && !productDetails"
+      class="text-center p-4"
+    >
+      Producto no encontrado o no disponible.
+    </div>
+  </ng-template>
+
+  <div class="propiedadesProducto-section">
+    <div class="product-specifications" *ngIf="especificaciones.length > 0">
+      <h2 class="section-title">Especificaciones</h2>
+      <div class="table-responsive">
+        <table class="table table-striped product-table">
+          <thead>
+            <tr>
+              <th>Propiedad</th>
+              <th>Valor</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let spec of especificaciones">
+              <td>{{ spec.nombre }}</td>
+              <td>{{ spec.valor }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="product-attributes" *ngIf="atributos.length > 0">
+      <h2 class="section-title">Atributos</h2>
+      <ul class="product-list">
+        <li *ngFor="let attr of atributos">
+          <strong>{{ attr.nombre }}:</strong> {{ attr.valor }}
+        </li>
+      </ul>
+    </div>
+
+    <div class="product-characteristics" *ngIf="caracteristicas.length > 0">
+      <h2 class="section-title">Características</h2>
+      <ul class="product-list">
+        <li *ngFor="let char of caracteristicas">
+          <strong>{{ char.nombre }}:</strong> {{ char.valor }}
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="productosSimilares"></div>
+</div>

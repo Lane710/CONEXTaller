@@ -1,0 +1,307 @@
+<div class="sidebar-container" [ngClass]="{ active: sidebarActive }">
+  <div class="sidebar-header">
+    <img
+      src="https://via.placeholder.com/60"
+      alt="Profile Picture"
+      class="profile-picture"
+    />
+    <p class="profile-name">Julia Roberts</p>
+    <p *ngIf="userRole" class="user-role">{{ userRole.nombreRol }}</p>
+    <p *ngIf="!userRole" class="user-role">Cargando rol...</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <ul class="list-unstyled">
+      <li class="nav-item-sidebar">
+        <a
+          routerLink="/home/inicio"
+          class="nav-link-sidebar"
+          routerLinkActive="active"
+        >
+          <span class="icon">🏠</span> <span class="text">Home</span>
+        </a>
+      </li>
+
+      <li
+        class="nav-item-sidebar dropdown"
+        *ngIf="isAdministrador() || isDuena() || isTrabajador()"
+      >
+        <a
+          class="nav-link-sidebar dropdown-toggle"
+          routerLink="/home/listarProductos"
+          id="inventarioDropdown"
+          role="button"
+          routerLinkActive="active"
+        >
+          <span class="icon">📦</span>
+          <span class="text">Gestionar Inventario</span>
+        </a>
+      </li>
+
+      <li
+        class="nav-item-sidebar dropdown"
+        *ngIf="isAdministrador() || isDuena() || isTrabajador()"
+      >
+        <a
+          class="nav-link-sidebar dropdown-toggle"
+          href="#"
+          id="enviosDropdown"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <span class="icon">🚚</span>
+          <span class="text">Gestionar Envíos</span>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="enviosDropdown">
+          <li>
+            <a
+              class="dropdown-item"
+              routerLink="/envios/crear"
+              routerLinkActive="active"
+              >Crear Envío</a
+            >
+          </li>
+          <li>
+            <a
+              class="dropdown-item"
+              routerLink="/envios/rastrear"
+              routerLinkActive="active"
+              >Rastrear Envíos</a
+            >
+          </li>
+        </ul>
+      </li>
+
+      <li
+        class="nav-item-sidebar dropdown"
+        *ngIf="isAdministrador() || isDuena() || isTrabajador() || isCliente()"
+      >
+        <a
+          class="nav-link-sidebar dropdown-toggle"
+          href="#"
+          id="pedidosDropdown"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <span class="icon">📝</span>
+          <span class="text">Gestionar Pedidos</span>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="pedidosDropdown">
+          <li>
+            <a
+              class="dropdown-item"
+              routerLink="/pedidos/listar"
+              routerLinkActive="active"
+              >Listar Pedidos</a
+            >
+          </li>
+          <li *ngIf="isCliente()">
+            <a
+              class="dropdown-item"
+              routerLink="/pedidos/crear"
+              routerLinkActive="active"
+              >Crear Pedido</a
+            >
+          </li>
+        </ul>
+      </li>
+
+      <li
+        class="nav-item-sidebar dropdown"
+        *ngIf="isAdministrador() || isDuena() || isProveedor()"
+      >
+        <a
+          class="nav-link-sidebar dropdown-toggle"
+          href="#"
+          id="comprasDropdown"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <span class="icon">🛒</span>
+          <span class="text">Gestionar Compras</span>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="comprasDropdown">
+          <li>
+            <a
+              class="dropdown-item"
+              routerLink="/compras/realizar"
+              routerLinkActive="active"
+              >Realizar Compra</a
+            >
+          </li>
+          <li>
+            <a
+              class="dropdown-item"
+              routerLink="/compras/historial"
+              routerLinkActive="active"
+              >Historial de Compras</a
+            >
+          </li>
+        </ul>
+      </li>
+
+      <li
+        class="nav-item-sidebar dropdown"
+        *ngIf="isAdministrador() || isDuena() || isTrabajador()"
+      >
+        <a
+          class="nav-link-sidebar dropdown-toggle"
+          href="#"
+          id="ventasDropdown"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <span class="icon">💰</span>
+          <span class="text">Gestionar Ventas</span>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="ventasDropdown">
+          <li>
+            <a
+              class="dropdown-item"
+              routerLink="/ventas/realizar"
+              routerLinkActive="active"
+              >Realizar Venta</a
+            >
+          </li>
+          <li>
+            <a
+              class="dropdown-item"
+              routerLink="/ventas/historial"
+              routerLinkActive="active"
+              >Historial de Ventas</a
+            >
+          </li>
+        </ul>
+      </li>
+
+      <li
+        class="nav-item-sidebar dropdown"
+        *ngIf="isAdministrador() || isDuena()"
+      >
+        <a
+          class="nav-link-sidebar dropdown-toggle"
+          routerLink="/home/listarUser"
+          id="usuariosDropdown"
+          role="button"
+          routerLinkActive="active"
+        >
+          <span class="icon">👥</span>
+          <span class="text">Gestionar Usuarios</span>
+        </a>
+      </li>
+
+      <li
+        class="nav-item-sidebar dropdown"
+        *ngIf="isAdministrador() || isDuena() "
+      >
+        <a
+          class="nav-link-sidebar dropdown-toggle"
+          href="#"
+          id="reportesDropdown"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <span class="icon">📊</span>
+          <span class="text">Generar Reportes</span>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="reportesDropdown">
+          <li>
+            <a
+              class="dropdown-item"
+              routerLink="/reportes/ventas"
+              routerLinkActive="active"
+              >Reporte de Ventas</a
+            >
+          </li>
+          <li>
+            <a
+              class="dropdown-item"
+              routerLink="/reportes/inventario"
+              routerLinkActive="active"
+              >Reporte de Inventario</a
+            >
+          </li>
+        </ul>
+      </li>
+
+      <li
+        class="nav-item-sidebar dropdown"
+        *ngIf="isAdministrador() || isDuena() || isTrabajador() || isCliente()"
+      >
+        <a
+          class="nav-link-sidebar dropdown-toggle"
+          href="#"
+          id="facturasDropdown"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <span class="icon">🧾</span>
+          <span class="text">Gestionar Facturas</span>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="facturasDropdown">
+          <li *ngIf="isAdministrador() || isDuena()">
+            <a
+              class="dropdown-item"
+              routerLink="/facturas/crear"
+              routerLinkActive="active"
+              >Crear Factura</a
+            >
+          </li>
+          <li>
+            <a
+              class="dropdown-item"
+              routerLink="/facturas/consultar"
+              routerLinkActive="active"
+              >Consultar Facturas</a
+            >
+          </li>
+        </ul>
+      </li>
+
+      <li
+        class="nav-item-sidebar dropdown"
+        *ngIf="isAdministrador() || isDuena() || isProveedor()"
+      >
+        <a
+          class="nav-link-sidebar dropdown-toggle"
+          href="#"
+          id="proveedoresDropdown"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <span class="icon">🏢</span>
+          <span class="text">Gestionar Proveedores</span>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="proveedoresDropdown">
+          <li>
+            <a
+              class="dropdown-item"
+              routerLink="/home/listarProveedores"
+              routerLinkActive="active"
+              >Listar Proveedores</a
+            >
+          </li>
+          <li *ngIf="isAdministrador() || isDuena() ">
+            <a
+              class="dropdown-item"
+              routerLink="/proveedores/registrar"
+              routerLinkActive="active"
+              >Registrar Proveedor</a
+            >
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-footer">
+    <p>© 2025 CONEX</p>
+  </div>
+</div>

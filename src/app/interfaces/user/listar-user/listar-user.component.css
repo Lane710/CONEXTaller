@@ -1,0 +1,76 @@
+/* src/app/listar-usuarios/listar-user.component.css */
+
+/* Fuente general para una mejor estética */
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Estilos para la foto del usuario (se beneficiará de Bootstrap 'rounded-circle' e 'img-thumbnail') */
+.user-photo {
+  width: 50px; /* Tamaño de la foto */
+  height: 50px;
+  object-fit: cover; /* Para que la imagen no se distorsione */
+  /* Las clases de Bootstrap rounded-circle e img-thumbnail ya hacen gran parte del trabajo */
+}
+
+/* Opcional: Ajustes para el texto de no hay datos */
+.text-muted {
+  color: #6c757d !important; /* Color de texto secundario de Bootstrap */
+}
+
+/* Responsive adjustments for tables on small screens */
+@media (max-width: 767.98px) { /* Bootstrap's 'md' breakpoint is 768px */
+  .table-responsive table {
+    border: 0; /* Elimina los bordes de la tabla para una apariencia más limpia en móvil */
+  }
+
+  .table-responsive thead {
+    display: none; /* Oculta los encabezados de la tabla en pantallas pequeñas */
+  }
+
+  .table-responsive tr {
+    display: block; /* Hace que las filas de la tabla se comporten como elementos de bloque */
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6; /* Añade un borde a cada 'tarjeta' (fila) */
+    border-radius: 0.25rem; /* Esquinas redondeadas para las 'tarjetas' */
+  }
+
+  .table-responsive td {
+    display: block; /* Hace que las celdas de la tabla se comporten como elementos de bloque */
+    text-align: right; /* Alinea el contenido a la derecha */
+    padding-left: 50%; /* Deja espacio para la etiqueta data-label */
+    position: relative;
+    border-bottom: 1px solid #dee2e6; /* Separador entre celdas */
+  }
+
+  .table-responsive td:last-child {
+    border-bottom: 0; /* Sin borde para la última celda */
+  }
+
+  .table-responsive td::before {
+    content: attr(data-label); /* Usa data-label como pseudo-elemento para el encabezado */
+    position: absolute;
+    left: 0.75rem; /* Relleno desde la izquierda */
+    width: 45%; /* Ancho para la etiqueta */
+    padding-right: 0.5rem;
+    white-space: nowrap;
+    text-align: left; /* Alinea la etiqueta a la izquierda */
+    font-weight: bold;
+  }
+
+  /* Ajustes específicos para los botones de acción en móvil */
+  .actions-column {
+    display: flex; /* Usa flexbox para los botones de acción */
+    flex-wrap: nowrap; /* ¡CAMBIO CLAVE! Evita que los botones se envuelvan */
+    justify-content: flex-end; /* Alinea los botones a la derecha */
+    gap: 0.5rem; /* Espacio entre botones */
+    padding-top: 0.75rem; /* Añade algo de relleno encima de los botones */
+    overflow-x: auto; /* Permite el desplazamiento horizontal si los botones no caben */
+    -webkit-overflow-scrolling: touch; /* Mejora el desplazamiento en iOS */
+  }
+
+  .actions-column button {
+    /* Eliminamos flex-grow y min-width para que los botones sean más compactos */
+    flex-shrink: 0; /* Evita que los botones se encojan demasiado */
+  }
+}

@@ -1,0 +1,50 @@
+<!-- src/app/components/verificable/verificable.component.html -->
+<div class="container my-5">
+  <div class="card shadow p-4 mx-auto" style="max-width: 500px;">
+    <h2 class="card-title text-center mb-4 text-primary">Restablecer Contraseña</h2>
+
+    <!-- Mensajes de éxito/error -->
+    <div *ngIf="successMessage" class="alert alert-success mb-3 text-center" role="alert">
+      {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-danger mb-3 text-center" role="alert">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Indicador de carga -->
+    <div *ngIf="isLoading" class="alert alert-info text-center" role="alert">
+      Cargando... Por favor, espera.
+    </div>
+
+    <!-- Formulario para solicitar el código (Paso Único en este componente) -->
+    <div>
+      <p class="text-center text-muted mb-4">Ingresa tu correo electrónico para recibir un código de verificación.</p>
+      <form [formGroup]="requestForm" (ngSubmit)="requestResetCode()">
+        <div class="mb-3">
+          <label for="email" class="form-label">Correo Electrónico</label>
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            formControlName="email"
+            placeholder="tu_correo@gmail.com"
+            [class.is-invalid]="emailControl.invalid && emailControl.touched"
+          >
+          <div *ngIf="emailControl.invalid && emailControl.touched" class="invalid-feedback">
+            <div *ngIf="emailControl.errors?.['required']">El correo electrónico es obligatorio.</div>
+            <div *ngIf="emailControl.errors?.['email']">Formato de correo electrónico inválido.</div>
+            <div *ngIf="emailControl.errors?.['pattern']">Solo se permiten correos de Gmail.</div>
+          </div>
+        </div>
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-primary btn-lg" [disabled]="isLoading || requestForm.invalid">
+            Solicitar Código
+          </button>
+          <button type="button" class="btn btn-secondary btn-lg" (click)="goToLogin()">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

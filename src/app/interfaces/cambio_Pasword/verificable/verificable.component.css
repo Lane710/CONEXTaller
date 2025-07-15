@@ -1,0 +1,30 @@
+/* Centrar el contenedor del formulario */
+.contact-form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Ocupa toda la altura de la ventana */
+    margin: 0;
+    background-color: #f8f9fa; /* Color de fondo ligero */
+}
+
+/* Estilos de la tarjeta (card) */
+.contact-form-container .card {
+    width: 100%;
+    max-width: 450px; /* Ancho máximo del formulario */
+    padding: 30px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra suave */
+    border-radius: 8px; /* Bordes ligeramente redondeados */
+    background-color: #fff; /* Fondo blanco para la tarjeta */
+}
+
+/* Estilos específicos del botón de Bootstrap */
+.contact-form-container .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.contact-form-container .btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}

@@ -1,0 +1,503 @@
+<div class="container mt-4">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">
+        Stock de Productos
+      </li>
+    </ol>
+  </nav>
+
+  <!-- Título principal -->
+  <h1 class="mb-4">Lista de Stock de Productos</h1>
+
+  <!-- Barra de herramientas superior: Botones y Filtros -->
+  <div
+    class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3"
+  >
+    <!-- Grupo de botones y búsqueda -->
+    <div class="d-flex flex-wrap gap-2 flex-grow-1">
+      <div class="col-12 col-md-auto">
+        <button
+          class="btn btn-primary rounded-pill w-100"
+          routerLink="/home/RegistrarProduc"
+        >
+          <i class="bi bi-plus-lg me-2"></i>Añadir Producto con Stock
+        </button>
+      </div>
+
+      <div class="col-12 col-md flex-grow-1">
+        <div class="input-group search-input-group w-100">
+          <input
+            type="text"
+            class="form-control rounded-pill-start"
+            placeholder="Buscar producto"
+          />
+          <span class="input-group-text rounded-pill-end">
+            <i class="bi bi-search"></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="col-12 col-md flex-grow-1">
+        <div class="input-group date-input-group w-100">
+          <input
+            type="text"
+            class="form-control rounded-pill-start"
+            placeholder="14 Feb, 24"
+          />
+          <span class="input-group-text rounded-pill-end">
+            <i class="bi bi-calendar"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grupo de Dropdowns (Filtros) -->
+    <div class="d-flex flex-wrap gap-2 justify-content-end">
+      <div class="col-12 col-sm-auto">
+        <div class="dropdown w-100">
+          <button
+            class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
+            type="button"
+            id="vendorDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Proveedor
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="vendorDropdown">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-auto">
+        <div class="dropdown w-100">
+          <button
+            class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
+            type="button"
+            id="statusDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Estado
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="statusDropdown">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Inactivo</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de Stock de Productos -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th scope="col">Foto</th>
+              <th scope="col">Nombre del Producto</th>
+              <th scope="col">Categoría</th>
+              <th scope="col">Stock</th>
+              <th scope="col">Precio Unitario</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="isLoading">
+              <td colspan="7" class="text-center py-4 text-info">
+                Cargando stock...
+              </td>
+            </tr>
+            <tr *ngIf="!isLoading && errorMessage">
+              <td colspan="7" class="text-center py-4 text-danger">
+                {{ errorMessage }}
+              </td>
+            </tr>
+            <tr *ngIf="!isLoading && stocks.length === 0 && !errorMessage">
+              <td colspan="7" class="text-center py-4 text-muted">
+                No hay registros de stock para mostrar.
+              </td>
+            </tr>
+
+            <!-- Iterar sobre paginatedStocks para mostrar solo los elementos de la página actual -->
+            @for (item of paginatedStocks; track item.idStock) { @if
+            (item.producto) { @let producto = item.producto;
+            <tr>
+              <td data-label="Foto">
+                <img
+                  [src]="producto.imagen"
+                  alt="Foto del producto"
+                  class="img-thumbnail rounded-circle product-image"
+                  style="width: 50px; height: 50px; object-fit: cover"
+                />
+              </td>
+              <td data-label="Nombre del Producto">
+                {{ producto.nombre }}
+              </td>
+              <td data-label="Categoría">
+                {{ getCategoryName(producto?.categoria?.idCategoria) }}
+              </td>
+              <td data-label="Cantidad en Stock" style="text-align: center">
+                {{ item.cantidad }}
+              </td>
+              <td data-label="Precio Unitario">
+                {{
+                  item.producto.precio | currency : "Bs " : "symbol" : "1.2-2"
+                }}
+              </td>
+              <td data-label="Estado">
+                <span
+                  [class]="
+                    producto?.estado === 1
+                      ? 'badge bg-success'
+                      : 'badge bg-danger'
+                  "
+                >
+                  {{ producto?.estado === 1 ? "Activo" : "Inactivo" }}
+                </span>
+              </td>
+              <td data-label="Acciones" class="actions-column">
+                <button
+                  class="btn btn-info btn-sm me-1"
+                  (click)="verDetallesStock(item)"
+                >
+                  <img
+                    src="/icon_Productos/Listar/ver_observar.svg"
+                    style="width: 30px; height: 30px; vertical-align: middle"
+                  />
+                </button>
+                <button
+                  class="btn btn-warning btn-sm me-1"
+                  routerLink="/home/modificarProduc/{{ producto.idProducto }}"
+                >
+                  <img
+                    src="/icon_Productos/Listar/Modificar.svg"
+                    alt=""
+                    style="width: 30px; height: 30px; vertical-align: middle"
+                  />
+                </button>
+                <button
+                  [class]="
+                    producto?.estado === 1
+                      ? 'btn btn-danger btn-sm'
+                      : 'btn btn-success btn-sm'
+                  "
+                  (click)="abrirModalConfirmacion(item)"
+                >
+                  <img
+                    [src]="
+                      producto?.estado === 1
+                        ? '/icon_Productos/Listar/deshabilitar.svg'
+                        : '/icon_Productos/Listar/habilitar.svg'
+                    "
+                    alt="Estado del producto"
+                    style="width: 30px; height: 30px; vertical-align: middle"
+                  />
+                </button>
+              </td>
+            </tr>
+            } @else {
+            <tr>
+              <td colspan="7" class="text-center text-warning py-2">
+                Producto asociado no encontrado para el registro de stock ID:
+                {{ item.idStock }}
+              </td>
+            </tr>
+            } }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paginación -->
+  <div class="d-flex justify-content-center align-items-center flex-wrap mb-3">
+    <nav aria-label="Page navigation">
+      <ul class="pagination pagination-sm mb-0">
+        <!-- Botón Anterior -->
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button
+            class="page-link"
+            (click)="goToPage(currentPage - 1)"
+            aria-label="Previous"
+            [disabled]="currentPage === 1"
+          >
+            <span aria-hidden="true">&laquo;</span>
+          </button>
+        </li>
+        <!-- Números de Página -->
+        @for (page of [].constructor(totalPages); let i = $index; track i) {
+        <li class="page-item" [class.active]="currentPage === i + 1">
+          <button class="page-link" (click)="goToPage(i + 1)">
+            {{ i + 1 }}
+          </button>
+        </li>
+        }
+        <!-- Botón Siguiente -->
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button
+            class="page-link"
+            (click)="goToPage(currentPage + 1)"
+            aria-label="Next"
+            [disabled]="currentPage === totalPages"
+          >
+            <span aria-hidden="true">&raquo;</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<!-- Modal de Confirmación (ya estaba en Bootstrap) -->
+<div
+  class="modal fade"
+  id="confirmarAccionModal"
+  tabindex="-1"
+  aria-labelledby="confirmarAccionModalLabel"
+  aria-hidden="true"
+  #confirmarAccionModal
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmarAccionModalLabel">
+          Confirmar Acción del Producto
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        @let nombreProducto = stockSeleccionado?.producto?.nombre || 'este
+        producto';
+        <p *ngIf="stockSeleccionado">
+          ¿Estás seguro de que quieres
+          <strong>{{
+            stockSeleccionado.producto.estado === 1
+              ? "deshabilitar"
+              : "habilitar"
+          }}</strong>
+          el producto: <strong>{{ nombreProducto }}</strong
+          >?
+        </p>
+        <p *ngIf="!stockSeleccionado">
+          ¿Estás seguro de realizar esta acción para el producto?
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="confirmarAccionProducto()"
+        >
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Mensaje General (ya estaba en Bootstrap) -->
+<div
+  class="modal fade"
+  [class.show]="showModal"
+  [style.display]="showModal ? 'block' : 'none'"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="messageModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div
+        class="modal-header"
+        [ngClass]="{
+          'bg-success text-white': isSuccessModal,
+          'bg-danger text-white': !isSuccessModal
+        }"
+      >
+        <h5 class="modal-title" id="messageModalLabel">{{ modalTitle }}</h5>
+      </div>
+      <div class="modal-body text-center">
+        <i
+          class="bi"
+          [ngClass]="{
+            'bi-check-circle-fill text-success': isSuccessModal,
+            'bi-x-circle-fill text-danger': !isSuccessModal
+          }"
+          style="font-size: 3rem"
+        ></i>
+        <p class="mt-3 fs-5">{{ modalMessage }}</p>
+        <ul *ngIf="modalDetails.length > 0" class="list-unstyled text-start">
+          <li *ngFor="let detail of modalDetails">
+            <i class="bi bi-info-circle me-2"></i>{{ detail }}
+          </li>
+        </ul>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button
+          type="button"
+          class="btn"
+          [ngClass]="{
+            'btn-success': isSuccessModal,
+            'btn-danger': !isSuccessModal
+          }"
+          (click)="closeModal()"
+        >
+          Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CAMBIO: Usar el nuevo getter público para el modal-backdrop -->
+
+
+<!-- Modal de Detalles del Producto (REVERTIDO A BOOTSTRAP) -->
+<div
+  class="modal fade"
+  id="modalDetallesProducto"
+  tabindex="-1"
+  aria-labelledby="modalDetallesProductoLabel"
+  aria-hidden="true"
+  #modalDetallesProductoRef
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content rounded-3 shadow-lg">
+      <div class="modal-header bg-primary text-white rounded-top-3">
+        <h5 class="modal-title fw-bold" id="modalDetallesProductoLabel">
+          Detalles del Producto
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="closeDetallesModal()"
+        ></button>
+      </div>
+      <!-- Usamos 'stockSeleccionado?.producto as producto' para asegurar que 'producto' no es null dentro de este bloque -->
+      <div
+        class="modal-body p-4"
+        *ngIf="stockSeleccionado?.producto as producto"
+      >
+        <div class="row align-items-center">
+          <!-- Columna de Imagen Principal -->
+          <div class="col-md-4 text-center mb-4 mb-md-0">
+            <img
+              [src]="
+                producto.imagen ||
+                'https://placehold.co/200x200/cccccc/ffffff?text=Sin+Imagen'
+              "
+              alt="Imagen del producto"
+              class="img-fluid rounded-3 shadow-sm product-detail-image"
+            />
+            <h4 class="fw-bold mt-3 text-primary">{{ producto.nombre }}</h4>
+            <p class="text-muted small">SKU: {{ producto.sku || "N/A" }}</p>
+          </div>
+          <!-- Columna de Información General -->
+          <div class="col-md-8">
+            <h5 class="mb-3 border-bottom pb-2 text-secondary">
+              Información General
+            </h5>
+            <div class="row g-2 mb-2">
+              <div class="col-sm-6"><strong>Descripción:</strong></div>
+              <div class="col-sm-6">
+                {{ producto.descripcion || "No disponible" }}
+              </div>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-sm-6"><strong>Cantidad en Stock:</strong></div>
+              <div class="col-sm-6">
+                <span class="badge bg-info text-dark fs-6">{{
+                  stockSeleccionado?.cantidad
+                }}</span>
+              </div>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-sm-6"><strong>Precio Unitario:</strong></div>
+              <div class="col-sm-6">
+                <span class="fw-bold text-success fs-5">{{
+                  producto.precio | currency : "Bs " : "symbol" : "1.2-2"
+                }}</span>
+              </div>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-sm-6"><strong>Marca:</strong></div>
+              <div class="col-sm-6">{{ producto.marca || "N/A" }}</div>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-sm-6"><strong>Color:</strong></div>
+              <div class="col-sm-6">{{ producto.color || "N/A" }}</div>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-sm-6"><strong>Estado:</strong></div>
+              <div class="col-sm-6">
+                <span
+                  [class]="
+                    producto.estado === 1
+                      ? 'badge bg-success'
+                      : 'badge bg-danger'
+                  "
+                >
+                  {{ producto.estado === 1 ? "Activo" : "Inactivo" }}
+                </span>
+              </div>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-sm-6"><strong>Disponible Online:</strong></div>
+              <div class="col-sm-6">
+                <span
+                  [class]="
+                    producto.disponibleOnline
+                      ? 'badge bg-primary'
+                      : 'badge bg-secondary'
+                  "
+                >
+                  {{ producto.disponibleOnline ? "Sí" : "No" }}
+                </span>
+              </div>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-sm-6"><strong>Categoría:</strong></div>
+              <div class="col-sm-6">
+                {{ getCategoryName(producto.categoria.idCategoria) || "N/A" }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="modal-footer justify-content-center bg-light border-top-0 rounded-bottom-3"
+      >
+        <button
+          type="button"
+          class="btn btn-secondary px-4"
+          data-bs-dismiss="modal"
+          (click)="closeDetallesModal()"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

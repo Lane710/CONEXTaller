@@ -1,0 +1,257 @@
+/* src/app/components/login/login.component.css */
+
+/* Contenedor principal */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Usa min-height para asegurar que ocupe al menos toda la altura de la vista */
+  background: linear-gradient to bottom right, #e0f7fa, #bbdefb; /* Gradiente suave */
+  font-family: 'Inter', sans-serif; /* Fuente moderna */
+  padding: 20px; /* Padding para evitar que el contenido toque los bordes en móviles */
+  box-sizing: border-box; /* Incluye padding y borde en el ancho/alto total */
+}
+
+/* Tarjeta de login (contenedor principal de los dos paneles) */
+.login-card {
+  display: flex;
+  background-color: #ffffff;
+  border-radius: 15px; /* Bordes más suaves */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Sombra más pronunciada para un efecto flotante */
+  overflow: hidden; /* Asegura que los bordes redondeados se apliquen a los hijos */
+  max-width: 900px; /* Ancho máximo para el contenedor */
+  width: 100%; /* Ocupa todo el ancho disponible hasta el max-width */
+  min-height: 500px; /* Altura mínima para que no se vea muy pequeño */
+}
+
+/* Panel de branding (izquierda) */
+.login-branding {
+  flex: 1; /* Ocupa el espacio restante */
+  background-color: #1E8099; /* Color de fondo */
+  color: #ffffff; /* Texto blanco */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  text-align: center;
+  position: relative; /* Para posibles efectos */
+}
+
+.branding-title {
+  font-size: 2.2rem; /* Título más grande */
+  font-weight: 700; /* Negrita */
+  line-height: 1.2;
+  margin-bottom: 30px; /* Espacio debajo del título */
+}
+
+.branding-logo {
+  width: 250px; /* Imagen más grande */
+  height: 250px;
+  border-radius: 50%; /* Circular */
+  object-fit: cover; /* Asegura que la imagen no se distorsione */
+  border: 5px solid rgba(255, 255, 255, 0.3); /* Borde blanco semitransparente */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Sombra para la imagen */
+}
+
+/* Panel del formulario (derecha) */
+.login-form-area {
+  flex: 1; /* Ocupa el espacio restante */
+  background-color: #ffffff;
+  padding: 40px; /* Más padding para un mejor respiro */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.welcome-title {
+  font-size: 1.8rem; /* Título de bienvenida */
+  color: #333333;
+  margin-bottom: 30px;
+  font-weight: 600;
+}
+
+/* Formulario */
+.login-form {
+  width: 100%;
+  max-width: 350px; /* Ancho máximo para el formulario */
+}
+
+.form-group {
+  margin-bottom: 20px; /* Espacio entre grupos de formulario */
+  width: 100%; /* Asegura que el grupo ocupe todo el ancho */
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 20px; /* Más padding para inputs */
+  border: 1px solid #ced4da; /* Borde suave */
+  border-radius: 30px; /* Bordes más redondeados */
+  font-size: 1rem;
+  color: #495057;
+  background-color: #f8f9fa; /* Fondo ligeramente gris */
+  transition: all 0.3s ease-in-out; /* Transición suave para focus */
+}
+
+.form-control:focus {
+  border-color: #007bff; /* Borde azul al enfocar */
+  box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25); /* Sombra de enfoque */
+  background-color: #ffffff; /* Fondo blanco al enfocar */
+  outline: none; /* Eliminar el outline por defecto del navegador */
+}
+
+/* Estilos de validación de Bootstrap */
+.form-control.is-invalid {
+  border-color: #dc3545;
+}
+
+.invalid-feedback {
+  color: #dc3545;
+  font-size: 0.875em;
+  margin-top: 5px; /* Ajusta el margen superior */
+  text-align: left;
+  padding-left: 15px; /* Alinea con el padding del input */
+}
+
+/* Botones */
+.btn {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 30px; /* Bordes redondeados */
+  font-size: 1.1rem; /* Fuente más grande */
+  font-weight: 600; /* Negrita */
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  margin-top: 15px; /* Espacio entre el último input y el botón */
+}
+
+.login-btn {
+  background-color: #007bff; /* Azul primario de Bootstrap */
+  color: white;
+  border: none;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2); /* Sombra para el botón */
+}
+
+.login-btn:hover:not(:disabled) {
+  background-color: #0056b3; /* Tono más oscuro al pasar el ratón */
+  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+}
+
+.login-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+  box-shadow: none;
+}
+
+.register-btn {
+  background-color: #6c757d; /* Gris secundario de Bootstrap */
+  color: white;
+  border: none;
+  margin-top: 20px; /* Más espacio para el botón de registro */
+  box-shadow: 0 4px 10px rgba(108, 117, 125, 0.2);
+}
+
+.register-btn:hover:not(:disabled) {
+  background-color: #5a6268; /* Tono más oscuro al pasar el ratón */
+  box-shadow: 0 6px 15px rgba(108, 117, 125, 0.3);
+}
+
+/* Enlaces */
+.forgot-password-link {
+  display: block; /* Para que ocupe su propia línea */
+  margin-top: 20px;
+  color: #007bff; /* Azul primario */
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.3s ease;
+  margin-bottom: 10px; /* Espacio antes del botón de registro */
+}
+
+.forgot-password-link:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* Mensajes de estado (Bootstrap alerts) */
+.alert {
+  padding: 10px 15px;
+  margin-bottom: 20px;
+  border-radius: 8px; /* Bordes redondeados */
+  font-size: 0.95rem;
+  width: 100%;
+  max-width: 350px;
+  text-align: center;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  border-color: #f5c6cb;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border-color: #c3e6cb;
+}
+
+.alert-warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border-color: #ffeeba;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .login-card {
+    flex-direction: column; /* Apila los paneles en pantallas pequeñas */
+    max-width: 450px; /* Ajusta el ancho máximo para móviles */
+    min-height: auto; /* Altura automática */
+  }
+
+  .login-branding,
+  .login-form-area {
+    width: 100%; /* Ambos paneles ocupan todo el ancho */
+    padding: 30px; /* Ajusta el padding para móviles */
+  }
+
+  .branding-title {
+    font-size: 1.8rem; /* Reduce el tamaño del título de branding */
+  }
+
+  .branding-logo {
+    width: 180px; /* Reduce el tamaño de la imagen en móviles */
+    height: 180px;
+  }
+
+  .welcome-title {
+    font-size: 1.5rem; /* Reduce el tamaño del título de bienvenida */
+  }
+
+  .login-form,
+  .alert {
+    max-width: 100%; /* Asegura que el formulario y las alertas ocupen todo el ancho disponible */
+  }
+}
+
+@media (max-width: 480px) {
+  .login-branding,
+  .login-form-area {
+    padding: 20px; /* Más reducción de padding para pantallas muy pequeñas */
+  }
+
+  .branding-logo {
+    width: 150px; /* Más reducción de tamaño de imagen */
+    height: 150px;
+  }
+
+  .branding-title {
+    font-size: 1.5rem;
+  }
+
+  .welcome-title {
+    font-size: 1.3rem;
+  }
+}
