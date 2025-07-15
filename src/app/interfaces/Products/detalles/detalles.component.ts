@@ -26,6 +26,7 @@ export class DetallesComponent implements OnInit {
   productDetails: StockDTO | null = null; // Para almacenar los detalles completos del producto
   isLoading: boolean = true; // Para mostrar un estado de carga
   error: string | null = null; // Para manejar errores
+  variablePrueba: string = 'Hola, soy una variable de prueba'; // Variable de prueba para verificar el funcionamiento del componente
 
   // Nuevas propiedades para almacenar las propiedades filtradas
   especificaciones: ProductProperty[] = [];
