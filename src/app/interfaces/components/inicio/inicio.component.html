@@ -224,6 +224,7 @@
               <div class="col" *ngFor="let stockItem of page">
                 <div class="card">
                   <img
+                   (click)="Details(stockItem)"
                     [src]="stockItem.producto?.imagen"
                     alt="{{ stockItem.producto?.descripcion }}"
                     class="card-img-top"
@@ -334,6 +335,7 @@
               <div class="col" *ngFor="let stockItem of page">
                 <div class="card">
                   <img
+                   (click)="Details(stockItem)"
                     [src]="stockItem.producto?.imagen"
                     alt="{{ stockItem.producto?.descripcion }}"
                     class="card-img-top"
@@ -440,6 +442,7 @@
               <div class="col" *ngFor="let stockItem of page">
                 <div class="card">
                   <img
+                   (click)="Details(stockItem)" 
                     [src]="stockItem.producto?.imagen"
                     alt="{{ stockItem.producto?.descripcion }}"
                     class="card-img-top"

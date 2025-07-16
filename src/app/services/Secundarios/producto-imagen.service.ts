@@ -65,7 +65,7 @@ export class ProductoImagenService {
    * @param idProducto El ID del producto.
    * @returns Un Observable con la ApiResponse que contiene la lista de ProductoImagen.
    */
-  getProductImages(idProducto: number): Observable<ApiResponse> {
+  getProductImages(idProducto: number|null): Observable<ApiResponse> {
     return this.http.get<ApiResponse>(`${this.baseUrl}/findByProductoId/${idProducto}`);
   }
 

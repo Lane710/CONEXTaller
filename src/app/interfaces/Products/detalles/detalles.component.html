@@ -1,27 +1,51 @@
-<div class="container-fluid"> <div
+<div class="container-fluid">
+  <div
     class="productoDetalle"
     *ngIf="productDetails as details; else loadingOrError"
   >
-    <div class="product-detail-full-width bg-white shadow-sm rounded"> <div class="row g-0">
-        <div class="col-lg-6 product-gallery-full d-flex flex-column align-items-center">
-          <div class="main-image-wrapper border rounded mb-3 bg-light d-flex justify-content-center align-items-center">
+    <div class="product-detail-full-width bg-white shadow-sm rounded">
+      <div class="row g-0">
+        <!--contenedor de las imagenes-->
+        <div
+          class="col-lg-6 product-gallery-full p-lg-5 p-4 d-flex flex-column align-items-center"
+        >
+          <div
+            class="main-image-wrapper border rounded mb-3 bg-light d-flex justify-content-center align-items-center"
+          >
             <img
-              *ngIf="details.producto.imagen"
-              [src]="details.producto.imagen"
-              [alt]="details.producto.nombre || 'Imagen del producto'"
+              [src]="mainImageUrl"
+              [alt]="details.producto.nombre || 'Imagen principal del producto'"
               class="main-product-image img-fluid"
               id="mainProductImage"
             />
           </div>
-          <div class="thumbnail-gallery d-flex flex-wrap justify-content-center gap-2" *ngIf="details.producto.imagen">
-            <div class="thumbnail-image-wrapper active border rounded d-flex justify-content-center align-items-center">
+          <div
+            class="thumbnail-gallery d-flex flex-wrap justify-content-center gap-2"
+          >
+            <div
+              class="thumbnail-image-wrapper border rounded d-flex justify-content-center align-items-center"
+              [ngClass]="{ active: mainImageUrl === details.producto.imagen }"
+              (click)="changeMainImage(details.producto.imagen)"
+            >
               <img
                 [src]="details.producto.imagen"
                 [alt]="details.producto.nombre || 'Miniatura del producto'"
                 class="thumbnail-image img-fluid"
               />
             </div>
+            <div
+              class="thumbnail-image-wrapper border rounded d-flex justify-content-center align-items-center"
+              *ngFor="let img of ImagenProducts"
+              [ngClass]="{ active: mainImageUrl === img.urlImagen }"
+              (click)="changeMainImage(img.urlImagen)"
+            >
+              <img
+                [src]="img.urlImagen"
+                [alt]="'Miniatura secundaria'"
+                class="thumbnail-image img-fluid"
+              />
             </div>
+          </div>
         </div>
 
         <div class="col-lg-6 product-info-section-full p-4">
@@ -32,7 +56,8 @@
               {{ details.producto.descripcion }}
             </p>
           </div>
-          <br /> <p class="product-price mb-3">561 Bs.</p>
+          <br />
+          <p class="product-price mb-3">{{ details.producto.precio }} Bs.</p>
 
           <p
             class="product-availability fw-bold mb-4"
@@ -56,7 +81,10 @@
             >
           </p>
 
-          <div class="product-option-group d-flex align-items-center mb-3" *ngIf="details.producto.color">
+          <div
+            class="product-option-group d-flex align-items-center mb-3"
+            *ngIf="details.producto.color"
+          >
             <label class="option-label fw-semibold me-2">Color:</label>
             <div class="option-values d-flex align-items-center gap-2">
               <button
@@ -66,7 +94,9 @@
                 "
                 [title]="details.producto.color"
               ></button>
-              <span class="color-name text-muted">{{ details.producto.color }}</span>
+              <span class="color-name text-muted">{{
+                details.producto.color
+              }}</span>
             </div>
           </div>
 
@@ -78,32 +108,29 @@
               name="productQuantity"
               min="1"
               [max]="details.cantidad"
-              [value]="1"
+              [(ngModel)]="cantidadSeleccionada"
               [disabled]="details.cantidad === 0"
               class="form-control"
-              style="width: 80px;"
+              style="width: 80px"
             />
           </div>
           <br />
           <div class="action-buttons d-flex gap-3 mb-4 flex-wrap">
             <button
-              class="btn btn-primary add-to-cart-btn flex-grow-1"
+            style="background-color: #29aaca;"
+              class="btn btn-dark add-to-cart-btn flex-grow-1 align-items-center border-0 "
               [disabled]="details.cantidad === 0"
+              (click)="AddProductCarrito(details)"
             >
               <i class="fas fa-cart-plus me-2"></i> Añadir al carrito
             </button>
-            <a
-              href="https://wa.me/yourwhatsappnumber"
-              target="_blank"
-              class="btn btn-success whatsapp-btn flex-grow-1"
-            >
-              <i class="fab fa-whatsapp me-2"></i> Pedir por WhatsApp
-            </a>
           </div>
 
           <div class="product-meta text-muted border-top pt-3">
             <span class="d-block mb-1">SKU: N/D</span>
-            <span class="d-block mb-1">Categoría: {{ details.producto.nombreCategoria }}</span>
+            <span class="d-block mb-1"
+              >Categoría: {{ details.producto.nombreCategoria }}</span
+            >
             <span class="d-block mb-1">Estado: Nuevo</span>
             <span class="d-block mb-1">Envíos: A toda Tarija</span>
             <span class="d-block">Marca: {{ details.producto.marca }}</span>
@@ -127,16 +154,23 @@
   </ng-template>
 
   <div class="propiedadesProducto-section bg-light shadow-sm rounded mt-5 p-4">
-    <div class="product-specifications mb-5" *ngIf="especificaciones.length > 0">
-      <h2 class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block">Especificaciones</h2>
+    <div
+      class="product-specifications mb-5"
+      *ngIf="especificaciones.length > 0"
+    >
+      <h2
+        class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block"
+      >
+        Especificaciones
+      </h2>
       <div class="table-responsive">
         <table class="table table-striped product-table table-sm">
-          <thead>
+          <!-- <thead>
             <tr>
               <th>Propiedad</th>
               <th>Valor</th>
             </tr>
-          </thead>
+          </thead>-->
           <tbody>
             <tr *ngFor="let spec of especificaciones">
               <td>{{ spec.nombre }}</td>
@@ -148,7 +182,11 @@
     </div>
 
     <div class="product-attributes mb-5" *ngIf="atributos.length > 0">
-      <h2 class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block">Atributos</h2>
+      <h2
+        class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block"
+      >
+        Atributos
+      </h2>
       <ul class="product-list list-unstyled ps-3">
         <li *ngFor="let attr of atributos" class="mb-2">
           <strong>{{ attr.nombre }}:</strong> {{ attr.valor }}
@@ -157,7 +195,11 @@
     </div>
 
     <div class="product-characteristics" *ngIf="caracteristicas.length > 0">
-      <h2 class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block">Características</h2>
+      <h2
+        class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block"
+      >
+        Características
+      </h2>
       <ul class="product-list list-unstyled ps-3">
         <li *ngFor="let char of caracteristicas" class="mb-2">
           <strong>{{ char.nombre }}:</strong> {{ char.valor }}
@@ -168,33 +210,62 @@
 
   <div class="productosSimilares">
     <div class="similar-products-section bg-light shadow-sm rounded mt-5 p-4">
-      <h2 class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block">Productos Tecnológicos que Podrían Interesarte</h2>
+      <h2
+        class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block"
+      >
+        Productos Tecnológicos que Podrían Interesarte
+      </h2>
       <div class="carousel-wrapper d-flex align-items-center">
-        <button class="carousel-nav-btn left btn btn-dark rounded-circle" (click)="scrollCarousel('left')">
+        <button
+          class="carousel-nav-btn left btn btn-dark rounded-circle"
+          (click)="scrollCarousel('left')"
+        >
           &#10094;
         </button>
-        <div class="carousel-container d-flex flex-nowrap overflow-auto py-2" #carouselContainer>
-          <div class="product-card card shadow-sm me-3 flex-shrink-0" *ngFor="let product of techoProducts">
-            <div class="product-image-wrapper d-flex justify-content-center align-items-center bg-light">
-              <img [src]="product.imagenUrl" [alt]="product.nombre" class="product-image img-fluid">
+        <div
+          class="carousel-container d-flex flex-nowrap overflow-auto py-2"
+          #carouselContainer
+        >
+          <div
+            class="product-card card shadow-sm me-3 flex-shrink-0"
+            *ngFor="let product of techoProducts"
+          >
+            <div
+              class="product-image-wrapper d-flex justify-content-center align-items-center bg-light"
+            >
+              <img
+                [src]="product.producto.imagen"
+                [alt]="product.producto.nombre"
+                class="product-image img-fluid"
+              />
             </div>
-            <div class="card-body product-info text-center d-flex flex-column justify-content-between">
-              <h3 class="product-name card-title fs-5 fw-bold mb-2">{{ product.nombre }}</h3>
-              <p class="product-price fs-4 fw-bolder text-success mb-2">{{ product.precio | currency:'USD':'symbol':'1.2-2' }}</p>
-              <p class="product-availability-text small fw-medium mb-3" [ngClass]="getAvailabilityClass(product)">
-                {{ getAvailabilityText(product) }}
+            <div
+              class="card-body product-info text-center d-flex flex-column justify-content-between"
+            >
+              <h3 class="product-name card-title fs-5 fw-bold mb-2">
+                {{ product.producto.nombre }}
+              </h3>
+              <p class="product-price fs-4 fw-bolder text-success mb-2">
+                {{
+                  product.producto.precio
+                    | currency : "USD" : "symbol" : "1.2-2"
+                }}
               </p>
+             
               <button
                 class="btn btn-primary add-to-cart-btn-sm d-flex align-items-center justify-content-center gap-2"
-                [disabled]="!product.disponible || product.stock === 0"
-                (click)="addToCart(product)"
+                [disabled]="product.disponible || product.stock > 0"
+                (click)="AddProductCarrito(product)"
               >
                 <i class="fas fa-cart-plus"></i> Añadir
               </button>
             </div>
           </div>
         </div>
-        <button class="carousel-nav-btn right btn btn-dark rounded-circle" (click)="scrollCarousel('right')">
+        <button
+          class="carousel-nav-btn right btn btn-dark rounded-circle"
+          (click)="scrollCarousel('right')"
+        >
           &#10095;
         </button>
       </div>
