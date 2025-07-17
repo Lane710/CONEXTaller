@@ -4,16 +4,17 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidatorFn, ReactiveFormsModule, ValidationErrors } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { usuarios } from '../../../models/usuarios';
-import { personas } from '../../../models/personas';
-import { roles } from '../../../models/roles';
+import { usuarios } from '../../../models/PersonModel/usuarios';
+import { personas } from '../../../models/PersonModel/personas';
+import { roles } from '../../../models/PersonModel/roles';
 
-import { UsuariosService } from '../../../services/usuarios.service';
-import { PersonasService } from '../../../services/personas.service';
+import { UsuariosService } from '../../../services/PersonServis/usuarios.service';
+
 import { ApiResponse } from '../../../models/api-response';
 import { HttpErrorResponse } from '@angular/common/http';
 import { forkJoin, of, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { PersonasService } from '../../../services/PersonServis/personas.service';
 
 declare var bootstrap: any;
 

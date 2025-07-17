@@ -7,10 +7,10 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgFor, NgIf } from '@angular/common';
-import { StockService } from '../../../services/stock.service';
+import { StockService } from '../../../services/ProductosServis/stock.service';
 import { StockDTO } from '../../../DTOs/Produc/StockDTO';
-import { CarritoService } from '../../../services/carrito.service';
-import { AgregarDetalleCarritoRequest } from '../../../models/AgregarDetalleCarritoRequest';
+import { CarritoService } from '../../../services/CartServis/carrito.service';
+import { AgregarDetalleCarritoRequest } from '../../../models/CartModel/AgregarDetalleCarritoRequest';
 
 @Component({
   selector: 'app-inicio',

@@ -3,10 +3,11 @@ import { CommonModule, NgClass, NgIf } from '@angular/common';
 import { Router, RouterLink } from '@angular/router'; // Asegúrate de que RouterLink esté aquí
 import { forkJoin } from 'rxjs';
 
-import { usuarios } from '../../../models/usuarios';
-import { UsuariosService } from '../../../services/usuarios.service';
-import { personas } from '../../../models/personas';
-import { PersonasService } from '../../../services/personas.service';
+import { usuarios } from '../../../models/PersonModel/usuarios';
+import { UsuariosService } from '../../../services/PersonServis/usuarios.service';
+import { personas } from '../../../models/PersonModel/personas';
+import { PersonasService } from '../../../services/PersonServis/personas.service';
+
 
 declare var bootstrap: any;
 

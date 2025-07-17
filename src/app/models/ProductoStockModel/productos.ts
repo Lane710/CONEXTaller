@@ -2,7 +2,7 @@
 
 
 import { categoria } from "./categorias";
-import { proveedor } from "./proveedor";
+import { proveedor } from "../proveedor";
 
 export interface productos {
   idProducto?: number; // <<-- ¡CORREGIDO! Hacemos 'idProducto' opcional.

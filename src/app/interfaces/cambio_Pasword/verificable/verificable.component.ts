@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UsuariosService } from '../../../services/usuarios.service';
+import { UsuariosService } from '../../../services/PersonServis/usuarios.service';
 import { ApiResponse } from '../../../models/api-response';
 import { HttpErrorResponse } from '@angular/common/http';
 

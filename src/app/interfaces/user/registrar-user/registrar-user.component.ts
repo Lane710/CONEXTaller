@@ -9,14 +9,16 @@ import {
   ReactiveFormsModule,
   ValidatorFn,
 } from '@angular/forms';
-import { UsuariosService } from '../../../services/usuarios.service';
-import { personas } from '../../../models/personas';
-import { roles } from '../../../models/roles';
-import { usuarios } from '../../../models/usuarios';
-import { PersonasService } from '../../../services/personas.service';
+import { UsuariosService } from '../../../services/PersonServis/usuarios.service';
+import { personas } from '../../../models/PersonModel/personas';
+import { roles } from '../../../models/PersonModel/roles';
+import { usuarios } from '../../../models/PersonModel/usuarios';
+
+
 import { ApiResponse } from '../../../models/api-response';
 import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
+import { PersonasService } from '../../../services/PersonServis/personas.service';
 
 @Component({
   selector: 'app-registrar-user',

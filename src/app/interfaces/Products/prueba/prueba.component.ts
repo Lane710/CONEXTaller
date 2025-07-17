@@ -1,7 +1,7 @@
 // src/app/prueba.component.ts
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ProductosService } from '../../../services/productos.service'; // Ajusta la ruta si es necesario
-import { productos } from '../../../models/productos'; // Ajusta la ruta si es necesario
+import { ProductosService } from '../../../services/ProductosServis/productos.service'; // Ajusta la ruta si es necesario
+import { productos } from '../../../models/ProductoStockModel/productos'; // Ajusta la ruta si es necesario
 import { ApiResponse } from '../../../models/api-response'; // Ajusta la ruta si es necesario
 import { CommonModule, NgFor, NgIf, CurrencyPipe, DatePipe } from '@angular/common'; // Importa CommonModule y Pipes
 

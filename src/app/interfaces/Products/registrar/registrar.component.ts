@@ -19,19 +19,19 @@ import { forkJoin, Observable, of } from 'rxjs'; // Importar forkJoin, Observabl
 import { finalize, catchError, concatMap, map } from 'rxjs/operators'; // Importar finalize, catchError, concatMap, map
 
 // Importaciones de modelos
-import { productos } from '../../../models/productos';
-import { StockService } from '../../../services/stock.service';
-import { UsuariosService } from '../../../services/usuarios.service';
+import { productos } from '../../../models/ProductoStockModel/productos';
+import { StockService } from '../../../services/ProductosServis/stock.service';
+import { UsuariosService } from '../../../services/PersonServis/usuarios.service';
 import { ApiResponse } from '../../../models/api-response';
 import { proveedor } from '../../../models/proveedor';
 import { HttpErrorResponse } from '@angular/common/http';
-import { stock } from '../../../models/stock';
-import { categoria } from '../../../models/categorias';
-import { ProductoPropiedad } from '../../../models/ProductoPropiedad';
-import { ProductoImagenService } from '../../../services/Secundarios/producto-imagen.service';
-import { ProductoPropiedadService } from '../../../services/Secundarios/producto-propiedad.service';
-import { ProductoImagen } from '../../../models/ProductoImagen';
-import { ProductosService } from '../../../services/productos.service'; // Asegúrate de que ProductosService esté importado
+import { stock } from '../../../models/ProductoStockModel/stock';
+import { categoria } from '../../../models/ProductoStockModel/categorias';
+import { ProductoPropiedad } from '../../../models/ProductoStockModel/ProductoPropiedad';
+import { ProductoImagenService } from '../../../services/PersonServis/Secundarios/producto-imagen.service';
+import { ProductoPropiedadService } from '../../../services/PersonServis/Secundarios/producto-propiedad.service';
+import { ProductoImagen } from '../../../models/ProductoStockModel/ProductoImagen';
+import { ProductosService } from '../../../services/ProductosServis/productos.service'; // Asegúrate de que ProductosService esté importado
 
 // Importar la librería de Bootstrap para poder usar el modal programáticamente
 declare var bootstrap: any;

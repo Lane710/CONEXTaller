@@ -2,11 +2,11 @@ import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angula
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UsuariosService } from '../../../services/usuarios.service';
+import { UsuariosService } from '../../../services/PersonServis/usuarios.service';
 import { ApiResponse } from '../../../models/api-response';
-import { roles } from '../../../models/roles';
+import { roles } from '../../../models/PersonModel/roles';
 import { HttpErrorResponse } from '@angular/common/http';
-import { usuarios } from '../../../models/usuarios';
+import { usuarios } from '../../../models/PersonModel/usuarios';
 import { Router } from '@angular/router'; // Importar Router
 
 declare var bootstrap: any;

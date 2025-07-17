@@ -2,8 +2,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ProductoImagen } from '../../models/ProductoImagen';
-import { ApiResponse } from '../../models/api-response';
+import { ProductoImagen } from '../../../models/ProductoStockModel/ProductoImagen';
+import { ApiResponse } from '../../../models/api-response';
 
 
 @Injectable({

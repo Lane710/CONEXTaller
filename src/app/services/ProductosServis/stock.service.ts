@@ -1,14 +1,14 @@
 // src/app/services/stock.service.ts
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { ApiResponse } from '../models/api-response'; // Asegúrate de que esta ruta sea correcta
+import { ApiResponse } from '../../models/api-response'; // Asegúrate de que esta ruta sea correcta
 import { HttpClient } from '@angular/common/http';
-import { productos } from '../models/productos'; // Asumiendo que aún necesitas la interfaz productos
+import { productos } from '../../models/ProductoStockModel/productos'; // Asumiendo que aún necesitas la interfaz productos
 
 // Si ProductosService no se usa en este archivo para 'findAll' o 'findByIdStock',
 // no es necesario importarlo aquí, pero se mantiene si se usa para otras funciones.
 import { ProductosService } from './productos.service'; // Mantener si necesario para otras operaciones
-import { stock } from '../models/stock';
+import { stock } from '../../models/ProductoStockModel/stock';
 
 @Injectable({
   providedIn: 'root'

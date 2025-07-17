@@ -5,10 +5,10 @@ import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
 
-import { stock } from '../../../models/stock';
-import { categoria } from '../../../models/categorias';
-import { StockService } from '../../../services/stock.service';
-import { ProductosService } from '../../../services/productos.service';
+import { stock } from '../../../models/ProductoStockModel/stock';
+import { categoria } from '../../../models/ProductoStockModel/categorias';
+import { StockService } from '../../../services/ProductosServis/stock.service';
+import { ProductosService } from '../../../services/ProductosServis/productos.service';
 import { ApiResponse } from '../../../models/api-response';
 
 declare var bootstrap: any;

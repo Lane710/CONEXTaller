@@ -4,13 +4,13 @@ import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angula
 import { CommonModule, NgIf, NgFor, NgClass, CurrencyPipe } from '@angular/common';
 import { StockDTO } from '../../../DTOs/Produc/StockDTO';
 import { ActivatedRoute, Router } from '@angular/router';
-import { StockService } from '../../../services/stock.service';
-import { ProductoPropiedadService } from '../../../services/Secundarios/producto-propiedad.service';
-import { ProductoImagenService } from '../../../services/Secundarios/producto-imagen.service'; // ¡Importa este servicio!
-import { ProductoImagen } from '../../../models/ProductoImagen';
-import { CarritoService } from '../../../services/carrito.service';
-import { AgregarDetalleCarritoRequest } from '../../../models/AgregarDetalleCarritoRequest';
-import { ProductoPropiedad } from '../../../models/ProductoPropiedad';
+import { StockService } from '../../../services/ProductosServis/stock.service';
+import { ProductoPropiedadService } from '../../../services/PersonServis/Secundarios/producto-propiedad.service';
+import { ProductoImagenService } from '../../../services/PersonServis/Secundarios/producto-imagen.service'; // ¡Importa este servicio!
+import { ProductoImagen } from '../../../models/ProductoStockModel/ProductoImagen';
+import { CarritoService } from '../../../services/CartServis/carrito.service';
+import { AgregarDetalleCarritoRequest } from '../../../models/CartModel/AgregarDetalleCarritoRequest';
+import { ProductoPropiedad } from '../../../models/ProductoStockModel/ProductoPropiedad';
 import { FormsModule } from '@angular/forms';
 
 // Interfaz para la estructura de la propiedad

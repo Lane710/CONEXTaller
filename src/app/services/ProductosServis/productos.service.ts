@@ -1,9 +1,9 @@
 // src/app/services/productos.service.ts
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiResponse } from '../models/api-response';
+import { ApiResponse } from '../../models/api-response';
 import { HttpClient } from '@angular/common/http';
-import { productos } from '../models/productos'; // Importa 'productos'
+import { productos } from '../../models/ProductoStockModel/productos'; // Importa 'productos'
 
 
 @Injectable({

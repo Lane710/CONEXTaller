@@ -2,8 +2,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiResponse } from '../models/api-response';
-import { personas } from '../models/personas';
+import { personas } from '../../models/PersonModel/personas';
+import { ApiResponse } from '../../models/api-response';
+
 
 @Injectable({
   providedIn: 'root'

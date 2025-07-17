@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 // ¡¡¡CORRECCIÓN DE RUTAS!!!
-import { roles } from '../../../models/roles'; // Asegúrate de que esta ruta sea correcta
-import { UsuariosService } from '../../../services/usuarios.service';
+import { roles } from '../../../models/PersonModel/roles'; // Asegúrate de que esta ruta sea correcta
+import { UsuariosService } from '../../../services/PersonServis/usuarios.service';
 import { ApiResponse } from '../../../models/api-response';
 
 @Component({

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'; // ¡Importa HttpClient!
 import { Observable } from 'rxjs'; // ¡Importa Observable para manejar respuestas asíncronas!
-import { ApiResponse } from '../models/api-response';
-import { AgregarDetalleCarritoRequest } from '../models/AgregarDetalleCarritoRequest';
+import { ApiResponse } from '../../models/api-response';
+import { AgregarDetalleCarritoRequest } from '../../models/CartModel/AgregarDetalleCarritoRequest';
 
 // Importa tus interfaces actualizadas (que ahora usan 'Decimal' internamente)
 

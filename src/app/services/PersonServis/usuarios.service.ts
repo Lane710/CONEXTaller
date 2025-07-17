@@ -6,9 +6,9 @@ import {
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, of, tap } from 'rxjs';
-import { ApiResponse } from '../models/api-response';
-import { usuarios } from '../models/usuarios';
-import { roles } from '../models/roles';
+import { ApiResponse } from '../../models/api-response';
+import { usuarios } from '../../models/PersonModel/usuarios';
+import { roles } from '../../models/PersonModel/roles';
 
 // Revisa el nombre de la propiedad y el tipo de ID según tu backend
 export interface LoginResponse {

@@ -58,10 +58,7 @@
               Subtotal:
               <span class="fw-bold">{{ subtotalCarrito | currency:'Bs. ':'symbol':'1.2-2' }}</span>
             </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              Envío:
-              <span class="text-success">Gratis</span>
-            </li>
+            
             <li class="list-group-item d-flex justify-content-between align-items-center fs-5 fw-bold">
               Total:
               <span>{{ totalCarrito | currency:'Bs. ':'symbol':'1.2-2' }}</span>
@@ -73,5 +70,36 @@
         </div>
       </div>
     </div>
+    <!--CARRUSEL DE PRODCUCTO QUE PUEDEN INTEREZAR-->
+
+   <div>
+  <h3 class="text-center my-4 category-title">Productos que te pueden interesar</h3>
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center">
+    <div class="col" *ngFor="let producto of productosCuadricula">
+      <div class="card">
+        <img
+          
+          [src]="producto.producto.imagen || 'https://placehold.co/150x120?text=Sin+imagen'"
+          alt="{{ producto.producto.nombre }}"
+          class="card-img-top"
+          onerror="this.onerror=null;this.src='https://placehold.co/150x120?text=Sin+imagen'"
+        />
+        <div class="card-body p-1">
+          <small>{{ producto.producto.nombre }}</small>
+          <div class="stock-msg">
+            {{ producto.cantidad >= 1 ? "Hay stock" : "Agotado" }}
+          </div>
+          <button
+            class="btn-cart"
+            type="button"
+            (click)="redirectToDetails(producto)"
+          >
+            ver mas 
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
   </div>
 </div>

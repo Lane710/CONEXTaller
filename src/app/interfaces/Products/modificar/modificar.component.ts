@@ -1,23 +1,23 @@
 // src/app/components/modificar/modificar.component.ts
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ProductosService } from '../../../services/productos.service';
-import { StockService } from '../../../services/stock.service';
-import { productos } from '../../../models/productos';
-import { stock } from '../../../models/stock';
+import { ProductosService } from '../../../services/ProductosServis/productos.service';
+import { StockService } from '../../../services/ProductosServis/stock.service';
+import { productos } from '../../../models/ProductoStockModel/productos';
+import { stock } from '../../../models/ProductoStockModel/stock';
 import { FormsModule, NgForm, ValidationErrors, NgModel } from '@angular/forms'; // Importa NgForm, ValidationErrors, NgModel
 import { CommonModule, TitleCasePipe } from '@angular/common'; // Importa TitleCasePipe
 import { proveedor } from '../../../models/proveedor';
 import { ApiResponse } from '../../../models/api-response';
 import { forkJoin, Observable, of } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http'; // Asegúrate de importar HttpErrorResponse
-import { categoria } from '../../../models/categorias';
+import { categoria } from '../../../models/ProductoStockModel/categorias';
 
 import { finalize, catchError, concatMap, map } from 'rxjs/operators'; // Importa map
-import { ProductoPropiedad } from '../../../models/ProductoPropiedad'; // Asegúrate de que esta ruta sea correcta
-import { ProductoImagenService } from '../../../services/Secundarios/producto-imagen.service'; // Asegúrate de que esta ruta sea correcta
-import { ProductoPropiedadService } from '../../../services/Secundarios/producto-propiedad.service'; // Asegúrate de que esta ruta sea correcta
-import { ProductoImagen } from '../../../models/ProductoImagen'; // Asegúrate de que esta ruta sea correcta
+import { ProductoPropiedad } from '../../../models/ProductoStockModel/ProductoPropiedad'; // Asegúrate de que esta ruta sea correcta
+import { ProductoImagenService } from '../../../services/PersonServis/Secundarios/producto-imagen.service'; // Asegúrate de que esta ruta sea correcta
+import { ProductoPropiedadService } from '../../../services/PersonServis/Secundarios/producto-propiedad.service'; // Asegúrate de que esta ruta sea correcta
+import { ProductoImagen } from '../../../models/ProductoStockModel/ProductoImagen'; // Asegúrate de que esta ruta sea correcta
 
 
 declare var bootstrap: any;

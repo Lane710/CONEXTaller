@@ -3,7 +3,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'; // Importa ReactiveFormsModule y FormBuilder
 import { Router, RouterLink } from '@angular/router'; // Asegúrate de importar RouterLink
-import { UsuariosService, LoginResponse } from '../../services/usuarios.service'; // Asegúrate de que la ruta sea correcta
+import { UsuariosService, LoginResponse } from '../../services/PersonServis/usuarios.service'; // Asegúrate de que la ruta sea correcta
 import { HttpErrorResponse } from '@angular/common/http';
 import { interval, Subscription } from 'rxjs'; // Importa interval y Subscription
 
