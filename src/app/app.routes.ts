@@ -12,8 +12,7 @@ export const routes: Routes = [
 
   // Ruta principal del Home, que actuará como layout
   {
-    path: 'home',
-    component: HomeComponent, // HomeComponent es quien contiene el Header, Footer y su propio router-outlet
+    path: 'home',component: HomeComponent, // HomeComponent es quien contiene el Header, Footer y su propio router-outlet
     children: [ // Las rutas hijas de 'home' ahora vienen de componentsRoutes
       ...componentsRoutes // Incluye inicio, gestión, productos, usuarios, carrito, etc.
     ]

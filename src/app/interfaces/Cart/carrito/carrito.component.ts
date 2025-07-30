@@ -182,4 +182,9 @@ export class CarritoComponent implements OnInit {
     console.log('Redirigiendo a detalles del producto:', producto);
     this.router.navigate(['/home/DetailProduct', producto.idStock]);
   }
+  RealizarPedido(): void {
+    // Aquí puedes implementar la lógica para redirigir al usuario a la página de pago
+    console.log('Redirigiendo a la página de pago...');
+    this.router.navigate(['/home/datosCliente']);
+  }
 }

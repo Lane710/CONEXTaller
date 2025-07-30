@@ -3,6 +3,7 @@ import { InicioComponent } from '../interfaces/components/inicio/inicio.componen
 import { HomeGestionComponent } from '../interfaces/components/home-gestion/home-gestion.component';
 import { productsRoutes } from './productsRoutes.routes';
 import { userRoutes } from './userRoutes.routes';
+import { ventasOnline } from './ventasOnline.routes';
 
 
 // Importa las rutas de los otros módulos
@@ -16,4 +17,5 @@ export const componentsRoutes: Routes = [
   // Extiende las rutas de los otros módulos
   ...productsRoutes,
   ...userRoutes,
+  ...ventasOnline
 ];
