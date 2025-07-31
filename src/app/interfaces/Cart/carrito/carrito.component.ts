@@ -109,17 +109,11 @@ export class CarritoComponent implements OnInit {
     console.log(
       `Intentando eliminar producto con ID: ${idDetalleCarrito} del carrito del usuario: ${this.username}`
     );
-    if (
-      confirm(
-        '¿Estás seguro de que quieres eliminar este producto del carrito?'
-      )
-    ) {
-      this.carritoService
+         this.carritoService
         .eliminarProductoDeCarrito(this.username, idDetalleCarrito)
         .subscribe({
           next: (response: ApiResponse) => {
             if (response.success) {
-              console.log('Producto eliminado:', response.data);
               this.cargarCarrito(); // Recargar el carrito para actualizar la vista y los totales
             } else {
               console.error('Error al eliminar producto:', response.message);
@@ -127,7 +121,6 @@ export class CarritoComponent implements OnInit {
           },
           error: (err) => console.error('Error HTTP al eliminar:', err),
         });
-    }
   }
 
   cambiarCantidad(idDetalleCarrito: number, operacion: 0 | 1): void {

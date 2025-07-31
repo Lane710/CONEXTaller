@@ -1,3 +1,5 @@
+// En tu ./inicio.component.ts
+
 import {
   Component,
   OnInit,
@@ -8,7 +10,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgFor, NgIf } from '@angular/common';
 import { StockService } from '../../../services/ProductosServis/stock.service';
-import { StockDTO } from '../../../DTOs/Produc/StockDTO';
+import { StockDTO } from '../../../DTOs/Produc/StockDTO'; // ¡Asegúrate de importar StockDTO!
 import { CarritoService } from '../../../services/CartServis/carrito.service';
 import { AgregarDetalleCarritoRequest } from '../../../models/CartModel/AgregarDetalleCarritoRequest';
 
@@ -26,6 +28,7 @@ export class InicioComponent implements OnInit, AfterViewInit {
   ListadoProductos4: StockDTO[] = []; // Otros
   currentIndex = 0;
   intervalId: any;
+
   constructor(
     private router: Router,
     private stockPRoductService: StockService,
@@ -37,7 +40,6 @@ export class InicioComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.ProductosConSuCategoria();
   }
-  
 
   ngAfterViewInit(): void {
     const carousels = this.el.nativeElement.querySelectorAll(
@@ -102,27 +104,40 @@ export class InicioComponent implements OnInit, AfterViewInit {
     this.stockPRoductService
       .ProductoporCategoria(2, 3, 5)
       .subscribe((response) => {
-        this.ListadoProductos1 = response.data;
+        // Mapea los productos para añadir la propiedad anadidoAlCarrito
+        this.ListadoProductos1 = response.data.map((item: StockDTO) => ({ // <--- Aquí el cambio
+          ...item,
+          anadidoAlCarrito: false, // Inicializa en false
+        }));
       });
     this.stockPRoductService
       .ProductoporCategoria(1, 6, 0)
       .subscribe((response) => {
-        this.ListadoProductos2 = response.data;
+        this.ListadoProductos2 = response.data.map((item: StockDTO) => ({ // <--- Aquí el cambio
+          ...item,
+          anadidoAlCarrito: false,
+        }));
       });
     this.stockPRoductService
       .ProductoporCategoria(7, 8, 0)
       .subscribe((response) => {
-        this.ListadoProductos3 = response.data;
+        this.ListadoProductos3 = response.data.map((item: StockDTO) => ({ // <--- Aquí el cambio
+          ...item,
+          anadidoAlCarrito: false,
+        }));
       });
     this.stockPRoductService
       .ProductoporCategoria(4, 9, 0)
       .subscribe((response) => {
-        this.ListadoProductos4 = response.data;
+        this.ListadoProductos4 = response.data.map((item: StockDTO) => ({ // <--- Aquí el cambio
+          ...item,
+          anadidoAlCarrito: false,
+        }));
       });
   }
 
-  paginateProducts(items: any[], itemsPerPage: number): any[][] {
-    const result: any[][] = [];
+  paginateProducts(items: StockDTO[], itemsPerPage: number): StockDTO[][] {
+    const result: StockDTO[][] = [];
     if (!items || items.length === 0) {
       return result;
     }
@@ -132,21 +147,21 @@ export class InicioComponent implements OnInit, AfterViewInit {
     return result;
   }
 
-  AddProductCarrito(producto: StockDTO) {
+  AddProductCarrito(stockItem: StockDTO) {
     const usuarioId = localStorage.getItem('current_username');
 
     const request: AgregarDetalleCarritoRequest = {
       producto: {
-        idProducto: producto.producto.idProducto,
+        idProducto: stockItem.producto.idProducto,
       },
       cantidad: 1,
-      precioUnitario: parseFloat(producto.producto.precio),
+      precioUnitario: parseFloat(stockItem.producto.precio),
     };
 
     this.carritoService.agregarProductoACarrito(usuarioId, request).subscribe({
       next: (response) => {
-        console.log('Producto agregado al carrito con éxito:', response);
-        alert('¡Producto añadido al carrito!');
+        console.log('Producto agregado al carrito con éxito:');
+        stockItem.anadidoAlCarrito = true;
       },
       error: (error) => {
         console.error('Error al agregar producto al carrito:', error);

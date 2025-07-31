@@ -2,7 +2,7 @@
 
 /* Título de la categoría */
 h2.category-title {
-    color: #d41616; /* Color rojo vibrante */
+    color: #29aaca; 
     font-weight: 700; /* Negrita */
     border-bottom: 1px solid #eee; /* Línea divisoria sutil */
     padding-bottom: 0.2rem; /* Espacio debajo de la línea */
@@ -51,11 +51,16 @@ h2.category-title {
     color: #555; /* Color gris oscuro */
     margin-bottom: 0.7rem; /* Margen inferior */
 }
-
+.btn-cart.added-to-cart {
+  background-color: #28a745; /* Un color verde que indica éxito */
+  color: white; /* Texto blanco para mejor contraste con el verde */
+  border-color: #28a745; /* Opcional: si quieres cambiar el color del borde también */
+  cursor: not-allowed; /* Opcional: indica visualmente que no se puede interactuar */
+}
 /* Botón "Agregar al Carrito" o similar */
 .btn-cart,
 .btn-select-options { /* Agrupados ya que comparten muchos estilos */
-    background-color: #d41616; /* Fondo rojo */
+    background-color: #29aaca; /* Fondo rojo */
     border: none; /* Sin borde */
     font-size: 0.85rem; /* Tamaño de fuente */
     color: white; /* Texto blanco */
@@ -66,10 +71,7 @@ h2.category-title {
     transition: background-color 0.3s ease; /* Transición suave para el hover */
 }
 
-.btn-cart:hover,
-.btn-select-options:hover {
-    background-color: #af1212; /* Fondo rojo más oscuro al pasar el ratón */
-}
+
 
 /* Botón de WhatsApp */
 .btn-whatsapp {
@@ -302,7 +304,7 @@ h2.category-title {
 .carousel.slide .carousel-control-prev:hover,
 .carousel.slide .carousel-control-next:hover {
     opacity: 1;
-    background-color: rgba(0, 251, 255, 0.9); /* Más opaco al pasar el ratón */
+    background-color: #29aaca; /* Más opaco al pasar el ratón */
     transform: translateY(-50%) scale(1.05);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
 }
@@ -336,7 +338,7 @@ h2.category-title {
 }
 
 .carousel.slide .carousel-indicators button {
-    background-color: #d41616;
+    background-color: #29aacb;
     border-radius: 50%;
     width: 10px;
     height: 10px;
@@ -347,7 +349,7 @@ h2.category-title {
 }
 
 .carousel.slide .carousel-indicators .active {
-    background-color: #a30f0f;
+    background-color: #29aaca;
     opacity: 1;
 }
 

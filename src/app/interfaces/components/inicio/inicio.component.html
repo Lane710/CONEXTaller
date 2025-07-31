@@ -1,76 +1,76 @@
 <div>
-<section aria-label="Carrusel de Imágenes Destacadas" class="mb-6">
-  <div
-    id="heroCarousel"
-    class="carousel slide"
-    data-bs-ride="carousel"
-    data-bs-interval="5000"
-  >
-    <div class="carousel-indicators">
-      <button
-        type="button"
-        data-bs-target="#heroCarousel"
-        data-bs-slide-to="0"
-        class="active"
-        aria-current="true"
-        aria-label="Slide 1"
-      ></button>
-      <button
-        type="button"
-        data-bs-target="#heroCarousel"
-        data-bs-slide-to="1"
-        aria-label="Slide 2"
-      ></button>
-      <button
-        type="button"
-        data-bs-target="#heroCarousel"
-        data-bs-slide-to="2"
-        aria-label="Slide 3"
-      ></button>
+  <section aria-label="Carrusel de Imágenes Destacadas" class="mb-6">
+    <div
+      id="heroCarousel"
+      class="carousel slide"
+      data-bs-ride="carousel"
+      data-bs-interval="5000"
+    >
+      <div class="carousel-indicators">
+        <button
+          type="button"
+          data-bs-target="#heroCarousel"
+          data-bs-slide-to="0"
+          class="active"
+          aria-current="true"
+          aria-label="Slide 1"
+        ></button>
+        <button
+          type="button"
+          data-bs-target="#heroCarousel"
+          data-bs-slide-to="1"
+          aria-label="Slide 2"
+        ></button>
+        <button
+          type="button"
+          data-bs-target="#heroCarousel"
+          data-bs-slide-to="2"
+          aria-label="Slide 3"
+        ></button>
+      </div>
+      <div class="carousel-inner rounded-lg shadow-lg">
+        <div class="carousel-item active">
+          <img
+            src="https://placehold.co/1200x400/FF5733/FFFFFF?text=Producto+Destacado+1"
+            class="d-block w-100 rounded-lg"
+            alt=""
+          />
+          <div class="carousel-caption d-none d-md-block">
+            <h5 class="text-2xl font-bold">Oferta Especial de Laptops</h5>
+            <p class="text-base">
+              Descubre nuestras últimas laptops con descuentos increíbles.
+            </p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img
+            src="https://placehold.co/1200x400/33FF57/FFFFFF?text=Producto+Destacado+2"
+            class="d-block w-100 rounded-lg"
+            alt=""
+          />
+          <div class="carousel-caption d-none d-md-block">
+            <h5 class="text-2xl font-bold">Accesorios Imprescindibles</h5>
+            <p class="text-base">
+              Todo lo que necesitas para complementar tus dispositivos.
+            </p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img
+            src="https://placehold.co/1200x400/3357FF/FFFFFF?text=Producto+Destacado+3"
+            class="d-block w-100 rounded-lg"
+            alt=""
+          />
+          <div class="carousel-caption d-none d-md-block">
+            <h5 class="text-2xl font-bold">Impresoras de Última Generación</h5>
+            <p class="text-base">
+              Imprime con calidad profesional desde casa u oficina.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="carousel-inner rounded-lg shadow-lg">
-      <div class="carousel-item active">
-        <img
-          src="https://placehold.co/1200x400/FF5733/FFFFFF?text=Producto+Destacado+1"
-          class="d-block w-100 rounded-lg"
-          alt=""
-        />
-        <div class="carousel-caption d-none d-md-block">
-          <h5 class="text-2xl font-bold">Oferta Especial de Laptops</h5>
-          <p class="text-base">
-            Descubre nuestras últimas laptops con descuentos increíbles.
-          </p>
-        </div>
-      </div>
-      <div class="carousel-item">
-        <img
-          src="https://placehold.co/1200x400/33FF57/FFFFFF?text=Producto+Destacado+2"
-          class="d-block w-100 rounded-lg"
-          alt=""
-        />
-        <div class="carousel-caption d-none d-md-block">
-          <h5 class="text-2xl font-bold">Accesorios Imprescindibles</h5>
-          <p class="text-base">
-            Todo lo que necesitas para complementar tus dispositivos.
-          </p>
-        </div>
-      </div>
-      <div class="carousel-item">
-        <img
-          src="https://placehold.co/1200x400/3357FF/FFFFFF?text=Producto+Destacado+3"
-          class="d-block w-100 rounded-lg"
-          alt=""
-        />
-        <div class="carousel-caption d-none d-md-block">
-          <h5 class="text-2xl font-bold">Impresoras de Última Generación</h5>
-          <p class="text-base">
-            Imprime con calidad profesional desde casa u oficina.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
   <div class="container">
     <section
       *ngIf="ListadoProductos1?.length"
@@ -114,28 +114,33 @@
                 <div class="card">
                   <img
                     (click)="Details(stockItem)"
-                    [src]="stockItem.producto?.imagen"
-                    alt="{{ stockItem.producto?.descripcion }}"
+                    [src]="stockItem.producto.imagen"
+                    alt="{{ stockItem.producto.descripcion }}"
                     class="card-img-top"
                     onerror="this.onerror=null;this.src='https://placehold.co/150x120?text=Sin+imagen'"
                   />
                   <div class="card-body p-1">
-                    <small>{{ stockItem.producto?.nombre }}</small>
+                    <small>{{ stockItem.producto.nombre }}</small>
                     <div class="stock-msg">
                       {{ stockItem.cantidad >= 1 ? "Hay stock" : "Agotado" }}
                     </div>
-                    <div class="price">
-                      {{ stockItem.producto?.precio }} Bs.
-                    </div>
+                    <div class="price">{{ stockItem.producto.precio }} Bs.</div>
                     <div class="brand">
-                      Marca {{ stockItem.producto?.marca }}
+                      Marca {{ stockItem.producto.marca }}
                     </div>
                     <button
                       class="btn-cart"
                       type="button"
                       (click)="AddProductCarrito(stockItem)"
+                      [disabled]="stockItem.anadidoAlCarrito"
+                      [class.added-to-cart]="stockItem.anadidoAlCarrito"
                     >
-                      Añadir al carrito
+                      <span *ngIf="!stockItem.anadidoAlCarrito"
+                        >Añadir al carrito</span
+                      >
+                      <span *ngIf="stockItem.anadidoAlCarrito"
+                        >✔ Añadido al Carrito</span
+                      >
                     </button>
                     <a
                       href="#"
@@ -224,29 +229,34 @@
               <div class="col" *ngFor="let stockItem of page">
                 <div class="card">
                   <img
-                   (click)="Details(stockItem)"
-                    [src]="stockItem.producto?.imagen"
-                    alt="{{ stockItem.producto?.descripcion }}"
+                    (click)="Details(stockItem)"
+                    [src]="stockItem.producto.imagen"
+                    alt="{{ stockItem.producto.descripcion }}"
                     class="card-img-top"
                     onerror="this.onerror=null;this.src='https://placehold.co/150x120?text=Sin+imagen'"
                   />
                   <div class="card-body p-1">
-                    <small>{{ stockItem.producto?.nombre }}</small>
+                    <small>{{ stockItem.producto.nombre }}</small>
                     <div class="stock-msg">
                       {{ stockItem.cantidad >= 1 ? "Hay stock" : "Agotado" }}
                     </div>
-                    <div class="price">
-                      {{ stockItem.producto?.precio }} Bs.
-                    </div>
+                    <div class="price">{{ stockItem.producto.precio }} Bs.</div>
                     <div class="brand">
-                      Marca {{ stockItem.producto?.marca }}
+                      Marca {{ stockItem.producto.marca }}
                     </div>
                     <button
                       class="btn-cart"
                       type="button"
                       (click)="AddProductCarrito(stockItem)"
+                      [disabled]="stockItem.anadidoAlCarrito"
+                      [class.added-to-cart]="stockItem.anadidoAlCarrito"
                     >
-                      Añadir al carrito
+                      <span *ngIf="!stockItem.anadidoAlCarrito"
+                        >Añadir al carrito</span
+                      >
+                      <span *ngIf="stockItem.anadidoAlCarrito"
+                        >✔ Añadido al Carrito</span
+                      >
                     </button>
                     <a
                       href="#"
@@ -335,29 +345,34 @@
               <div class="col" *ngFor="let stockItem of page">
                 <div class="card">
                   <img
-                   (click)="Details(stockItem)"
-                    [src]="stockItem.producto?.imagen"
-                    alt="{{ stockItem.producto?.descripcion }}"
+                    (click)="Details(stockItem)"
+                    [src]="stockItem.producto.imagen"
+                    alt="{{ stockItem.producto.descripcion }}"
                     class="card-img-top"
                     onerror="this.onerror=null;this.src='https://placehold.co/150x120?text=Sin+imagen'"
                   />
                   <div class="card-body p-1">
-                    <small>{{ stockItem.producto?.nombre }}</small>
+                    <small>{{ stockItem.producto.nombre }}</small>
                     <div class="stock-msg">
                       {{ stockItem.cantidad >= 1 ? "Hay stock" : "Agotado" }}
                     </div>
-                    <div class="price">
-                      {{ stockItem.producto?.precio }} Bs.
-                    </div>
+                    <div class="price">{{ stockItem.producto.precio }} Bs.</div>
                     <div class="brand">
-                      Marca {{ stockItem.producto?.marca }}
+                      Marca {{ stockItem.producto.marca }}
                     </div>
                     <button
                       class="btn-cart"
                       type="button"
                       (click)="AddProductCarrito(stockItem)"
+                      [disabled]="stockItem.anadidoAlCarrito"
+                      [class.added-to-cart]="stockItem.anadidoAlCarrito"
                     >
-                      Añadir al carrito
+                      <span *ngIf="!stockItem.anadidoAlCarrito"
+                        >Añadir al carrito</span
+                      >
+                      <span *ngIf="stockItem.anadidoAlCarrito"
+                        >✔ Añadido al Carrito</span
+                      >
                     </button>
                     <a
                       href="#"
@@ -442,29 +457,34 @@
               <div class="col" *ngFor="let stockItem of page">
                 <div class="card">
                   <img
-                   (click)="Details(stockItem)" 
-                    [src]="stockItem.producto?.imagen"
-                    alt="{{ stockItem.producto?.descripcion }}"
+                    (click)="Details(stockItem)"
+                    [src]="stockItem.producto.imagen"
+                    alt="{{ stockItem.producto.descripcion }}"
                     class="card-img-top"
                     onerror="this.onerror=null;this.src='https://placehold.co/150x120?text=Sin+imagen'"
                   />
                   <div class="card-body p-1">
-                    <small>{{ stockItem.producto?.nombre }}</small>
+                    <small>{{ stockItem.producto.nombre }}</small>
                     <div class="stock-msg">
                       {{ stockItem.cantidad >= 1 ? "Hay stock" : "Agotado" }}
                     </div>
-                    <div class="price">
-                      {{ stockItem.producto?.precio }} Bs.
-                    </div>
+                    <div class="price">{{ stockItem.producto.precio }} Bs.</div>
                     <div class="brand">
-                      Marca {{ stockItem.producto?.marca }}
+                      Marca {{ stockItem.producto.marca }}
                     </div>
                     <button
                       class="btn-cart"
                       type="button"
                       (click)="AddProductCarrito(stockItem)"
+                      [disabled]="stockItem.anadidoAlCarrito"
+                      [class.added-to-cart]="stockItem.anadidoAlCarrito"
                     >
-                      Añadir al carrito
+                      <span *ngIf="!stockItem.anadidoAlCarrito"
+                        >Añadir al carrito</span
+                      >
+                      <span *ngIf="stockItem.anadidoAlCarrito"
+                        >✔ Añadido al Carrito</span
+                      >
                     </button>
                     <a
                       href="#"
@@ -514,30 +534,30 @@
     </section>
 
     <!-- Nueva sección de imágenes de productos -->
-   <section aria-label="Imágenes de Productos Adicionales" class="mb-5">
-    <h2 class="category-title text-center mb-4">Descubre Más Productos</h2>
-    <div class="row g-4 justify-content-center">
+    <section aria-label="Imágenes de Productos Adicionales" class="mb-5">
+      <h2 class="category-title text-center mb-4">Descubre Más Productos</h2>
+      <div class="row g-4 justify-content-center">
         <div class="col-12 col-md-6 d-flex justify-content-center">
-            <!-- Contenedor para la primera imagen, con los estilos definidos en CSS -->
-            <div class="product-ad-image-container">
-                <img
-                    src="https://i.pinimg.com/1200x/5b/b5/2c/5bb52cc80c5fc8f809a515c7e4520e26.jpg"
-                    alt="Computadora Gaming de Alta Gama"
-                    onerror="this.onerror=null;this.src='https://placehold.co/800x600/4CAF50/FFFFFF?text=Imagen+No+Disponible'"
-                />
-            </div>
+          <!-- Contenedor para la primera imagen, con los estilos definidos en CSS -->
+          <div class="product-ad-image-container">
+            <img
+              src="https://i.pinimg.com/1200x/5b/b5/2c/5bb52cc80c5fc8f809a515c7e4520e26.jpg"
+              alt="Computadora Gaming de Alta Gama"
+              onerror="this.onerror=null;this.src='https://placehold.co/800x600/4CAF50/FFFFFF?text=Imagen+No+Disponible'"
+            />
+          </div>
         </div>
         <div class="col-12 col-md-6 d-flex justify-content-center">
-            <!-- Contenedor para la segunda imagen, con los estilos definidos en CSS -->
-            <div class="product-ad-image-container">
-                <img
-                    src="https://imgs.search.brave.com/tTZUDzCS__3tMGFsxpTBngYAKe9bRmZEFZ3MrA-qS4o/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pbWcu/ZnJlZXBpay5jb20v/Zm90b3MtcHJlbWl1/bS9hY2Nlc29yaW9z/LWNvbXB1dGFkb3Jh/cy1haXNsYWRvcy1z/b2JyZS1mb25kby1i/bGFuY29fNjIxOTU1/LTQ0MDEwLmpwZz9z/ZW10PWFpc19pdGVt/c19ib29zdGVkJnc9/NzQw"
-                    alt="Laptop Ultrafina para Productividad"
-                    onerror="this.onerror=null;this.src='https://placehold.co/800x600/2196F3/FFFFFF?text=Imagen+No+Disponible'"
-                />
-            </div>
+          <!-- Contenedor para la segunda imagen, con los estilos definidos en CSS -->
+          <div class="product-ad-image-container">
+            <img
+              src="https://imgs.search.brave.com/tTZUDzCS__3tMGFsxpTBngYAKe9bRmZEFZ3MrA-qS4o/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pbWcu/ZnJlZXBpay5jb20v/Zm90b3MtcHJlbWl1/bS9hY2Nlc29yaW9z/LWNvbXB1dGFkb3Jh/cy1haXNsYWRvcy1z/b2JyZS1mb25kby1i/bGFuY29fNjIxOTU1/LTQ0MDEwLmpwZz9z/ZW10PWFpc19pdGVt/c19ib29zdGVkJnc9/NzQw"
+              alt="Laptop Ultrafina para Productividad"
+              onerror="this.onerror=null;this.src='https://placehold.co/800x600/2196F3/FFFFFF?text=Imagen+No+Disponible'"
+            />
+          </div>
         </div>
-    </div>
-</section>
+      </div>
+    </section>
   </div>
 </div>
