@@ -13,6 +13,7 @@ import { StockService } from '../../../services/ProductosServis/stock.service';
 import { StockDTO } from '../../../DTOs/Produc/StockDTO'; // ¡Asegúrate de importar StockDTO!
 import { CarritoService } from '../../../services/CartServis/carrito.service';
 import { AgregarDetalleCarritoRequest } from '../../../models/CartModel/AgregarDetalleCarritoRequest';
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-inicio',
@@ -28,6 +29,7 @@ export class InicioComponent implements OnInit, AfterViewInit {
   ListadoProductos4: StockDTO[] = []; // Otros
   currentIndex = 0;
   intervalId: any;
+  usuarioValido: boolean = false;
 
   constructor(
     private router: Router,
@@ -150,6 +152,32 @@ export class InicioComponent implements OnInit, AfterViewInit {
   AddProductCarrito(stockItem: StockDTO) {
     const usuarioId = localStorage.getItem('current_username');
 
+    if(usuarioId==null || usuarioId==undefined || usuarioId==''){
+     const modalElement = document.getElementById('modalSesionRequerida');
+
+        if (modalElement) {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+
+            // Opcional: Manejar los botones dentro de esta misma función
+            const btnIrLogin = document.getElementById('btnIrLogin');
+            if (btnIrLogin) {
+                btnIrLogin.onclick = () => {
+                    modal.hide();
+                    this.router.navigate(['/login']); // Asume que tienes el Router inyectado
+                };
+            }
+
+            const btnOkModal = document.getElementById('btnOkModal');
+            if (btnOkModal) {
+                btnOkModal.onclick = () => {
+                    modal.hide();
+                };
+            }
+        }
+    }else{
+
+    
     const request: AgregarDetalleCarritoRequest = {
       producto: {
         idProducto: stockItem.producto.idProducto,
@@ -168,6 +196,7 @@ export class InicioComponent implements OnInit, AfterViewInit {
         alert('Hubo un problema al añadir el producto al carrito.');
       },
     });
+  }
   }
 
   Details(prodcut: StockDTO) {

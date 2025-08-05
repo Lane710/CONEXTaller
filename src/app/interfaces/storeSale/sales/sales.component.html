@@ -1,0 +1,289 @@
+
+<h1>hola mundo</h1>
+<!--
+<div class="container mt-4">
+  
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Ventas Realizadas</li>
+    </ol>
+  </nav>
+
+  
+  <h1 class="mb-4">Listado de Ventas Realizadas</h1>
+
+  
+  <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3">
+  
+    <div class="d-flex flex-wrap gap-2 flex-grow-1">
+      <div class="col-12 col-md-auto">
+        <button class="btn btn-primary rounded-pill w-100" routerLink="/home/reporte-ventas">
+          <i class="bi bi-bar-chart-line-fill me-2"></i>Ver Reporte de Ventas
+        </button>
+      </div>
+
+      <div class="col-12 col-md flex-grow-1">
+        <div class="input-group search-input-group w-100">
+          <input
+            type="text"
+            class="form-control rounded-pill-start"
+            placeholder="Buscar por cliente o ID de venta"
+          />
+          <span class="input-group-text rounded-pill-end">
+            <i class="bi bi-search"></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="col-12 col-md flex-grow-1">
+        <div class="input-group date-input-group w-100">
+          <input
+            type="text"
+            class="form-control rounded-pill-start"
+            placeholder="Filtrar por fecha"
+          />
+          <span class="input-group-text rounded-pill-end">
+            <i class="bi bi-calendar"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+
+  
+    <div class="d-flex flex-wrap gap-2 justify-content-end">
+      <div class="col-12 col-sm-auto">
+        <div class="dropdown w-100">
+          <button
+            class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
+            type="button"
+            id="statusDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Estado de Venta
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="statusDropdown">
+            <li><a class="dropdown-item" href="#">Todas</a></li>
+            <li><a class="dropdown-item" href="#">Pendiente</a></li>
+            <li><a class="dropdown-item" href="#">Enviado</a></li>
+            <li><a class="dropdown-item" href="#">Completado</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-12 col-sm-auto">
+        <div class="dropdown w-100">
+          <button
+            class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
+            type="button"
+            id="paymentDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Método de Pago
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="paymentDropdown">
+            <li><a class="dropdown-item" href="#">Todos</a></li>
+            <li><a class="dropdown-item" href="#">Transferencia Bancaria</a></li>
+            <li><a class="dropdown-item" href="#">Tarjeta de Crédito</a></li>
+            <li><a class="dropdown-item" href="#">Pago en Entrega</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="card shadow-sm mb-4">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th scope="col">ID de Venta</th>
+              <th scope="col">Cliente</th>
+              <th scope="col">Fecha</th>
+              <th scope="col">Total</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Método de Pago</th>
+              <th scope="col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+            <tr *ngIf="isLoading">
+              <td colspan="7" class="text-center py-4 text-info">
+                Cargando ventas...
+              </td>
+            </tr>
+            <tr *ngIf="!isLoading && errorMessage">
+              <td colspan="7" class="text-center py-4 text-danger">
+                {{ errorMessage }}
+              </td>
+            </tr>
+            <tr *ngIf="!isLoading && ventas.length === 0 && !errorMessage">
+              <td colspan="7" class="text-center py-4 text-muted">
+                No hay ventas registradas para mostrar.
+              </td>
+            </tr>
+
+            
+            @for (venta of paginatedVentas; track venta.idVenta) {
+            <tr>
+              <td data-label="ID de Venta">{{ venta.idVenta }}</td>
+              <td data-label="Cliente">{{ venta.nombreCliente }}</td>
+              <td data-label="Fecha">{{ venta.fecha | date : "dd/MM/yyyy" }}</td>
+              <td data-label="Total">
+                {{ venta.total | currency : "Bs " : "symbol" : "1.2-2" }}
+              </td>
+              <td data-label="Estado">
+                <span
+                  [class]="
+                    venta.estado === 'Completado'
+                      ? 'badge bg-success'
+                      : venta.estado === 'Enviado'
+                      ? 'badge bg-info text-dark'
+                      : 'badge bg-warning text-dark'
+                  "
+                >
+                  {{ venta.estado }}
+                </span>
+              </td>
+              <td data-label="Método de Pago">
+                <span class="badge bg-secondary">{{ venta.metodoPago }}</span>
+              </td>
+              <td data-label="Acciones" class="actions-column">
+                <button
+                  class="btn btn-info btn-sm me-1"
+                  (click)="verDetallesVenta(venta)"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalDetallesVenta"
+                >
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button
+                  class="btn btn-primary btn-sm"
+                  [disabled]="venta.estado === 'Completado'"
+                  (click)="cambiarEstadoVenta(venta)"
+                >
+                  <i class="bi bi-truck"></i>
+                </button>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="d-flex justify-content-center align-items-center flex-wrap mb-3">
+    <nav aria-label="Page navigation">
+      <ul class="pagination pagination-sm mb-0">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button
+            class="page-link"
+            (click)="goToPage(currentPage - 1)"
+            aria-label="Previous"
+            [disabled]="currentPage === 1"
+          >
+            <span aria-hidden="true">&laquo;</span>
+          </button>
+        </li>
+        @for (page of [].constructor(totalPages); let i = $index; track i) {
+        <li class="page-item" [class.active]="currentPage === i + 1">
+          <button class="page-link" (click)="goToPage(i + 1)">
+            {{ i + 1 }}
+          </button>
+        </li>
+        }
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button
+            class="page-link"
+            (click)="goToPage(currentPage + 1)"
+            aria-label="Next"
+            [disabled]="currentPage === totalPages"
+          >
+            <span aria-hidden="true">&raquo;</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+
+<div
+  class="modal fade"
+  id="modalDetallesVenta"
+  tabindex="-1"
+  aria-labelledby="modalDetallesVentaLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content rounded-3 shadow-lg">
+      <div class="modal-header bg-primary text-white rounded-top-3">
+        <h5 class="modal-title fw-bold" id="modalDetallesVentaLabel">Detalles de la Venta</h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body p-4" *ngIf="ventaSeleccionada">
+        <div class="row">
+          
+          <div class="col-md-6 border-end">
+            <h5 class="mb-3 border-bottom pb-2 text-secondary">
+              Información del Cliente
+            </h5>
+            <p><strong>Cliente:</strong> {{ ventaSeleccionada.nombreCliente }}</p>
+            <p><strong>Email:</strong> {{ ventaSeleccionada.emailCliente }}</p>
+            <p><strong>WhatsApp:</strong> {{ ventaSeleccionada.whatsappCliente }}</p>
+            <h5 class="mt-4 mb-3 border-bottom pb-2 text-secondary">
+              Detalles de Envío
+            </h5>
+            <p><strong>Dirección:</strong> {{ ventaSeleccionada.direccionEnvio }}</p>
+            <p><strong>Barrio:</strong> {{ ventaSeleccionada.barrioEnvio }}</p>
+            <p><strong>Ciudad:</strong> {{ ventaSeleccionada.ciudadEnvio }}</p>
+            <p><strong>Notas del Pedido:</strong> {{ ventaSeleccionada.notasPedido || 'N/A' }}</p>
+          </div>
+          
+          <div class="col-md-6">
+            <h5 class="mb-3 border-bottom pb-2 text-secondary">
+              Resumen del Pedido
+            </h5>
+            <ul class="list-group list-group-flush mb-3">
+              
+              @for (item of ventaSeleccionada.items; track item.idProducto) {
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ item.nombreProducto }} &times; {{ item.cantidad }}</span>
+                <span class="fw-bold">{{ item.subtotal | currency : "Bs " : "symbol" : "1.2-2" }}</span>
+              </li>
+              }
+            </ul>
+            <div class="d-flex justify-content-between align-items-center border-top pt-2">
+              <h5 class="fw-bold text-success m-0">Total:</h5>
+              <h5 class="fw-bold text-success m-0">
+                {{ ventaSeleccionada.total | currency : "Bs " : "symbol" : "1.2-2" }}
+              </h5>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="modal-footer justify-content-center bg-light border-top-0 rounded-bottom-3"
+      >
+        <button
+          type="button"
+          class="btn btn-secondary px-4"
+          data-bs-dismiss="modal"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>-->

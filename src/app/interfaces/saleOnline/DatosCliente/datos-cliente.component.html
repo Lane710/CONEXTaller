@@ -4,235 +4,238 @@
     ya no tendrías acceso a la tienda en un futuro.
   </div>
 
-  <div class="row">
-    <div class="col-md-7 datoscliente">
-      <h5 class="section-title">Detalles de facturación</h5>
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label for="nombre" class="form-label"
-            >Nombre <span class="text-danger">*</span></label
-          >
-          <input type="text" class="form-control" id="nombre" required />
-        </div>
-        <div class="col-md-6">
-          <label for="apellidos" class="form-label"
-            >Apellidos <span class="text-danger">*</span></label
-          >
-          <input type="text" class="form-control" id="apellidos" required />
-        </div>
-        <div class="col-12">
-          <label for="paisRegion" class="form-label">País / Región</label>
-          <input
-            type="text"
-            class="form-control"
-            id="paisRegion"
-            value="Bolivia"
-            readonly
-          />
-        </div>
-        <div class="col-12">
-          <label for="direccionCalle" class="form-label"
-            >Dirección de la calles <span class="text-danger">*</span></label
-          >
-          <input
-            type="text"
-            class="form-control"
-            id="direccionCalle"
-            placeholder="House number and street name"
-            required
-          />
-          <div class="form-text">
-            Velgrano, Espana, Av. la paz y circumbalacion, etc.
+  <form  class="datos-cliente-form">
+    <div class="row">
+      <div class="col-md-7 datoscliente">
+        <h5 class="section-title">Detalles de facturación</h5>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="nombre" class="form-label"
+              >Nombre <span class="text-danger">*</span></label
+            >
+            <input type="text" class="form-control" id="nombre" required />
+          </div>
+          <div class="col-md-6">
+            <label for="apellidos" class="form-label"
+              >Apellidos <span class="text-danger">*</span></label
+            >
+            <input type="text" class="form-control" id="apellidos" required />
+          </div>
+          <div class="col-12">
+            <label for="paisRegion" class="form-label">País / Región</label>
+            <input
+              type="text"
+              class="form-control"
+              id="paisRegion"
+              value="Bolivia"
+              readonly
+            />
+          </div>
+          <div class="col-12">
+            <label for="direccionCalle" class="form-label"
+              >Dirección de la calles <span class="text-danger">*</span></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="direccionCalle"
+              placeholder="House number and street name"
+              required
+            />
+            <div class="form-text">
+              Velgrano, Espana, Av. la paz y circumbalacion, etc.
+            </div>
+          </div>
+          <div class="col-12">
+            <label for="Barrio" class="form-label"
+              >Barrio <span class="text-danger">*</span></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="barrio"
+              placeholder="House number and street name"
+              required
+            />
+            <div class="form-text">Juan 23, Tablada grande, Senac, etc.</div>
+          </div>
+          <div class="col-12">
+            <label for="ciudadProvincia" class="form-label"
+              >Provincia <span class="text-danger">*</span></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="ciudadProvincia"
+              required
+            />
+          </div>
+          <div class="col-12">
+            <label for="departamento" class="form-label"
+              >Departamento <span class="text-danger">*</span></label
+            >
+            <select class="form-select" id="departamento" required>
+              <option value="Tarija" selected>Tarija</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label for="whatsapp" class="form-label"
+              >WhatsApp <span class="text-danger">*</span></label
+            >
+            <input type="tel" class="form-control" id="whatsapp" required />
+          </div>
+          <div class="col-12">
+            <label for="email" class="form-label"
+              >Dirección de correo electrónico
+              <span class="text-danger">*</span></label
+            >
+            <input type="email" class="form-control" id="email" required />
           </div>
         </div>
-        <div class="col-12">
-          <label for="direccionCalle" class="form-label"
-            >Barrio <span class="text-danger">*</span></label
+      </div>
+
+      <div class="col-md-5">
+        <h5 class="section-title">Información adicional</h5>
+        <div class="mb-3">
+          <label for="notasPedido" class="form-label"
+            >Notas del pedido (opcional)</label
           >
-          <input
-            type="text"
+          <textarea
             class="form-control"
-            id="direccionCalle"
-            placeholder="House number and street name"
-            required
-          />
-          <div class="form-text">Juan 23, Tablada grande, Senac, etc.</div>
-        </div>
-        <div class="col-12">
-          <label for="ciudadPoblacion" class="form-label"
-            >Provincia <span class="text-danger">*</span></label
-          >
-          <input
-            type="text"
-            class="form-control"
-            id="ciudadPoblacion"
-            required
-          />
-        </div>
-        <div class="col-12">
-          <label for="departamento" class="form-label"
-            >Departamento <span class="text-danger">*</span></label
-          >
-          <select class="form-select" id="departamento" required>
-            <option value="Tarija" selected>Tarija</option>
-          </select>
-        </div>
-        <div class="col-12">
-          <label for="whatsapp" class="form-label"
-            >WhatsApp <span class="text-danger">*</span></label
-          >
-          <input type="tel" class="form-control" id="whatsapp" required />
-        </div>
-        <div class="col-12">
-          <label for="email" class="form-label"
-            >Dirección de correo electrónico
-            <span class="text-danger">*</span></label
-          >
-          <input type="email" class="form-control" id="email" required />
+            id="notasPedido"
+            rows="4"
+            placeholder="Notes about your order, e.g. special notes for delivery"
+          ></textarea>
         </div>
       </div>
     </div>
 
-    <div class="col-md-5">
-      <h5 class="section-title">Información adicional</h5>
-      <div class="mb-3">
-        <label for="notasPedido" class="form-label"
-          >Notas del pedido (opcional)</label
-        >
-        <textarea
-          class="form-control"
-          id="notasPedido"
-          rows="4"
-          placeholder="Notes about your order, e.g. special notes for delivery"
-        ></textarea>
+    <div class="my-5">
+      <h5 class="section-title">Tu pedido</h5>
+      <div class="order-summary">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">Productos</th>
+              <th scope="col">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of detallesCarrito">
+              <td>
+                {{ item.producto.nombre }} &times; {{ item.cantidad }}
+                <br />
+                <small class="text-success" *ngIf="item.cantidad"
+                  >Hay existencias</small
+                >
+                <small class="text-danger" *ngIf="item.cantidad <= 0"
+                  >Sin existencias</small
+                >
+              </td>
+              <td>{{ item.subtotal }} Bs.</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td class="total">Total</td>
+              <td class="total">{{ totalCarrito }} Bs.</td>
+            </tr>
+          </tfoot>
+        </table>
       </div>
     </div>
-  </div>
 
-  <div class="my-5">
-    <h5 class="section-title">Tu pedido</h5>
-    <div class="order-summary">
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th scope="col">Productos</th>
-            <th scope="col">Subtotal</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of detallesCarrito">
-            <td>
-              {{ item.producto.nombre }} &times; {{ item.cantidad }}
-              <br />
-              <small
-                class="text-success"
-                *ngIf="item.cantidad"
-                >Hay existencias</small
-              >
-              <small
-                class="text-danger"
-                *ngIf="item.cantidad <= 0"
-                >Sin existencias</small
-              >
-            </td>
-            <td>{{ item.subtotal }} Bs.</td>
-          </tr>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td class="total">Total</td>
-            <td class="total">{{totalCarrito}} Bs.</td>
-          </tr>
-        </tfoot>
-      </table>
+   <div class="seleccionTarjetaQRPagoEntrega">
+  
+  <div class="payment-option mb-3">
+    <div class="form-check">
+      <input
+        class="form-check-input"
+        type="radio"
+        name="paymentMethod"
+        id="transferenciaBancaria"
+        (change)="onPaymentMethodChange('transferenciaBancaria')"
+        [checked]="seleccionMetodoPago === 'transferenciaBancaria'"
+      />
+      <label class="form-check-label" for="transferenciaBancaria">
+        Transferencia Bancaria Directa
+      </label>
+    </div>
+    <div *ngIf="seleccionMetodoPago === 'transferenciaBancaria'" class="payment-instructions mt-3">
+      Realiza tu pago directamente a una de nuestras cuentas bancarias. Por
+      favor usa la referencia del pedido como referencia de pago.
+      <ul>
+        <li>
+          Si estas en la Ciudad de Santa Cruz puedes hacer la transferencia
+          bancaria al momento de recibir tu paquete
+        </li>
+        <li>
+          Si estas en otro departamento el pedido no será enviado hasta que
+          el pago completo haya sido recibido (costo de envió por pagar)
+        </li>
+      </ul>
+      <strong>PARA TOMAR EN CUENTA</strong>
+      <ul>
+        <li>
+          Se recibe pedidos únicamente hasta las 6:00PM para hacer envíos
+          locales en Santa Cruz o las demás ciudades ese mismo día del
+          pedido (pedidos después de las 6:00 PM se enviaran al día
+          siguiente)
+        </li>
+        <li>
+          Todos los pedidos se comienzan a repartir después de las 6:00 PM
+        </li>
+      </ul>
     </div>
   </div>
 
-  <div class="seleccionTarjetaQRPagoEntrega">
-    <div class="payment-option mb-3">
-      <div class="form-check">
-        <input
-          class="form-check-input"
-          type="radio"
-          name="paymentMethod"
-          id="transferenciaBancaria"
-          checked
-        />
-        <label class="form-check-label" for="transferenciaBancaria">
-          Transferencia Bancaria Directa
-        </label>
-      </div>
-      <div class="payment-instructions mt-3">
-        Realiza tu pago directamente a una de nuestras cuentas bancarias. Por
-        favor usa la referencia del pedido como referencia de pago.
-        <ul>
-          <li>
-            Si estas en la Ciudad de Santa Cruz puedes hacer la transferencia
-            bancaria al momento de recibir tu paquete
-          </li>
-          <li>
-            Si estas en otro departamento el pedido no será enviado hasta que el
-            pago completo haya sido recibido (costo de envió por pagar)
-          </li>
-        </ul>
-        <strong>PARA TOMAR EN CUENTA</strong>
-        <ul>
-          <li>
-            Se recibe pedidos únicamente hasta las 6:00PM para hacer envíos
-            locales en Santa Cruz o las demás ciudades ese mismo día del pedido
-            (pedidos después de las 6:00 PM se enviaran al día siguiente)
-          </li>
-          <li>
-            Todos los pedidos se comienzan a repartir después de las 6:00 PM
-          </li>
-        </ul>
-      </div>
+  <div class="payment-option mb-3">
+    <div class="form-check">
+      <input
+        class="form-check-input"
+        type="radio"
+        name="paymentMethod"
+        id="pagarTarjetaCredito"
+        (change)="onPaymentMethodChange('pagarTarjetaCredito')"
+        [checked]="seleccionMetodoPago === 'pagarTarjetaCredito'"
+      />
+      <label class="form-check-label" for="pagarTarjetaCredito">
+        Pagar con Tarjeta de Crédito o Débito
+        <span class="card-icons">
+          <img src="https://img.icons8.com/color/48/000000/visa.png" alt="Visa" />
+          <img src="https://img.icons8.com/color/48/000000/mastercard.png" alt="Mastercard" />
+         
+          <img src="https://img.icons8.com/color/48/000000/discover.png" alt="Discover" />
+        </span>
+      </label>
     </div>
-
-    <div class="payment-option mb-3">
-      <div class="form-check">
-        <input
-          class="form-check-input"
-          type="radio"
-          name="paymentMethod"
-          id="pagarTarjetaCredito"
-        />
-        <label class="form-check-label" for="pagarTarjetaCredito">
-          Pagar con Tarjeta de Crédito o Débito
-          <span class="card-icons">
-            <img
-              src="https://img.icons8.com/color/48/000000/visa.png"
-              alt="Visa"
-            />
-            <img
-              src="https://img.icons8.com/color/48/000000/mastercard.png"
-              alt="Mastercard"
-            />
-            <img
-              src="https://img.icons8.com/color/48/000000/american-express.png"
-              alt="American Express"
-            />
-            <img
-              src="https://img.icons8.com/color/48/000000/discover.png"
-              alt="Discover"
-            />
-          </span>
-        </label>
-      </div>
+    <div *ngIf="seleccionMetodoPago === 'pagarTarjetaCredito'" class="payment-instructions mt-3">
+      <p>Serás redirigido a una página de pago seguro para completar tu compra con tarjeta de crédito o débito.</p>
     </div>
-
-    <!--<div class="payment-option">
-      <div class="form-check">
-        <input
-          class="form-check-input"
-          type="radio"
-          name="paymentMethod"
-          id="pagoEntrega"
-        />
-        <label class="form-check-label" for="pagoEntrega">
-          Pago en entrega
-        </label>
-      </div>
-    </div>-->
   </div>
+
+  <div class="payment-option mb-3">
+    <div class="form-check">
+      <input
+        class="form-check-input"
+        type="radio"
+        name="paymentMethod"
+        id="pagoEntrega"
+        (change)="onPaymentMethodChange('pagoEntrega')"
+        [checked]="seleccionMetodoPago === 'pagoEntrega'"
+      />
+      <label class="form-check-label" for="pagoEntrega">
+        Pago en entrega
+      </label>
+    </div>
+    <div *ngIf="seleccionMetodoPago === 'pagoEntrega'" class="payment-instructions mt-3">
+      <p>Paga en efectivo al momento de recibir tu pedido. Esta opción solo está disponible para entregas en la Ciudad de Tarija.</p>
+    </div>
+  </div>
+</div>
+    <div id="errorContainer" class="mt-3 alert alert-danger" role="alert" style="display:none;">
+  </div>
+
+    <button class="btn btn-primary" type="button" (click)="DatosDelCLiente()">Realizar Pedido</button>
+  </form>
 </div>

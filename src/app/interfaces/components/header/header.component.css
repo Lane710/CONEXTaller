@@ -281,3 +281,30 @@
     margin-right: 8px; /* Último ajuste para espacio en móvil */
   }
 }
+.boton_iniciar_sesion {
+  background-color: transparent; /* Fondo transparente */
+  color: #29aaca; /* Color de texto azul (similar a Tailwind blue-600) */
+  font-weight: 600; /* Texto semi-negrita */
+  padding: 0.5rem 1rem; /* Relleno vertical y horizontal */
+  border-radius: 9999px; /* Bordes completamente redondeados */
+  display: flex; /* Para alinear el icono y el texto */
+  align-items: center; /* Alineación vertical al centro */
+  gap: 0.5rem; /* Espacio entre el icono y el texto */
+  transition: color 0.15s ease-in-out; /* Transición suave para el color */
+  border: none; /* Elimina el borde por defecto del botón */
+  cursor: pointer; /* Cambia el cursor al pasar por encima */
+}
+
+.boton_iniciar_sesion:hover {
+  color: #29aaca; /* Color de texto azul oscuro al pasar el cursor (similar a blue-700) */
+}
+
+/* Estilos para el SVG del icono dentro del botón */
+.boton_iniciar_sesion svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor; /* El color del icono sigue el color del texto */
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

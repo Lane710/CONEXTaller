@@ -36,59 +36,67 @@ export class CarritoComponent implements OnInit {
   ngOnInit(): void {
     this.cargarCarrito(); // Llama a cargarCarrito al inicializar el componente
     this.cargarProductosParaCuadricula();
+    console.log(this.detallesCarrito.length)
   }
+cargarCarrito(): void {
+  console.log(`Intentando cargar carrito para el usuario: ${this.username}`);
+  console.log(`Usuario actual: ${this.username}`);
+  this.carritoService.listarProductosDeUsuario(this.username).subscribe({
+    next: (response: ApiResponse) => {
+      if (response.success) {
+        console.log(
+          'Respuesta exitosa del backend (datos crudos):',
+          response.data
+        );
 
-  cargarCarrito(): void {
-    console.log(`Intentando cargar carrito para el usuario: ${this.username}`);
-    console.log(`Usuario actual: ${this.username}`); // Verifica el usuario actual
-    this.carritoService.listarProductosDeUsuario(this.username).subscribe({
-      next: (response: ApiResponse) => {
-        if (response.success) {
-          console.log(
-            'Respuesta exitosa del backend (datos crudos):',
-            response.data
-          );
+        const rawDetalles: RawDetalleCarritoProducto[] =
+          response.data as RawDetalleCarritoProducto[];
 
-          const rawDetalles: RawDetalleCarritoProducto[] =
-            response.data as RawDetalleCarritoProducto[];
+        // Mapea y transforma los datos
+        this.detallesCarrito = rawDetalles.map(
+          (item: RawDetalleCarritoProducto) => {
+            return {
+              ...item,
+              precioUnitario: new Decimal(item.precioUnitario).toString(),
+              subtotal: new Decimal(item.subtotal).toString(),
+              producto: {
+                ...item.producto,
+                precio: new Decimal(item.producto.precio).toString(),
+              },
+            };
+          }
+        );
 
-          // Mapea y transforma los datos, asegurando que los campos monetarios sean 'string'
-          this.detallesCarrito = rawDetalles.map(
-            (item: RawDetalleCarritoProducto) => {
-              return {
-                ...item,
-                // Convertimos a Decimal para asegurar la precisión y luego de vuelta a string
-                precioUnitario: new Decimal(item.precioUnitario).toString(),
-                subtotal: new Decimal(item.subtotal).toString(),
-                producto: {
-                  ...item.producto,
-                  precio: new Decimal(item.producto.precio).toString(),
-                },
-              };
-            }
-          );
+        // --- ORDENA LA LISTA DIRECTAMENTE AQUÍ ---
+        this.detallesCarrito.sort((a, b) => {
+          const nombreA = a.producto.nombre.toLowerCase();
+          const nombreB = b.producto.nombre.toLowerCase();
+          if (nombreA < nombreB) return -1;
+          if (nombreA > nombreB) return 1;
+          return 0;
+        });
 
-          console.log(
-            'Productos del carrito (transformados a string para visualización):',
-            this.detallesCarrito
-          );
-          this.calcularTotales(); // Calcula los totales después de cargar y transformar los datos
-        } else {
-          console.error(
-            'Error al listar productos del carrito:',
-            response.message
-          );
-          this.detallesCarrito = []; // Vacía el carrito en caso de error
-          this.calcularTotales(); // Reinicia los totales
-        }
-      },
-      error: (error) => {
-        console.error('Error en la solicitud HTTP al listar productos:', error);
-        this.detallesCarrito = []; // Vacía el carrito en caso de error de red
-        this.calcularTotales(); // Reinicia los totales
-      },
-    });
-  }
+        console.log(
+          'Productos del carrito (ordenados alfabéticamente):',
+          this.detallesCarrito
+        );
+        this.calcularTotales();
+      } else {
+        console.error(
+          'Error al listar productos del carrito:',
+          response.message
+        );
+        this.detallesCarrito = [];
+        this.calcularTotales();
+      }
+    },
+    error: (error) => {
+      console.error('Error en la solicitud HTTP al listar productos:', error);
+      this.detallesCarrito = [];
+      this.calcularTotales();
+    },
+  });
+}
 
   /**
    * Calcula el subtotal y el total del carrito usando Decimal.js para precisión.
@@ -109,51 +117,59 @@ export class CarritoComponent implements OnInit {
     console.log(
       `Intentando eliminar producto con ID: ${idDetalleCarrito} del carrito del usuario: ${this.username}`
     );
-         this.carritoService
-        .eliminarProductoDeCarrito(this.username, idDetalleCarrito)
-        .subscribe({
-          next: (response: ApiResponse) => {
-            if (response.success) {
-              this.cargarCarrito(); // Recargar el carrito para actualizar la vista y los totales
-            } else {
-              console.error('Error al eliminar producto:', response.message);
-            }
-          },
-          error: (err) => console.error('Error HTTP al eliminar:', err),
-        });
-  }
-
-  cambiarCantidad(idDetalleCarrito: number, operacion: 0 | 1): void {
-    // Encuentra el ítem en la lista actual del carrito
-    const item = this.detallesCarrito.find(
-      (d) => d.idDetalleCarrito === idDetalleCarrito
-    );
-
-    // Si la operación es disminuir (0) y la cantidad actual es 1, no permitimos disminuir más
-    // Esto previene que la cantidad llegue a 0 o menos desde el frontend,
-    // aunque tu backend también debería manejarlo.
-    if (operacion === 0 && item && item.cantidad <= 1) {
-      alert(
-        'La cantidad mínima de un producto es 1. Para quitarlo, usa el botón "Eliminar".'
-      );
-      return; // Detiene la ejecución si no se puede disminuir
-    }
-
     this.carritoService
-      .actualizarCantidadDetalle(idDetalleCarrito, operacion)
+      .eliminarProductoDeCarrito(this.username, idDetalleCarrito)
       .subscribe({
         next: (response: ApiResponse) => {
           if (response.success) {
-            console.log('Cantidad actualizada:', response.data);
-            this.cargarCarrito(); // Recargar el carrito para obtener los nuevos subtotales del backend
+            this.cargarCarrito(); // Recargar el carrito para actualizar la vista y los totales
           } else {
-            console.error('Error al actualizar cantidad:', response.message);
+            console.error('Error al eliminar producto:', response.message);
           }
         },
-        error: (err) =>
-          console.error('Error HTTP al actualizar cantidad:', err),
+        error: (err) => console.error('Error HTTP al eliminar:', err),
       });
   }
+
+  cambiarCantidad(idDetalleCarrito: number, operacion: 0 | 1, stockDisponible: number): void {
+    // Encuentra el ítem en la lista actual del carrito
+    const item = this.detallesCarrito.find(
+        (d) => d.idDetalleCarrito === idDetalleCarrito
+    );
+
+    if (!item) {
+        console.error('El producto no se encontró en el carrito.');
+        return;
+    }
+
+    // --- Lógica para sumar (operacion === 1) ---
+    if (operacion === 1) {
+        // Validación de stock: comprueba si la cantidad actual es menor que el stock
+        if (item.cantidad >= stockDisponible) {
+            return; // Detiene la ejecución si no hay suficiente stock
+        }
+    } 
+    // --- Lógica para restar (operacion === 0) ---
+    else if (operacion === 0 && item.cantidad <= 1) {
+        alert('La cantidad mínima de un producto es 1. Para quitarlo, usa el botón "Eliminar".');
+        return; // Detiene la ejecución si no se puede disminuir
+    }
+
+    // Si las validaciones pasan, llama al servicio para actualizar la cantidad
+    this.carritoService
+        .actualizarCantidadDetalle(idDetalleCarrito, operacion)
+        .subscribe({
+            next: (response: ApiResponse) => {
+                if (response.success) {
+                    console.log('Cantidad actualizada:', response.data);
+                    this.cargarCarrito(); // Recargar el carrito
+                } else {
+                    console.error('Error al actualizar cantidad:', response.message);
+                }
+            },
+            error: (err) => console.error('Error HTTP al actualizar cantidad:', err),
+        });
+}
 
   ///carrusel de productos que le pueden interesar
   cargarProductosParaCuadricula(): void {

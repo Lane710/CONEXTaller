@@ -32,7 +32,7 @@
           <div class="dropdown-content">
             <a routerLink="/home/Gestion">Acciones de Usuario</a>
             <a (click)="insertarModificar()"  routerLink="/home/modificarUser">Modificar</a>
-            <a (click)="logout()">Cerrar Sesión</a>
+            <a (click)="logout()"*ngIf="isLoggedIn" >Cerrar Sesión</a>
           </div>
         </div>
 
@@ -43,6 +43,15 @@
           routerLink="/home/Carrito"
         />
       </div>
+        <button 
+    class="boton_iniciar_sesion"
+    *ngIf="!isLoggedIn" 
+    routerLink="/login"
+  >
+    <!-- Tu icono SVG aquí -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Iniciar Sesión</span>
+  </button>
     </div>
   </div>
 </div>
