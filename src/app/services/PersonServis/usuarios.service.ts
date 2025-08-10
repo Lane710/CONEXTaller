@@ -66,24 +66,8 @@ export class UsuariosService {
       .post<LoginResponse>(`${this.loginAuthUrl}login`, credentials)
       .pipe(
         tap((response) => {
-          if (response && response.token) {
-            localStorage.setItem('jwt_token', response.token);
-            // Si el backend devuelve 'username' en la respuesta de login
-            if (response.Usuario) {
-              localStorage.setItem('current_username', response.Usuario);
-              console.log('Usuario logeado:', response.Usuario);
-            }
-            // Si el backend devuelve 'idPersona' en la respuesta de login (el CI)
-          }
         })
       );
-  }
-
-  logout(): void {
-    localStorage.removeItem('jwt_token');
-    localStorage.removeItem('current_username'); // Cambiado de id_usuario_actual
-    localStorage.removeItem('id_persona_actual'); // Nuevo, si guardas el CI
-    localStorage.removeItem('currentUserRoleData');
   }
 
   roles(): Observable<ApiResponse> {

@@ -73,7 +73,6 @@ export class LoginComponent implements OnInit, OnDestroy {
       next: (response: LoginResponse) => {
         this.isLoading = false;
         this.successMessage = response.message || 'Inicio de sesión exitoso.';
-        console.log('Login exitoso:', response.Usuario);
         localStorage.setItem('usuario_actual', response.Usuario + '');
 
         // El token y el ID de usuario ya se guardaron en localStorage dentro de UsuariosService.login()

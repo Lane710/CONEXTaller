@@ -80,5 +80,9 @@ export class StockService { // Renombrado a StockService
     return this.http.get<ApiResponse>(`${this.apiUrl}producto/${num}`);
   }
 
+  listadoProducStock(): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.apiUrl}listaProductConStock`);
+  }
+
 
 }
