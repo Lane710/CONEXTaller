@@ -1,12 +1,12 @@
 <div class="sidebar-container" [ngClass]="{ active: sidebarActive }">
   <div class="sidebar-header">
     <img
-      src=""
+      src='https://imgs.search.brave.com/XPdpy5tc-5AN1JbOVWaLqq-JPI1L4NtHd24vb2DQjaQ/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/Y3JlYXRlLnZpc3Rh/LmNvbS9hcGkvbWVk/aWEvc21hbGwvMzQ5/MTgyNzI0L3N0b2Nr/LXZlY3Rvci11c2Vy/LWF2YXRhci1wcm9m/aWxlLWljb24tYmxh/Y2stdmVjdG9yLWls/bHVzdHJhdGlvbi13/ZWJzaXRlLWFwcC1t/ZW1iZXI'
       alt="Profile Picture"
       class="profile-picture"
     />
-    <p class="profile-name">Julia Roberts</p>
-    <p *ngIf="userRole" class="user-role">{{ userRole.nombreRol }}</p>
+    <p class="profile-name">{{ username }}</p>
+    <p *ngIf="userRole" class="user-role">{{ userRole }}</p>
     <p *ngIf="!userRole" class="user-role">Cargando rol...</p>
   </div>
 
@@ -24,7 +24,7 @@
 
       <li
         class="nav-item-sidebar dropdown"
-        *ngIf="isAdministrador() || isDuena() || isTrabajador()"
+        *ngIf="authService.hasRole('administrador') || authService.hasRole('dueno') || authService.hasRole('trabajador')"
       >
         <a
           class="nav-link-sidebar dropdown-toggle"
@@ -40,7 +40,7 @@
 
       <li
         class="nav-item-sidebar dropdown"
-        *ngIf="isAdministrador() || isDuena() || isTrabajador()"
+        *ngIf="authService.hasRole('administrador') || authService.hasRole('duena') || authService.hasRole('trabajador')"
       >
         <a
           class="nav-link-sidebar dropdown-toggle"
@@ -57,9 +57,9 @@
           <li>
             <a
               class="dropdown-item"
-              routerLink="/envios/crear"
+              routerLink="/home/envios/listado"
               routerLinkActive="active"
-              >Crear Envío</a
+              >Listar Envío</a
             >
           </li>
           <li>
@@ -67,7 +67,7 @@
               class="dropdown-item"
               routerLink="/envios/rastrear"
               routerLinkActive="active"
-              >Rastrear Envíos</a
+              >Registar envío</a
             >
           </li>
         </ul>
@@ -75,7 +75,7 @@
 
       <li
         class="nav-item-sidebar dropdown"
-        *ngIf="isAdministrador() || isDuena() || isTrabajador() || isCliente()"
+        *ngIf="authService.hasRole('administrador') || authService.hasRole('duena') || authService.hasRole('trabajador') || authService.hasRole('cliente')"
       >
         <a
           class="nav-link-sidebar dropdown-toggle"
@@ -92,12 +92,12 @@
           <li>
             <a
               class="dropdown-item"
-              routerLink="/pedidos/listar"
+              routerLink="/home/pedidoOnline/Listado"
               routerLinkActive="active"
               >Listar Pedidos</a
             >
           </li>
-          <li *ngIf="isCliente()">
+          <li *ngIf="authService.hasRole('cliente')">
             <a
               class="dropdown-item"
               routerLink="/pedidos/crear"
@@ -110,7 +110,7 @@
 
       <li
         class="nav-item-sidebar dropdown"
-        *ngIf="isAdministrador() || isDuena() || isProveedor()"
+        *ngIf="authService.hasRole('administrador') || authService.hasRole('duena') || authService.hasRole('proveedor')"
       >
         <a
           class="nav-link-sidebar dropdown-toggle"
@@ -145,7 +145,7 @@
 
       <li
         class="nav-item-sidebar dropdown"
-        *ngIf="isAdministrador() || isDuena() || isTrabajador()"
+        *ngIf="authService.hasRole('administrador') || authService.hasRole('duena') || authService.hasRole('trabajador')"
       >
         <a
           class="nav-link-sidebar dropdown-toggle"
@@ -180,7 +180,7 @@
 
       <li
         class="nav-item-sidebar dropdown"
-        *ngIf="isAdministrador() || isDuena()"
+        *ngIf="authService.hasRole('administrador') || authService.hasRole('duena')"
       >
         <a
           class="nav-link-sidebar dropdown-toggle"
@@ -196,7 +196,7 @@
 
       <li
         class="nav-item-sidebar dropdown"
-        *ngIf="isAdministrador() || isDuena() "
+        *ngIf="authService.hasRole('administrador') || authService.hasRole('duena') "
       >
         <a
           class="nav-link-sidebar dropdown-toggle"
@@ -231,7 +231,7 @@
 
       <li
         class="nav-item-sidebar dropdown"
-        *ngIf="isAdministrador() || isDuena() || isTrabajador() || isCliente()"
+        *ngIf="authService.hasRole('administrador') || authService.hasRole('duena') || authService.hasRole('trabajador') || authService.hasRole('cliente')"
       >
         <a
           class="nav-link-sidebar dropdown-toggle"
@@ -245,7 +245,7 @@
           <span class="text">Gestionar Facturas</span>
         </a>
         <ul class="dropdown-menu" aria-labelledby="facturasDropdown">
-          <li *ngIf="isAdministrador() || isDuena()">
+          <li *ngIf="authService.hasRole('administrador') || authService.hasRole('duena')">
             <a
               class="dropdown-item"
               routerLink="/facturas/crear"
@@ -266,7 +266,7 @@
 
       <li
         class="nav-item-sidebar dropdown"
-        *ngIf="isAdministrador() || isDuena() || isProveedor()"
+        *ngIf="authService.hasRole('administrador') || authService.hasRole('duena') || authService.hasRole('proveedor')"
       >
         <a
           class="nav-link-sidebar dropdown-toggle"
@@ -288,12 +288,83 @@
               >Listar Proveedores</a
             >
           </li>
-          <li *ngIf="isAdministrador() || isDuena() ">
+          <li *ngIf="authService.hasRole('administrador') || authService.hasRole('duena')">
             <a
               class="dropdown-item"
               routerLink="/proveedores/registrar"
               routerLinkActive="active"
               >Registrar Proveedor</a
+            >
+          </li>
+          
+        </ul>
+      </li>
+      <!--    MENU DEL CLIENTE-->
+
+       <li
+        class="nav-item-sidebar dropdown"
+        *ngIf="authService.hasRole('Cliente')"
+      >
+        <a
+          class="nav-link-sidebar dropdown-toggle"
+          href="#"
+          id="pedidosDropdown"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <span class="icon">📝</span>
+          <span class="text">Gestionar Pedidos</span>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="pedidosDropdown">
+          <li>
+            <a
+              class="dropdown-item"
+              routerLink="/home/cliente/PedidosEnvios"
+              routerLinkActive="active"
+              >Listar Pedidos</a
+            >
+          </li>
+          <li *ngIf="authService.hasRole('cliente')">
+            <a
+              class="dropdown-item"
+              routerLink="/pedidos/crear"
+              routerLinkActive="active"
+              >Crear Pedido</a
+            >
+          </li>
+        </ul>
+      </li>
+      <li
+        class="nav-item-sidebar dropdown"
+        *ngIf="authService.hasRole('cliente')"
+      >
+        <a
+          class="nav-link-sidebar dropdown-toggle"
+          href="#"
+          id="enviosDropdown"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <span class="icon">🚚</span>
+          <span class="text">Gestionar Envíos</span>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="enviosDropdown">
+          <li>
+            <a
+              class="dropdown-item"
+              routerLink="/home/envios/listado"
+              routerLinkActive="active"
+              >Listar Envío</a
+            >
+          </li>
+          <li>
+            <a
+              class="dropdown-item"
+              routerLink="/envios/rastrear"
+              routerLinkActive="active"
+              >Registar envío</a
             >
           </li>
         </ul>
@@ -304,4 +375,3 @@
   <div class="sidebar-footer">
     <p>© 2025 CONEX</p>
   </div>
-</div>

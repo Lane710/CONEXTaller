@@ -1,0 +1,424 @@
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-white border-bottom-0">
+      <ul class="nav nav-pills card-header-pills" role="tablist">
+        <li class="nav-item">
+          <a
+            class="nav-link active"
+            id="pedidos-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#pedidos-content"
+            type="button"
+            role="tab"
+            aria-controls="pedidos-content"
+            aria-selected="true"
+          >
+            Pedidos
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="card-body">
+      <div class="tab-content">
+        <div
+          class="tab-pane fade show active"
+          id="pedidos-content"
+          role="tabpanel"
+          aria-labelledby="pedidos-tab"
+        >
+          <div
+            class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3"
+          >
+            <div class="input-group search-input-group">
+              <span
+                class="input-group-text rounded-start-pill border-end-0 bg-transparent"
+              >
+                <i class="bi bi-search"></i>
+              </span>
+              <input
+                type="text"
+                class="form-control border-start-0 rounded-end-pill"
+                placeholder="Buscar por número de pedido, artículo o tienda"
+                aria-label="Buscar"
+              />
+            </div>
+          </div>
+          <div *ngIf="pedidos.length > 0; else noPedidos">
+            <div
+              *ngFor="let pedido of pedidos"
+              class="card mb-3 shadow-sm border"
+            >
+              <div
+                class="card-header bg-light d-flex justify-content-between align-items-center"
+              >
+                <small class="text-muted"
+                  >Pedido #{{ pedido.idPedido }} -
+                  {{ pedido.fechaPedido | date : "mediumDate" }}</small
+                >
+                <div class="d-flex align-items-center">
+                  
+                  
+                </div>
+              </div>
+              <div class="card-body">
+                <div
+                  class="d-flex justify-content-between align-items-center flex-wrap"
+                >
+                  <div>
+                    <p class="mb-1">
+                      <span class="fw-bold">Usuario:</span>
+                      {{ pedido.username }}
+                    </p>
+                    <p class="mb-1">
+                      <span class="fw-bold">Fecha:</span>
+                      {{ pedido.fechaPedido | date : "short" }}
+                    </p>
+                    <p class="mb-1">
+                      <span class="fw-bold">Estado:</span>
+                      <span
+                        class="badge"
+                        [ngClass]="{
+                          'bg-success': pedido.estado === 'completado',
+                          'bg-warning text-dark': pedido.estado === 'pendiente',
+                          'bg-danger': pedido.estado === 'cancelado'
+                        }"
+                        >{{ pedido.estado | titlecase }}</span
+                      >
+                    </p>
+                    <p class="mb-0">
+                      <span class="fw-bold">Total:</span> Bs
+                      {{ pedido.totalPedido }}
+                    </p>
+                  </div>
+                  <div class="d-flex align-items-center mt-2 mt-md-0">
+                    <button
+                      class="btn btn-sm btn-outline-secondary me-2"
+                      (click)="prepararCancelacion(pedido)"
+                      data-bs-toggle="modal"
+                      data-bs-target="#confirmarCancelacionModal"
+                      [disabled]="pedido.estado === 'cancelado'"
+                    >
+                      Cancelar pedido
+                    </button>
+                    <button
+                      class="btn btn-sm btn-outline-info me-2"
+                      data-bs-toggle="modal"
+                      data-bs-target="#detalleEnvioModal"
+                      (click)="verEnvio(pedido.idPedido || 0)"
+                      [disabled]="pedido.estado === 'cancelado'"
+                    >
+                      Ver Envío
+                    </button>
+                    <button
+                      class="btn btn-sm btn-outline-primary"
+                      data-bs-toggle="modal"
+                      data-bs-target="#detallePedidoModal"
+                      (click)="verDetalles(pedido)"
+                    >
+                      Ver detalles
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ng-template #noPedidos>
+            <div class="text-center p-5">
+              <i class="bi bi-box-seam display-4 text-muted mb-3"></i>
+              <p class="text-muted">No hay pedidos para mostrar.</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="detalleEnvioModal"
+  tabindex="-1"
+  aria-labelledby="detalleEnvioModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content rounded-lg shadow-lg">
+      <div class="modal-header bg-light border-0 rounded-top-lg">
+        <h5
+          class="modal-title fw-bold text-primary"
+          id="detalleEnvioModalLabel"
+        >
+          <i class="bi bi-truck me-2 text-info"></i> Detalles del Envío
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body p-4 bg-white">
+        <div *ngIf="envioSeleccionado" class="container-fluid">
+          <div class="card mb-4 rounded-lg border-0 shadow-sm">
+            <div
+              class="card-header bg-info bg-opacity-10 text-info fw-bold d-flex align-items-center rounded-lg"
+            >
+              <i class="bi bi-info-circle-fill me-2"></i> Información del Envío
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <p class="mb-1 text-muted">Número de Envío</p>
+                  <p class="fw-bold">{{ envioSeleccionado.idEnvio }}</p>
+                </div>
+                <div class="col-md-6">
+                  <p class="mb-1 text-muted">Estado</p>
+                  <p class="fw-bold">
+                    <span
+                      class="badge ms-2 text-dark"
+                      [ngClass]="{
+                        'bg-info':
+                          envioSeleccionado.estado === 'En tránsito' ||
+                          envioSeleccionado.estado === 'Preparando pedido',
+                        'bg-success': envioSeleccionado.estado === 'Entregado',
+                        'bg-danger': envioSeleccionado.estado === 'Problema'
+                      }"
+                    >
+                      {{ envioSeleccionado.estado | titlecase }}
+                    </span>
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <p class="mb-1 text-muted">Empresa de Envío</p>
+                  <p class="fw-bold">{{ envioSeleccionado.empresaEnvio }}</p>
+                </div>
+                <div class="col-md-6">
+                  <p class="mb-1 text-muted">Código de Seguimiento</p>
+                  <p class="fw-bold">
+                    {{ envioSeleccionado.codigoSeguimiento }}
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <p class="mb-1 text-muted">Fecha de Entrega Estimada</p>
+                  <p class="fw-bold">
+                    {{
+                      envioSeleccionado.fechaEntregaEstimada
+                        | date : "mediumDate"
+                    }}
+                  </p>
+                </div>
+
+                <div class="col-12" *ngIf="envioSeleccionado.notas">
+                  <p class="mb-1 text-muted">Notas Adicionales</p>
+                  <p>{{ envioSeleccionado.notas }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card rounded-lg border-0 shadow-sm">
+            <div
+              class="card-header bg-info bg-opacity-10 text-info fw-bold d-flex align-items-center rounded-lg"
+            >
+              <i class="bi bi-geo-alt-fill me-2"></i> Dirección del Destinatario
+            </div>
+            <div class="card-body" *ngIf="envioSeleccionado.direccionEnvio">
+              <span class="fw-bold "
+                >Nombre de Destinatario:
+                </span
+              ><p class="mb-1">
+                {{ envioSeleccionado.direccionEnvio.nombreDestinatario }}
+                {{ envioSeleccionado.direccionEnvio.apellidosDestinatario }}
+              </p>
+              <p class="mb-1">
+                <span class="fw-bold">Calle:</span>
+                {{ envioSeleccionado.direccionEnvio.direccion }},
+                <span class="fw-bold">Barrio:</span>
+                {{ envioSeleccionado.direccionEnvio.barrio }}
+              </p>
+              <p class="mb-1">
+                <span class="fw-bold">Ciudad:</span>
+                {{ envioSeleccionado.direccionEnvio.ciudad }},
+                <span class="fw-bold">Provincia:</span>
+                {{ envioSeleccionado.direccionEnvio.provinciaEstado }}
+              </p>
+              <p class="mb-1">
+                <span class="fw-bold">Código Postal:</span>
+                {{ envioSeleccionado.direccionEnvio.codigoPostal }}
+              </p>
+              <p class="mb-1">
+                <span class="fw-bold">País:</span>
+                {{ envioSeleccionado.direccionEnvio.pais }}
+              </p>
+              <p class="mb-0 text-muted">
+                <span class="fw-bold">Teléfono:</span>
+                {{ envioSeleccionado.direccionEnvio.numeroTelefono }}
+              </p>
+            </div>
+            <div class="card-body" *ngIf="!envioSeleccionado.direccionEnvio">
+              <p>Dirección no disponible.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center" *ngIf="!envioSeleccionado">
+          <i class="bi bi-x-circle display-4 text-danger mb-3"></i>
+          <p class="text-muted">
+            No se encontraron detalles de envío para este pedido.
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer bg-light border-0 rounded-bottom-lg">
+        <button
+          type="button"
+          class="btn btn-secondary rounded-pill"
+          data-bs-dismiss="modal"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="detallePedidoModal"
+  tabindex="-1"
+  aria-labelledby="detallePedidoModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content rounded-lg shadow-lg">
+      <div
+        class="modal-header bg-primary bg-opacity-75 text-white border-0 rounded-top-lg"
+      >
+        <h5 class="modal-title fw-bold" id="detallePedidoModalLabel">
+          <i class="bi bi-receipt me-2"></i> Detalles del Pedido #{{
+            pedidoSeleccionado?.idPedido
+          }}
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body p-4 bg-white">
+        <div *ngIf="ListaDetallePedidoSelec.length > 0; else noDetalles">
+          <div class="list-group">
+            <div
+              *ngFor="let detalle of ListaDetallePedidoSelec"
+              class="list-group-item list-group-item-action d-flex align-items-center gap-3 mb-2 rounded-lg shadow-sm"
+            >
+              <img
+                src="https://placehold.co/80x80/e9ecef/212529?text=Producto"
+                alt="Imagen del producto"
+                class="img-fluid rounded-lg"
+                onerror="this.onerror=null; this.src='https://placehold.co/80x80/e9ecef/212529?text=Producto';"
+              />
+              <div
+                class="d-flex w-100 justify-content-between align-items-center"
+              >
+                <div>
+                  <h6 class="mb-1 fw-bold">{{ detalle.producto?.nombre }}</h6>
+                  <p class="mb-1 text-muted">
+                    Cantidad: {{ detalle.cantidad }}
+                  </p>
+                  <p class="mb-0 text-success fw-bold">
+                    Bs {{ detalle.producto?.precio }}
+                  </p>
+                </div>
+                <span class="fw-bold fs-5">Bs {{ detalle.subtotal }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ng-template #noDetalles>
+          <div class="text-center p-5">
+            <i class="bi bi-box display-4 text-muted mb-3"></i>
+            <p class="text-muted">
+              No se encontraron productos para este pedido.
+            </p>
+          </div>
+        </ng-template>
+      </div>
+      <div class="modal-footer bg-light border-0 rounded-bottom-lg">
+        <button
+          type="button"
+          class="btn btn-secondary rounded-pill"
+          data-bs-dismiss="modal"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="confirmarCancelacionModal"
+  tabindex="-1"
+  aria-labelledby="confirmarCancelacionModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-lg shadow-lg">
+      <div
+        class="modal-header bg-danger bg-opacity-75 text-white border-0 rounded-top-lg"
+      >
+        <h5 class="modal-title fw-bold" id="confirmarCancelacionModalLabel">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i> Confirmar
+          Cancelación
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body p-4 bg-white">
+        <div class="text-center mb-3">
+          <i class="bi bi-question-circle display-4 text-danger mb-3"></i>
+          <p class="fs-5 fw-bold text-dark">
+            ¿Estás seguro de que quieres cancelar este pedido?
+          </p>
+          <p class="text-muted">
+            Pedido #: {{ pedidoParaCancelar?.idPedido }}
+          </p>
+        </div>
+        <div *ngIf="pedidoParaCancelar" class="card border-danger bg-danger-subtle">
+          <div class="card-body">
+            <p class="mb-1 text-dark">
+              <span class="fw-bold">Fecha de Pedido:</span>
+              {{ pedidoParaCancelar.fechaPedido | date : "mediumDate" }}
+            </p>
+            <p class="mb-0 text-dark">
+              <span class="fw-bold">Monto Total:</span> Bs {{ pedidoParaCancelar.totalPedido }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer bg-light border-0 rounded-bottom-lg">
+        <button
+          type="button"
+          class="btn btn-secondary rounded-pill"
+          data-bs-dismiss="modal"
+        >
+          Cerrar
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger rounded-pill"
+          (click)="confirmarCancelacion()"
+          [disabled]="pedidoParaCancelar?.estado=='cancelado'"
+        >
+          Cancelar Pedido
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

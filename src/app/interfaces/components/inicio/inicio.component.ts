@@ -1,5 +1,3 @@
-// En tu ./inicio.component.ts
-
 import {
   Component,
   OnInit,
@@ -30,6 +28,7 @@ export class InicioComponent implements OnInit, AfterViewInit {
   currentIndex = 0;
   intervalId: any;
   usuarioValido: boolean = false;
+  errorMessage: string | null = null; // Variable para mostrar errores al usuario
 
   constructor(
     private router: Router,
@@ -103,41 +102,46 @@ export class InicioComponent implements OnInit, AfterViewInit {
   }
 
   ProductosConSuCategoria() {
-    this.stockPRoductService
-      .ProductoporCategoria(2, 3, 5)
-      .subscribe((response) => {
-        // Mapea los productos para añadir la propiedad anadidoAlCarrito
-        this.ListadoProductos1 = response.data.map((item: StockDTO) => ({ // <--- Aquí el cambio
-          ...item,
-          anadidoAlCarrito: false, // Inicializa en false
-        }));
-      });
-    this.stockPRoductService
-      .ProductoporCategoria(1, 6, 0)
-      .subscribe((response) => {
-        this.ListadoProductos2 = response.data.map((item: StockDTO) => ({ // <--- Aquí el cambio
-          ...item,
-          anadidoAlCarrito: false,
-        }));
-      });
-    this.stockPRoductService
-      .ProductoporCategoria(7, 8, 0)
-      .subscribe((response) => {
-        this.ListadoProductos3 = response.data.map((item: StockDTO) => ({ // <--- Aquí el cambio
-          ...item,
-          anadidoAlCarrito: false,
-        }));
-      });
-    this.stockPRoductService
-      .ProductoporCategoria(4, 9, 0)
-      .subscribe((response) => {
-        this.ListadoProductos4 = response.data.map((item: StockDTO) => ({ // <--- Aquí el cambio
-          ...item,
-          anadidoAlCarrito: false,
-        }));
-      });
-  }
+  // Sección 1: Computadoras
+  this.stockPRoductService
+    .ProductoporCategoria(2, 3,0)
+    .subscribe((response) => {
+      this.ListadoProductos1 = response.data.map((item: StockDTO) => ({
+        ...item,
+        anadidoAlCarrito: false,
+      }));
+    });
 
+  // Sección 2: Pantallas e Impresión
+  this.stockPRoductService
+    .ProductoporCategoria(4, 5,0)
+    .subscribe((response) => {
+      this.ListadoProductos2 = response.data.map((item: StockDTO) => ({
+        ...item,
+        anadidoAlCarrito: false,
+      }));
+    });
+
+  // Sección 3: Periféricos y Accesorios
+  this.stockPRoductService
+    .ProductoporCategoria(1, 6,0)
+    .subscribe((response) => {
+      this.ListadoProductos3 = response.data.map((item: StockDTO) => ({
+        ...item,
+        anadidoAlCarrito: false,
+      }));
+    });
+
+  // Sección 4: Conectividad y Componentes
+  this.stockPRoductService
+    .ProductoporCategoria(7, 8,0)
+    .subscribe((response) => {
+      this.ListadoProductos4 = response.data.map((item: StockDTO) => ({
+        ...item,
+        anadidoAlCarrito: false,
+      }));
+    });
+}
   paginateProducts(items: StockDTO[], itemsPerPage: number): StockDTO[][] {
     const result: StockDTO[][] = [];
     if (!items || items.length === 0) {
@@ -151,52 +155,51 @@ export class InicioComponent implements OnInit, AfterViewInit {
 
   AddProductCarrito(stockItem: StockDTO) {
     const usuarioId = localStorage.getItem('current_username');
+    this.errorMessage = null; // Limpiamos cualquier error anterior
 
     if(usuarioId==null || usuarioId==undefined || usuarioId==''){
-     const modalElement = document.getElementById('modalSesionRequerida');
+      const modalElement = document.getElementById('modalSesionRequerida');
 
         if (modalElement) {
-            const modal = new bootstrap.Modal(modalElement);
-            modal.show();
+          const modal = new bootstrap.Modal(modalElement);
+          modal.show();
 
-            // Opcional: Manejar los botones dentro de esta misma función
-            const btnIrLogin = document.getElementById('btnIrLogin');
-            if (btnIrLogin) {
-                btnIrLogin.onclick = () => {
-                    modal.hide();
-                    this.router.navigate(['/login']); // Asume que tienes el Router inyectado
-                };
-            }
+          // Opcional: Manejar los botones dentro de esta misma función
+          const btnIrLogin = document.getElementById('btnIrLogin');
+          if (btnIrLogin) {
+            btnIrLogin.onclick = () => {
+              modal.hide();
+              this.router.navigate(['/login']); // Asume que tienes el Router inyectado
+            };
+          }
 
-            const btnOkModal = document.getElementById('btnOkModal');
-            if (btnOkModal) {
-                btnOkModal.onclick = () => {
-                    modal.hide();
-                };
-            }
+          const btnOkModal = document.getElementById('btnOkModal');
+          if (btnOkModal) {
+            btnOkModal.onclick = () => {
+              modal.hide();
+            };
+          }
         }
     }else{
+      const request: AgregarDetalleCarritoRequest = {
+        producto: {
+          idProducto: stockItem.producto.idProducto,
+        },
+        cantidad: 1,
+        precioUnitario: parseFloat(stockItem.producto.precio),
+      };
 
-    
-    const request: AgregarDetalleCarritoRequest = {
-      producto: {
-        idProducto: stockItem.producto.idProducto,
-      },
-      cantidad: 1,
-      precioUnitario: parseFloat(stockItem.producto.precio),
-    };
-
-    this.carritoService.agregarProductoACarrito(usuarioId, request).subscribe({
-      next: (response) => {
-        console.log('Producto agregado al carrito con éxito:');
-        stockItem.anadidoAlCarrito = true;
-      },
-      error: (error) => {
-        console.error('Error al agregar producto al carrito:', error);
-        alert('Hubo un problema al añadir el producto al carrito.');
-      },
-    });
-  }
+      this.carritoService.agregarProductoACarrito(usuarioId, request).subscribe({
+        next: (response) => {
+          console.log('Producto agregado al carrito con éxito:');
+          stockItem.anadidoAlCarrito = true;
+        },
+        error: (error) => {
+          console.error('Error al agregar producto al carrito:', error);
+          this.errorMessage = 'Hubo un problema al añadir el producto al carrito. Inténtalo de nuevo.';
+        },
+      });
+    }
   }
 
   Details(prodcut: StockDTO) {

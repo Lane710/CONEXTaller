@@ -5,18 +5,46 @@ import { ApiResponse } from '../../models/api-response';
 import { pedidos } from '../../models/PedidosEnviosDetalles/pedidos';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PedidosService {
-  private Url= 'http://localhost:8080/pedidos/';
+  private Url = 'http://localhost:8080/pedidos/';
 
-  constructor( private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  finAll():Observable<ApiResponse> {
+  finAll(): Observable<ApiResponse> {
     return this.http.get<ApiResponse>(`${this.Url}findAll`);
   }
 
-  save(pedido:pedidos):Observable<ApiResponse>{
-    return this.http.post<ApiResponse>(`${this.Url}save`,pedido);
+  save(pedido: pedidos): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.Url}save`, pedido);
+  } // Nuevo método para actualizar el estado del pedido
+
+  actualizarEstado(id: number, nuevoEstado: string): Observable<ApiResponse> {
+    // La URL debe coincidir con el endpoint de tu backend:
+    // http://localhost:8080/pedidos/actualizarEstado/{id}/{nuevoEstado}
+    return this.http.put<ApiResponse>(
+      `${this.Url}actualizarEstado/${id}/${nuevoEstado}`,
+      {}
+    );
+  } // Nuevo método para obtener la lista de pedidos por nombre de usuario
+  getListadoProductosPorPedidoUsuario(
+    username: string
+  ): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(
+      `${this.Url}ListadoProductosPorPedidoUsuario/${username}`
+    );
+  }
+
+  //modfiicar estado del productod de detalle pedido
+  modificarEstado(id: string, estado: string) {
+    return this.http.put<ApiResponse>(
+      `${this.Url}updateEstado/${id}/${estado}`,
+      {}    
+    );
+  }
+
+  update(id:number,pedido:pedidos){
+    return this.http.put<ApiResponse>(`${this.Url}updateById/${id}`,pedido)
   }
 }

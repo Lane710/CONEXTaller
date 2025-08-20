@@ -26,6 +26,7 @@ export class UsuariosService {
   private apiUrlRoles = 'http://localhost:8080/roles/';
   private loginAuthUrl = 'http://localhost:8080/user/'; // Asegúrate de que esta ruta sea correcta para tu login
 
+  
   constructor(private http: HttpClient) {}
 
   findAll(): Observable<ApiResponse> {
@@ -66,6 +67,9 @@ export class UsuariosService {
       .post<LoginResponse>(`${this.loginAuthUrl}login`, credentials)
       .pipe(
         tap((response) => {
+          localStorage.setItem('usuario_actual', response.Usuario + '');
+        localStorage.setItem('current_username', response.Usuario+'');
+        localStorage.setItem('jwt_token',response.token);
         })
       );
   }

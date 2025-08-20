@@ -1,10 +1,13 @@
+<!-- La estructura del formulario es la misma que proporcionaste, lo cual es correcto. -->
+<!-- La validación se gestiona en el componente .ts a través de los IDs de cada input. -->
+
 <div class="container">
   <div class="alert-warning-top">
     NOTA: No hacer pedidos de "prueba", la administración puede banear tu IP y
     ya no tendrías acceso a la tienda en un futuro.
   </div>
 
-  <form  class="datos-cliente-form">
+  <form class="datos-cliente-form">
     <div class="row">
       <div class="col-md-7 datoscliente">
         <h5 class="section-title">Detalles de facturación</h5>
@@ -13,16 +16,16 @@
             <label for="nombre" class="form-label"
               >Nombre <span class="text-danger">*</span></label
             >
-            <input type="text" class="form-control" id="nombre" required />
+            <input type="text" class="form-control" id="nombre" />
           </div>
           <div class="col-md-6">
             <label for="apellidos" class="form-label"
               >Apellidos <span class="text-danger">*</span></label
             >
-            <input type="text" class="form-control" id="apellidos" required />
+            <input type="text" class="form-control" id="apellidos" />
           </div>
           <div class="col-12">
-            <label for="paisRegion" class="form-label">País / Región</label>
+            <label for="paisRegion" class="form-label">País</label>
             <input
               type="text"
               class="form-control"
@@ -40,14 +43,13 @@
               class="form-control"
               id="direccionCalle"
               placeholder="House number and street name"
-              required
             />
             <div class="form-text">
               Velgrano, Espana, Av. la paz y circumbalacion, etc.
             </div>
           </div>
           <div class="col-12">
-            <label for="Barrio" class="form-label"
+            <label for="barrio" class="form-label"
               >Barrio <span class="text-danger">*</span></label
             >
             <input
@@ -55,26 +57,14 @@
               class="form-control"
               id="barrio"
               placeholder="House number and street name"
-              required
             />
             <div class="form-text">Juan 23, Tablada grande, Senac, etc.</div>
-          </div>
-          <div class="col-12">
-            <label for="ciudadProvincia" class="form-label"
-              >Provincia <span class="text-danger">*</span></label
-            >
-            <input
-              type="text"
-              class="form-control"
-              id="ciudadProvincia"
-              required
-            />
           </div>
           <div class="col-12">
             <label for="departamento" class="form-label"
               >Departamento <span class="text-danger">*</span></label
             >
-            <select class="form-select" id="departamento" required>
+            <select class="form-select" id="departamento">
               <option value="Tarija" selected>Tarija</option>
             </select>
           </div>
@@ -82,14 +72,21 @@
             <label for="whatsapp" class="form-label"
               >WhatsApp <span class="text-danger">*</span></label
             >
-            <input type="tel" class="form-control" id="whatsapp" required />
+            <input
+              id="whatsapp"
+              type="number"
+              class="form-control"
+              required
+              pattern="[0-9]*"
+              inputmode="numeric"
+            />
           </div>
           <div class="col-12">
             <label for="email" class="form-label"
               >Dirección de correo electrónico
               <span class="text-danger">*</span></label
             >
-            <input type="email" class="form-control" id="email" required />
+            <input type="email" class="form-control" id="email" />
           </div>
         </div>
       </div>
@@ -121,6 +118,7 @@
             </tr>
           </thead>
           <tbody>
+            <!-- Aquí se mantienen las directivas de Angular para que el template funcione -->
             <tr *ngFor="let item of detallesCarrito">
               <td>
                 {{ item.producto.nombre }} &times; {{ item.cantidad }}
@@ -145,97 +143,130 @@
       </div>
     </div>
 
-   <div class="seleccionTarjetaQRPagoEntrega">
-  
-  <div class="payment-option mb-3">
-    <div class="form-check">
-      <input
-        class="form-check-input"
-        type="radio"
-        name="paymentMethod"
-        id="transferenciaBancaria"
-        (change)="onPaymentMethodChange('transferenciaBancaria')"
-        [checked]="seleccionMetodoPago === 'transferenciaBancaria'"
-      />
-      <label class="form-check-label" for="transferenciaBancaria">
-        Transferencia Bancaria Directa
-      </label>
-    </div>
-    <div *ngIf="seleccionMetodoPago === 'transferenciaBancaria'" class="payment-instructions mt-3">
-      Realiza tu pago directamente a una de nuestras cuentas bancarias. Por
-      favor usa la referencia del pedido como referencia de pago.
-      <ul>
-        <li>
-          Si estas en la Ciudad de Santa Cruz puedes hacer la transferencia
-          bancaria al momento de recibir tu paquete
-        </li>
-        <li>
-          Si estas en otro departamento el pedido no será enviado hasta que
-          el pago completo haya sido recibido (costo de envió por pagar)
-        </li>
-      </ul>
-      <strong>PARA TOMAR EN CUENTA</strong>
-      <ul>
-        <li>
-          Se recibe pedidos únicamente hasta las 6:00PM para hacer envíos
-          locales en Santa Cruz o las demás ciudades ese mismo día del
-          pedido (pedidos después de las 6:00 PM se enviaran al día
-          siguiente)
-        </li>
-        <li>
-          Todos los pedidos se comienzan a repartir después de las 6:00 PM
-        </li>
-      </ul>
-    </div>
-  </div>
+    <div class="seleccionTarjetaQRPagoEntrega">
+      <div class="payment-option mb-3">
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="radio"
+            name="paymentMethod"
+            id="transferenciaBancaria"
+            (change)="onPaymentMethodChange('transferenciaBancaria')"
+            [checked]="seleccionMetodoPago === 'transferenciaBancaria'"
+          />
+          <label class="form-check-label" for="transferenciaBancaria">
+            Transferencia Bancaria Directa
+          </label>
+        </div>
+        <div
+          *ngIf="seleccionMetodoPago === 'transferenciaBancaria'"
+          class="payment-instructions mt-3"
+        >
+          Realiza tu pago directamente a una de nuestras cuentas bancarias. Por
+          favor usa la referencia del pedido como referencia de pago.
+          <ul>
+            <li>
+              Si estas en la Ciudad de Tarija puedes hacer la transferencia
+              bancaria al momento de recibir tu paquete
+            </li>
+            <!--<li>
+              Si estas en otro departamento el pedido no será enviado hasta que
+              el pago completo haya sido recibido (costo de envió por pagar)
+            </li>-->
+          </ul>
+          <strong>PARA TOMAR EN CUENTA</strong>
+          <ul>
+            <li>
+              Se recibe pedidos únicamente hasta las 6:00PM para hacer envíos
+              locales en Tarija (pedidos después de las 6:00 PM se enviaran al día
+              siguiente)
+            </li>
+            <li>
+              Todos los pedidos se comienzan a repartir después de las 8:00 AM
+            </li>
+          </ul>
+        </div>
+      </div>
 
-  <div class="payment-option mb-3">
-    <div class="form-check">
-      <input
-        class="form-check-input"
-        type="radio"
-        name="paymentMethod"
-        id="pagarTarjetaCredito"
-        (change)="onPaymentMethodChange('pagarTarjetaCredito')"
-        [checked]="seleccionMetodoPago === 'pagarTarjetaCredito'"
-      />
-      <label class="form-check-label" for="pagarTarjetaCredito">
-        Pagar con Tarjeta de Crédito o Débito
-        <span class="card-icons">
-          <img src="https://img.icons8.com/color/48/000000/visa.png" alt="Visa" />
-          <img src="https://img.icons8.com/color/48/000000/mastercard.png" alt="Mastercard" />
-         
-          <img src="https://img.icons8.com/color/48/000000/discover.png" alt="Discover" />
-        </span>
-      </label>
+      <div class="payment-option mb-3">
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="radio"
+            name="paymentMethod"
+            id="pagoEntrega"
+            (change)="onPaymentMethodChange('pagoEntrega')"
+            [checked]="seleccionMetodoPago === 'pagoEntrega'"
+          />
+          <label class="form-check-label" for="pagoEntrega">
+            Pago en entrega
+          </label>
+        </div>
+        <div
+          *ngIf="seleccionMetodoPago === 'pagoEntrega'"
+          class="payment-instructions mt-3"
+        >
+          <p>
+            Paga en efectivo al momento de recibir tu pedido. Esta opción solo
+            está disponible para entregas en la Ciudad de Tarija.
+          </p>
+        </div>
+      </div>
     </div>
-    <div *ngIf="seleccionMetodoPago === 'pagarTarjetaCredito'" class="payment-instructions mt-3">
-      <p>Serás redirigido a una página de pago seguro para completar tu compra con tarjeta de crédito o débito.</p>
-    </div>
-  </div>
 
-  <div class="payment-option mb-3">
-    <div class="form-check">
-      <input
-        class="form-check-input"
-        type="radio"
-        name="paymentMethod"
-        id="pagoEntrega"
-        (change)="onPaymentMethodChange('pagoEntrega')"
-        [checked]="seleccionMetodoPago === 'pagoEntrega'"
-      />
-      <label class="form-check-label" for="pagoEntrega">
-        Pago en entrega
-      </label>
-    </div>
-    <div *ngIf="seleccionMetodoPago === 'pagoEntrega'" class="payment-instructions mt-3">
-      <p>Paga en efectivo al momento de recibir tu pedido. Esta opción solo está disponible para entregas en la Ciudad de Tarija.</p>
-    </div>
-  </div>
-</div>
-    <div id="errorContainer" class="mt-3 alert alert-danger" role="alert" style="display:none;">
-  </div>
+    <!-- Este es el div donde se mostrarán los mensajes de error. -->
+    <div
+      id="errorContainer"
+      class="mt-3 alert alert-danger"
+      role="alert"
+      style="display: none"
+    ></div>
 
-    <button class="btn btn-primary" type="button" (click)="DatosDelCLiente()">Realizar Pedido</button>
+    <!-- El botón ahora se deshabilitará si no hay productos en el carrito. -->
+    <button
+      class="btn btn-primary"
+      type="button"
+      (click)="DatosDelCLiente()"
+      [disabled]="!detallesCarrito || detallesCarrito.length === 0"
+    >
+      Realizar Pedido
+    </button>
   </form>
 </div>
+
+<div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="modalExitoLabel">Pedido Exitoso ✅</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>¡Gracias por tu compra! Tu pedido se ha realizado con éxito.</p>
+        <p>Revisa tu correo electrónico para más detalles.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalError" tabindex="-1" aria-labelledby="modalErrorLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalErrorLabel">Error al Realizar el Pedido ❌</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Ha ocurrido un problema al procesar tu pedido. Por favor, inténtalo de nuevo.</p>
+        <p>Si el problema persiste, contacta con soporte técnico.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+

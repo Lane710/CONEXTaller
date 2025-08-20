@@ -19,4 +19,8 @@ export class ClientesService {
   save(cliente:clientes): Observable<ApiResponse> {
       return this.http.post<ApiResponse>(`${this.apiUrl}save`,cliente);
     }
+    update(cliente:clientes): Observable<ApiResponse> {
+      console.log('Actualizando cliente:', cliente.idCliente);
+      return this.http.put<ApiResponse>(`${this.apiUrl}updateById/${cliente.idCliente}`,cliente);
+    }
 }

@@ -155,13 +155,13 @@
                 </span>
               </td>
               <td data-label="Acciones" class="actions-column">
-                <button class="btn btn-info btn-sm me-1" (click)="verDetallesUsuario(user)">
+                <button class="btn  btn-sm me-1" (click)="verDetallesUsuario(user)">
                   <img
                     src="/icon_Productos/Listar/ver_observar.svg"
                     style="width: 30px; height: 30px; vertical-align: middle"
                   />
                 </button>
-                <button class="btn btn-warning btn-sm me-1" (click)="goToModifyUser(user.username)">
+                <button class="btn  btn-sm me-1" (click)="goToModifyUser(user.username)">
                   <img
                     src="/icon_Productos/Listar/Modificar.svg"
                     alt=""
@@ -169,7 +169,7 @@
                   />
                 </button>
                 <button
-                  [class]="user.estado === 1 ? 'btn btn-danger btn-sm' : 'btn btn-success btn-sm'"
+                  [class]="user.estado === 1 ? 'btn btn-sm' : 'btn  btn-sm'"
                   (click)="abrirModalConfirmacionUsuario(user)"
                 >
                   <img

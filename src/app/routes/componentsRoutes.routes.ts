@@ -5,6 +5,7 @@ import { productsRoutes } from './productsRoutes.routes';
 import { userRoutes } from './userRoutes.routes';
 import { ventasOnline } from './ventasOnline.routes';
 import { ventasStore } from './ventasStore.routes';
+import { clients } from './Client/client.routes';
 
 
 // Importa las rutas de los otros módulos
@@ -19,5 +20,6 @@ export const componentsRoutes: Routes = [
   ...productsRoutes,
   ...userRoutes,
   ...ventasOnline,
-  ...ventasStore
+  ...ventasStore,
+  ...clients
 ];

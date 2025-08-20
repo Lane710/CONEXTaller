@@ -74,7 +74,8 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.isLoading = false;
         this.successMessage = response.message || 'Inicio de sesión exitoso.';
         localStorage.setItem('usuario_actual', response.Usuario + '');
-
+        localStorage.setItem('current_username', response.Usuario+'');
+        localStorage.setItem('jwt_token',response.token);
         // El token y el ID de usuario ya se guardaron en localStorage dentro de UsuariosService.login()
         if (response && response.token) {
           // Redirige al usuario a la página principal o dashboard

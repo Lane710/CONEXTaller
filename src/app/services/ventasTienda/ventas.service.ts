@@ -27,7 +27,11 @@ export class VentasService {
     );
   }
 
-  findById(idVenta: number): Observable<ApiResponse> {
+  findById(idVenta: string): Observable<ApiResponse> {
     return this.http.get<ApiResponse>(`${this.apiUrl}findById/${idVenta}`);
+  }
+
+  update(venta: ventas): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(`${this.apiUrl}updateById/${venta.idVenta}`, venta);
   }
 }

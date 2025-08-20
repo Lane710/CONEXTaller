@@ -6,7 +6,6 @@ import { DetalleCarritoProducto } from '../../../DTOs/Cart/DetalleCarritoProduct
 import { CarritoService } from '../../../services/CartServis/carrito.service';
 import { NgFor, NgIf } from '@angular/common';
 import { PedidosService } from '../../../services/PedidosEnviosDetalles/pedidos.service';
-import { ReturnStatement } from '@angular/compiler';
 import { pedidos } from '../../../models/PedidosEnviosDetalles/pedidos';
 import { detallePedido } from '../../../models/PedidosEnviosDetalles/detallePedido';
 import { stock } from '../../../models/ProductoStockModel/stock';
@@ -16,34 +15,39 @@ import { DetalleEnviosService } from '../../../services/PedidosEnviosDetalles/de
 import { envios } from '../../../models/PedidosEnviosDetalles/envios';
 import { direccionesEnvio } from '../../../models/PedidosEnviosDetalles/direccionesEnvio';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
+import { StockService } from '../../../services/ProductosServis/stock.service';
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-datos-cliente',
+  standalone: true, // Asegúrate de que esto está en true
   imports: [NgFor, NgIf],
   templateUrl: './datos-cliente.component.html',
   styleUrl: './datos-cliente.component.css',
 })
 export class DatosClienteComponent implements OnInit {
-  //Variables Globales
+  // Variables Globales
   username: string = localStorage.getItem('current_username') || '';
   detallesCarrito: DetalleCarritoProducto[] = [];
-  subtotalCarrito: string = '0.00'; // Inicializa como string
-  totalCarrito: string = '0.00'; // Inicializa como string
+  subtotalCarrito: string = '0.00';
+  totalCarrito: string = '0.00';
   productosCarrio: DetalleCarritoProducto[] = [];
+
   pedido: pedidos = {
-    //variable para guardar los datos pedido
+    // Variable para guardar los datos del pedido
     username: '',
     idFormaPago: 0,
+    totalPedido: '', // Agregado totalPedido aquí
+    estado: 'pendiente',
+    notas: '',
   };
-  detallePedido: detallePedido = {
-    pedido: this.pedido,
-    cantidad: 0,
-    precioUnitario: '',
-    subtotal: '',
-  };
+
   envio: envios = {
     idPedido: 0,
-    idDireccionEnvio: undefined,
+    direccionEnvio: undefined,
     idMetodoEnvio: 0,
     nombreReceptor: '',
     apellidosReceptor: '',
@@ -52,6 +56,7 @@ export class DatosClienteComponent implements OnInit {
     empresaEnvio: '',
     notas: '',
   };
+
   direccionEnvio: direccionesEnvio = {
     username: '',
     nombreDestinatario: '',
@@ -65,35 +70,33 @@ export class DatosClienteComponent implements OnInit {
     numeroTelefono: '',
     emailDestinatario: '',
   };
-  seleccionMetodoPago: string = 'transferenciaBancaria'; // Para el control de los radio buttons
 
-  //cONSTRUCTOR
+  seleccionMetodoPago: string = 'transferenciaBancaria';
+
   constructor(
     private carritoService: CarritoService,
     private PedidosS: PedidosService,
     private detallePedidoS: DetallePedidosService,
     private enviosS: EnviosService,
-    private direccionEnvioS: DetalleEnviosService
+    private direccionEnvioS: DetalleEnviosService,
+    private router: Router,
+    private stockService: StockService
   ) {}
 
   ngOnInit(): void {
     this.cargarProductoCarrito();
   }
-// Aquí puedes agregar métodos para manejar los datos del cliente, como guardar cambios, etc.
+
   cargarProductoCarrito(): void {
-    console.log(`Cargando datos del cliente para el usuario: ${this.username}`);
     this.carritoService.listarProductosDeUsuario(this.username).subscribe({
       next: (response: ApiResponse) => {
         if (response.success) {
           const rawDetalles: RawDetalleCarritoProducto[] =
             response.data as RawDetalleCarritoProducto[];
-
-          // Mapea y transforma los datos, asegurando que los campos monetarios sean 'string'
           this.detallesCarrito = rawDetalles.map(
             (item: RawDetalleCarritoProducto) => {
               return {
                 ...item,
-                // Convertimos a Decimal para asegurar la precisión y luego de vuelta a string
                 precioUnitario: new Decimal(item.precioUnitario).toString(),
                 subtotal: new Decimal(item.subtotal).toString(),
                 producto: {
@@ -103,253 +106,231 @@ export class DatosClienteComponent implements OnInit {
               };
             }
           );
-
-          console.log(
-            'Productos del carrito (transformados a string para visualización):',
-            this.detallesCarrito
-          );
-          this.calcularTotales(); // Calcula los totales después de cargar y transformar los datos
+          this.productosCarrio = [...this.detallesCarrito];
+          this.calcularTotales();
         } else {
-          console.error(
-            'Error al listar productos del carrito:',
-            response.message
-          );
-          this.detallesCarrito = []; // Vacía el carrito en caso de error
-          this.calcularTotales(); // Reinicia los totales
+          console.error('Error al listar productos del carrito:', response.message);
+          this.detallesCarrito = [];
+          this.calcularTotales();
         }
       },
       error: (error) => {
         console.error('Error en la solicitud HTTP al listar productos:', error);
-        this.detallesCarrito = []; // Vacía el carrito en caso de error de red
-        this.calcularTotales(); // Reinicia los totales
+        this.detallesCarrito = [];
+        this.calcularTotales();
       },
     });
   }
+
   calcularTotales(): void {
     let subtotalCalculado = new Decimal(0);
-
     this.detallesCarrito.forEach((item) => {
-      // Suma los subtotales. item.subtotal es un string, lo convertimos a Decimal para la suma.
       subtotalCalculado = subtotalCalculado.plus(new Decimal(item.subtotal));
     });
-
-    this.subtotalCarrito = subtotalCalculado.toString(); // Almacena el resultado como string
-    this.totalCarrito = subtotalCalculado.toString(); // Asumiendo envío gratis por ahora, también como string
+    this.subtotalCarrito = subtotalCalculado.toString();
+    this.totalCarrito = subtotalCalculado.toString();
   }
 
-  //Recuperar datos del pedido para el cliente
   DatosDelCLiente() {
-    //Sacar los datos del cliente poara el envio y pedido
-    let inputNombre = document.getElementById('nombre') as HTMLInputElement;
-    let apellidosInput = document.getElementById(
-      'apellidos'
-    ) as HTMLInputElement;
-    let paisRegionInput = document.getElementById(
-      'paisRegion'
-    ) as HTMLInputElement;
-    let direccionCalleInput = document.getElementById(
-      'direccionCalle'
-    ) as HTMLInputElement;
-    let barrioInput = document.getElementById('barrio') as HTMLInputElement;
-    let ciudadProvinciaInput = document.getElementById(
-      'ciudadProvincia'
-    ) as HTMLInputElement;
-    let departamentoInput = document.getElementById(
-      'departamento'
-    ) as HTMLInputElement;
-    let numeroTelefonoInput = document.getElementById(
-      'whatsapp'
-    ) as HTMLInputElement;
-    let emailInput = document.getElementById('email') as HTMLInputElement;
-    let notasPedidoInput = document.getElementById(
-      'notasPedido'
-    ) as HTMLTextAreaElement;
+    // 1. Oculta cualquier mensaje de error previo
+    const errorContainer = document.getElementById('errorContainer');
+    if (errorContainer) {
+      errorContainer.style.display = 'none';
+    }
 
-    //Sacar el tipo de pago que selecciona el cliente
+    // 2. Extrae y valida los valores del formulario (código omitido para brevedad, asumiendo que funciona)
+    const inputNombre = document.getElementById('nombre') as HTMLInputElement;
+    const apellidosInput = document.getElementById('apellidos') as HTMLInputElement;
+    const paisRegionInput = document.getElementById('paisRegion') as HTMLInputElement;
+    const direccionCalleInput = document.getElementById('direccionCalle') as HTMLInputElement;
+    const barrioInput = document.getElementById('barrio') as HTMLInputElement;
+    const departamentoInput = document.getElementById('departamento') as HTMLInputElement;
+    const numeroTelefonoInput = document.getElementById('whatsapp') as HTMLInputElement;
+    const emailInput = document.getElementById('email') as HTMLInputElement;
+    const notasPedidoInput = document.getElementById('notasPedido') as HTMLTextAreaElement;
 
-    //sacar los datos del pedido
-    const datosDelPedido = {
-      nombre: inputNombre.value,
-      apellidos: apellidosInput.value,
-      paisRegion: paisRegionInput.value,
-      direccionCalle: direccionCalleInput.value,
-      barrio: barrioInput.value,
-      ciudadProvincia: ciudadProvinciaInput.value,
-      departamento: departamentoInput.value,
-      numeroTelefonico: numeroTelefonoInput.value,
-      email: emailInput.value,
-      notasPedido: notasPedidoInput.value,
-      idFormaPago: this.seleecionadoMetodoPago(),
-    };
+    // 3. Realiza la validación de los campos obligatorios
+    if (!inputNombre.value || !apellidosInput.value || !direccionCalleInput.value || !barrioInput.value || !departamentoInput.value || !numeroTelefonoInput.value || !this.validarEmail(emailInput.value)) {
+      this.mesagesErrores('Por favor, completa todos los campos obligatorios correctamente.', null);
+      return;
+    }
 
-    //guardado del pedido
+    // 4. Configurar los objetos de pedido, dirección y envío
+    const idFormaPagoSeleccionada = this.seleecionadoMetodoPago();
+
     this.pedido = {
       username: this.username,
-      idFormaPago: datosDelPedido.idFormaPago,
-      notas: datosDelPedido.notasPedido,
-      estado: 'pendiente',
-    };
-    //datos de envio
-    this.envio = {
-      idMetodoEnvio: 1, // Asigna el valor adecuado según tu lógica
-      nombreReceptor: inputNombre.value,
-      apellidosReceptor: apellidosInput.value,
-      telefonoReceptor: numeroTelefonoInput.value,
-      emailReceptor: emailInput.value,
-      empresaEnvio: 'falta', // Asigna el valor adecuado si tienes este dato
+      idFormaPago: idFormaPagoSeleccionada,
       notas: notasPedidoInput.value,
+      estado: 'pendiente',
+      totalPedido: this.totalCarrito, // Se asigna el total calculado del carrito aquí
     };
-    //captura de datos de direccion envio
+
     this.direccionEnvio = {
       username: this.username,
       nombreDestinatario: inputNombre.value,
       apellidosDestinatario: apellidosInput.value,
       direccion: direccionCalleInput.value,
       barrio: barrioInput.value,
-      ciudad: ciudadProvinciaInput.value,
+      ciudad: 'Cercado',
       provinciaEstado: departamentoInput.value,
-      codigoPostal: '0000', // Puedes agregar otro input si tienes este dato
+      codigoPostal: '0000',
       pais: paisRegionInput.value,
       numeroTelefono: numeroTelefonoInput.value,
       emailDestinatario: emailInput.value,
     };
-    //guardado del pedido
-    this.PedidosS.save(this.pedido).subscribe({
-      next: (pedidoGuardado: ApiResponse) => {
-        this.pedido.idPedido = pedidoGuardado.data;
-        //registro de los detalles del pedidos
-        this.carritoService.listarProductosDeUsuario(this.username).subscribe({
-          next: (productoCarrio: ApiResponse) => {
-            this.productosCarrio = productoCarrio.data;
-            console.log(this.productosCarrio);
-            for (const stock of this.productosCarrio) {
-              const nuevoDetallePedido: detallePedido = {
-                pedido: this.pedido,
-                producto: stock.producto,
-                cantidad: stock.cantidad, // o la cantidad real del carrito
-                precioUnitario: stock.precioUnitario,
-                subtotal: stock.subtotal,
-              };
-              console.log(nuevoDetallePedido);
-              this.detallePedidoS.save(nuevoDetallePedido).subscribe({
-                next: (response: ApiResponse) => {
-                  console.log(response.data);
-                },
-                error: (err: HttpErrorResponse) => {
-                  console.log(
-                    'error en el resgistro del detalle del pedido',
-                    err
-                  );
-                  this.mesagesErrores(
-                    'Fallo al realizar el guardado del detalle del Pedido vuelve a intentarlo',
-                    err
-                  );
-                },
-              });
-            }
-          },
-          error: (err: HttpErrorResponse) => {
-            console.log('error en el listado del carrito', err);
-            this.mesagesErrores(
-              'Fallo en el listado de los productos de su carrito, regrese al carrito',
-              err
-            );
-          },
-        });
 
-        this.direccionEnvioS.save(this.direccionEnvio).subscribe({
-          next: (guardadoDireccionE: ApiResponse) => {
-            console.log('direccion de envio', guardadoDireccionE.data);
-            this.envio.idDireccionEnvio = guardadoDireccionE.data;
-            this.envio.idPedido = pedidoGuardado.data;
-            this.enviosS.save(this.envio).subscribe({
-              next: (response: ApiResponse) => {
-                const form = document.querySelector(
-                  '.datos-cliente-form'
-                ) as HTMLFormElement;
-                if (form) {
-                  form.reset(); // Limpia todos los campos del formulario
-                }
-                //eliminacion de los productos del carrito
-                this.limpiarCarrito();
-              },
-              error: (err: HttpErrorResponse) => {
-                console.log('error en el resgistro del envio', err);
-                this.mesagesErrores(
-                  'Fallo al realizar el guardado del Envio vuelve a intentarlo',
-                  err
+    this.envio = {
+      idPedido: undefined,
+      direccionEnvio: undefined,
+      idMetodoEnvio: 1, // Asigna el valor adecuado
+      nombreReceptor: inputNombre.value,
+      apellidosReceptor: apellidosInput.value,
+      telefonoReceptor: numeroTelefonoInput.value,
+      emailReceptor: emailInput.value,
+      empresaEnvio: 'falta',
+      notas: notasPedidoInput.value,
+      estado: 'Preparando pedido',
+      
+    };
+
+    // 5. Encadenar las llamadas de forma secuencial
+    this.PedidosS.save(this.pedido)
+      .pipe(
+        // 1. Guardar el pedido y obtener su ID
+        switchMap((pedidoGuardado: ApiResponse) => {
+          if (!pedidoGuardado.success || !pedidoGuardado.data) {
+            throw new Error('Error al guardar el pedido principal.');
+          }
+          this.pedido.idPedido = pedidoGuardado.data as number;
+          this.envio.idPedido = this.pedido.idPedido; // Asigna el ID del pedido al objeto de envío
+          console.log(`Pedido guardado con ID: ${this.pedido.idPedido}`);
+
+          // 2. Guardar la dirección de envío
+          return this.direccionEnvioS.save(this.direccionEnvio);
+        }),
+        // 3. Guardar el envío
+        switchMap((direccionGuardada: ApiResponse) => {
+          if (!direccionGuardada.success || !direccionGuardada.data) {
+            throw new Error('Error al guardar la dirección de envío.');
+          }
+          this.envio.direccionEnvio = direccionGuardada.data;
+          console.log(`Dirección de envío guardada con ID: ${this.envio.direccionEnvio}`);
+          return this.enviosS.save(this.envio);
+        }),
+        // 4. Guardar los detalles del pedido y actualizar el stock
+        switchMap((envioGuardado: ApiResponse) => {
+          if (!envioGuardado.success || !envioGuardado.data) {
+            throw new Error('Error al guardar el envío.');
+          }
+          console.log(`Envío guardado con ID: ${envioGuardado.data}`);
+
+          const operacionesDetalleYStock = this.detallesCarrito.map(item => {
+            const nuevoDetallePedido: detallePedido = {
+              pedido:this.pedido, // Usamos solo el ID del pedido
+              producto: item.producto,
+              cantidad: item.cantidad,
+              precioUnitario: item.precioUnitario,
+              subtotal: item.subtotal,
+            };
+
+            return this.detallePedidoS.save(nuevoDetallePedido).pipe(
+              switchMap(() => {
+                // Actualizar el stock
+                return this.stockService.StockDelProducto(item.producto.idProducto).pipe(
+                  switchMap((stockResponse: ApiResponse) => {
+                    if (stockResponse.success) {
+                      const idStock = stockResponse.data;
+                      const cantidadVendida = item.cantidad;
+                      return this.stockService.addorRestarStockProductos(idStock, -cantidadVendida);
+                    }
+                    return of(null); // Retornar un observable para que forkJoin no falle
+                  })
                 );
-              },
-            });
-          },
-          error: (err: HttpErrorResponse) => {
-            console.log('error en el resgistro de la direccion de  envio', err);
-            this.mesagesErrores(
-              'Fallo al realizar el guardado de la direccion del Envio vuelve a intentarlo',
-              err
+              })
             );
-          },
-        });
-      },
-      error: (err: HttpErrorResponse) => {
-        console.log('error en el resgistro del pedido', err);
-        this.mesagesErrores(
-          'Fallo al realizar el guardado del Pedido vuelve a intentarlo',
-          err
-        );
-      },
-    });
+          });
+          return forkJoin(operacionesDetalleYStock);
+        })
+      )
+      .subscribe({
+        next: (responses) => {
+          console.log('Todas las operaciones de pedido, envío, detalles y stock fueron exitosas.', responses);
+          this.limpiarCarrito();
+          this.redireccionarMetodoPago();
+        },
+        error: (err: HttpErrorResponse) => {
+          console.error('Error durante la secuencia de registro del pedido:', err);
+          this.mesagesErrores('Ocurrió un error al procesar el pedido. Por favor, inténtelo de nuevo.', err);
+        },
+      });
+  }
+
+  // Los demás métodos (validarEmail, mesagesErrores, onPaymentMethodChange, etc.) se mantienen igual.
+
+  //Registro exitoso se redirege dependiendo del metodo de pago
+  redireccionarMetodoPago(): void {
+    if (this.seleccionMetodoPago === 'transferenciaBancaria') {
+      // Redirigir a la página de transferencia bancaria, incluyendo los datos
+      const datosParaOtraPagina = {
+        totalCarrito: this.totalCarrito,
+      };
+      this.router.navigate(['/home/pedidoOnline/pagoQR'], {
+        state: { datosDelPedido: datosParaOtraPagina },
+      });
+    } else if (this.seleccionMetodoPago === 'pagoEntrega') {
+      this.mostrarModalExito();
+    }
+  }
+
+  validarEmail(email: string): boolean {
+    const emailRegex = /^[a-zA-Z0-9._-]+@gmail\.com$/;
+    return emailRegex.test(email);
   }
 
   mesagesErrores(error: string, err: any): void {
-    console.log('error en el resgistro del pedido', err);
+    console.log('Error:', error, err);
     const errorContainer = document.getElementById('errorContainer');
     if (errorContainer) {
-      // 1. Inyecta el mensaje de error en el div
-      (errorContainer.textContent = error),
-        // 2. Haz que el div sea visible
-        (errorContainer.style.display = 'block');
+      errorContainer.textContent = error;
+      errorContainer.style.display = 'block';
     } else {
       console.error('No se encontró el contenedor de errores.');
     }
   }
 
-  //seleecion del metodo de pago para mostrar sus detalle y informacion
-  /**
-   * Actualiza el método de pago seleccionado.
-   * Este método se llama desde el HTML cuando se selecciona un radio button.
-   * @param methodId El ID del método de pago que se ha seleccionado.
-   */
   onPaymentMethodChange(methodId: string): void {
     this.seleccionMetodoPago = methodId;
   }
 
-  //metodo de pago seleccionado
   seleecionadoMetodoPago(): number {
-    console.log('Método de pago seleccionado:', this.seleccionMetodoPago);
     let metodoPago = 1111;
     if (this.seleccionMetodoPago === 'transferenciaBancaria') {
       metodoPago = 1111;
-    } else if (this.seleccionMetodoPago === 'pagarTarjetaCredito') {
-      metodoPago = 2222;
     } else if (this.seleccionMetodoPago === 'pagoEntrega') {
-      metodoPago = 3333;
+      metodoPago = 2222;
     }
-    console.log(metodoPago);
     return metodoPago;
   }
 
-  //eliminar los productos del carrio por que ya se guardo el pedido y envio
-  limpiarCarrito():void{
-    const productos=this.productosCarrio;
+  limpiarCarrito(): void {
+    this.productosCarrio.forEach(iten => {
+      this.carritoService
+        .eliminarProductoDeCarrito(this.username, iten.idDetalleCarrito)
+        .subscribe({
+          error: (err) => console.error('Error al eliminar producto del carrito:', err),
+        });
+    });
+  }
 
-    for(let iten of productos){
-this.carritoService.eliminarProductoDeCarrito(this.username,iten.idDetalleCarrito).subscribe({
-      next:(respuesta:ApiResponse)=>{
-
-      }
-    })
+  mostrarModalExito(): void {
+    const modalElement = document.getElementById('modalExito');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+      modalElement.addEventListener('hidden.bs.modal', () => {
+        this.router.navigate(['/home']);
+      }, { once: true });
     }
-    
   }
 }

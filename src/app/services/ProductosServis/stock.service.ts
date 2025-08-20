@@ -1,4 +1,3 @@
-// src/app/services/stock.service.ts
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { ApiResponse } from '../../models/api-response'; // Asegúrate de que esta ruta sea correcta
@@ -7,7 +6,7 @@ import { productos } from '../../models/ProductoStockModel/productos'; // Asumie
 
 // Si ProductosService no se usa en este archivo para 'findAll' o 'findByIdStock',
 // no es necesario importarlo aquí, pero se mantiene si se usa para otras funciones.
-import { ProductosService } from './productos.service'; // Mantener si necesario para otras operaciones
+import { ProductosService } from './productos.service'; // Mantener si es necesario para otras operaciones
 import { stock } from '../../models/ProductoStockModel/stock';
 
 @Injectable({
@@ -68,9 +67,12 @@ export class StockService { // Renombrado a StockService
     return this.http.delete<ApiResponse>(`${this.apiUrl}deleteById/${idStock}`);
   }
 
-  addStockProductos(idStock: number, cantidad:number): Observable<ApiResponse> {
+  addorRestarStockProductos(idStock: number, cantidad:number): Observable<ApiResponse> {
+
     return this.http.put<ApiResponse>(`${this.apiUrl}add-quantity/${idStock}/${cantidad}`, {});
   }
+  
+ 
 
   ProductoporCategoria(num1: number,num2: number,num3: number): Observable<ApiResponse> {
     return this.http.get<ApiResponse>(`${this.apiUrlP}ProductoCategorias/${num1}/${num2}/${num3}`);
@@ -83,6 +85,4 @@ export class StockService { // Renombrado a StockService
   listadoProducStock(): Observable<ApiResponse> {
     return this.http.get<ApiResponse>(`${this.apiUrl}listaProductConStock`);
   }
-
-
 }

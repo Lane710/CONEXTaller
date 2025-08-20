@@ -1,0 +1,206 @@
+ .order-card {
+   border-radius: 1rem;
+ }
+
+ .order-details-section {
+   flex-grow: 1;
+   display: flex;
+   flex-direction: column;
+ }
+
+ .order-header {
+   background-color: #0d6efd;
+   color: white;
+   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+   border-radius: 1rem 0 0 0;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+ }
+
+ .products-list-container {
+   min-height: 100px;
+   max-height: 210px;
+   overflow-y: auto;
+ }
+
+ .order-footer {
+   border-top: 1px solid rgba(0, 0, 0, 0.125);
+ }
+
+ .product-item {
+   background-color: #f8f9fa;
+   border: 1px solid #dee2e6;
+ }
+
+ /* Sección de botones de acción */
+.order-actions-section {
+  width: 100%;
+  background-color: #f8f9fa;
+  border-left: 1px solid #dee2e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  flex-shrink: 0; /* Evita que este contenedor se encoja */
+}
+
+
+ /* Media Query para pantallas grandes */
+@media (min-width: 768px) {
+  .order-details-section {
+    border-right: 1px solid #dee2e6;
+  }
+
+  .order-actions-section {
+    width: auto; /* Permite que el contenedor se ajuste al contenido, o sea, que crezca */
+    border-radius: 0 0.5rem 0.5rem 0;
+  }
+
+   .order-header {
+    border-radius: 0.5rem 0 0 0.5rem;
+  }
+}
+
+/* Estilos para los botones de expansión */
+.btn-icon-expand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.75rem;
+  width: 44px; /* Ancho inicial */
+  transition: width 0.3s ease-in-out;
+  overflow: hidden;
+  white-space: nowrap;
+  
+}
+
+ .btn-icon-expand .btn-label {
+  opacity: 0;
+  width: 0;
+  transition: opacity 0.3s ease-in-out, width 0.3s ease-in-out;
+}
+
+
+ .btn-icon-expand:hover {
+  width: 140px; /* Ancho expandido */
+  justify-content: start;
+}
+
+.btn-icon-expand:hover .btn-label {
+  opacity: 1;
+  width: auto;
+  margin-left: 0.5rem;
+}
+
+ .order-card {
+   border: 1px solid #dee2e6;
+   border-radius: 0.5rem;
+ }
+
+ .order-details-section {
+   flex-grow: 1;
+ }
+
+ .order-header {
+   background-color: #0d6efd;
+   color: white;
+   border-bottom: 1px solid #dee2e6;
+   border-top-left-radius: 0.5rem;
+   border-top-right-radius: 0.5rem;
+ }
+
+ @media (min-width: 768px) {
+   .order-header {
+     border-bottom-left-radius: 0;
+     border-top-right-radius: 0;
+   }
+ }
+
+ .order-actions-section {
+   background-color: #f8f9fa;
+   border-left: 1px solid #dee2e6;
+   border-bottom-left-radius: 0.5rem;
+   border-bottom-right-radius: 0.5rem;
+ }
+
+@media (min-width: 768px) {
+    .order-actions-section {
+        /* No definas un ancho fijo aquí */
+        border-radius: 0 1rem 1rem 0;
+    }
+}
+
+ .products-list-container {
+   max-height: 210px;
+   overflow-y: auto;
+ }
+
+ .product-item {
+   background-color: #f8f9fa;
+   border: 1px solid #e9ecef;
+ }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  50% { transform: translateX(3px); }
+  75% { transform: translateX(-3px); }
+}
+
+
+.list-group-item:not(.is-cancelled):hover {
+  animation: shake 0.5s ease-in-out infinite;
+}
+.border-blue {
+  border-radius: 12px;
+  margin: 5px;
+  border-color: #0d6efd !important;
+}
+
+.border-red {
+  border-radius: 12px;
+  margin: 5px;
+  border-color: #dc3545 !important;
+}
+
+/* Estilos para el modal de cancelación */
+.list-group-item.border-red,
+.list-group-item.border-blue {
+  border-width: 3px;
+  border-style: solid;
+}
+
+ .cursor-pointer {
+   cursor: pointer;
+ }
+
+
+.products-list-container.is-expanded {
+  max-height: 500px; /* Un valor lo suficientemente grande */
+  padding: 1rem;
+}
+
+/* Estilo para el contenedor de productos en el modal */
+.productos-container {
+  max-height: 400px; /* Ajusta este valor según la altura que necesites */
+  overflow-y: auto; /* Habilita el scroll vertical cuando el contenido excede la altura */
+  padding-right: 15px; /* Añade un espacio para que el scroll bar no se pegue al borde */
+}
+
+/* Estilo para el card de un producto cancelado */
+.card-canceled {
+  border: 2px solid #dc3545; /* Borde rojo */
+}
+
+
+
+
+
+
+
+
+
+
+
+

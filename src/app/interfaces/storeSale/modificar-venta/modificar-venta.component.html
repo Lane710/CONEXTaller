@@ -1,1 +1,345 @@
-<h1>HOla mundo</h1>
+<div class="main-container p-4">
+  <div class="row g-4 d-flex flex-column flex-lg-row">
+    <div class="col-lg-7">
+      <h2 class="mt-5 mb-4">Productos Disponibles</h2>
+
+      <div
+        class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3"
+      >
+        <div class="col-12 col-sm-auto flex-grow-1">
+          <div class="dropdown w-100">
+            <button
+              class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
+              type="button"
+              id="categoryDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              Categoría: Todos
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
+              <li>
+                <a class="dropdown-item" href="#" data-category="all">Todos</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#" data-category="electronics"
+                  >Electrónicos</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="#" data-category="apparel"
+                  >Ropa</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="#" data-category="food"
+                  >Alimentos</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-5">
+          <div class="search-bar-container">
+            <i class="fas fa-search search-icon"></i>
+            <input
+              type="text"
+              class="form-control rounded-pill"
+              placeholder="Buscar productos..."
+              id="product-search-input"
+              [(ngModel)]="filtroTermino"
+              (ngModelChange)="aplicarFiltro()"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm mb-4">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th scope="col">Imagen</th>
+                  <th scope="col">Producto</th>
+                  <th scope="col">Precio</th>
+                  <th scope="col" class="text-center">Cantidad</th>
+                  <th scope="col" class="text-center">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="product-list-body">
+                <tr *ngFor="let product of paginatedProducts; let i = index">
+                  <td data-label="Imagen">
+                    <img
+                      [src]="product.producto.imagen"
+                      alt="Producto"
+                      class="img-thumbnail product-image"
+                    />
+                  </td>
+                  <td data-label="Producto">{{ product.producto.nombre }}</td>
+                  <td data-label="Precio">{{ product.producto.precio }} Bs.</td>
+                  <td data-label="Cantidad" class="text-center">
+                    <div class="quantity-control">
+                      <button
+                        class="btn btn-outline-secondary btn-sm minus-btn"
+                        [disabled]="
+                          cantidadesEnVenta[(currentPage - 1) * pageSize + i] <=
+                          1
+                        "
+                        (click)="sumarRestar(i, -1)"
+                      >
+                        <i class="fas fa-minus">-</i>
+                      </button>
+                      <input
+                        class="quantity-value"
+                        [(ngModel)]="
+                          cantidadesEnVenta[(currentPage - 1) * pageSize + i]
+                        "
+                        (change)="actualizarCantidadManual(i, $event)"
+                        type="number"
+                      />
+                      <button
+                        class="btn btn-outline-secondary btn-sm plus-btn"
+                        [disabled]="
+                          cantidadesEnVenta[(currentPage - 1) * pageSize + i] >=
+                          product.cantidad
+                        "
+                        (click)="sumarRestar(i, 1)"
+                      >
+                        <i class="fas fa-plus">+</i>
+                      </button>
+                    </div>
+                  </td>
+                  <td data-label="Acción" class="text-center">
+                    <button
+                      class="btn btn-sm add-to-ticket-btn"
+                      style="border: none"
+                      (click)="
+                        anadirVentaTemporal(
+                          product,
+                          cantidadesEnVenta[(currentPage - 1) * pageSize + i]
+                        )
+                      "
+                    >
+                      <img src="/icon_Ventas/plusVentas.svg" alt="" />
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5 ticket-section-sticky">
+      <div class="p-4">
+        <h3 class="border-bottom pb-2">
+          <i class="fas fa-receipt me-2"></i>Detalles de Venta
+        </h3>
+        <div class="bg-white p-3 rounded mb-3">
+          <div class="d-flex justify-content-between mb-1">
+            <span>Subtotal:</span>
+            <span>{{
+              calcularSubtotal() | currency : "Bs " : "symbol" : "1.2-2"
+            }}</span>
+          </div>
+          <div class="d-flex justify-content-between fw-bold fs-5">
+            <span>Total:</span>
+            <span>{{
+              calcularTotal() | currency : "Bs " : "symbol" : "1.2-2"
+            }}</span>
+          </div>
+        </div>
+
+        <div class="d-grid gap-2">
+          <button
+            class="btn btn-danger"
+            routerLink="/home/listadoVentasStore"
+          >
+            <i class="fas fa-trash me-1"></i> Cancelar
+          </button>
+          <button
+            class="btn btn-success"
+            data-bs-toggle="modal"
+            data-bs-target="#confirmModal"
+            [disabled]="detalleVentasExistente.length === 0"
+          >
+            <i class="fas fa-check-circle me-1"></i> Actualizar Venta
+          </button>
+        </div>
+        <div
+          class="VentaPendiente list-group list-group-flush"
+          id="ticket-items"
+        >
+          <div
+            *ngFor="let item of detalleVentasExistente; let i = index"
+            class="list-group-item d-flex justify-content-between align-items-center mb-2 p-3 rounded-3 shadow-sm ticket-item"
+          >
+            <div class="d-flex flex-column">
+              <span class="fw-bold"
+                >{{ item.cantidad }}x {{ item.stock.producto.nombre }}</span
+              >
+              <small class="text-muted">
+                Precio unitario:
+                {{ item.precioUnitario | currency : "Bs" : "symbol" : "1.2-2" }}
+              </small>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+              <span class="fw-bold text-success">
+                {{
+                  item.cantidad * item.precioUnitario
+                    | currency : "Bs" : "symbol" : "1.2-2"
+                }}
+              </span>
+              <button
+                (click)="eliminarDetalleVenta(i)"
+                class="btn btn-sm btn-outline-danger p-1 border-0"
+              >
+                <img src="/icon_Ventas/IconoX.svg" alt="" style="width: 24px" />
+              </button>
+            </div>
+          </div>
+
+          <div
+            *ngIf="detalleVentasExistente.length === 0"
+            class="text-center text-muted p-4"
+          >
+            <i class="fas fa-box-open me-2"></i> No hay productos en esta venta.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="confirmModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Confirmar Modificación</h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Revisa los detalles antes de actualizar la venta.
+        </p>
+        <form>
+          <div class="mb-3">
+            <label for="clienteNombre" class="form-label">Nombre:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="clienteNombre"
+              [(ngModel)]="nombreCliente"
+              name="nombreCliente"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="clienteApellidos" class="form-label">Apellidos:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="apellidosClientes"
+              [(ngModel)]="apellidosCliente"
+              name="apellidosCliente"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="clienteCelular" class="form-label"
+              >Celular (opcional):</label
+            >
+            <input
+              type="tel"
+              class="form-control"
+              id="numeroCliente"
+              [(ngModel)]="celularCliente"
+              name="celularCliente"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="clienteCorreo" class="form-label"
+              >Email (opcional):</label
+            >
+            <input
+              type="email"
+              class="form-control"
+              id="emailCliente"
+              [(ngModel)]="emailCliente"
+              name="emailCliente"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="actualizarVenta()"
+            [disabled]="!nombreCliente || nombreCliente.trim() ===''|| !apellidosCliente"
+        >
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div *ngIf="mostrarModalStock" class="modal fade show d-block" tabindex="-1">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+      <div class="modal-content rounded-3 shadow-lg">
+        <div class="modal-header bg-primary text-white rounded-top-3">
+          <h5 class="modal-title fw-bold" id="modalDetallesProductoLabel">
+            ⚠️ Error de Stock
+          </h5>
+          <button
+            type="button"
+            class="btn-close btn-close-white"
+            (click)="ocultarModal()"
+          ></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="row2 align-items-center">
+            <div class="col-md-8">
+              <p class="mb-2">
+                No se puede agregar la cantidad deseada del producto.
+              </p>
+              <p>
+                El producto "<strong class="text-primary">{{
+                  nombreProductoModal
+                }}</strong
+                >" tiene un stock máximo de:
+                <strong class="text-danger fs-5">{{ stockMaximoModal }}</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div
+          class="modal-footer justify-content-center bg-light border-top-0 rounded-bottom-3"
+        >
+          <button
+            type="button"
+            class="btn btn-secondary px-4"
+            (click)="ocultarModal()"
+          >
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="mostrarModalStock" class="modal-backdrop fade show"></div>
+</div>

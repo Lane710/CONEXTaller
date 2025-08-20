@@ -1,0 +1,518 @@
+<div class="container mt-4">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">
+        Lista de Pedidos Online
+      </li>
+    </ol>
+  </nav>
+
+  <h1 class="mb-4 text-center text-md-start">Lista de Pedidos Online</h1>
+
+  <!-- Sección de Búsqueda y Filtros -->
+  <div
+    class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3"
+  >
+    <div class="d-flex flex-wrap gap-2 flex-grow-1">
+      <div class="col-12 col-md-auto">
+        <!-- Botón para registrar un nuevo pedido -->
+        <button
+          class="btn btn-primary rounded-pill w-100"
+          routerLink="/home/registrarPedido"
+        >
+          <i class="bi bi-plus-lg me-2"></i>Registrar Pedido
+        </button>
+      </div>
+
+      <div class="col-12 col-md flex-grow-1">
+        <!-- Campo de búsqueda -->
+        <div class="input-group w-100">
+          <input
+            type="text"
+            class="form-control rounded-pill-start"
+            placeholder="Buscar por ID de pedido o nombre de producto"
+            [(ngModel)]="searchTerm"
+            (input)="onSearch()"
+          />
+          <span class="input-group-text rounded-pill-end">
+            <i class="bi bi-search"></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="col-12 col-md flex-grow-1">
+        <div class="input-group w-100">
+          <input
+            type="text"
+            class="form-control rounded-pill-start"
+            placeholder="Fecha de pedido"
+            disabled
+          />
+          <span class="input-group-text rounded-pill-end">
+            <i class="bi bi-calendar"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 justify-content-end">
+      <div class="col-12 col-sm-auto">
+        <!-- Dropdown para ordenar por fecha -->
+        <div class="dropdown w-100">
+          <button
+            class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
+            type="button"
+            data-bs-toggle="dropdown"
+          >
+            Ordenar por Fecha
+          </button>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" (click)="ordenarPorFechaReciente()"
+                >Más Reciente</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" (click)="ordenarPorFechaAntigua()"
+                >Más Antigua</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección de la lista de pedidos -->
+  <div class="d-flex flex-column gap-3">
+  <div
+    *ngFor="let item of paginatedPedidosConDetalles | buscadorPedidos: searchTerm"
+    class="card shadow-sm order-card"
+  >
+      <div class="card-body p-0 d-flex flex-column flex-md-row">
+        <!-- Contenedor principal para el ID del pedido y los productos -->
+        <div class="order-details-section">
+          <!-- Sección para el ID del pedido, con un evento de clic para expandir/contraer -->
+          <div
+            class="order-header p-3 d-flex justify-content-between align-items-center cursor-pointer"
+            [ngClass]="{
+              'bg-danger-subtle': item.pedido.estado === 'cancelado',
+              'bg-secondary-subtle text-dark':
+                item.pedido.estado !== 'cancelado'
+            }"
+            (click)="item.isExpanded = !item.isExpanded"
+          >
+            <h6 class="mb-0">
+              Pedido ID:
+              <span class="fw-bold">PED{{ item.pedido.idPedido }}</span>
+            </h6>
+            <div class="d-flex align-items-center">
+              <span
+                class="badge me-2"
+                [ngClass]="{
+                  'bg-success': item.pedido.estado === 'completado',
+                  'bg-warning text-dark': item.pedido.estado === 'pendiente',
+                  'bg-danger': item.pedido.estado === 'cancelado'
+                }"
+              >
+                {{ item.pedido.estado }}
+              </span>
+              <i
+                class="bi"
+                [ngClass]="
+                  item.isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'
+                "
+              ></i>
+            </div>
+          </div>
+
+          <!-- Sección con altura controlada para la lista de productos -->
+          <!-- La clase 'is-expanded' controla si se muestran los productos o no -->
+          <div
+            class="products-list-container p-3"
+            [ngClass]="{ 'is-expanded': item.isExpanded }"
+          >
+            <div *ngIf="item.detallePedidos.length > 0; else noProducts">
+              <div
+                *ngFor="let detalle of item.detallePedidos"
+                class="product-item mb-2 p-2 rounded-3"
+              >
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="d-flex flex-column">
+                    <span class="fw-bold">{{ detalle.producto?.nombre }}</span>
+                    <small class="text-muted"
+                      >Cantidad: {{ detalle.cantidad }} | Precio Unitario: Bs
+                      {{ detalle.precioUnitario }}</small
+                    >
+                  </div>
+                  <span class="text-end fw-bold"
+                    >Bs {{ detalle.subtotal }}</span
+                  >
+                </div>
+              </div>
+            </div>
+            <ng-template #noProducts>
+              <p class="text-muted text-center m-0">
+                No hay productos en este pedido.
+              </p>
+            </ng-template>
+          </div>
+
+          <div class="order-footer p-3">
+            <p class="mb-0 fw-bold fs-5 text-end text-success">
+              Total: Bs {{ item.pedido.totalPedido }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Columna de botones a la derecha -->
+        <div
+          class="order-actions-section d-flex align-items-center justify-content-center p-3"
+        >
+          <div class="d-flex flex-column gap-2">
+            <!-- Botón para ver detalles (modal existente) -->
+            <button
+              class="btn rounded-pill btn-icon-expand"
+              style="border: 2px solid #29aaca; color: #29aaca"
+              data-bs-toggle="modal"
+              data-bs-target="#modalDetallesPedido"
+              (click)="selectPedidoModalDetalle(item)"
+            >
+              <img
+                src="icon_SaleOnline/ic--outline-remove-red-eye.svg"
+                alt=""
+              />
+              <span class="btn-label">Ver Detalle</span>
+            </button>
+            <!-- Botón para modificar estado (NUEVO) -->
+            <button
+              class="btn rounded-pill btn-icon-expand"
+              style="border: 2px solid #ffc107; color: #ffc107"
+              (click)="modificarRedireccion(item.pedido)"
+            >
+              <img src="/icon_SaleOnline/iconoir--page-edit.svg" alt="" />
+              <span class="btn-label">Modificar</span>
+            </button>
+            <!-- Nuevo botón para cambiar el estado del pedido, que abre el nuevo modal -->
+            <button
+              class="btn rounded-pill btn-icon-expand"
+              style="border: 2px solid #29aaca; color: #29aaca"
+              (click)="abrirModalCambiarEstado(item.pedido)"
+            >
+              <img src="icon_SaleOnline/ic--outline-change-circle.svg" alt="" />
+              <span class="btn-label">Estado</span>
+            </button>
+            <!-- Botón de Cancelar (NUEVO) -->
+            <button
+              class="btn rounded-pill btn-icon-expand"
+              style="border: 2px solid #dc3545; color: #dc3545"
+              [disabled]="
+                item.pedido.estado === 'cancelado' ||
+                item.pedido.estado === 'completado'
+              "
+              data-bs-toggle="modal"
+              data-bs-target="#modalConfirmarCancelacion"
+              (click)="selectPedidoModalDetalle(item)"
+            >
+              <img src="/icon_SaleOnline/ic--outline-cancel.svg" alt="" />
+              <span class="btn-label">Cancelar</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje si no hay pedidos -->
+    <div
+      *ngIf="paginatedPedidosConDetalles.length === 0"
+      class="card shadow-sm"
+    >
+      <div class="card-body text-center text-muted">
+        No se encontraron pedidos.
+      </div>
+    </div>
+  </div>
+
+  <!-- Paginación -->
+  <div
+    class="d-flex justify-content-center align-items-center flex-wrap mb-3 mt-4"
+    *ngIf="totalPages > 1"
+  >
+    <nav>
+      <ul class="pagination pagination-sm mb-0">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToPage(currentPage - 1)">
+            &laquo;
+          </button>
+        </li>
+        <li
+          class="page-item"
+          *ngFor="let page of pages"
+          [class.active]="page === currentPage"
+        >
+          <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="goToPage(currentPage + 1)">
+            &raquo;
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<!-- Modal para Cambiar el Estado del Pedido -->
+<div
+  class="modal fade"
+  id="modalCambiarEstado"
+  tabindex="-1"
+  aria-labelledby="modalCambiarEstadoLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="modalCambiarEstadoLabel">
+          Cambiar Estado de Pedido
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="pedidoSeleccionado">
+          <p>
+            Estás a punto de cambiar el estado del pedido:
+            <strong>PED{{ pedidoSeleccionado.idPedido }}</strong
+            >.
+          </p>
+          <div class="mb-3">
+            <label for="nuevoEstado" class="form-label"
+              >Selecciona el nuevo estado:</label
+            >
+            <select
+              class="form-select"
+              id="nuevoEstado"
+              [(ngModel)]="estadoSeleccionado"
+            >
+              <option value="pendiente">Pendiente</option>
+              <option value="completado">Completado</option>
+              <option value="cancelado">Cancelado</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="confirmarCambioEstado()"
+        >
+          Guardar cambios
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para Detalles del Pedido -->
+<div
+  class="modal fade"
+  id="modalDetallesPedido"
+  tabindex="-1"
+  aria-labelledby="modalDetallesPedidoLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content rounded-3 shadow-lg" *ngIf="pedidoSeleccionado">
+      <div class="modal-header bg-primary text-white rounded-top-3">
+        <h5 class="modal-title fw-bold" id="modalDetallesPedidoLabel">
+          Detalles del Pedido PED{{ pedidoSeleccionado.idPedido }}
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          aria-label="Cerrar"
+        ></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="row">
+          <div class="col-md-6 d-flex flex-column justify-content-between">
+            <div>
+              <p><strong>Usuario:</strong> {{ pedidoSeleccionado.username }}</p>
+              <p>
+                <strong>Fecha del Pedido:</strong>
+                {{ pedidoSeleccionado.fechaPedido | date : "dd MMM, yyyy" }}
+              </p>
+              <p>
+                <strong>ID Forma de Pago:</strong>
+                {{ pedidoSeleccionado.idFormaPago }}
+              </p>
+              <p>
+                <strong>Estado:</strong>
+                <span
+                  class="badge"
+                  [ngClass]="{
+                    'bg-success': pedidoSeleccionado.estado === 'completado',
+                    'bg-warning text-dark':
+                      pedidoSeleccionado.estado === 'pendiente',
+                    'bg-danger': pedidoSeleccionado.estado === 'cancelado'
+                  }"
+                >
+                  {{ pedidoSeleccionado.estado }}
+                </span>
+              </p>
+            </div>
+            <div class="mt-4">
+              <p class="fw-bold fs-5 text-success">
+                Total: Bs {{ pedidoSeleccionado.totalPedido }}
+              </p>
+            </div>
+          </div>
+
+          <div class="col-md-6 border-start ps-4">
+            <h6>Productos del Pedido:</h6>
+            <div
+              *ngIf="ListaDetallePedidoSelec.length > 0; else sinProductos"
+              class="productos-container"
+            >
+              <div class="d-flex flex-column gap-3">
+                <div
+                  *ngFor="
+                    let detalle of ListaDetallePedidoSelec.sort(sortByEstado)
+                  "
+                >
+                  <div
+                    class="card h-100 shadow-sm"
+                    [ngClass]="{
+                      'card-canceled': detalle.estado === 'CANCELADO'
+                    }"
+                  >
+                    <div class="card-body">
+                      <h6 class="card-title">{{ detalle.producto?.nombre }}</h6>
+                      <p class="card-text mb-1">
+                        Cantidad: <strong>{{ detalle.cantidad }}</strong>
+                      </p>
+                      <p class="card-text mb-1">
+                        Precio Unitario:
+                        <strong>Bs {{ detalle.precioUnitario }}</strong>
+                      </p>
+                      <p class="card-text fw-bold text-end mb-0">
+                        Subtotal: Bs {{ detalle.subtotal }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ng-template #sinProductos>
+              <p>No hay productos para mostrar.</p>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="modal-footer justify-content-center bg-light border-top-0 rounded-bottom-3"
+      >
+        <button
+          type="button"
+          class="btn btn-secondary px-4"
+          data-bs-dismiss="modal"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal para Confirmación de Cancelación -->
+<div
+  class="modal fade"
+  id="modalConfirmarCancelacion"
+  tabindex="-1"
+  aria-labelledby="modalConfirmarCancelacionLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-3 shadow-lg">
+      <div class="modal-header bg-danger text-white rounded-top-3">
+        <h5 class="modal-title fw-bold" id="modalConfirmarCancelacionLabel">
+          Confirmar Cancelación
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          aria-label="Cerrar"
+        ></button>
+      </div>
+      <div class="modal-body p-4" *ngIf="pedidoSeleccionado">
+        <p class="mb-3">
+          ¿Estás seguro de que deseas cancelar el pedido
+          <strong>PED{{ pedidoSeleccionado.idPedido }}</strong
+          >? Esta acción no se puede deshacer.
+        </p>
+        <p class="fw-bold mb-2">Productos del pedido:</p>
+        <ul class="list-group list-group-flush">
+          <li
+            class="list-group-item d-flex justify-content-between align-items-center"
+            [class.is-cancelled]="detalle.estado === 'CANCELADO'"
+            [class.border-red]="detalle.estado === 'CANCELADO'"
+            [class.border-blue]="detalle.estado !== 'CANCELADO'"
+            *ngFor="let detalle of ListaDetallePedidoSelec"
+          >
+            <div>
+              {{ detalle.producto?.nombre }}
+              <span class="text-muted d-block small"
+                >Cantidad: {{ detalle.cantidad }}</span
+              >
+            </div>
+            <div class="d-flex align-items-center">
+              <span class="badge bg-secondary rounded-pill me-2"
+                >Bs {{ detalle.subtotal }}</span
+              >
+              <button
+                class="btn btn-sm btn-outline-danger"
+                [disabled]="detalle.estado === 'CANCELADO'"
+                style="border: none"
+                (click)="cancelarProductoDePedido(detalle)"
+              >
+                <img src="/icon_SaleOnline/ic--outline-cancel.svg" alt="" />
+              </button>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div
+        class="modal-footer justify-content-center bg-light border-top-0 rounded-bottom-3"
+      >
+        <button
+          type="button"
+          class="btn btn-secondary px-4"
+          data-bs-dismiss="modal"
+          (click)="restablecerListasTemporales()"
+        >
+          No, volver
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger px-4"
+          (click)="confirmarCancelacion()"
+        >
+          Sí, cancelar pedido
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

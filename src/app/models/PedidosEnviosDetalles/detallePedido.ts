@@ -1,7 +1,8 @@
 
 
+// src/app/models/detallePedido/detallePedido.ts
 import { ProductoEnCarrito } from '../../DTOs/Cart/ProductoEnCarrito';
-import { productos } from '../ProductoStockModel/productos';
+//\mport { productos } from '../ProductoStockModel/productos';
 import { pedidos } from './pedidos';
 
 
@@ -12,4 +13,6 @@ export interface detallePedido {
   cantidad: number;
   precioUnitario: String;
   subtotal: String;
+  estado?:String;
+  fechaCreacion?:String;
 }

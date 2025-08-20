@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router'; // NavigationEnd ya no es necesario aquí
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../../services/aut.service';
 
 @Component({
   selector: 'app-header',
@@ -10,43 +11,29 @@ import { Router, RouterLink } from '@angular/router'; // NavigationEnd ya no es 
   styleUrl: './header.component.css',
 })
 export class HeaderComponent implements OnInit {
-  // Volvemos a hacer de mostrarBotonMenu un Input
-  // Este componente solo recibe la señal del padre sobre si el botón debe mostrarse.
-  
   @Input() mostrarBotonMenu: boolean = false;
   @Output() toggleSidebarEvent = new EventEmitter<void>();
-  user: string = ''; // Variable para almacenar el usuario actual
-   isLoggedIn = false; // El estado inicial es falso
-  constructor(private router: Router) {}
+  user: string = '';
 
+  // Inyectamos el AuthService en el constructor para usarlo en la plantilla
+  constructor(private router: Router, public authService: AuthService) {}
 
   ngOnInit(): void {
-    
-    this.checkLoginStatus();
+    // Al iniciar el componente, obtenemos el nombre de usuario.
+    const usernameFromLocalStorage = localStorage.getItem('current_username');
+    this.user = usernameFromLocalStorage ? usernameFromLocalStorage : '';
   }
 
   emitToggleSidebar() {
     this.toggleSidebarEvent.emit();
   }
 
+  // Ahora el logout está centralizado en el AuthService
   logout() {
-    localStorage.removeItem('jwt_token');
-    this.router.navigate(['/login']);
-  }
-  insertarModificar() {
-    
-    localStorage.setItem('ModUser', this.user);
+    this.authService.logout();
   }
 
-  checkLoginStatus() {
-    // Si el token existe y no es una cadena vacía, consideramos que el usuario ha iniciado sesión
-    const token = localStorage.getItem('jwt_token');
-    const usernameFromLocalStorage = localStorage.getItem('current_username');
-    if (token && usernameFromLocalStorage!== '') {
-      this.isLoggedIn = true;
-      this.user = usernameFromLocalStorage ? usernameFromLocalStorage : '';
-    } else {
-      this.isLoggedIn = false;
-    }
+  insertarModificar() {
+    localStorage.setItem('ModUser', this.user);
   }
 }

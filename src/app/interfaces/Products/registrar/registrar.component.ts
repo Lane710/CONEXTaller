@@ -803,7 +803,7 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
                 concatMap((stockResponse: ApiResponse) => {
                   if (stockResponse.data) {
                     return this.stockService
-                      .addStockProductos(stockResponse.data, this.cantidadStock)
+                      .addorRestarStockProductos(stockResponse.data, this.cantidadStock)
                       .pipe(
                         map((addStockResponse: ApiResponse) => {
                           this.modalDetails.push(

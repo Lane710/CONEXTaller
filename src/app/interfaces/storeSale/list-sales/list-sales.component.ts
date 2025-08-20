@@ -112,6 +112,7 @@ export class ListSalesComponent implements OnInit {
   }
 
   modificarRedireccion(sale: ventas): void {
+    console.log('Redirigiendo a modificar venta con ID:', sale.idVenta);
     this.router.navigate(['/home/modificarVenta', sale.idVenta]);
 
   }
