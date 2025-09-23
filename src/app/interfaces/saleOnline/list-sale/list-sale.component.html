@@ -1,5 +1,4 @@
 <div class="container mt-4">
-  <!-- Breadcrumb -->
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="#">Home</a></li>
@@ -11,13 +10,11 @@
 
   <h1 class="mb-4 text-center text-md-start">Lista de Pedidos Online</h1>
 
-  <!-- Sección de Búsqueda y Filtros -->
   <div
     class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3"
   >
     <div class="d-flex flex-wrap gap-2 flex-grow-1">
       <div class="col-12 col-md-auto">
-        <!-- Botón para registrar un nuevo pedido -->
         <button
           class="btn btn-primary rounded-pill w-100"
           routerLink="/home/registrarPedido"
@@ -27,13 +24,12 @@
       </div>
 
       <div class="col-12 col-md flex-grow-1">
-        <!-- Campo de búsqueda -->
         <div class="input-group w-100">
           <input
             type="text"
             class="form-control rounded-pill-start"
-            placeholder="Buscar por ID de pedido o nombre de producto"
-            [(ngModel)]="searchTerm"
+            placeholder="Buscar por ID, producto o usuario..."
+            [(ngModel)]="searchText"
             (input)="onSearch()"
           />
           <span class="input-group-text rounded-pill-end">
@@ -42,41 +38,43 @@
         </div>
       </div>
 
-      <div class="col-12 col-md flex-grow-1">
-        <div class="input-group w-100">
-          <input
-            type="text"
-            class="form-control rounded-pill-start"
-            placeholder="Fecha de pedido"
-            disabled
-          />
-          <span class="input-group-text rounded-pill-end">
-            <i class="bi bi-calendar"></i>
-          </span>
-        </div>
+      <div class="col-12 col-md-auto">
+        <select
+          class="form-select rounded-pill w-100"
+          [(ngModel)]="filterStatus"
+          (ngModelChange)="onFilterChange()"
+        >
+          <option value="todos">Todos los estados</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="completado">Completado</option>
+          <option value="cancelado">Cancelado</option>
+        </select>
       </div>
     </div>
 
     <div class="d-flex flex-wrap gap-2 justify-content-end">
       <div class="col-12 col-sm-auto">
-        <!-- Dropdown para ordenar por fecha -->
         <div class="dropdown w-100">
           <button
             class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
             type="button"
             data-bs-toggle="dropdown"
           >
-            Ordenar por Fecha
+            {{ sortDirection === "reciente" ? "Más Reciente" : "Más Antiguo" }}
           </button>
           <ul class="dropdown-menu">
             <li>
-              <a class="dropdown-item" (click)="ordenarPorFechaReciente()"
+              <a
+                class="dropdown-item"
+                (click)="ordenarPorFechaReciente()"
                 >Más Reciente</a
               >
             </li>
             <li>
-              <a class="dropdown-item" (click)="ordenarPorFechaAntigua()"
-                >Más Antigua</a
+              <a
+                class="dropdown-item"
+                (click)="ordenarPorFechaAntigua()"
+                >Más Antiguo</a
               >
             </li>
           </ul>
@@ -84,17 +82,12 @@
       </div>
     </div>
   </div>
-
-  <!-- Sección de la lista de pedidos -->
   <div class="d-flex flex-column gap-3">
-  <div
-    *ngFor="let item of paginatedPedidosConDetalles | buscadorPedidos: searchTerm"
-    class="card shadow-sm order-card"
-  >
+    @if (filteredAndPaginatedPedidos.length > 0) { @for (item of
+    filteredAndPaginatedPedidos; track item.pedido.idPedido) {
+    <div class="card shadow-sm order-card">
       <div class="card-body p-0 d-flex flex-column flex-md-row">
-        <!-- Contenedor principal para el ID del pedido y los productos -->
         <div class="order-details-section">
-          <!-- Sección para el ID del pedido, con un evento de clic para expandir/contraer -->
           <div
             class="order-header p-3 d-flex justify-content-between align-items-center cursor-pointer"
             [ngClass]="{
@@ -128,36 +121,33 @@
             </div>
           </div>
 
-          <!-- Sección con altura controlada para la lista de productos -->
-          <!-- La clase 'is-expanded' controla si se muestran los productos o no -->
           <div
             class="products-list-container p-3"
             [ngClass]="{ 'is-expanded': item.isExpanded }"
           >
-            <div *ngIf="item.detallePedidos.length > 0; else noProducts">
-              <div
-                *ngFor="let detalle of item.detallePedidos"
-                class="product-item mb-2 p-2 rounded-3"
-              >
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="d-flex flex-column">
-                    <span class="fw-bold">{{ detalle.producto?.nombre }}</span>
-                    <small class="text-muted"
-                      >Cantidad: {{ detalle.cantidad }} | Precio Unitario: Bs
-                      {{ detalle.precioUnitario }}</small
-                    >
-                  </div>
-                  <span class="text-end fw-bold"
-                    >Bs {{ detalle.subtotal }}</span
+            @if (item.detallePedidos.length > 0) {
+            <div
+              *ngFor="let detalle of item.detallePedidos"
+              class="product-item mb-2 p-2 rounded-3"
+            >
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex flex-column">
+                  <span class="fw-bold">{{ detalle.producto?.nombre }}</span>
+                  <small class="text-muted"
+                    >Cantidad: {{ detalle.cantidad }} | Precio Unitario: Bs
+                    {{ detalle.precioUnitario }}</small
                   >
                 </div>
+                <span class="text-end fw-bold"
+                  >Bs {{ detalle.subtotal }}</span
+                >
               </div>
             </div>
-            <ng-template #noProducts>
-              <p class="text-muted text-center m-0">
-                No hay productos en este pedido.
-              </p>
-            </ng-template>
+            } @else {
+            <p class="text-muted text-center m-0">
+              No hay productos en este pedido.
+            </p>
+            }
           </div>
 
           <div class="order-footer p-3">
@@ -167,12 +157,10 @@
           </div>
         </div>
 
-        <!-- Columna de botones a la derecha -->
         <div
           class="order-actions-section d-flex align-items-center justify-content-center p-3"
         >
           <div class="d-flex flex-column gap-2">
-            <!-- Botón para ver detalles (modal existente) -->
             <button
               class="btn rounded-pill btn-icon-expand"
               style="border: 2px solid #29aaca; color: #29aaca"
@@ -186,16 +174,15 @@
               />
               <span class="btn-label">Ver Detalle</span>
             </button>
-            <!-- Botón para modificar estado (NUEVO) -->
             <button
               class="btn rounded-pill btn-icon-expand"
               style="border: 2px solid #ffc107; color: #ffc107"
-              (click)="modificarRedireccion(item.pedido)"
+              (click)="abrirModalCambiarEstado(item.pedido)"
+              [disabled]="item.pedido.estado === 'cancelado'"
             >
               <img src="/icon_SaleOnline/iconoir--page-edit.svg" alt="" />
               <span class="btn-label">Modificar</span>
             </button>
-            <!-- Nuevo botón para cambiar el estado del pedido, que abre el nuevo modal -->
             <button
               class="btn rounded-pill btn-icon-expand"
               style="border: 2px solid #29aaca; color: #29aaca"
@@ -204,7 +191,6 @@
               <img src="icon_SaleOnline/ic--outline-change-circle.svg" alt="" />
               <span class="btn-label">Estado</span>
             </button>
-            <!-- Botón de Cancelar (NUEVO) -->
             <button
               class="btn rounded-pill btn-icon-expand"
               style="border: 2px solid #dc3545; color: #dc3545"
@@ -212,9 +198,7 @@
                 item.pedido.estado === 'cancelado' ||
                 item.pedido.estado === 'completado'
               "
-              data-bs-toggle="modal"
-              data-bs-target="#modalConfirmarCancelacion"
-              (click)="selectPedidoModalDetalle(item)"
+              (click)="abrirModalCancelarPedido(item.pedido)"
             >
               <img src="/icon_SaleOnline/ic--outline-cancel.svg" alt="" />
               <span class="btn-label">Cancelar</span>
@@ -223,47 +207,199 @@
         </div>
       </div>
     </div>
-
-    <!-- Mensaje si no hay pedidos -->
-    <div
-      *ngIf="paginatedPedidosConDetalles.length === 0"
-      class="card shadow-sm"
-    >
+    } } @else {
+    <div class="card shadow-sm">
       <div class="card-body text-center text-muted">
         No se encontraron pedidos.
       </div>
     </div>
+    }
   </div>
 
-  <!-- Paginación -->
+ <div
+      class="d-flex justify-content-center align-items-center flex-wrap mb-3 mt-4"
+      *ngIf="totalPages > 1"
+    >
+      <nav>
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <button class="page-link" (click)="goToPage(currentPage - 1)">
+              &laquo;
+            </button>
+          </li>
+          @if (pages[0] > 1) {
+            <li class="page-item">
+              <button class="page-link" (click)="goToPage(1)">1</button>
+            </li>
+            @if (pages[0] > 2) {
+              <li class="page-item disabled">
+                <span class="page-link">...</span>
+              </li>
+            }
+          }
+          @for (page of pages; track page) {
+          <li
+            class="page-item"
+            [class.active]="page === currentPage"
+            [attr.aria-current]="page === currentPage ? 'page' : null"
+          >
+            <button class="page-link" (click)="goToPage(page)">
+              {{ page }}
+            </button>
+          </li>
+          }
+          @if (pages[pages.length - 1] < totalPages) {
+            @if (pages[pages.length - 1] < totalPages - 1) {
+              <li class="page-item disabled">
+                <span class="page-link">...</span>
+              </li>
+            }
+            <li class="page-item">
+              <button class="page-link" (click)="goToPage(totalPages)">
+                {{ totalPages }}
+              </button>
+            </li>
+          }
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <button class="page-link" (click)="goToPage(currentPage + 1)">
+              &raquo;
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
   <div
-    class="d-flex justify-content-center align-items-center flex-wrap mb-3 mt-4"
-    *ngIf="totalPages > 1"
+    class="modal fade"
+    id="modalCambiarEstado"
+    tabindex="-1"
+    aria-labelledby="modalCambiarEstadoLabel"
+    aria-hidden="true"
   >
-    <nav>
-      <ul class="pagination pagination-sm mb-0">
-        <li class="page-item" [class.disabled]="currentPage === 1">
-          <button class="page-link" (click)="goToPage(currentPage - 1)">
-            &laquo;
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-white">
+          <h5 class="modal-title" id="modalCambiarEstadoLabel">
+            Cambiar estado del Pedido
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-center">
+            Seleccione el nuevo estado para el pedido
+            <span class="fw-bold text-primary"
+              >#PED{{ pedidoSeleccionado?.idPedido }}</span
+            >.
+          </p>
+          <div class="form-group mb-3">
+            <label for="estadoSelect" class="form-label">Nuevo Estado:</label>
+            <select
+              class="form-select"
+              id="estadoSelect"
+              [(ngModel)]="estadoSeleccionado"
+            >
+              <option value="pendiente">Pendiente</option>
+              <option value="completado">Completado</option>
+              <option value="cancelado">Cancelado</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cerrar
           </button>
-        </li>
-        <li
-          class="page-item"
-          *ngFor="let page of pages"
-          [class.active]="page === currentPage"
+          <button
+            type="button"
+            class="btn btn-warning"
+            (click)="confirmarCambioEstado()"
+          >
+            Confirmar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+  class="modal fade"
+  id="modalConfirmarCancelacion"
+  tabindex="-1"
+  aria-labelledby="modalConfirmarCancelacionLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalConfirmarCancelacionLabel">
+          Cancelar Productos del Pedido
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-center">
+          Seleccione los productos que desea cancelar del pedido
+          <span class="fw-bold text-primary"
+            >#PED{{ pedidoSeleccionado?.idPedido }}</span
+          >
+        </p>
+        <div class="list-group">
+          @for (detalle of ListaDetallePedidoSelec.sort(sortByEstado); track
+          detalle.idDetallePedido) {
+          <button
+            type="button"
+            class="list-group-item list-group-item-action"
+            [disabled]="detalle.estado === 'CANCELADO'"
+            (click)="cancelarProductoDePedido(detalle)"
+          >
+            <div class="d-flex w-100 justify-content-between">
+              <h6 class="mb-1">
+                {{ detalle.producto?.nombre }}
+                <span
+                  class="badge"
+                  [ngClass]="{
+                    'bg-danger': detalle.estado === 'CANCELADO',
+                    'bg-success': detalle.estado !== 'CANCELADO'
+                  }"
+                  >{{ detalle.estado }}</span
+                >
+              </h6>
+              <small class="text-end">Cantidad: {{ detalle.cantidad }}</small>
+            </div>
+            <small>Bs {{ detalle.subtotal }}</small>
+          </button>
+          }
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cerrar
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          (click)="confirmarCancelacion()"
+          [disabled]="ListaProductoCancelar.length === 0"
         >
-          <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
-        </li>
-        <li class="page-item" [class.disabled]="currentPage === totalPages">
-          <button class="page-link" (click)="goToPage(currentPage + 1)">
-            &raquo;
-          </button>
-        </li>
-      </ul>
-    </nav>
+          Confirmar Cancelación
+        </button>
+      </div>
+    </div>
   </div>
 </div>
-
+</div>
 <!-- Modal para Cambiar el Estado del Pedido -->
 <div
   class="modal fade"

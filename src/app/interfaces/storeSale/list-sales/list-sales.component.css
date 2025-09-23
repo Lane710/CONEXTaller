@@ -1,3 +1,20 @@
+/* Estilo general del contenedor */
+.container-fluid {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+/* Tarjeta principal */
+.card {
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
 /* Contenedor de tabla en escritorio */
 .table-container {
   min-height: 0;
@@ -89,4 +106,80 @@
   td[data-label="Acciones"]::before {
     content: none;
   }
+}
+
+/* Estilos de los modales */
+.modal-content {
+  border-radius: 0.8rem;
+  border: none;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+}
+
+.modal-header {
+  border-top-left-radius: 0.8rem;
+  border-top-right-radius: 0.8rem;
+}
+
+.table th {
+  border-top: none;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.35em 0.65em;
+}
+
+.text-muted {
+  font-size: 0.95rem;
+}
+
+.fs-5 {
+  font-size: 1.25rem !important;
+}
+
+.vr {
+  height: 40px;
+  opacity: 0.3;
+}
+
+.form-select, .form-control {
+  font-size: 0.875rem;
+}
+
+/* Estilos específicos de la paginación */
+.pagination {
+  --bs-pagination-color: #337ab7;
+  --bs-pagination-bg: #fff;
+  --bs-pagination-border-color: #dee2e6;
+  --bs-pagination-focus-box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  --bs-pagination-hover-color: #23527c;
+  --bs-pagination-hover-bg: #eee;
+  --bs-pagination-hover-border-color: #dee2e6;
+  --bs-pagination-active-color: #fff;
+  --bs-pagination-active-bg: #0d6efd;
+  --bs-pagination-active-border-color: #0d6efd;
+  --bs-pagination-disabled-color: #6c757d;
+  --bs-pagination-disabled-bg: #fff;
+  --bs-pagination-disabled-border-color: #dee2e6;
+}
+
+.pagination .page-item.disabled .page-link {
+  color: var(--bs-pagination-disabled-color);
+  background-color: var(--bs-pagination-disabled-bg);
+  border-color: var(--bs-pagination-disabled-border-color);
+  cursor: default;
+}
+
+.pagination .page-item.active .page-link {
+  color: var(--bs-pagination-active-color);
+  background-color: var(--bs-pagination-active-bg);
+  border-color: var(--bs-pagination-active-border-color);
 }

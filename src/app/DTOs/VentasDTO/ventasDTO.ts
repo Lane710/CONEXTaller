@@ -11,7 +11,9 @@ export interface ventasDTO {
   fechaVenta: string; // En frontend lo más común es usar ISO string para fechas
   horaVenta: string; // string formato "HH:mm:ss" o similar
   total: number;
-  metodoPago: string;
+  formaPago: string;
   estado?: string;
   detalles?: detalleVentaDTO[]; // opcional, si quieres incluir detalles dentro de la venta
+  descuento:number;
+  notas?:string;
 }

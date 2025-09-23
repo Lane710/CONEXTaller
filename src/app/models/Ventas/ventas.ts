@@ -1,3 +1,4 @@
+import { forma_pago } from "../PedidosEnviosDetalles/forma_pago";
 import { clientes } from "./clientes";
 
 export interface ventas {
@@ -6,6 +7,8 @@ export interface ventas {
   usuarioTrabajador: string;
   fechaVenta?: string; // 'LocalDateTime' en Java se mapea a 'string' (ISO 8601) en TypeScript. Opcional por @PrePersist.
   total: number; // 'BigDecimal' en Java se mapea a 'number' en TypeScript.
-  metodoPago?: string; // Opcional por @PrePersist.
+  formaPago: forma_pago; // Opcional por @PrePersist.
   estado?: string; // Opcional por @PrePersist.
+  descuento:number;
+  notas?:string;
 }

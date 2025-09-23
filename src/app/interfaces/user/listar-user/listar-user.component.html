@@ -32,7 +32,9 @@
           <input
             type="text"
             class="form-control rounded-pill-start"
-            placeholder="Buscar usuario"
+            placeholder="Buscar por nombre o usuario"
+            [(ngModel)]="searchTerm"
+            (input)="onFilterChange()"
           />
           <span class="input-group-text rounded-pill-end">
             <i class="bi bi-search"></i>
@@ -40,17 +42,34 @@
         </div>
       </div>
 
-      <!-- Puedes añadir un filtro de fecha si es relevante para usuarios, o eliminar este div si no -->
-      <div class="col-12 col-md flex-grow-1">
-        <div class="input-group date-input-group w-100">
-          <input
-            type="text"
-            class="form-control rounded-pill-start"
-            placeholder="Filtrar por fecha"
-          />
-          <span class="input-group-text rounded-pill-end">
-            <i class="bi bi-calendar"></i>
-          </span>
+      <!-- Dropdown para Ordenar por Fecha -->
+      <div class="col-12 col-sm-auto">
+        <div class="dropdown w-100">
+          <button
+            class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
+            type="button"
+            id="fechaDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Fecha: {{ sortDirection === 'reciente' ? 'Más Reciente' : 'Más Antiguo' }}
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="fechaDropdown">
+            <li>
+              <a
+                class="dropdown-item"
+                [ngClass]="{ active: sortDirection === 'reciente' }"
+                (click)="sortDirection = 'reciente'; onFilterChange()"
+              >Más Reciente</a>
+            </li>
+            <li>
+              <a
+                class="dropdown-item"
+                [ngClass]="{ active: sortDirection === 'antiguo' }"
+                (click)="sortDirection = 'antiguo'; onFilterChange()"
+              >Más Antiguo</a>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -66,12 +85,21 @@
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            Rol
+            Rol: {{ filterRole === 'todos' ? 'Todos' : filterRole | titlecase }}
           </button>
           <ul class="dropdown-menu" aria-labelledby="rolDropdown">
-            <li><a class="dropdown-item" href="#">Administrador</a></li>
-            <li><a class="dropdown-item" href="#">Empleado</a></li>
-            <li><a class="dropdown-item" href="#">Cliente</a></li>
+            <li>
+              <a class="dropdown-item" [ngClass]="{ active: filterRole === 'todos' }" (click)="filterRole = 'todos'; onFilterChange()">Todos los Roles</a>
+            </li>
+            <li>
+              <a class="dropdown-item" [ngClass]="{ active: filterRole === 'administrador' }" (click)="filterRole = 'administrador'; onFilterChange()">Administrador</a>
+            </li>
+            <li>
+              <a class="dropdown-item" [ngClass]="{ active: filterRole === 'trabajador' }" (click)="filterRole = 'trabajador'; onFilterChange()">Trabajador</a>
+            </li>
+            <li>
+              <a class="dropdown-item" [ngClass]="{ active: filterRole === 'Cliente' }" (click)="filterRole = 'Cliente'; onFilterChange()">Cliente</a>
+            </li>
           </ul>
         </div>
       </div>
@@ -85,11 +113,18 @@
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            Estado
+            Estado: {{ filterStatus === 'todos' ? 'Todos' : (filterStatus === 'activo' ? 'Activo' : 'Inactivo') }}
           </button>
           <ul class="dropdown-menu" aria-labelledby="estadoDropdown">
-            <li><a class="dropdown-item" href="#">Activo</a></li>
-            <li><a class="dropdown-item" href="#">Inactivo</a></li>
+            <li>
+              <a class="dropdown-item" [ngClass]="{ active: filterStatus === 'todos' }" (click)="filterStatus = 'todos'; onFilterChange()">Todos los Estados</a>
+            </li>
+            <li>
+              <a class="dropdown-item" [ngClass]="{ active: filterStatus === 'activo' }" (click)="filterStatus = 'activo'; onFilterChange()">Activo</a>
+            </li>
+            <li>
+              <a class="dropdown-item" [ngClass]="{ active: filterStatus === 'inactivo' }" (click)="filterStatus = 'inactivo'; onFilterChange()">Inactivo</a>
+            </li>
           </ul>
         </div>
       </div>
@@ -106,11 +141,11 @@
       <div *ngIf="errorMessage" class="alert alert-danger text-center py-4" role="alert">
         {{ errorMessage }}
       </div>
-      <div *ngIf="!isLoading && usuarios.length === 0 && !errorMessage" class="alert alert-warning text-center py-4" role="alert">
-        No hay usuarios para mostrar.
+      <div *ngIf="!isLoading && filteredUsers.length === 0 && !errorMessage" class="alert alert-warning text-center py-4" role="alert">
+        No hay usuarios que coincidan con los filtros.
       </div>
 
-      <div class="table-responsive">
+      <div class="table-responsive" *ngIf="!isLoading && filteredUsers.length > 0">
         <table class="table table-hover mb-0">
           <thead>
             <tr>
@@ -124,13 +159,10 @@
             </tr>
           </thead>
           <tbody>
-            <!-- Itera sobre los usuarios solo si hay datos y no hay error de carga grave -->
             @for (user of paginatedUsers; track user.username) {
-            <!-- Protección adicional: asegúrate de que user.persona existe antes de acceder a .ci -->
             @let persona = user.persona ? getPersonaForUser(user.persona.ci) : undefined;
             <tr>
               <td data-label="Foto">
-                <!-- Usa el encadenamiento opcional para fotoUrl y un placeholder -->
                 <img
                   [src]="persona?.fotoUrl || 'https://placehold.co/50x50/cccccc/ffffff?text=User'"
                   alt="Foto de usuario"
@@ -139,15 +171,13 @@
                 />
               </td>
               <td data-label="Nombre Completo">
-                <!-- Usa el encadenamiento opcional para las propiedades de persona -->
-                {{ persona?.nombre }} {{ persona?.apellidoP }}
-                {{ persona?.apellidoM }}
+                {{ persona?.nombre }} {{ persona?.apellidop }}
+                {{ persona?.apellidom }}
               </td>
               <td data-label="Usuario">{{ user.username }}</td>
               <td data-label="Email">{{ user.email }}</td>
               <td data-label="Rol">
-                <!-- Protección para user.rol.idRol -->
-                {{ user.rol.idRol || 'N/A' }}
+                {{ user.rol.nombreRol }}
               </td>
               <td data-label="Estado">
                 <span [class]="user.estado === 1 ? 'badge bg-success' : 'badge bg-danger'">
@@ -155,13 +185,13 @@
                 </span>
               </td>
               <td data-label="Acciones" class="actions-column">
-                <button class="btn  btn-sm me-1" (click)="verDetallesUsuario(user)">
+                <button class="btn btn-sm me-1" (click)="verDetallesUsuario(user)">
                   <img
                     src="/icon_Productos/Listar/ver_observar.svg"
                     style="width: 30px; height: 30px; vertical-align: middle"
                   />
                 </button>
-                <button class="btn  btn-sm me-1" (click)="goToModifyUser(user.username)">
+                <button class="btn btn-sm me-1" (click)="goToModifyUser(user.username)">
                   <img
                     src="/icon_Productos/Listar/Modificar.svg"
                     alt=""
@@ -169,7 +199,7 @@
                   />
                 </button>
                 <button
-                  [class]="user.estado === 1 ? 'btn btn-sm' : 'btn  btn-sm'"
+                  [class]="user.estado === 1 ? 'btn btn-sm' : 'btn btn-sm'"
                   (click)="abrirModalConfirmacionUsuario(user)"
                 >
                   <img
@@ -180,10 +210,6 @@
                 </button>
               </td>
             </tr>
-            } @empty {
-            <tr>
-              <td colspan="7" class="text-center py-4 text-muted">No hay usuarios para mostrar.</td>
-            </tr>
             }
           </tbody>
         </table>
@@ -192,10 +218,9 @@
   </div>
 
   <!-- Paginación -->
-  <div class="d-flex justify-content-center align-items-center flex-wrap mb-3">
+  <div class="d-flex justify-content-center align-items-center flex-wrap mb-3" *ngIf="totalPages > 1">
     <nav aria-label="Page navigation">
       <ul class="pagination pagination-sm mb-0">
-        <!-- Botón Anterior -->
         <li class="page-item" [class.disabled]="currentPage === 1">
           <button
             class="page-link"
@@ -206,7 +231,6 @@
             <span aria-hidden="true">&laquo;</span>
           </button>
         </li>
-        <!-- Números de Página (asume que tienes totalPages y currentPage en tu componente TS) -->
         @for (page of [].constructor(totalPages); let i = $index; track i) {
         <li class="page-item" [class.active]="currentPage === i + 1">
           <button class="page-link" (click)="goToPage(i + 1)">
@@ -214,7 +238,6 @@
           </button>
         </li>
         }
-        <!-- Botón Siguiente -->
         <li class="page-item" [class.disabled]="currentPage === totalPages">
           <button
             class="page-link"
@@ -251,7 +274,7 @@
           ¿Estás seguro de que quieres
           <strong>{{ usuarioSeleccionado.estado === 1 ? 'deshabilitar' : 'habilitar' }}</strong> al usuario:
           <strong>{{ usuarioSeleccionado.username }} ({{ personaSeleccionada?.nombre }}
-            {{ personaSeleccionada?.apellidoP }})</strong
+            {{ personaSeleccionada?.apellidop }})</strong
           >
           ?
         </p>
@@ -358,7 +381,7 @@
               alt="Imagen del usuario"
               class="img-fluid rounded-3 shadow-sm product-detail-image"
             />
-            <h4 class="fw-bold mt-3 text-primary">{{ persona?.nombre }} {{ persona?.apellidoP }}</h4>
+            <h4 class="fw-bold mt-3 text-primary">{{ persona?.nombre }} {{ persona?.apellidop }}</h4>
             <p class="text-muted small">Usuario: {{ user.username || "N/A" }}</p>
           </div>
           <!-- Columna de Información General -->
@@ -375,7 +398,7 @@
             <div class="row g-2 mb-2">
               <div class="col-sm-6"><strong>Nombre Completo:</strong></div>
               <div class="col-sm-6">
-                {{ persona?.nombre }} {{ persona?.apellidoP }} {{ persona?.apellidoM }}
+                {{ persona?.nombre }} {{ persona?.apellidop }} {{ persona?.apellidom }}
               </div>
             </div>
             <div class="row g-2 mb-2">
@@ -433,8 +456,4 @@
   </div>
 </div>
 
-<!-- CAMBIO: Usar el nuevo getter público para el modal-backdrop -->
-<div
-  *ngIf="showModal || isModalDetallesUsuarioShown()"
-  class="modal-backdrop fade show"
-></div>
+

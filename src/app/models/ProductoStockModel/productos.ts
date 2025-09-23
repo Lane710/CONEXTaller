@@ -1,26 +1,31 @@
 // src/app/models/productos.ts (ruta que uses para tus interfaces)
 
-
+// Importamos las interfaces que el backend está serializando
 import { categoria } from "./categorias";
-import { proveedor } from "../proveedor";
+import { subcategoria } from "./subcategorias";
+
 
 export interface productos {
-  idProducto?: number; // <<-- ¡CORREGIDO! Hacemos 'idProducto' opcional.
+  idProducto?: number;
   nombre: string;
   descripcion?: string;
-  precio: number;
+  precio: number; // Cambio de 'number' a 'string' para coincidir con BigDecimal
   sku?: string | null;
   codigoBarras?: string | null;
   marca?: string;
   color?: string;
   estado: number;
-  imagen?: string | null; // Acepta null si no hay imagen
+  imagen?: string | null; 
   disponibleOnline: boolean;
-
+  
+  // Estas son las nuevas propiedades del DTO que coinciden con el backend
   categoria: categoria;
-  idProveedor?: number | null; // <<-- ¡CORREGIDO! Coherencia con el componente y HTML
-  idUsuarioRegistro?: string;
+  subcategoria?: subcategoria;
 
+  // Las siguientes propiedades están en el backend pero no son obligatorias para el DTO
+  // ya que no siempre se necesitan para las operaciones del frontend.
+  idProveedor?: number | null; 
+  idUsuarioRegistro?: string;
   fechaRegistro?: string;
   ultimaActualizacion?: string;
 }

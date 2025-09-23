@@ -1,22 +1,22 @@
-// src/app/components/login/login.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'; // Importa ReactiveFormsModule y FormBuilder
-import { Router, RouterLink } from '@angular/router'; // Asegúrate de importar RouterLink
-import { UsuariosService, LoginResponse } from '../../services/PersonServis/usuarios.service'; // Asegúrate de que la ruta sea correcta
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { UsuariosService, LoginResponse } from '../../services/PersonServis/usuarios.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { interval, Subscription } from 'rxjs'; // Importa interval y Subscription
+import { interval, Subscription } from 'rxjs';
+import { AuthService } from '../../services/aut.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterLink, CommonModule, ReactiveFormsModule], // Usa ReactiveFormsModule
+  imports: [RouterLink, CommonModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit, OnDestroy {
 
-  loginForm!: FormGroup; // Declara el FormGroup
+  loginForm!: FormGroup;
   isLoading: boolean = false;
   errorMessage: string | null = null;
   successMessage: string | null = null;
@@ -26,9 +26,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   private countdownSubscription: Subscription | null = null;
 
   constructor(
-    private fb: FormBuilder, // Inyecta FormBuilder
+    private fb: FormBuilder,
     private router: Router,
-    private usuariosService: UsuariosService
+    private usuariosService: UsuariosService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -36,13 +37,11 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Asegúrate de limpiar la suscripción del contador para evitar fugas de memoria
     if (this.countdownSubscription) {
       this.countdownSubscription.unsubscribe();
     }
   }
 
-  // Inicializa el formulario con validadores
   initForm(): void {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
@@ -50,15 +49,14 @@ export class LoginComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Getter para acceder fácilmente a los controles del formulario en la plantilla
   get f() { return this.loginForm.controls; }
 
   login(): void {
     this.errorMessage = null;
     this.successMessage = null;
-    this.throttlingMessage = null; // Limpia el mensaje de throttling al intentar iniciar sesión
+    this.throttlingMessage = null;
 
-    this.loginForm.markAllAsTouched(); // Marca todos los campos como tocados para mostrar validaciones
+    this.loginForm.markAllAsTouched();
 
     if (this.loginForm.invalid) {
       this.errorMessage = 'Por favor, introduce tu usuario y contraseña.';
@@ -66,35 +64,32 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     this.isLoading = true;
-    const username = this.f['username'].value; // Accede a los valores del formulario reactivo
-    const password = this.f['password'].value; // Accede a los valores del formulario reactivo
+    const username = this.f['username'].value;
+    const password = this.f['password'].value;
 
     this.usuariosService.login(username, password).subscribe({
       next: (response: LoginResponse) => {
         this.isLoading = false;
         this.successMessage = response.message || 'Inicio de sesión exitoso.';
-        localStorage.setItem('usuario_actual', response.Usuario + '');
-        localStorage.setItem('current_username', response.Usuario+'');
-        localStorage.setItem('jwt_token',response.token);
-        // El token y el ID de usuario ya se guardaron en localStorage dentro de UsuariosService.login()
+        
         if (response && response.token) {
-          // Redirige al usuario a la página principal o dashboard
+          this.authService.setToken(response.token);
           setTimeout(() => {
-            this.router.navigateByUrl('/home'); // Ajusta esta ruta según tu aplicación
+            this.router.navigateByUrl('/home');
           }, 1500);
+        } else {
+            this.errorMessage = 'Token no recibido';
         }
       },
       error: (errorResponse: HttpErrorResponse) => {
         this.isLoading = false;
-        if (errorResponse.status === 429) { // Código de estado HTTP 429 (Too Many Requests)
-          // Extrae el tiempo de la respuesta del backend
+        if (errorResponse.status === 429) {
           const message = errorResponse.error?.message || 'Demasiados intentos de inicio de sesión fallidos.';
-          const match = message.match(/(\d+)\ssegundos/); // Busca el número de segundos
+          const match = message.match(/(\d+)\ssegundos/);
           let delaySeconds = 0;
           if (match && match[1]) {
             delaySeconds = parseInt(match[1], 10);
           }
-
           this.throttlingMessage = message;
           this.remainingTime = delaySeconds;
           this.startCountdown();
@@ -111,14 +106,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   private startCountdown(): void {
-    // Limpia cualquier suscripción existente para evitar múltiples contadores
     if (this.countdownSubscription) {
       this.countdownSubscription.unsubscribe();
     }
-
-    // Deshabilita el formulario mientras el contador está activo
     this.loginForm.disable();
-
     this.countdownSubscription = interval(1000).subscribe(() => {
       this.remainingTime--;
       if (this.remainingTime <= 0) {
@@ -132,16 +123,16 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.countdownSubscription.unsubscribe();
       this.countdownSubscription = null;
     }
-    this.throttlingMessage = null; // Limpia el mensaje de throttling
-    this.remainingTime = 0; // Asegura que el tiempo restante sea 0
-    this.loginForm.enable(); // Habilita el formulario cuando el contador termina
+    this.throttlingMessage = null;
+    this.remainingTime = 0;
+    this.loginForm.enable();
   }
 
   goToRegister(): void {
-    this.router.navigate(['/registrar']); // Ajusta esta ruta si tu registro está en otro lugar
+    this.router.navigate(['/registrar']);
   }
 
   goToResetPassword(): void {
-    this.router.navigate(['/verificable']); // Redirige al componente de restablecimiento de contraseña
+    this.router.navigate(['/verificable']);
   }
 }

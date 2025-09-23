@@ -1,9 +1,16 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+// src/app/interfaces/Products/listar/listar.component.ts
+
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+} from '@angular/core';
 import { CommonModule, CurrencyPipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-
 
 import { stock } from '../../../models/ProductoStockModel/stock';
 import { categoria } from '../../../models/ProductoStockModel/categorias';
@@ -18,7 +25,7 @@ declare var bootstrap: any;
   standalone: true,
   imports: [CommonModule, FormsModule, CurrencyPipe, RouterLink, NgClass],
   templateUrl: './listar.component.html',
-  styleUrls: ['./listar.component.css']
+  styleUrls: ['./listar.component.css'],
 })
 export class ListarComponent implements OnInit, AfterViewInit {
   stocks: stock[] = [];
@@ -34,7 +41,7 @@ export class ListarComponent implements OnInit, AfterViewInit {
   modalDetails: string[] = [];
   isSuccessModal: boolean = false;
 
-  @ViewChild('confirmarAccionModal') confirmarAccionModalRef!: ElementRef;
+  @ViewChild('confirmarAccionModalRef') confirmarAccionModalRef!: ElementRef;
   private confirmarAccionModal: any;
 
   @ViewChild('modalDetallesProductoRef') modalDetallesProductoRef!: ElementRef;
@@ -42,14 +49,18 @@ export class ListarComponent implements OnInit, AfterViewInit {
 
   // --- PROPIEDADES DE PAGINACIÓN ---
   currentPage: number = 1;
-  itemsPerPage: number = 10; // Mostrar 10 productos por página
-  totalPages: number = 0;
-  paginatedStocks: stock[] = []; // Los productos que se muestran en la página actual
+  itemsPerPage: number = 7;
+  pagesToShow = 5; // Número de botones de página a mostrar
+  
+  // --- PROPIEDADES DE FILTRO ---
+  searchText: string = '';
+  filterBy: string = 'nombre';
+  filterStatus: 'todos' | 'activo' | 'inactivo' = 'todos';
+  filterCategory: string = 'todos';
 
   constructor(
     private stockService: StockService,
     private productosService: ProductosService,
-    // private productoImagenService: ProductoImagenService, // Descomenta si lo usas
     private router: Router
   ) {}
 
@@ -71,9 +82,6 @@ export class ListarComponent implements OnInit, AfterViewInit {
     }
   }
 
-  /**
-   * Obtiene todos los ítems de stock desde el servicio y aplica paginación.
-   */
   getStocks(): void {
     this.isLoading = true;
     this.errorMessage = null;
@@ -83,69 +91,155 @@ export class ListarComponent implements OnInit, AfterViewInit {
         if (response && response.data) {
           this.stocks = response.data as stock[];
           this.isLoading = false;
-          this.applyPagination(); // Aplicar paginación después de cargar todos los datos
         } else {
-          this.errorMessage = response.message || 'No se encontraron registros de stock.';
+          this.errorMessage =
+            response.message || 'No se encontraron registros de stock.';
           this.stocks = [];
           this.isLoading = false;
           this.showModalMessage('Información', this.errorMessage, false);
         }
       },
       error: (err: HttpErrorResponse) => {
-        this.errorMessage = 'Error al cargar el stock: ' + (err.message || 'Error desconocido');
+        this.errorMessage =
+          'Error al cargar el stock: ' + (err.message || 'Error desconocido');
         this.isLoading = false;
         console.error('Error al obtener el stock:', err);
         this.showModalMessage('Error', this.errorMessage, false);
-      }
+      },
     });
   }
 
-  /**
-   * Aplica la lógica de paginación al array 'stocks'.
-   */
-  applyPagination(): void {
-    this.totalPages = Math.ceil(this.stocks.length / this.itemsPerPage);
+  get filteredAndPaginatedStocks(): stock[] {
+    let filteredList = this.stocks.filter((item) => {
+      let matchesSearch = true;
+      if (this.searchText) {
+        const term = this.searchText.toLowerCase();
+        switch (this.filterBy) {
+          case 'nombre':
+            matchesSearch = item.producto?.nombre?.toLowerCase().includes(term);
+            break;
+          case 'marca':
+            matchesSearch = item.producto?.marca?.toLowerCase().includes(term) ?? false;
+            break;
+          case 'sku':
+            matchesSearch = item.producto?.sku?.toLowerCase().includes(term) ?? false;
+            break;
+        }
+      }
+
+      const matchesStatus = this.filterStatus === 'todos' ||
+                            (this.filterStatus === 'activo' && item.producto?.estado === 1) ||
+                            (this.filterStatus === 'inactivo' && item.producto?.estado === 0);
+      
+      const matchesCategory = this.filterCategory === 'todos' ||
+                              (item.producto?.categoria?.nombre === this.filterCategory);
+
+      return matchesSearch && matchesStatus && matchesCategory;
+    });
+
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    this.paginatedStocks = this.stocks.slice(startIndex, endIndex);
+    return filteredList.slice(startIndex, startIndex + this.itemsPerPage);
   }
 
-  /**
-   * Cambia la página actual del paginador.
-   * @param page El número de página al que ir.
-   */
+  get totalPages(): number {
+    let filteredCount = this.stocks.filter((item) => {
+      let matchesSearch = true;
+      if (this.searchText) {
+        const term = this.searchText.toLowerCase();
+        switch (this.filterBy) {
+          case 'nombre':
+            matchesSearch = item.producto?.nombre?.toLowerCase().includes(term);
+            break;
+          case 'marca':
+            matchesSearch = item.producto?.marca?.toLowerCase().includes(term) ?? false;
+            break;
+          case 'sku':
+            matchesSearch = item.producto?.sku?.toLowerCase().includes(term)?? false;
+            break;
+        }
+      }
+
+      const matchesStatus = this.filterStatus === 'todos' ||
+                            (this.filterStatus === 'activo' && item.producto?.estado === 1) ||
+                            (this.filterStatus === 'inactivo' && item.producto?.estado === 0);
+      
+      const matchesCategory = this.filterCategory === 'todos' ||
+                              (item.producto?.categoria?.nombre === this.filterCategory);
+
+      return matchesSearch && matchesStatus && matchesCategory;
+    }).length;
+
+    return Math.ceil(filteredCount / this.itemsPerPage);
+  }
+
+  // Lógica para generar los botones de paginación dinámicamente
+  getPagesArray(): number[] {
+    const pages = [];
+    let startPage;
+    let endPage;
+
+    if (this.totalPages <= this.pagesToShow) {
+      startPage = 1;
+      endPage = this.totalPages;
+    } else {
+      const half = Math.floor(this.pagesToShow / 2);
+      if (this.currentPage <= half) {
+        startPage = 1;
+        endPage = this.pagesToShow;
+      } else if (this.currentPage + half >= this.totalPages) {
+        startPage = this.totalPages - this.pagesToShow + 1;
+        endPage = this.totalPages;
+      } else {
+        startPage = this.currentPage - half;
+        endPage = this.currentPage + half;
+      }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+  
+  onFilterChange(): void {
+    this.currentPage = 1;
+  }
+
+  onSearchChange(): void {
+    this.currentPage = 1;
+  }
+
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
-      this.applyPagination();
     }
   }
 
-  /**
-   * Getter público para verificar si el modal de detalles del producto está visible.
-   * Resuelve el error de acceso a propiedad privada en el template.
-   */
   isModalDetallesProductoShown(): boolean {
-    // La propiedad 'isShown' es específica de la instancia de Bootstrap Modal
     return this.modalDetallesProducto && this.modalDetallesProducto._isShown;
   }
 
-  // --- Métodos existentes (sin cambios) ---
   loadCategorias(): void {
     this.productosService.getCategorias().subscribe({
       next: (response: ApiResponse) => {
         if (response.success && response.data) {
           this.categorias = response.data as categoria[];
-          console.log('Categorías cargadas:', this.categorias);
         } else {
-          console.error('Error al cargar categorías:', response.message);
-          this.showModalMessage('Error', 'No se pudieron cargar las categorías: ' + response.message, false);
+          this.showModalMessage(
+            'Error',
+            'No se pudieron cargar las categorías: ' + response.message,
+            false
+          );
         }
       },
       error: (err: HttpErrorResponse) => {
-        console.error('Error HTTP al cargar categorías:', err);
-        this.showModalMessage('Error', 'Error de conexión al cargar categorías: ' + (err.message || 'Error desconocido'), false);
-      }
+        this.showModalMessage(
+          'Error',
+          'Error de conexión al cargar categorías: ' +
+            (err.message || 'Error desconocido'),
+          false
+        );
+      },
     });
   }
 
@@ -153,26 +247,14 @@ export class ListarComponent implements OnInit, AfterViewInit {
     if (idCategoria === undefined || idCategoria === null) {
       return 'N/A';
     }
-    const categoriaEncontrada = this.categorias.find(cat => cat.idCategoria === idCategoria);
+    const categoriaEncontrada = this.categorias.find(
+      (cat) => cat.idCategoria === idCategoria
+    );
     return categoriaEncontrada ? categoriaEncontrada.nombre : 'Desconocida';
   }
 
   verDetallesStock(stockItem: stock): void {
     this.stockSeleccionado = stockItem;
-    // if (stockItem.producto?.idProducto) { // Descomenta si usas ProductoImagenService
-    //   this.productoImagenService.getProductImages(stockItem.producto.idProducto).subscribe({
-    //     next: (response: ApiResponse) => {
-    //       if (response.success && response.data) {
-    //         console.log('Imágenes secundarias cargadas:', response.data);
-    //       } else {
-    //         console.warn('No se encontraron imágenes secundarias o hubo un error:', response.message);
-    //       }
-    //     },
-    //     error: (err: HttpErrorResponse) => {
-    //       console.error('Error al cargar imágenes secundarias:', err);
-    //     }
-    //   });
-    // }
     this.modalDetallesProducto?.show();
   }
 
@@ -182,30 +264,45 @@ export class ListarComponent implements OnInit, AfterViewInit {
   }
 
   confirmarAccionProducto(): void {
-    console.log('Intentando confirmar acción de producto...');
-    if (this.stockSeleccionado && this.stockSeleccionado.producto?.idProducto !== undefined && this.stockSeleccionado.producto.idProducto !== null) {
+    if (
+      this.stockSeleccionado &&
+      this.stockSeleccionado.producto?.idProducto !== undefined &&
+      this.stockSeleccionado.producto.idProducto !== null
+    ) {
       const idProducto = this.stockSeleccionado.producto.idProducto;
-      console.log('ID de producto a modificar:', idProducto);
-
       this.productosService.toggleProductStatus(idProducto).subscribe({
         next: (response: ApiResponse) => {
-          console.log('Respuesta del servicio toggleProductStatus:', response);
           if (response.success) {
-            this.showModalMessage('Éxito', response.message || 'Estado del producto cambiado con éxito.', true);
+            this.showModalMessage(
+              'Éxito',
+              response.message || 'Estado del producto cambiado con éxito.',
+              true
+            );
             this.confirmarAccionModal?.hide();
-            this.getStocks(); // Recarga la lista para reflejar el cambio
+            this.getStocks();
           } else {
-            this.showModalMessage('Error', response.message || 'Error al cambiar el estado del producto.', false);
+            this.showModalMessage(
+              'Error',
+              response.message || 'Error al cambiar el estado del producto.',
+              false
+            );
           }
         },
         error: (err: HttpErrorResponse) => {
-          console.error('Error en la comunicación al cambiar el estado del producto:', err);
-          this.showModalMessage('Error', 'Error de conexión al cambiar el estado del producto: ' + (err.message || 'Error desconocido'), false);
-        }
+          this.showModalMessage(
+            'Error',
+            'Error de conexión al cambiar el estado del producto: ' +
+              (err.message || 'Error desconocido'),
+            false
+          );
+        },
       });
     } else {
-      console.log('stockSeleccionado o ID de producto no válido para confirmar acción.');
-      this.showModalMessage('Error', 'Registro de stock no seleccionado o ID de producto no válido.', false);
+      this.showModalMessage(
+        'Error',
+        'Registro de stock no seleccionado o ID de producto no válido.',
+        false
+      );
     }
   }
 

@@ -1,218 +1,242 @@
-<div class="container mt-4">
-  <!-- Migas de pan -->
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="#">Home</a></li>
-      <li class="breadcrumb-item active" aria-current="page">
-        Lista de Envíos
-      </li>
-    </ol>
-  </nav>
+ <div class="container mt-4">
+      <!-- Migas de pan -->
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">
+            Lista de Envíos
+          </li>
+        </ol>
+      </nav>
 
-  <h1 class="mb-4 text-center text-md-start">Lista de Envíos</h1>
+      <h1 class="mb-4 text-center text-md-start">Lista de Envíos</h1>
 
-  <!-- Filtros y botones -->
-  <div
-    class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3"
-  >
-    <div class="d-flex flex-wrap gap-2 flex-grow-1">
-      <div class="col-12 col-md-auto">
-        <button
-          class="btn btn-primary rounded-pill w-100"
-          routerLink="/home/registrarEnvio"
-        >
-          <i class="bi bi-plus-lg me-2"></i>Registrar Envío
-        </button>
-      </div>
+      <!-- Filtros y botones -->
+      <div
+        class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3"
+      >
+        <div class="d-flex flex-wrap gap-2 flex-grow-1">
+          <div class="col-12 col-md-auto">
+            <button
+              class="btn btn-primary rounded-pill w-100"
+              routerLink="/home/registrarEnvio"
+            >
+              <i class="bi bi-plus-lg me-2"></i>Registrar Envío
+            </button>
+          </div>
 
-      <div class="col-12 col-md flex-grow-1">
-        <div class="input-group w-100">
-          <input
-            type="text"
-            class="form-control rounded-pill-start"
-            placeholder="Buscar envío por cliente/ID"
-            [(ngModel)]="busquedaTerm"
-            (keyup)="applyFilter()"
-          />
-          <span class="input-group-text rounded-pill-end"
-            ><i class="bi bi-search"></i
-          ></span>
+          <div class="col-12 col-md flex-grow-1">
+            <div class="input-group w-100">
+              <input
+                type="text"
+                class="form-control rounded-pill-start"
+                placeholder="Buscar envío por cliente/ID"
+                [(ngModel)]="busquedaTerm"
+                (keyup)="applyFilter()"
+              />
+              <span class="input-group-text rounded-pill-end"
+                ><i class="bi bi-search"></i
+              ></span>
+            </div>
+          </div>
+
+          <div class="col-12 col-md flex-grow-1">
+            <div class="input-group w-100">
+              <input
+                type="text"
+                class="form-control rounded-pill-start"
+                placeholder="14 Feb, 24"
+              />
+              <span class="input-group-text rounded-pill-end"
+                ><i class="bi bi-calendar"></i
+              ></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 justify-content-end">
+          <div class="col-12 col-sm-auto">
+            <div class="dropdown w-100">
+              <button
+                class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
+                type="button"
+                data-bs-toggle="dropdown"
+              >
+                Estado de Envío
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Preparando pedido</a></li>
+                <li><a class="dropdown-item" href="#">En camino</a></li>
+                <li><a class="dropdown-item" href="#">Entregado</a></li>
+                <li><a class="dropdown-item" href="#">No entregado</a></li>
+                <li><a class="dropdown-item" href="#">Cancelado</a></li>
+                <li><a class="dropdown-item" href="#">Devuelto</a></li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="col-12 col-md flex-grow-1">
-        <div class="input-group w-100">
-          <input
-            type="text"
-            class="form-control rounded-pill-start"
-            placeholder="14 Feb, 24"
-          />
-          <span class="input-group-text rounded-pill-end"
-            ><i class="bi bi-calendar"></i
-          ></span>
+      <!-- Tabla de envíos -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>ID Envío</th>
+                  <th>Receptor</th>
+                  <th>Empresa de Envío</th>
+                  <th>Fecha de Envío</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let envio of paginatedEnvios">
+                  <td data-label="ID Envío">ENV{{ envio.idEnvio }}</td>
+                  <td data-label="Receptor">
+                    {{ envio.nombreReceptor }} {{ envio.apellidosReceptor }}
+                  </td>
+                  <td data-label="Empresa de Envío">{{ envio.empresaEnvio }}</td>
+                  <td data-label="Fecha de Envío">
+                    {{ envio.fechaCreacion | date : "dd/MM/yyyy" }}
+                  </td>
+                  <td>
+                    <span
+                      class="badge"
+                      [ngClass]="{
+                        'bg-secondary': envio.estado === 'Preparando pedido',
+                        'bg-warning text-dark': envio.estado === 'En camino',
+                        'bg-success': envio.estado === 'Entregado',
+                        'bg-danger':
+                          envio.estado === 'No entregado' ||
+                          envio.estado === 'Cancelado',
+                        'bg-primary': envio.estado === 'Devuelto'
+                      }"
+                    >
+                      {{ envio.estado }}
+                    </span>
+                  </td>
+                  <td class="actions-column">
+                    <!-- Botón para ver detalles -->
+                    <button
+                      style="border: none"
+                      class="btn btn-sm me-1"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalDetallesEnvio"
+                      (click)="selectEnvio(envio)"
+                    >
+                      <img
+                        src="/icon_Productos/Listar/ver_observar.svg"
+                        style="width: 30px; height: 30px; vertical-align: middle"
+                      />
+                    </button>
+                    <!-- Botón para modificar el envío -->
+                    <button
+                      style="border: none"
+                      class="btn btn-sm me-1"
+                      (click)="modificarRedireccion(envio)"
+                    >
+                      <img
+                        src="/icon_Productos/Listar/Modificar.svg"
+                        alt=""
+                        style="width: 30px; height: 30px; vertical-align: middle"
+                      />
+                    </button>
+                    <!-- Botón para cancelar el envío -->
+                    <button
+                      class="btn btn-sm"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modificarEstadoEnvioModal"
+                      [disabled]="envio?.estado === 'Cancelado'"
+                      style="border: none"
+                      (click)="selectEnvio(envio)"
+                    >
+                      <img
+                        [src]="
+                          envio?.estado === 'entregado'
+                            ? '/icon_Productos/Listar/deshabilitar.svg'
+                            : '/icon_Productos/Listar/deshabilitar.svg'
+                        "
+                        alt="Estado del envío"
+                        style="width: 30px; height: 30px; vertical-align: middle"
+                      />
+                    </button>
+                    <button
+                      class="btn btn-sm"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modificarEstadoEnvioModal"
+                      style="border: none"
+                      (click)="selectEnvio(envio)"
+                    >
+                      ...
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="paginatedEnvios.length === 0">
+                  <td colspan="6" class="text-center py-3">
+                    No hay envíos para mostrar
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="d-flex flex-wrap gap-2 justify-content-end">
-      <div class="col-12 col-sm-auto">
-        <div class="dropdown w-100">
-          <button
-            class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
-            type="button"
-            data-bs-toggle="dropdown"
-          >
-            Estado de Envío
-          </button>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Preparando pedido</a></li>
-            <li><a class="dropdown-item" href="#">En camino</a></li>
-            <li><a class="dropdown-item" href="#">Entregado</a></li>
-            <li><a class="dropdown-item" href="#">No entregado</a></li>
-            <li><a class="dropdown-item" href="#">Cancelado</a></li>
-            <li><a class="dropdown-item" href="#">Devuelto</a></li>
+      <!-- Paginación -->
+      <div
+        class="d-flex justify-content-center align-items-center flex-wrap mb-3 mt-4"
+        *ngIf="totalPages > 1"
+      >
+        <nav>
+          <ul class="pagination pagination-sm mb-0">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <button class="page-link" (click)="goToPage(currentPage - 1)">
+                &laquo;
+              </button>
+            </li>
+            @if (pages[0] > 1) {
+            <li class="page-item">
+              <button class="page-link" (click)="goToPage(1)">1</button>
+            </li>
+            @if (pages[0] > 2) {
+            <li class="page-item disabled">
+              <span class="page-link">...</span>
+            </li>
+            }
+            } @for (page of pages; track page) {
+            <li
+              class="page-item"
+              [class.active]="page === currentPage"
+              [attr.aria-current]="page === currentPage ? 'page' : null"
+            >
+              <button class="page-link" (click)="goToPage(page)">
+                {{ page }}
+              </button>
+            </li>
+            } @if (pages[pages.length - 1] < totalPages) {
+            @if (pages[pages.length - 1] < totalPages - 1) {
+            <li class="page-item disabled">
+              <span class="page-link">...</span>
+            </li>
+            }
+            <li class="page-item">
+              <button class="page-link" (click)="goToPage(totalPages)">
+                {{ totalPages }}
+              </button>
+            </li>
+            }
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <button class="page-link" (click)="goToPage(currentPage + 1)">
+                &raquo;
+              </button>
+            </li>
           </ul>
-        </div>
+        </nav>
       </div>
     </div>
-  </div>
-
-  <!-- Tabla de envíos -->
-  <div class="card shadow-sm mb-4">
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover">
-          <thead class="table-light">
-            <tr>
-              <th>ID Envío</th>
-              <th>Receptor</th>
-              <th>Empresa de Envío</th>
-              <th>Fecha de Envío</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let envio of paginatedEnvios">
-              <td data-label="ID Envío">ENV{{ envio.idEnvio }}</td>
-              <td data-label="Receptor">
-                {{ envio.nombreReceptor }} {{ envio.apellidosReceptor }}
-              </td>
-              <td data-label="Empresa de Envío">{{ envio.empresaEnvio }}</td>
-              <td data-label="Fecha de Envío">
-                {{ envio.fechaCreacion | date : "dd/MM/yyyy" }}
-              </td>
-              <td>
-                <span
-                  class="badge"
-                  [ngClass]="{
-                    'bg-secondary': envio.estado === 'Preparando pedido',
-                    'bg-warning text-dark': envio.estado === 'En camino',
-                    'bg-success': envio.estado === 'Entregado',
-                    'bg-danger':
-                      envio.estado === 'No entregado' ||
-                      envio.estado === 'Cancelado',
-                    'bg-primary': envio.estado === 'Devuelto'
-                  }"
-                >
-                  {{ envio.estado }}
-                </span>
-              </td>
-              <td class="actions-column">
-                <!-- Botón para ver detalles -->
-                <button
-                  style="border: none"
-                  class="btn btn-sm me-1"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modalDetallesEnvio"
-                  (click)="selectEnvio(envio)"
-                >
-                  <img
-                    src="/icon_Productos/Listar/ver_observar.svg"
-                    style="width: 30px; height: 30px; vertical-align: middle"
-                  />
-                </button>
-                <!-- Botón para modificar el envío -->
-                <button
-                  style="border: none"
-                  class="btn btn-sm me-1"
-                  (click)="modificarRedireccion(envio)"
-                >
-                  <img
-                    src="/icon_Productos/Listar/Modificar.svg"
-                    alt=""
-                    style="width: 30px; height: 30px; vertical-align: middle"
-                  />
-                </button>
-                <!-- Botón para cancelar el envío -->
-                <button
-                  class="btn btn-sm"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modificarEstadoEnvioModal"
-                  [disabled]="envio?.estado === 'Cancelado'"
-                  style="border: none"
-                  (click)="selectEnvio(envio)"
-                >
-                  <img
-                    [src]="
-                      envio?.estado === 'entregado'
-                        ? '/icon_Productos/Listar/deshabilitar.svg'
-                        : '/icon_Productos/Listar/deshabilitar.svg'
-                    "
-                    alt="Estado del envío"
-                    style="width: 30px; height: 30px; vertical-align: middle"
-                  />
-                </button>
-                <button
-                  class="btn btn-sm"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modificarEstadoEnvioModal"
-                  style="border: none"
-                  (click)="selectEnvio(envio)"
-                >
-                  ...
-                </button>
-              </td>
-            </tr>
-            <tr *ngIf="paginatedEnvios.length === 0">
-              <td colspan="6" class="text-center py-3">
-                No hay envíos para mostrar
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- Paginación -->
-  <div
-    class="d-flex justify-content-center align-items-center flex-wrap mb-3"
-    *ngIf="totalPages > 1"
-  >
-    <nav>
-      <ul class="pagination pagination-sm mb-0">
-        <li class="page-item" [class.disabled]="currentPage === 1">
-          <button class="page-link" (click)="goToPage(currentPage - 1)">
-            &laquo;
-          </button>
-        </li>
-        <li
-          class="page-item"
-          *ngFor="let page of pages"
-          [class.active]="page === currentPage"
-        >
-          <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
-        </li>
-        <li class="page-item" [class.disabled]="currentPage === totalPages">
-          <button class="page-link" (click)="goToPage(currentPage + 1)">
-            &raquo;
-          </button>
-        </li>
-      </ul>
-    </nav>
-  </div>
-</div>
 
 <!-- Modal de Confirmación para Cancelar Envío -->
 <div

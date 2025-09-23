@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './interfaces/components/home/home.component';
 import { authRoutes } from './routes/authRoutes.routes';
 import { componentsRoutes } from './routes/componentsRoutes.routes';
+import { authGuard } from './guards/auth.guard';
 
 // Importa los conjuntos de rutas subdivididas
 

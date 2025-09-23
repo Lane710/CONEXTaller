@@ -1,11 +1,14 @@
-// home.component.ts
+// En src/app/home.component.ts
 import { Component, OnInit } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
 import { MenuComponent } from '../menu/menu.component';
 import { FooterComponent } from '../footer/footer.component';
-import { RouterOutlet, Router, NavigationEnd } from '@angular/router'; // Importar Router y NavigationEnd
+import { RouterOutlet, Router, NavigationEnd, NavigationStart, NavigationCancel, NavigationError } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { filter } from 'rxjs/operators'; // Para filtrar eventos del router
+import { filter } from 'rxjs/operators';
+import { SpinnerComponent } from '../spinner/spinner.component';
+import { LoadingService } from '../../../services/LoadingService.service';
+
 
 @Component({
   selector: 'app-home',
@@ -13,9 +16,10 @@ import { filter } from 'rxjs/operators'; // Para filtrar eventos del router
   imports: [
     HeaderComponent,
     MenuComponent,
-    FooterComponent,
+    
     RouterOutlet,
-    CommonModule
+    CommonModule,
+    SpinnerComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
@@ -24,40 +28,44 @@ export class HomeComponent implements OnInit {
   sidebarActive: boolean = false;
   mostrarBotonMenu: boolean = false;
 
-  // No necesitamos el array sidebarActiveRoutes ni otras lógicas de condición.
-
-  constructor(private router: Router) { } // Inyecta el Router
+  constructor(private router: Router, private loadingService: LoadingService) { }
 
   ngOnInit() {
-    // Suscribirse a los eventos del router para detectar cambios de ruta
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationStart))
+      .subscribe(() => {
+        this.loadingService.show();
+      });
+
+    this.router.events
+      .pipe(filter(event => 
+          event instanceof NavigationEnd || 
+          event instanceof NavigationCancel || 
+          event instanceof NavigationError
+      ))
+      .subscribe(() => {
+        // Usa un temporizador para simular un tiempo mínimo de carga
+        // Esto previene que el cargador parpadee en navegaciones rápidas.
+        setTimeout(() => {
+            this.loadingService.hide();
+        }, 500);
+      });
+
+    // Lógica para mostrar/ocultar el botón del menú
+    this.mostrarBotonMenu = (this.router.url !== '/home/inicio');
     this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd) // Filtra solo los eventos de finalización de navegación
+      filter(event => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {
-      // **Lógica para decidir si mostrar el botón del menú y permitir el sidebar**
-      // El botón de menú debe mostrarse SIEMPRE, excepto cuando la ruta sea exactamente '/home/inicio'.
       this.mostrarBotonMenu = (event.urlAfterRedirects !== '/home/inicio');
-      
-      // Si el botón del menú se oculta (porque estamos en /home/inicio),
-      // asegúrate de que el sidebar también se cierre.
       if (!this.mostrarBotonMenu) {
         this.sidebarActive = false; 
       }
     });
-
-    // Llamar a la función de actualización al inicio también, por si la página carga
-    // directamente en 'home/inicio' o en otra ruta al inicio.
-    this.mostrarBotonMenu = (this.router.url !== '/home/inicio');
   }
 
-  /**
-   * Alterna el estado de visibilidad del sidebar.
-   * Este método es llamado por el HeaderComponent cuando se hace clic en el botón.
-   */
   toggleSidebar() {
-    // Solo permitimos alternar si el botón está visible (y por lo tanto, habilitado)
     if (this.mostrarBotonMenu) { 
       this.sidebarActive = !this.sidebarActive;
-      console.log('Sidebar activo:', this.sidebarActive);
     }
   }
 }

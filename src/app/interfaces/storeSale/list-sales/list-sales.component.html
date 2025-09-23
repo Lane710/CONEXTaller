@@ -1,5 +1,4 @@
 <div class="container mt-4">
-  <!-- Migas de pan -->
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="#">Home</a></li>
@@ -11,7 +10,6 @@
 
   <h1 class="mb-4 text-center text-md-start">Lista de Ventas</h1>
 
-  <!-- Filtros y botones -->
   <div
     class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3"
   >
@@ -30,7 +28,9 @@
           <input
             type="text"
             class="form-control rounded-pill-start"
-            placeholder="Buscar venta por cliente/ID"
+            placeholder="Buscar por cliente o ID"
+            [(ngModel)]="searchTerm"
+            (input)="onSearchChange()"
           />
           <span class="input-group-text rounded-pill-end"
             ><i class="bi bi-search"></i
@@ -38,17 +38,16 @@
         </div>
       </div>
 
-      <div class="col-12 col-md flex-grow-1">
-        <div class="input-group w-100">
-          <input
-            type="text"
-            class="form-control rounded-pill-start"
-            placeholder="14 Feb, 24"
-          />
-          <span class="input-group-text rounded-pill-end"
-            ><i class="bi bi-calendar"></i
-          ></span>
-        </div>
+      <div class="col-12 col-md-auto">
+        <select
+          class="form-select rounded-pill w-100"
+          [(ngModel)]="filterStatus"
+          (ngModelChange)="onStatusChange()"
+        >
+          <option value="todos">Todos los estados</option>
+          <option value="completada">Completada</option>
+          <option value="cancelada">Cancelada</option>
+        </select>
       </div>
     </div>
 
@@ -60,26 +59,35 @@
             type="button"
             data-bs-toggle="dropdown"
           >
-            Estado de Venta
+            {{ sortDirection === "reciente" ? "Más Reciente" : "Más Antiguo" }}
           </button>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Completada</a></li>
-            <li><a class="dropdown-item" href="#">Pendiente</a></li>
-            <li><a class="dropdown-item" href="#">Cancelada</a></li>
+            <li>
+              <a
+                class="dropdown-item"
+                (click)="sortDirection = 'reciente'; onSortChange()"
+                >Más Reciente</a
+              >
+            </li>
+            <li>
+              <a
+                class="dropdown-item"
+                (click)="sortDirection = 'antiguo'; onSortChange()"
+                >Más Antiguo</a
+              >
+            </li>
           </ul>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Tabla de ventas -->
   <div class="card shadow-sm mb-4">
     <div class="card-body p-0">
       <div class="table-responsive">
         <table class="table table-hover">
           <thead class="table-light">
             <tr>
-              <th>ID Venta</th>
               <th>Cliente</th>
               <th>Total</th>
               <th>Fecha</th>
@@ -89,12 +97,13 @@
           </thead>
           <tbody>
             <tr *ngFor="let sale of paginatedVentas">
-              <td data-label="ID Venta">VNT{{ sale.idVenta }}</td>
               <td data-label="Cliente">{{ sale.cliente.nombre }}</td>
               <td data-label="Total">
                 {{ sale.total | currency : "Bs " : "symbol" : "1.2-2" }}
               </td>
-              <td data-label="Fecha">{{ sale.fechaVenta }}</td>
+              <td data-label="Fecha">
+                {{ sale.fechaVenta | date : "dd/MM/yyyy" }}
+              </td>
               <td>
                 <span
                   class="badge"
@@ -104,13 +113,12 @@
                     'bg-danger': sale.estado === 'cancelada'
                   }"
                 >
-                  {{ sale.estado }}
+                  {{ sale.estado | titlecase }}
                 </span>
               </td>
               <td class="actions-column">
-                <!--boton para ver detalles-->
                 <button
-                  class="btn  btn-sm me-1"
+                  class="btn btn-sm me-1"
                   data-bs-toggle="modal"
                   data-bs-target="#modalDetallesVenta"
                   (click)="selectVentaModalDetalle(sale)"
@@ -120,27 +128,15 @@
                     style="width: 30px; height: 30px; vertical-align: middle"
                   />
                 </button>
-                <!--Boton para modificar la venta-->
                 <button
-                  class="btn  btn-sm me-1"
-                  (click)="modificarRedireccion(sale)"
-                >
-                  <img
-                    src="/icon_Productos/Listar/Modificar.svg"
-                    alt=""
-                    style="width: 30px; height: 30px; vertical-align: middle"
-                  />
-                </button>
-                <!--Boton para cancelar la venta-->
-                <button
-                  class="btn  btn-sm"
-                   data-bs-toggle="modal"
-                   data-bs-target="#confirmarVentaCompletadaOCanceladaModal"
-              (click)="selectVenta(sale)"
+                  class="btn btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#confirmarVentaCompletadaOCanceladaModal"
+                  (click)="selectVenta(sale)"
                 >
                   <img
                     [src]="
-                      sale?.estado === 'Completada'
+                      sale?.estado === 'completada'
                         ? '/icon_Productos/Listar/habilitar.svg'
                         : '/icon_Productos/Listar/deshabilitar.svg'
                     "
@@ -152,7 +148,7 @@
             </tr>
             <tr *ngIf="paginatedVentas.length === 0">
               <td colspan="6" class="text-center py-3">
-                No hay ventas para mostrar
+                No hay ventas para mostrar.
               </td>
             </tr>
           </tbody>
@@ -161,38 +157,66 @@
     </div>
   </div>
 
-  <!-- Paginación -->
-  <div
-    class="d-flex justify-content-center align-items-center flex-wrap mb-3"
-    *ngIf="totalPages > 1"
-  >
-    <nav>
-      <ul class="pagination pagination-sm mb-0">
-        <li class="page-item" [class.disabled]="currentPage === 1">
-          <button class="page-link" (click)="goToPage(currentPage - 1)">
-            &laquo;
-          </button>
-        </li>
-        <li
-          class="page-item"
-          *ngFor="let page of pages"
-          [class.active]="page === currentPage"
-        >
-          <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
-        </li>
-        <li class="page-item" [class.disabled]="currentPage === totalPages">
-          <button class="page-link" (click)="goToPage(currentPage + 1)">
-            &raquo;
-          </button>
-        </li>
-      </ul>
-    </nav>
-  </div>
+<!-- Paginación -->
+      <div
+        class="d-flex justify-content-center align-items-center flex-wrap mt-3"
+        *ngIf="totalPages > 1"
+      >
+        <nav>
+          <ul class="pagination pagination-sm mb-0">
+            <!-- Botón para ir a la página anterior -->
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <button class="page-link" (click)="goToPage(currentPage - 1)">
+                &laquo;
+              </button>
+            </li>
+
+            <!-- Botones de página dinámicos -->
+            @if (pages[0] > 1) {
+              <li class="page-item">
+                <button class="page-link" (click)="goToPage(1)">1</button>
+              </li>
+              @if (pages[0] > 2) {
+                <li class="page-item disabled">
+                  <span class="page-link">...</span>
+                </li>
+              }
+            }
+            @for (page of pages; track page) {
+              <li
+                class="page-item"
+                [class.active]="page === currentPage"
+                [attr.aria-current]="page === currentPage ? 'page' : null"
+              >
+                <button class="page-link" (click)="goToPage(page)">
+                  {{ page }}
+                </button>
+              </li>
+            }
+            @if (pages[pages.length - 1] < totalPages) {
+              @if (pages[pages.length - 1] < totalPages - 1) {
+                <li class="page-item disabled">
+                  <span class="page-link">...</span>
+                </li>
+              }
+              <li class="page-item">
+                <button class="page-link" (click)="goToPage(totalPages)">
+                  {{ totalPages }}
+                </button>
+              </li>
+            }
+
+            <!-- Botón para ir a la página siguiente -->
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <button class="page-link" (click)="goToPage(currentPage + 1)">
+                &raquo;
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
 </div>
 
-<!--Modales para el listado de las ventas-->
-
-<!--modal cancelar y confirmar-->
 <div
   class="modal fade"
   id="confirmarVentaCompletadaOCanceladaModal"
@@ -224,8 +248,12 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           Cancelar
         </button>
-        <button type="button" class="btn btn-primary" id="btnConfirmarAccion"
-          (click)="selectVentaCancelarConfirmar()">
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="btnConfirmarAccion"
+          (click)="selectVentaCancelarConfirmar()"
+        >
           Confirmar
         </button>
       </div>
@@ -233,7 +261,6 @@
   </div>
 </div>
 
-<!--modal de existo-->
 <div
   class="modal fade"
   id="modalMensajeGeneral"
@@ -261,9 +288,7 @@
           class="list-unstyled text-start"
           id="modalMensajeGeneralDetalles"
           style="display: none"
-        >
-          <!-- Detalles aquí -->
-        </ul>
+        ></ul>
       </div>
       <div class="modal-footer justify-content-center">
         <button type="button" class="btn btn-success" data-bs-dismiss="modal">
@@ -274,20 +299,22 @@
   </div>
 </div>
 
-<!-- Modal Detalles de la Venta -->
 <div
   class="modal fade"
   id="modalDetallesVenta"
   tabindex="-1"
-  aria-labelledby="modalDetallesVentaLabel"
+  aria-labelledby="modalDetallesVenta"
   aria-hidden="true"
 >
   <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content rounded-3 shadow-lg" *ngIf="ventaSeleccionada">
-      <div class="modal-header bg-primary text-white rounded-top-3">
-        <h5 class="modal-title fw-bold" id="modalDetallesVentaLabel">
-          Detalles de la Venta VNT{{ ventaSeleccionada.venta.idVenta }}
-        </h5>
+    <div class="modal-content" *ngIf="ventaSeleccionada">
+      <div class="modal-header bg-primary text-white">
+        <div>
+          <h5 class="modal-title mb-0" id="detalleVentaModalLabel">
+            <i class="fas fa-receipt me-2"></i>Detalles de la Venta
+          </h5>
+          <p class="mb-0 small">VNT{{ ventaSeleccionada.venta.idVenta }}</p>
+        </div>
         <button
           type="button"
           class="btn-close btn-close-white"
@@ -295,60 +322,178 @@
           aria-label="Cerrar"
         ></button>
       </div>
-      <div class="modal-body p-4 d-flex flex-wrap">
-        <!-- Columna izquierda: Datos de la venta -->
-        <div class="flex-column flex-grow-1 me-4" style="min-width: 250px; max-width: 350px;">
-          <p><strong>Cliente:</strong> {{ ventaSeleccionada.venta.cliente.nombre}} {{ventaSeleccionada.venta.cliente.apPaterno}} {{ventaSeleccionada.venta.cliente.apMaterno}}</p>
-          <p><strong>Fecha:</strong> {{ ventaSeleccionada.venta.fechaVenta | date:'dd MMM, yyyy' }}</p>
-          <p><strong>Hora de venta:</strong> {{ ventaSeleccionada.venta.horaVenta.slice(0,5) }}</p>
-          <p><strong>Metodo de pago: </strong>{{ventaSeleccionada.venta.metodoPago}}</p>
-          <p>
-            <strong>Estado:</strong>
-            <span
-              class="badge"
-              [ngClass]="{
-                'bg-success': ventaSeleccionada.venta.estado === 'completada',
-                'bg-warning': ventaSeleccionada.venta.estado === 'pendiente',
-                'bg-danger': ventaSeleccionada.venta.estado === 'cancelada'
-              }"
-            >
-              {{ ventaSeleccionada.venta.estado | titlecase }}
-            </span>
-          </p>
-          <p class="fw-bold fs-5 text-success mt-4">
-            Total: Bs {{ ventaSeleccionada.venta.total.toFixed(2) }}
-          </p>
+
+      <div class="modal-body p-4">
+        <div class="row mb-4">
+          <div class="col-md-6 mb-3 mb-md-0">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-header bg-light py-2">
+                <h6 class="mb-0">
+                  <i class="fas fa-info-circle me-2"></i>Datos de la Venta
+                </h6>
+              </div>
+              <div class="card-body">
+                <div class="d-flex justify-content-between border-bottom py-2">
+                  <span class="text-muted">Número:</span>
+                  <span class="fw-semibold"
+                    >VNT{{ ventaSeleccionada.venta.idVenta }}</span
+                  >
+                </div>
+                <div class="d-flex justify-content-between border-bottom py-2">
+                  <span class="text-muted">Fecha:</span>
+                  <span>{{
+                    ventaSeleccionada.venta.fechaVenta | date : "dd MMM, yyyy"
+                  }}</span>
+                </div>
+                <div class="d-flex justify-content-between border-bottom py-2">
+                  <span class="text-muted">Hora:</span>
+                  <span>{{
+                    ventaSeleccionada.venta.horaVenta.slice(0, 5)
+                  }}</span>
+                </div>
+                <div class="d-flex justify-content-between border-bottom py-2">
+                  <span class="text-muted">Método de Pago:</span>
+                  <span>{{ ventaSeleccionada.venta.formaPago }}</span>
+                </div>
+                <div class="d-flex justify-content-between pt-2">
+                  <span class="text-muted">Estado:</span>
+                  <span
+                    class="badge rounded-pill d-inline-flex align-items-center"
+                    [ngClass]="{
+                      'bg-success':
+                        ventaSeleccionada.venta.estado === 'completada',
+                      'bg-warning text-dark':
+                        ventaSeleccionada.venta.estado === 'pendiente',
+                      'bg-danger':
+                        ventaSeleccionada.venta.estado === 'cancelada'
+                    }"
+                  >
+                    <i
+                      class="fas me-1"
+                      [class.fa-check-circle]="
+                        ventaSeleccionada.venta.estado === 'completada'
+                      "
+                      [class.fa-clock]="
+                        ventaSeleccionada.venta.estado === 'pendiente'
+                      "
+                      [class.fa-times-circle]="
+                        ventaSeleccionada.venta.estado === 'cancelada'
+                      "
+                    >
+                    </i>
+                    {{ ventaSeleccionada.venta.estado | titlecase }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-header bg-light py-2">
+                <h6 class="mb-0">
+                  <i class="fas fa-user me-2"></i>Datos del Cliente
+                </h6>
+              </div>
+              <div class="card-body">
+                <div class="d-flex justify-content-between border-bottom py-2">
+                  <span class="text-muted">Cliente:</span>
+                  <span class="fw-semibold text-end"
+                    >{{ ventaSeleccionada.venta.cliente.nombre }}
+                    {{ ventaSeleccionada.venta.cliente.appaterno }}
+                    {{ ventaSeleccionada.venta.cliente.apmaterno }}</span
+                  >
+                </div>
+                <div class="d-flex justify-content-between border-bottom py-2">
+                  <span class="text-muted">Celular:</span>
+                  <span>{{
+                    ventaSeleccionada.venta.cliente.telefono || "N/A"
+                  }}</span>
+                </div>
+                <div class="d-flex justify-content-between pt-2">
+                  <span class="text-muted">Email:</span>
+                  <span>{{
+                    ventaSeleccionada.venta.cliente.email || "N/A"
+                  }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- Columna derecha: Listado de productos -->
-        <div class="flex-column flex-grow-2" style="min-width: 300px;">
-          <h6>Productos:</h6>
-          <ul *ngIf="ListaDetalleVentaSelec.length > 0; else sinProductos" class="list-group list-group-flush">
-            <li
-              *ngFor="let detalle of ListaDetalleVentaSelec"
-              class="list-group-item d-flex justify-content-between align-items-center"
-            >
-              <span>{{ detalle.stock.producto.nombre }}</span>
-              <span>
-                {{ detalle.cantidad }} x Bs {{ detalle.precioUnitario.toFixed(2) }}
-              </span>
-            </li>
-          </ul>
-          <ng-template #sinProductos>
-            <p>No hay productos para mostrar.</p>
-          </ng-template>
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-light py-2">
+            <h6 class="mb-0">
+              <i class="fas fa-boxes me-2"></i>Productos Vendidos
+            </h6>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th scope="col" class="ps-4">Producto</th>
+                    <th scope="col" class="text-center">Cantidad</th>
+                    <th scope="col" class="text-center">Precio Unitario</th>
+                    <th scope="col" class="text-end pe-4">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let detalle of ListaDetalleVentaSelec">
+                    <td class="ps-4">{{ detalle.stock.producto.nombre }}</td>
+                    <td class="text-center">{{ detalle.cantidad }}</td>
+                    <td class="text-center">
+                      Bs {{ detalle.precioUnitario.toFixed(2) }}
+                    </td>
+                    <td class="text-end pe-4">
+                      Bs
+                      {{
+                        (detalle.cantidad * detalle.precioUnitario)
+                      }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card border-0 mt-3 bg-light p-3">
+          <div class="card-body p-0">
+            <div class="d-flex justify-content-between align-items-center">
+              <!-- Sección de descuento -->
+              <div class="d-flex align-items-center">
+                <span class="text-muted me-2">Descuento:</span>
+                <span class="text-danger fw-bold fs-5"
+                  >Bs {{ ventaSeleccionada.venta.descuento.toFixed(2) }}</span
+                >
+              </div>
+
+              <!-- Separador visual -->
+              <div class="vr mx-3"></div>
+
+              <!-- Sección de total -->
+              <div class="d-flex align-items-center">
+                <span class="text-muted me-2">Total:</span>
+                <span class="text-success fw-bold fs-5"
+                  >Bs {{ ventaSeleccionada.venta.total.toFixed(2) }}</span
+                >
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div
-        class="modal-footer justify-content-center bg-light border-top-0 rounded-bottom-3"
-      >
+      <div class="modal-footer">
         <button
           type="button"
-          class="btn btn-secondary px-4"
+          class="btn btn-outline-secondary"
           data-bs-dismiss="modal"
         >
-          Cerrar
+          <i class="fas fa-times me-2"></i>Cerrar
+        </button>
+        <button type="button" class="btn btn-primary">
+          <i class="fas fa-print me-2"></i>Imprimir
         </button>
       </div>
     </div>

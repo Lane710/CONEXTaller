@@ -5,11 +5,11 @@
   ></app-header>
 
   <div class="content-wrapper">
-    <app-menu [sidebarActive]="sidebarActive"></app-menu>
+    <app-spinner></app-spinner> <app-menu [sidebarActive]="sidebarActive"></app-menu>
     <main class="main-content" [ngClass]="{'sidebar-active': sidebarActive}">
       <router-outlet></router-outlet>
     </main>
   </div>
 
-  <app-footer></app-footer>
+  <!-- <app-footer></app-footer>-->
 </div>

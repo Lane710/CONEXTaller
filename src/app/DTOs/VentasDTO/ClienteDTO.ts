@@ -1,9 +1,9 @@
 // src/app/models/cliente-dto.ts
 export interface ClienteDTO {
-  idCliente: number;
+  ci: number;
   nombre: string;
-  apPaterno?: string;
-  apMaterno?: string;
+  appaterno?: string;
+  apmaterno?: string;
   email?: string;
   telefono?: string;
   direccion?: string;

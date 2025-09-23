@@ -10,7 +10,8 @@ import { NgFor, NgIf } from '@angular/common';
 import { StockService } from '../../../services/ProductosServis/stock.service';
 import { StockDTO } from '../../../DTOs/Produc/StockDTO'; // ¡Asegúrate de importar StockDTO!
 import { CarritoService } from '../../../services/CartServis/carrito.service';
-import { AgregarDetalleCarritoRequest } from '../../../models/CartModel/AgregarDetalleCarritoRequest';
+import { DetalleCarritoProducto } from '../../../DTOs/Cart/DetalleCarritoProducto';
+import { DetalleCarrito } from '../../../models/CartModel/DetalleCarrito';
 declare var bootstrap: any;
 
 @Component({
@@ -181,12 +182,12 @@ export class InicioComponent implements OnInit, AfterViewInit {
           }
         }
     }else{
-      const request: AgregarDetalleCarritoRequest = {
-        producto: {
-          idProducto: stockItem.producto.idProducto,
-        },
+      const request: DetalleCarrito = {
+        producto: stockItem.producto,
         cantidad: 1,
-        precioUnitario: parseFloat(stockItem.producto.precio),
+        precioUnitario: parseFloat(stockItem.producto.precio).toString(),
+        idDetalleCarrito: 0,
+        subtotal: ''
       };
 
       this.carritoService.agregarProductoACarrito(usuarioId, request).subscribe({

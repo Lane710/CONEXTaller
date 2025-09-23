@@ -28,14 +28,26 @@
       >
         <a
           class="nav-link-sidebar dropdown-toggle"
-          routerLink="/home/listarProductos"
+          
           id="inventarioDropdown"
           role="button"
-          routerLinkActive="active"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
         >
           <span class="icon">📦</span>
           <span class="text">Gestionar Inventario</span>
         </a>
+         <ul class="dropdown-menu" aria-labelledby="inventarioDropdown">
+          <li>
+            <a
+              class="dropdown-item"
+              routerLink="/home/listarProductos"
+              routerLinkActive="active"
+              >Listar Productos</a
+            >
+          </li>
+          
+        </ul>
       </li>
 
       <li
@@ -184,14 +196,26 @@
       >
         <a
           class="nav-link-sidebar dropdown-toggle"
-          routerLink="/home/listarUser"
+          
           id="usuariosDropdown"
           role="button"
-          routerLinkActive="active"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
         >
           <span class="icon">👥</span>
           <span class="text">Gestionar Usuarios</span>
         </a>
+        <ul class="dropdown-menu" aria-labelledby="usuariosDropdown">
+          <li>
+            <a
+              class="dropdown-item"
+          routerLink="/home/listarUser"
+              routerLinkActive="active"
+              >Listar Usuarios</a
+            >
+          </li>
+          
+        </ul>
       </li>
 
       <li

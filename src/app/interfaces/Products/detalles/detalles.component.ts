@@ -9,9 +9,10 @@ import { ProductoPropiedadService } from '../../../services/PersonServis/Secunda
 import { ProductoImagenService } from '../../../services/PersonServis/Secundarios/producto-imagen.service'; // ¡Importa este servicio!
 import { ProductoImagen } from '../../../models/ProductoStockModel/ProductoImagen';
 import { CarritoService } from '../../../services/CartServis/carrito.service';
-import { AgregarDetalleCarritoRequest } from '../../../models/CartModel/AgregarDetalleCarritoRequest';
 import { ProductoPropiedad } from '../../../models/ProductoStockModel/ProductoPropiedad';
 import { FormsModule } from '@angular/forms';
+import { DetalleCarrito } from '../../../models/CartModel/DetalleCarrito';
+import { DetalleCarritoProducto } from '../../../DTOs/Cart/DetalleCarritoProducto';
 
 // Interfaz para la estructura de la propiedad
 
@@ -192,15 +193,13 @@ cantidadSeleccionada: number = 1; // Declara la variable para la cantidad selecc
 AddProductCarrito(producto: StockDTO) {
    const usuarioId = localStorage.getItem('current_username');
 
-    const request: AgregarDetalleCarritoRequest = {
-      producto: {
-        idProducto: producto.producto.idProducto,
-      },
+    const request: DetalleCarrito = {
+      producto: producto.producto,
       cantidad: this.cantidadSeleccionada, // ¡Aquí usas la variable!
-      precioUnitario: parseFloat(producto.producto.precio),
+      precioUnitario: parseFloat(producto.producto.precio).toString(),
     };
 
-    this.carritoService.agregarProductoACarrito(usuarioId, request).subscribe({
+    this.carritoService.agregarProductoACarrito(usuarioId||'', request).subscribe({
       next: (response) => {
         console.log('Producto agregado al carrito con éxito:', response);
         alert('¡Producto añadido al carrito!');

@@ -90,3 +90,11 @@
     content: none;
   }
 }
+
+/* Estilos para los botones de paginación deshabilitados */
+.pagination .page-item.disabled .page-link {
+  color: #6c757d; /* Color del texto */
+  pointer-events: none; /* Deshabilita los clics */
+  background-color: #e9ecef; /* Color de fondo */
+  border-color: #dee2e6; /* Color del borde */
+}

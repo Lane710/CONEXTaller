@@ -1,35 +1,53 @@
+// En src/app/services/aut.service.ts
+
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 
 export interface JwtPayload {
-  sub: string;   // username
+  sub: string;
   idUsuario: number;
   rol: string;
   exp: number;
 }
 
+// Nueva interfaz para el estado del usuario
+export interface UserState {
+  username: string | null;
+  role: string | null;
+  idUsuario: number | null;
+}
+
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-  private userRoleSubject = new BehaviorSubject<string | null>(null);
-  public userRole$ = this.userRoleSubject.asObservable();
+  private userStateSubject = new BehaviorSubject<UserState>({
+    username: null,
+    role: null,
+    idUsuario: null,
+  });
+  public userState$ = this.userStateSubject.asObservable();
 
   constructor(private router: Router) {
     this.initFromToken();
   }
 
-  // Inicializa los datos desde el token si ya existe
   private initFromToken() {
     const token = this.getToken();
     if (token) {
       const decoded = this.decodeToken(token);
-      if (decoded) {
-        this.userRoleSubject.next(decoded.rol);
+      if (decoded && this.isTokenValid(decoded)) {
+        this.userStateSubject.next({
+          username: decoded.sub,
+          role: decoded.rol,
+          idUsuario: decoded.idUsuario,
+        });
         localStorage.setItem('current_username', decoded.sub);
         localStorage.setItem('idUsuario', decoded.idUsuario.toString());
         localStorage.setItem('rol', decoded.rol);
+      } else {
+        this.logout();
       }
     }
   }
@@ -48,25 +66,32 @@ export class AuthService {
     }
   }
 
-  public getUsername(): string | null {
-    return localStorage.getItem('current_username');
-  }
-
-  public getRole(): string | null {
-    return localStorage.getItem('rol');
-  }
-
-  public getIdUsuario(): number | null {
-    const id = localStorage.getItem('idUsuario');
-    return id ? Number(id) : null;
-  }
-
-  public hasRole(role: string): boolean {
-    return this.getRole() === role;
+  private isTokenValid(decodedToken: JwtPayload): boolean {
+    const now = Date.now() / 1000;
+    return decodedToken.exp > now;
   }
 
   public isLoggedIn(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    if (!token) {
+      return false;
+    }
+    const decoded = this.decodeToken(token);
+    if (!decoded || !this.isTokenValid(decoded)) {
+      this.logout();
+      return false;
+    }
+    return true;
+  }
+
+  public hasRole(role: string): boolean {
+    const userState = this.userStateSubject.value;
+    return userState.role === role;
+  }
+
+  public getRole(): string | null {
+    const userState = this.userStateSubject.value;
+    return userState.role;
   }
 
   public logout(): void {
@@ -74,19 +99,28 @@ export class AuthService {
     localStorage.removeItem('current_username');
     localStorage.removeItem('rol');
     localStorage.removeItem('idUsuario');
-    this.userRoleSubject.next(null);
-    this.router.navigate(['/login']);
+    this.userStateSubject.next({
+      username: null,
+      role: null,
+      idUsuario: null,
+    });
+    this.router.navigate(['/home']);
   }
 
-  // Llamar al login y guardar token + decodificar rol
   public setToken(token: string) {
     localStorage.setItem('jwt_token', token);
     const decoded = this.decodeToken(token);
-    if (decoded) {
+    if (decoded && this.isTokenValid(decoded)) {
+      this.userStateSubject.next({
+        username: decoded.sub,
+        role: decoded.rol,
+        idUsuario: decoded.idUsuario,
+      });
       localStorage.setItem('rol', decoded.rol);
       localStorage.setItem('current_username', decoded.sub);
       localStorage.setItem('idUsuario', decoded.idUsuario.toString());
-      this.userRoleSubject.next(decoded.rol);
+    } else {
+      this.logout();
     }
   }
 }

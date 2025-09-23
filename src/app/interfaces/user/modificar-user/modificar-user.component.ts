@@ -158,8 +158,8 @@ export class ModificarUserComponent implements OnInit, AfterViewInit {
         persona: {
           ci: persona.ci || '',
           nombre: persona.nombre || '',
-          apellidoP: persona.apellidoP || '',
-          apellidoM: persona.apellidoM || '',
+          apellidoP: persona.apellidop || '',
+          apellidoM: persona.apellidom || '',
           telefono: persona.telefono || '',
           direccion: persona.direccion || '',
           ciudad: persona.ciudad || '',
@@ -262,8 +262,8 @@ export class ModificarUserComponent implements OnInit, AfterViewInit {
     const updatedPersona: personas = {
       ci: formValue.persona.ci,
       nombre: formValue.persona.nombre,
-      apellidoP: formValue.persona.apellidoP,
-      apellidoM: formValue.persona.apellidoM,
+      apellidop: formValue.persona.apellidoP,
+      apellidom: formValue.persona.apellidoM,
       telefono: formValue.persona.telefono,
       direccion: formValue.persona.direccion,
       ciudad: formValue.persona.ciudad,

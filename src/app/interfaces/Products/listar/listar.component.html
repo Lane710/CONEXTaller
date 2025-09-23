@@ -1,5 +1,4 @@
 <div class="container mt-4">
-  <!-- Breadcrumb -->
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="#">Home</a></li>
@@ -9,21 +8,18 @@
     </ol>
   </nav>
 
-  <!-- Título principal -->
-  <h1 class="mb-4">Lista de Stock de Productos</h1>
+  <h1 class="mb-4">Listado de Productos</h1>
 
-  <!-- Barra de herramientas superior: Botones y Filtros -->
   <div
     class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3"
   >
-    <!-- Grupo de botones y búsqueda -->
     <div class="d-flex flex-wrap gap-2 flex-grow-1">
       <div class="col-12 col-md-auto">
         <button
           class="btn btn-primary rounded-pill w-100"
           routerLink="/home/RegistrarProduc"
         >
-          <i class="bi bi-plus-lg me-2"></i>Añadir Producto con Stock
+          <i class="bi bi-plus-lg me-2"></i>Registrar Nuevo Producto
         </button>
       </div>
 
@@ -32,70 +28,41 @@
           <input
             type="text"
             class="form-control rounded-pill-start"
-            placeholder="Buscar producto"
+            placeholder="Buscar producto..."
+            [(ngModel)]="searchText"
+            (ngModelChange)="onSearchChange()"
           />
           <span class="input-group-text rounded-pill-end">
             <i class="bi bi-search"></i>
           </span>
         </div>
       </div>
-
-      <div class="col-12 col-md flex-grow-1">
-        <div class="input-group date-input-group w-100">
-          <input
-            type="text"
-            class="form-control rounded-pill-start"
-            placeholder="14 Feb, 24"
-          />
-          <span class="input-group-text rounded-pill-end">
-            <i class="bi bi-calendar"></i>
-          </span>
-        </div>
+      <div class="col-12 col-md-auto">
+        <select
+          class="form-select rounded-pill w-100"
+          [(ngModel)]="filterStatus"
+          (ngModelChange)="onFilterChange()"
+        >
+          <option value="todos">Todos</option>
+          <option value="activo">Activos</option>
+          <option value="inactivo">Inactivos</option>
+        </select>
       </div>
-    </div>
-
-    <!-- Grupo de Dropdowns (Filtros) -->
-    <div class="d-flex flex-wrap gap-2 justify-content-end">
-      <div class="col-12 col-sm-auto">
-        <div class="dropdown w-100">
-          <button
-            class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
-            type="button"
-            id="vendorDropdown"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            Proveedor
-          </button>
-          <ul class="dropdown-menu" aria-labelledby="vendorDropdown">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="col-12 col-sm-auto">
-        <div class="dropdown w-100">
-          <button
-            class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
-            type="button"
-            id="statusDropdown"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            Estado
-          </button>
-          <ul class="dropdown-menu" aria-labelledby="statusDropdown">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Inactivo</a></li>
-          </ul>
-        </div>
+      <div class="col-12 col-md-auto">
+        <select
+          class="form-select rounded-pill w-100"
+          [(ngModel)]="filterCategory"
+          (ngModelChange)="onFilterChange()"
+        >
+          <option value="todos">Todas las categorías</option>
+          @for (cat of categorias; track cat.idCategoria) {
+          <option [value]="cat.nombre">{{ cat.nombre }}</option>
+          }
+        </select>
       </div>
     </div>
   </div>
 
-  <!-- Tabla de Stock de Productos -->
   <div class="card shadow-sm mb-4">
     <div class="card-body p-0">
       <div class="table-responsive">
@@ -122,97 +89,101 @@
                 {{ errorMessage }}
               </td>
             </tr>
-            <tr *ngIf="!isLoading && stocks.length === 0 && !errorMessage">
-              <td colspan="7" class="text-center py-4 text-muted">
-                No hay registros de stock para mostrar.
-              </td>
-            </tr>
 
-            <!-- Iterar sobre paginatedStocks para mostrar solo los elementos de la página actual -->
-            @for (item of paginatedStocks; track item.idStock) { @if
-            (item.producto) { @let producto = item.producto;
-            <tr>
-              <td data-label="Foto">
-                <img
-                  [src]="producto.imagen"
-                  alt="Foto del producto"
-                  class="img-thumbnail rounded-circle product-image"
-                  style="width: 50px; height: 50px; object-fit: cover"
-                />
-              </td>
-              <td data-label="Nombre del Producto">
-                {{ producto.nombre }}
-              </td>
-              <td data-label="Categoría">
-                {{ getCategoryName(producto?.categoria?.idCategoria) }}
-              </td>
-              <td data-label="Cantidad en Stock" style="text-align: center">
-                {{ item.cantidad }}
-              </td>
-              <td data-label="Precio Unitario">
-                {{
-                  item.producto.precio | currency : "Bs " : "symbol" : "1.2-2"
-                }}
-              </td>
-              <td data-label="Estado">
-                <span
-                  [class]="
-                    producto?.estado === 1
-                      ? 'badge bg-success'
-                      : 'badge bg-danger'
-                  "
-                >
-                  {{ producto?.estado === 1 ? "Activo" : "Inactivo" }}
-                </span>
-              </td>
-              <td data-label="Acciones" class="actions-column">
-                <button
-                  class="btn  btn-sm me-1"
-                  (click)="verDetallesStock(item)"
-                >
-                  <img
-                    src="/icon_Productos/Listar/ver_observar.svg"
-                    style="width: 30px; height: 30px; vertical-align: middle"
-                  />
-                </button>
-                <button
-                  class="btn  btn-sm me-1"
-                  routerLink="/home/modificarProduc/{{ producto.idProducto }}"
-                >
-                  <img
-                    src="/icon_Productos/Listar/Modificar.svg"
-                    alt=""
-                    style="width: 30px; height: 30px; vertical-align: middle"
-                  />
-                </button>
-                <button
-                  [class]="
-                    producto?.estado === 1
-                      ? 'btn  btn-sm'
-                      : 'btn  btn-sm'
-                  "
-                  (click)="abrirModalConfirmacion(item)"
-                >
-                  <img
-                    [src]="
-                      producto?.estado === 1
-                        ? '/icon_Productos/Listar/deshabilitar.svg'
-                        : '/icon_Productos/Listar/habilitar.svg'
-                    "
-                    alt="Estado del producto"
-                    style="width: 30px; height: 30px; vertical-align: middle"
-                  />
-                </button>
-              </td>
-            </tr>
-            } @else {
-            <tr>
-              <td colspan="7" class="text-center text-warning py-2">
-                Producto asociado no encontrado para el registro de stock ID:
-                {{ item.idStock }}
-              </td>
-            </tr>
-            } }
+            <ng-container *ngIf="!isLoading && !errorMessage">
+              <ng-container *ngIf="filteredAndPaginatedStocks.length > 0; else noResults">
+                @for (item of filteredAndPaginatedStocks; track item.idStock) {
+                @if (item.producto) {
+                @let producto = item.producto;
+                <tr>
+                  <td data-label="Foto">
+                    <img
+                      [src]="producto.imagen"
+                      alt="Foto del producto"
+                      class="img-thumbnail rounded-circle product-image"
+                      style="width: 50px; height: 50px; object-fit: cover"
+                    />
+                  </td>
+                  <td data-label="Nombre del Producto">
+                    {{ producto.nombre }}
+                  </td>
+                  <td data-label="Categoría">
+                    {{ getCategoryName(producto?.categoria?.idCategoria) }}
+                  </td>
+                  <td data-label="Cantidad en Stock" style="text-align: center">
+                    {{ item.cantidad }}
+                  </td>
+                  <td data-label="Precio Unitario">
+                    {{
+                      item.producto.precio | currency : "Bs " : "symbol" : "1.2-2"
+                    }}
+                  </td>
+                  <td data-label="Estado">
+                    <span
+                      [class]="
+                        producto?.estado === 1
+                          ? 'badge bg-success'
+                          : 'badge bg-danger'
+                      "
+                    >
+                      {{ producto?.estado === 1 ? "Activo" : "Inactivo" }}
+                    </span>
+                  </td>
+                  <td data-label="Acciones" class="actions-column">
+                    <button
+                      class="btn btn-sm me-1"
+                      (click)="verDetallesStock(item)"
+                    >
+                      <img
+                        src="/icon_Productos/Listar/ver_observar.svg"
+                        style="width: 30px; height: 30px; vertical-align: middle"
+                      />
+                    </button>
+                    <button
+                      class="btn btn-sm me-1"
+                      routerLink="/home/modificarProduc/{{ producto.idProducto }}"
+                    >
+                      <img
+                        src="/icon_Productos/Listar/Modificar.svg"
+                        alt=""
+                        style="width: 30px; height: 30px; vertical-align: middle"
+                      />
+                    </button>
+                    <button
+                      [class]="
+                        producto?.estado === 1 ? 'btn btn-sm' : 'btn btn-sm'
+                      "
+                      (click)="abrirModalConfirmacion(item)"
+                    >
+                      <img
+                        [src]="
+                          producto?.estado === 1
+                            ? '/icon_Productos/Listar/deshabilitar.svg'
+                            : '/icon_Productos/Listar/habilitar.svg'
+                        "
+                        alt="Estado del producto"
+                        style="width: 30px; height: 30px; vertical-align: middle"
+                      />
+                    </button>
+                  </td>
+                </tr>
+                } @else {
+                <tr>
+                  <td colspan="7" class="text-center text-warning py-2">
+                    Producto asociado no encontrado para el registro de stock ID:
+                    {{ item.idStock }}
+                  </td>
+                </tr>
+                } }
+              </ng-container>
+              <ng-template #noResults>
+                <tr *ngIf="!isLoading && !errorMessage">
+                  <td colspan="7" class="text-center py-4 text-muted">
+                    No hay registros de stock que coincidan con la búsqueda.
+                  </td>
+                </tr>
+              </ng-template>
+            </ng-container>
           </tbody>
         </table>
       </div>
@@ -220,44 +191,31 @@
   </div>
 
   <!-- Paginación -->
-  <div class="d-flex justify-content-center align-items-center flex-wrap mb-3">
-    <nav aria-label="Page navigation">
-      <ul class="pagination pagination-sm mb-0">
-        <!-- Botón Anterior -->
-        <li class="page-item" [class.disabled]="currentPage === 1">
-          <button
-            class="page-link"
-            (click)="goToPage(currentPage - 1)"
-            aria-label="Previous"
-            [disabled]="currentPage === 1"
-          >
-            <span aria-hidden="true">&laquo;</span>
-          </button>
-        </li>
-        <!-- Números de Página -->
-        @for (page of [].constructor(totalPages); let i = $index; track i) {
-        <li class="page-item" [class.active]="currentPage === i + 1">
-          <button class="page-link" (click)="goToPage(i + 1)">
-            {{ i + 1 }}
-          </button>
-        </li>
-        }
-        <!-- Botón Siguiente -->
-        <li class="page-item" [class.disabled]="currentPage === totalPages">
-          <button
-            class="page-link"
-            (click)="goToPage(currentPage + 1)"
-            aria-label="Next"
-            [disabled]="currentPage === totalPages"
-          >
-            <span aria-hidden="true">&raquo;</span>
-          </button>
-        </li>
-      </ul>
-    </nav>
-  </div>
+      <div class="d-flex justify-content-center align-items-center flex-wrap mb-3" *ngIf="totalPages > 1">
+        <nav aria-label="Page navigation">
+          <ul class="pagination pagination-sm mb-0">
+            <!-- Botón de página anterior -->
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <button class="page-link" (click)="goToPage(currentPage - 1)">
+                &laquo;
+              </button>
+            </li>
+            <!-- Botones de página dinámicos -->
+            @for (page of getPagesArray(); track page) {
+              <li class="page-item" [class.active]="currentPage === page">
+                <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
+              </li>
+            }
+            <!-- Botón de página siguiente -->
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <button class="page-link" (click)="goToPage(currentPage + 1)">
+                &raquo;
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
 </div>
-
 <!-- Modal de Confirmación (ya estaba en Bootstrap) -->
 <div
   class="modal fade"

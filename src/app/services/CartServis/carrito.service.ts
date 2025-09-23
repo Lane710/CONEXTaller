@@ -1,40 +1,56 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http'; // ¡Importa HttpClient!
-import { Observable } from 'rxjs'; // ¡Importa Observable para manejar respuestas asíncronas!
+import { HttpClient } from '@angular/common/http'; 
+import { Observable } from 'rxjs'; 
 import { ApiResponse } from '../../models/api-response';
-import { AgregarDetalleCarritoRequest } from '../../models/CartModel/AgregarDetalleCarritoRequest';
+import { RawDetalleCarritoProducto } from '../../DTOs/Cart/ProductoEnCarrito';
+import { DetalleCarrito } from '../../models/CartModel/DetalleCarrito';
 
-// Importa tus interfaces actualizadas (que ahora usan 'Decimal' internamente)
+// Importa las interfaces necesarias
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class CarritoService {
 
+  // URL base para todas las operaciones relacionadas con el carrito.
   private baseUrl = 'http://localhost:8080/carrito/';
-  private baseUrl2 = 'http://localhost:8080/detalle-carrito/'; 
 
-  // Inyecta el HttpClient en el constructor
   constructor(private http: HttpClient) { }
 
- 
+  /**
+   * Obtiene la lista de productos en el carrito de un usuario.
+   * @param usuario El nombre de usuario.
+   */
   listarProductosDeUsuario(usuario: string): Observable<ApiResponse> {
-    
     return this.http.get<ApiResponse>(`${this.baseUrl}${usuario}/productos`);
   }
 
-  agregarProductoACarrito(usuario: string | null, request: AgregarDetalleCarritoRequest): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${this.baseUrl}${usuario}/productos`, request);
+  /**
+   * Agrega un producto al carrito de un usuario.
+   * @param usuario El nombre de usuario.
+   * @param nuevoDetalle El objeto RawDetalleCarritoProducto a agregar.
+   */
+  agregarProductoACarrito(usuario: string, nuevoDetalle: DetalleCarrito): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.baseUrl}${usuario}/productos`, nuevoDetalle);
   }
 
-  
+  /**
+   * Elimina un producto del carrito de un usuario.
+   * @param usuario El nombre de usuario.
+   * @param idDetalleCarrito El ID del detalle del carrito a eliminar.
+   */
   eliminarProductoDeCarrito(usuario: string, idDetalleCarrito: number): Observable<ApiResponse> {
     return this.http.delete<ApiResponse>(`${this.baseUrl}${usuario}/productos/${idDetalleCarrito}`);
   }
 
- 
-  actualizarCantidadDetalle(idDetalleCarrito: number, cantidad: number): Observable<ApiResponse> {
-   
-    return this.http.put<ApiResponse>(`${this.baseUrl2}AumentoCandtidad/${idDetalleCarrito}/${cantidad}`, {});
+  /**
+   * Actualiza la cantidad de un producto en el carrito.
+   * @param idDetalleCarrito El ID del detalle del carrito.
+   * @param operacion La operación a realizar (1 para aumentar, 0 para disminuir).
+   */
+  actualizarCantidadDetalle(idDetalleCarrito: number, operacion: 0 | 1): Observable<ApiResponse> {
+    // Se usa el endpoint de aumento/disminución de cantidad.
+    return this.http.put<ApiResponse>(`${this.baseUrl}actualizarCantidad/${idDetalleCarrito}/${operacion}`, {});
   }
 }

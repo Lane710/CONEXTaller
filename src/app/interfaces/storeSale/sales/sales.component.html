@@ -1,347 +1,406 @@
-<!-- Contenedor principal con espaciado en los lados y arriba -->
-<div class="main-container p-4">
-  <!-- El row ahora usa clases flexbox para asegurar que en móviles las columnas se apilen -->
-  <div class="row g-4 d-flex flex-column flex-lg-row">
-    <!-- Columna izquierda: listado de productos -->
-    <div class="col-lg-7">
-      <h2 class="mt-5 mb-4">Productos Disponibles</h2>
+<div class="row g-4 d-flex flex-column flex-lg-row" >
+  <div class="col-lg-7">
+    <h2 class="mt-5 mb-4">Productos Disponibles</h2>
 
-      <!-- Barra de filtros y buscador -->
-      <div
-        class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3"
-      >
-        <!-- Selector de Categoría -->
-        <div class="col-12 col-sm-auto flex-grow-1">
-          <div class="dropdown w-100">
-            <button
-              class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
-              type="button"
-              id="categoryDropdown"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              Categoría: Todos
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
-              <li>
-                <a class="dropdown-item" href="#" data-category="all">Todos</a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="#" data-category="electronics"
-                  >Electrónicos</a
-                >
-              </li>
-              <li>
-                <a class="dropdown-item" href="#" data-category="apparel"
-                  >Ropa</a
-                >
-              </li>
-              <li>
-                <a class="dropdown-item" href="#" data-category="food"
-                  >Alimentos</a
-                >
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Buscador Bonito -->
-        <div class="col-12 col-sm-6 col-md-5">
-          <div class="search-bar-container">
-            <i class="fas fa-search search-icon"></i>
-            <input
-              type="text"
-              class="form-control rounded-pill"
-              placeholder="Buscar productos..."
-              id="product-search-input"
-              [(ngModel)]="filtroTermino"
-              (ngModelChange)="aplicarFiltro()"
-            />
-          </div>
+    <div
+      class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3"
+    >
+      <div class="col-12 col-sm-auto flex-grow-1">
+        <div class="dropdown w-100">
+          <button
+            class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
+            type="button"
+            id="categoryDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Categoría: Todos
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
+            <li>
+              <a class="dropdown-item" href="#" data-category="all">Todos</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" data-category="electronics"
+                >Electrónicos</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" data-category="apparel">Ropa</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" data-category="food"
+                >Alimentos</a
+              >
+            </li>
+          </ul>
         </div>
       </div>
 
-      <!-- Tabla de productos -->
-      <div class="card shadow-sm mb-4">
-        <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table table-hover mb-0">
-              <thead>
-                <tr>
-                  <th scope="col">Imagen</th>
-                  <th scope="col">Producto</th>
-                  <th scope="col">Precio</th>
-                  <th scope="col" class="text-center">Cantidad</th>
-                  <th scope="col" class="text-center">Acción</th>
-                </tr>
-              </thead>
-              <tbody id="product-list-body">
-                <!-- Se itera sobre la lista paginada que ya ha sido filtrada -->
-                <tr *ngFor="let product of paginatedProducts; let i = index">
-                  <td data-label="Imagen">
-                    <img
-                      [src]="product.producto.imagen"
-                      alt="Producto"
-                      class="img-thumbnail product-image"
-                    />
-                  </td>
-                  <td data-label="Producto">{{ product.producto.nombre }}</td>
-                  <td data-label="Precio">{{ product.producto.precio }} Bs.</td>
-                  <td data-label="Cantidad" class="text-center">
-                    <div class="quantity-control">
-                      <!-- Se utiliza el índice local 'i' para acceder a la cantidad de cada producto -->
-                      <button
-                        class="btn btn-outline-secondary btn-sm minus-btn"
-                        [disabled]="
-                          cantidadesEnVenta[(currentPage - 1) * pageSize + i] <=
-                          1
-                        "
-                        (click)="sumarRestar(i, -1)"
-                      >
-                        <i class="fas fa-minus">-</i>
-                      </button>
-                      <!-- Se utiliza [(ngModel)] para un enlace de datos bidireccional -->
-                      <input
-                        class="quantity-value"
-                        [(ngModel)]="
-                          cantidadesEnVenta[(currentPage - 1) * pageSize + i]
-                        "
-                        (change)="actualizarCantidadManual(i, $event)"
-                        type="number"
-                      />
-                      <!-- Se utiliza el índice local 'i' para acceder a la cantidad de cada producto -->
-                      <button
-                        class="btn btn-outline-secondary btn-sm plus-btn"
-                        [disabled]="
-                          cantidadesEnVenta[(currentPage - 1) * pageSize + i] >=
-                          product.cantidad
-                        "
-                        (click)="sumarRestar(i, 1)"
-                      >
-                        <i class="fas fa-plus">+</i>
-                      </button>
-                    </div>
-                  </td>
-                  <td data-label="Acción" class="text-center">
+      <div class="col-12 col-sm-6 col-md-5">
+        <div class="search-bar-container">
+          <i class="fas fa-search search-icon"></i>
+          <input
+            type="text"
+            class="form-control rounded-pill"
+            placeholder="Buscar productos..."
+            id="product-search-input"
+            [(ngModel)]="filtroTermino"
+            (ngModelChange)="aplicarFiltro()"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th scope="col">Imagen</th>
+                <th scope="col">Producto</th>
+                <th scope="col">Precio</th>
+                <th scope="col" class="text-center">Cantidad</th>
+                <th scope="col" class="text-center">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="product-list-body">
+              <tr *ngFor="let product of paginatedProducts; let i = index">
+                <td data-label="Imagen">
+                  <img
+                    [src]="product.producto.imagen"
+                    alt="Producto"
+                    class="img-thumbnail product-image"
+                  />
+                </td>
+                <td data-label="Producto">{{ product.producto.nombre }}</td>
+                <td data-label="Precio">{{ product.producto.precio }} Bs.</td>
+                <td data-label="Cantidad" class="text-center">
+                  <div class="quantity-control">
                     <button
-                      class="btn btn-sm add-to-ticket-btn"
-                      style="border: none"
-                      (click)="
-                        anadirVentaTemporal(
-                          product,
-                          cantidadesEnVenta[(currentPage - 1) * pageSize + i]
-                        )
+                      class="btn btn-outline-secondary btn-sm minus-btn"
+                      [disabled]="
+                        cantidadesEnVenta[(currentPage - 1) * pageSize + i] <= 1
                       "
+                      (click)="sumarRestar(i, -1)"
                     >
-                      <img src="/icon_Ventas/plusVentas.svg" alt="" />
+                      <i class="fas fa-minus">-</i>
                     </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+                    <input
+                      class="quantity-value"
+                      [(ngModel)]="
+                        cantidadesEnVenta[(currentPage - 1) * pageSize + i]
+                      "
+                      (change)="actualizarCantidadManual(i, $event)"
+                      type="number"
+                    />
+                    <button
+                      class="btn btn-outline-secondary btn-sm plus-btn"
+                      [disabled]="
+                        cantidadesEnVenta[(currentPage - 1) * pageSize + i] >=
+                        product.cantidad
+                      "
+                      (click)="sumarRestar(i, 1)"
+                    >
+                      <i class="fas fa-plus">+</i>
+                    </button>
+                  </div>
+                </td>
+                <td data-label="Acción" class="text-center">
+                  <button
+                    class="btn btn-sm add-to-ticket-btn"
+                    style="border: none"
+                    (click)="
+                      anadirVentaTemporal(
+                        product,
+                        cantidadesEnVenta[(currentPage - 1) * pageSize + i]
+                      )
+                    "
+                  >
+                    <img src="/icon_Ventas/plusVentas.svg" alt="" />
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Columna derecha: ticket de venta -->
-    <div class="col-lg-5 ticket-section-sticky">
-      <div class="p-4">
-        <h3 class="border-bottom pb-2">
-          <i class="fas fa-receipt me-2"></i>Lista de Venta
+  <div class="ticket col-lg-5 ticket-section-sticky">
+    <div class="p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0 text-primary">
+          <i class="fas fa-receipt me-2"></i>Ticket de Venta
         </h3>
-        <!-- Sección de totales dinámicos -->
-        <div class="bg-white p-3 rounded mb-3">
-          <div class="d-flex justify-content-between mb-1">
-            <span>Subtotal:</span>
-            <!-- Mostramos el subtotal calculado por el método del componente -->
-            <span>{{
-              calcularSubtotal() | currency : "Bs " : "symbol" : "1.2-2"
-            }}</span>
-          </div>
-          <div class="d-flex justify-content-between fw-bold fs-5">
-            <span>Total:</span>
-            <!-- Mostramos el total final calculado por el método del componente -->
-            <span>{{
-              calcularTotal() | currency : "Bs " : "symbol" : "1.2-2"
-            }}</span>
-          </div>
-        </div>
+        <span class="badge bg-primary rounded-pill p-2">
+          {{ productosPorVender.length }}
+          {{ productosPorVender.length === 1 ? "producto" : "productos" }}
+        </span>
+      </div>
 
-        <!--botones para realizar y cancelar venta-->
-        <div class="d-grid gap-2">
-          <button class="btn btn-danger" routerLink="/home/listadoVentasStore">
-            <i class="fas fa-trash me-1"></i> Cancelar Venta
-          </button>
-          <button
-            class="btn btn-success"
-            data-bs-toggle="modal"
-            data-bs-target="#confirmModal"
-            [disabled]="productosPorVender.length === 0"
-          >
-            <i class="fas fa-check-circle me-1"></i> Registrar Venta
-          </button>
-        </div>
-        <!-- Contenido dinámico del ticket -->
+      <div
+        class="VentaPendiente list-group list-group-flush mb-4"
+        id="ticket-items"
+      >
         <div
-          class="VentaPendiente list-group list-group-flush"
-          id="ticket-items"
+          *ngFor="let item of productosPorVender; let i = index"
+          class="list-group-item d-flex justify-content-between align-items-center mb-2 p-3 rounded-3 shadow-sm ticket-item"
         >
-          <div
-            *ngFor="let item of productosPorVender; let i = index"
-            class="list-group-item d-flex justify-content-between align-items-center mb-2 p-3 rounded-3 shadow-sm ticket-item"
-          >
-            <div class="d-flex flex-column">
-              <span class="fw-bold"
-                >{{ item.cantidad }}x {{ item.stock.producto.nombre }}</span
-              >
-              <small class="text-muted">
-                Precio unitario:
-                {{ item.precioUnitario | currency : "Bs" : "symbol" : "1.2-2" }}
-              </small>
-            </div>
-
-            <div class="d-flex align-items-center gap-2">
-              <span class="fw-bold text-success">
-                {{
-                  item.cantidad * item.precioUnitario
-                    | currency : "Bs" : "symbol" : "1.2-2"
-                }}
+          <div class="d-flex flex-column flex-grow-1 me-3">
+            <div class="d-flex align-items-center mb-1">
+              <span class="badge bg-primary cantidad-badge me-2">
+                {{ item.cantidad }}
               </span>
-              <button
-                (click)="eliminarVentaTemporal(i)"
-                class="btn btn-sm btn-outline-danger p-1 border-0"
-              >
-                <img src="/icon_Ventas/IconoX.svg" alt="" style="width: 24px;">
-              </button>
+              <span class="fw-bold text-dark producto-nombre">{{
+                item.stock.producto.nombre
+              }}</span>
             </div>
+            <small class="text-muted ms-4">
+              Precio unitario:
+              {{ item.precioUnitario | currency : "Bs" : "symbol" : "1.2-2" }}
+            </small>
           </div>
 
-          <div
-            *ngIf="productosPorVender.length === 0"
-            class="text-center text-muted p-4"
-          >
-            <i class="fas fa-box-open me-2"></i> No hay productos por vender.
+          <div class="d-flex align-items-center gap-2">
+            <span class="fw-bold text-success precio-total">
+              {{
+                item.cantidad * item.precioUnitario
+                  | currency : "Bs" : "symbol" : "1.2-2"
+              }}
+            </span>
+            <button
+              (click)="eliminarVentaTemporal(i)"
+              class="btn btn-sm btn-outline-danger p-1 border-0 d-flex align-items-center justify-content-center"
+              title="Eliminar producto"
+            >
+              <img
+                src="/icon_Ventas/IconoX.svg"
+                alt="Eliminar"
+                style="width: 18px; height: 18px"
+              />
+            </button>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
 
-<!-- Modal de Confirmación de Venta -->
-<div class="modal fade" id="confirmModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">Confirmar Venta</h5>
-        <button
-          type="button"
-          class="btn-close btn-close-white"
-          data-bs-dismiss="modal"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <p>
-          Por favor, completa los datos del cliente para registrar la venta.
-        </p>
-        <form>
-          <div class="mb-3">
-            <label for="clienteNombre" class="form-label">Nombre :</label>
-            <input
-              type="text"
-              class="form-control"
-              id="clienteNombre"
-              required
-            />
-          </div>
-          <div class="mb-3">
-            <label for="clienteApellidos" class="form-label">Apellidos :</label>
-            <input
-              type="text"
-              class="form-control"
-              id="apellidosClientes"
-              required
-            />
-          </div>
-          <div class="mb-3">
-            <label for="clienteCelular" class="form-label"
-              >Celular (opcional):</label
-            >
-            <input type="tel" class="form-control" id="numeroCliente" />
-          </div>
-          <div class="mb-3">
-            <label for="clienteCorreo" class="form-label"
-              >Email (opcional):</label
-            >
-            <input type="email" class="form-control" id="emailCliente" />
-          </div>
-          <div class="mb-3">
-            <label for="ventaNotas" class="form-label">Notas (opcional):</label>
-            <textarea
-              class="form-control"
-              id="ventaNotas"
-              rows="2"
-              placeholder="Ej: Cliente pagó en efectivo..."
-            ></textarea>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-          Cancelar
-        </button>
-        <button type="button" class="btn btn-primary" (click)="realizarVenta()">
-          Confirmar
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-<div>
-  <div *ngIf="mostrarModalStock" class="modal fade show d-block" tabindex="-1">
-    <div class="modal-dialog modal-md modal-dialog-centered">
-      <div class="modal-content rounded-3 shadow-lg">
-        <div class="modal-header bg-primary text-white rounded-top-3">
-          <h5 class="modal-title fw-bold" id="modalDetallesProductoLabel">
-            ⚠️ Error de Stock
-          </h5>
-          <button
-            type="button"
-            class="btn-close btn-close-white"
-            (click)="ocultarModal()"
-          ></button>
+        <div
+          *ngIf="productosPorVender.length === 0"
+          class="text-center text-muted p-4 empty-state"
+        >
+          <i class="fas fa-box-open fa-2x mb-2 d-block"></i>
+          <p class="mb-0">No hay productos por vender.</p>
         </div>
-        <div class="modal-body p-4">
-          <div class="row2 align-items-center">
-            <div class="col-md-8">
-              <p class="mb-2">
-                No se puede agregar la cantidad deseada del producto.
-              </p>
-              <p>
-                El producto "<strong class="text-primary">{{
-                  nombreProductoModal
-                }}</strong
-                >" tiene un stock máximo de:
-                <strong class="text-danger fs-5">{{ stockMaximoModal }}</strong>
-              </p>
-            </div>
+      </div>
+
+      <div class="totales-section bg-light p-4 rounded-4 shadow-sm mb-4">
+        <h5 class="border-bottom pb-2 mb-3 fw-semibold">Resumen de compra</h5>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="text-secondary">Subtotal:</span>
+          <span class="fw-semibold">{{
+            calcularSubtotal() | currency : "Bs " : "symbol" : "1.2-2"
+          }}</span>
+        </div>
+        <div
+          class="descuento d-flex justify-content-between align-items-center mb-3 py-2"
+        >
+          <span class="text-secondary">Descuento:</span>
+          <div class="input-group input-group-sm" style="width: 120px">
+            <span class="input-group-text bg-white">Bs</span>
+            <input
+              type="number"
+              class="form-control form-control-sm"
+              step="0.01"
+              min="0"
+              placeholder="0.00"
+              [disabled]="productosPorVender.length === 0"
+              [(ngModel)]="descuento"
+              (input)="validarDescuento()"
+            />
           </div>
         </div>
         <div
-          class="modal-footer justify-content-center bg-light border-top-0 rounded-bottom-3"
+          class="d-flex justify-content-between align-items-center pt-2 border-top fw-bold fs-5 text-primary"
         >
-          <button
-            type="button"
-            class="btn btn-secondary px-4"
-            (click)="ocultarModal()"
-          >
-            Entendido
-          </button>
+          <span>Total:</span>
+          <span>{{
+            calcularTotal() | currency : "Bs " : "symbol" : "1.2-2"
+          }}</span>
         </div>
+      </div>
+      <div class="d-grid gap-3">
+        <button
+          class="btn btn-outline-danger btn-lg py-2 rounded-3"
+          routerLink="/home/listadoVentasStore"
+        >
+          <i class="fas fa-times-circle me-2"></i> Cancelar Venta
+        </button>
+        <button
+          class="btn btn-success btn-lg py-2 rounded-3"
+          data-bs-toggle="modal"
+          data-bs-target="#confirmModal"
+          [disabled]="productosPorVender.length === 0"
+          (click)="buscadorCliente()"
+        >
+          <i class="fas fa-check-circle me-2"></i> Registrar Venta
+        </button>
       </div>
     </div>
   </div>
+</div>
+<div class="modal fade" id="confirmModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Confirmar Venta</h5>
+                <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"
+                ></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Por favor, completa los datos del cliente para registrar la venta.
+                </p>
+                <form #clienteVentaForm="ngForm">
+                    <div class="mb-3">
+                        <label for="clienteBuscador" class="form-label"
+                            >Buscar cliente existente:</label
+                        >
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="clienteBuscador"
+                            placeholder="Buscar por nombre completo"
+                            name="clienteBuscador"
+                            [(ngModel)]="clienteNombreBuscador"
+                            (input)="filtrarClientes()"
+                            (blur)="clientesFiltrados = []"
+                        />
+                        <ul
+                            class="list-group mt-1"
+                            [hidden]="clientesFiltrados.length === 0"
+                        >
+                            <li
+                                *ngFor="let cliente of clientesFiltrados"
+                                class="list-group-item list-group-item-action"
+                                (mousedown)="seleccionarCliente(cliente)"
+                            >
+                                {{ cliente.nombre }} {{ cliente.appaterno }}
+                                {{ cliente.apmaterno }}
+                            </li>
+                        </ul>
+                    </div>
+                    <hr />
+                    <div class="mb-3">
+                        <label for="clienteCelular" class="form-label"
+                            >CI:</label
+                        >
+                        <input
+                            type="number"
+                            class="form-control"
+                            id="ci"
+                            name="numeroci"
+                            required
+                            [(ngModel)]="clienteVenta.ci"
+                            [disabled]="isCiDisabled"
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <label for="clienteNombre" class="form-label">Nombre :</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="clienteNombre"
+                            name="clienteNombre"
+                            [(ngModel)]="clienteVenta.nombre"
+                            required
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <label for="clienteApellidos" class="form-label">Apellidos :</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="apellidosClientes"
+                            name="apellidosClientes"
+                            [(ngModel)]="clienteVenta.appaterno"
+                            required
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <label for="clienteCelular" class="form-label"
+                            >Celular (opcional):</label
+                        >
+                        <input
+                            type="tel"
+                            class="form-control"
+                            id="numeroCliente"
+                            name="numeroCliente"
+                            [(ngModel)]="clienteVenta.telefono"
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <label for="ventaNotas" class="form-label">Notas (opcional):</label>
+                        <textarea
+                            class="form-control"
+                            id="ventaNotas"
+                            rows="2"
+                            placeholder="Ej: Se realizo un descuento de promocion"
+                        ></textarea>
+                    </div>
+                    <div class="col-12 col-md-auto">
+                        <label for="metodoPago" class="form-label">Metodo de Pago: </label>
+                        <select
+                            class="form-control rounded-pill w-100"
+                            name="metodoDePago"
+                            id="metodoPago"
+                            required
+                            #metodoDePago
+                            (change)="obtenerMetodoDePago(metodoDePago.value)"
+                        >
+                            <option value="efectivo">Efectivo</option>
+                            <option value="QR">QR</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                    (click)="limpiarDatosCliente()"
+                >
+                    Cancelar
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    (click)="realizarVenta()"
+                    [disabled]="!clienteVentaForm.form.valid"
+                >
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
-  <div *ngIf="mostrarModalStock" class="modal-backdrop fade show"></div>
+
+<!--MODAL DE CONFIRMACION DE LA VENTA REALIZADA-->
+
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center p-5">
+        <i class="bi bi-check-circle-fill success-icon mb-4"></i>
+        <h5 class="modal-title mb-3" id="successModalLabel">¡Venta Registrada con Éxito!</h5>
+        <p class="mb-4">La transacción se ha completado correctamente.</p>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+      </div>
+    </div>
+  </div>
 </div>

@@ -200,8 +200,8 @@ export class RegistrarUserComponent implements OnInit {
       const personaData: personas = {
         ci: this.usuarioForm.get('persona.ci')?.value,
         nombre: this.usuarioForm.get('persona.nombre')?.value,
-        apellidoP: this.usuarioForm.get('persona.apellidoPaterno')?.value,
-        apellidoM: this.usuarioForm.get('persona.apellidoMaterno')?.value,
+        apellidop: this.usuarioForm.get('persona.apellidoPaterno')?.value,
+        apellidom: this.usuarioForm.get('persona.apellidoMaterno')?.value,
         fechaNacimiento: this.usuarioForm.get('persona.fechaNacimiento')?.value,
         genero: this.usuarioForm.get('persona.genero')?.value,
         telefono: this.usuarioForm.get('persona.telefono')?.value,

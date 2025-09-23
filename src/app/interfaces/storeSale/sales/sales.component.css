@@ -1,99 +1,98 @@
-
 /* Contenedor principal de la página */
 .main-container {
-    max-width: 1350px;
-    margin: auto;
-    /* Se elimina el max-height para permitir el scroll natural del documento */
+  max-width: 1500px; /* Nuevo valor para un ancho más grande */
+  margin: auto;
+  /* Se elimina el max-height para permitir el scroll natural del documento */
 }
-
 /* El div que contiene las dos columnas (productos y ticket) */
 .row {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 4px 4px 6px 4px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    /* Se elimina flex-grow para evitar conflictos con la altura del viewport */
+  margin: auto;
+  max-width: 1350px; /* Valor duplicado */
+  /* Se elimina height: 850px; para permitir el crecimiento del contenido */
 }
 
+/* Se reajusta la altura del contenedor de la lista de productos
+   para ser más flexible y responsivo, sin un máximo fijo. */
 .product-list-container {
-    max-height: calc(80vh - 20px);
-    overflow-y: auto;
+  overflow-y: auto;
+  max-height: none; /* Se elimina el max-height fijo */
 }
 
 .product-image {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    border-radius: 8px;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
 /* Estilos de la sección del ticket, se ajustan para diferentes tamaños de pantalla */
 .ticket-section-sticky {
-    background-color: #e9ecef;
-    border-left: 1px solid #dee2e6;
-    /* En pantallas pequeñas, el diseño es de flujo normal */
-    border-radius: 12px;
-    position: static;
-    height: auto;
+  background-color: #e9ecef;
+  border-left: 1px solid #dee2e6;
+  /* Se elimina height: 1000px; para permitir el crecimiento del contenido */
+  border-radius: 12px;
+  position: static;
 }
 
 /* Estilos para la barra de búsqueda */
 .search-bar-container {
-    position: relative;
+  position: relative;
 }
 
 .search-bar-container .form-control {
-    padding-left: 2.5rem;
-    border-radius: 20px;
-    border: 1px solid #ced4da;
-    transition: all 0.3s ease;
+  padding-left: 2.5rem;
+  border-radius: 20px;
+  border: 1px solid #ced4da;
+  transition: all 0.3s ease;
 }
 
 .search-bar-container .form-control:focus {
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  border-color: #86b7fe;
 }
 
 .search-bar-container .search-icon {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #adb5bd;
-    pointer-events: none;
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #adb5bd;
+  pointer-events: none;
 }
 
 /* Controles de cantidad */
 .quantity-control {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .quantity-value {
-    width: 30px;
-    text-align: center;
+  width: 30px;
+  text-align: center;
 }
 
 .quantity-value::-webkit-outer-spin-button,
 .quantity-value::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 /* Estilos de las celdas de la tabla para alinear el contenido verticalmente */
 td {
-    vertical-align: middle;
+  vertical-align: middle;
 }
 
+/* Reemplaza la regla de .VentaPendiente con esta nueva. */
 .VentaPendiente {
-    border-radius: 12px;
-    margin-top: 10px;
-    padding: 8px;
-    background-color: #00ccff1a;
+  border-radius: 12px;
+  margin-top: 10px;
+  height: auto; /* Se cambia a auto para que crezca con el contenido */
+  padding: 8px;
+  background-color: #00ccff1a;
+  overflow-y: auto; /* Se mantiene para el scroll si el contenido es largo */
+  max-height: 400px; /* Se añade un max-height para evitar que se desborde en pantallas grandes */
 }
 
 /* --- Media Queries para responsividad --- */
@@ -101,95 +100,75 @@ td {
 /* Estilos aplicados solo para pantallas medianas (md) y superiores */
 @media (min-width: 992px) {
   .ticket-section-sticky {
-      height: calc(100vh - 20px);
-      position: sticky;
-      top: 1rem;
-      border-top: none;
+    height: auto; /* Se cambia a auto para evitar el desbordamiento en pantallas grandes */
+    top: 1rem;
+    border-top: none;
   }
 }
 
 /* Estilos para tablas en pantallas pequeñas (hasta 768px) */
 @media (max-width: 768px) {
-    /* La tabla se adapta a un formato de lista en móvil */
-    table,
-    thead,
-    tbody,
-    th,
-    td,
-    tr {
-        display: block;
-    }
+  /* La tabla se adapta a un formato de lista en móvil */
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
 
-    thead tr {
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
-    }
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
 
-    tr {
-        border: 1px solid #ccc;
-        margin-bottom: 10px;
-        border-radius: 8px;
-        overflow: hidden;
-    }
+  tr {
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
 
-    td {
-        border: none;
-        border-bottom: 1px solid #eee;
-        position: relative;
-        padding-left: 50%;
-        text-align: right;
-        vertical-align: middle;
-    }
+  td {
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 50%;
+    text-align: right;
+    vertical-align: middle;
+  }
 
-    td:last-child {
-        border-bottom: 0;
-    }
+  td:last-child {
+    border-bottom: 0;
+  }
 
-    td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 10px;
-        width: calc(50% - 20px);
-        padding-right: 10px;
-        white-space: nowrap;
-        text-align: left;
-        font-weight: bold;
-        color: #555;
-    }
+  td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    width: calc(50% - 20px);
+    padding-right: 10px;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: bold;
+    color: #555;
+  }
 
-    td[data-label="Imagen"] {
-        text-align: center;
-        padding-left: 10px;
-    }
+  td[data-label="Imagen"] {
+    text-align: center;
+    padding-left: 10px;
+  }
 
-    td[data-label="Imagen"]::before {
-        display: none;
-    }
+  td[data-label="Imagen"]::before {
+    display: none;
+  }
 
-    .product-image {
-        margin: 5px auto;
-        display: block;
-    }
-}
-
-/*modal para mostrar si la cantidad de productos a vender supera la del stock*/
-/* Ya tienes estos estilos de Bootstrap aplicados con las clases del HTML,
-   pero si necesitas un ajuste fino, puedes hacerlo aquí.
-   Por ejemplo, el color del texto de la tabla: */
-th {
-  color: #333;
-  font-weight: bold;
-}
-
-
-
-/* Reemplaza la regla de .VentaPendiente con esta nueva. */
-.VentaPendiente {
-  border-radius: 12px;
-  margin-top: 10px;
-  padding: 8px;
-  /* Eliminamos el background-color para que los ítems individuales tengan su propio fondo */
+  .product-image {
+    margin: 5px auto;
+    display: block;
+  }
 }
 
 /* Estilo para los ítems del ticket, con colores alternos */
@@ -217,3 +196,46 @@ th {
   color: #fff;
   background-color: #dc3545;
 }
+
+
+/* Estilos para el modal de éxito */
+.success-icon {
+  font-size: 4rem; /* Tamaño del icono */
+  color: #28a745; /* Color verde de éxito */
+  animation: scale-up 0.5s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+}
+
+/* Animación para el icono */
+@keyframes scale-up {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  border-radius: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal-title {
+  font-weight: 600;
+  color: #333;
+}
+
+.btn-primary {
+  background-color: #28a745;
+  border-color: #28a745;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
+  transform: translateY(-2px);
+}
+

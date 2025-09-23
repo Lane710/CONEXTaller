@@ -26,6 +26,7 @@ export class CarritoComponent implements OnInit {
   subtotalCarrito: string = '0.00'; // Inicializa como string
   totalCarrito: string = '0.00'; // Inicializa como string
   productosCuadricula: any[] = []; // Propiedad para almacenar los productos del carrusel
+  
   @ViewChild('carouselContainer') carouselContainer!: ElementRef;
   constructor(
     private carritoService: CarritoService,

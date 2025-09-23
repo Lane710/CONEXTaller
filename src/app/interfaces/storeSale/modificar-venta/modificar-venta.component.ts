@@ -40,7 +40,7 @@ export class ModificarVentaComponent implements OnInit {
       console.log('ID de venta obtenido:', idVenta);
       if (idVenta) {
         // 2. Si hay un ID, carga la venta y sus detalles
-        this.cargarVentaExistente(idVenta);
+      //  this.cargarVentaExistente(idVenta);
       }
     });
 
@@ -87,7 +87,7 @@ export class ModificarVentaComponent implements OnInit {
   /**
    * Carga los datos de la venta existente y los detalles de venta.
    * @param id El ID de la venta.
-   */
+   
   cargarVentaExistente(id: string) {
     this.idVenta = id;
     this.ventasS.findById(id).subscribe({
@@ -108,7 +108,7 @@ export class ModificarVentaComponent implements OnInit {
         console.error('Error al obtener la venta:', error);
       },
     });
-  }
+  }*/
 
   /**
    * Carga los detalles de la venta a partir del ID de la venta.
@@ -208,7 +208,7 @@ export class ModificarVentaComponent implements OnInit {
 
     if (
       clienteActualizado.nombre !== this.ventaExistente?.cliente?.nombre ||
-      clienteActualizado.apPaterno !== this.ventaExistente?.cliente?.apPaterno ||
+      //clienteActualizado.apellidos !== this.ventaExistente?.cliente?.apellidos ||
       clienteActualizado.telefono !== this.ventaExistente?.cliente?.telefono ||
       clienteActualizado.email !== this.ventaExistente?.cliente?.email
     ) {
