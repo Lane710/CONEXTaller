@@ -1,5 +1,5 @@
 
-import { ProductoEnCarrito } from "./ProductoEnCarrito";
+import { ProductoDTO } from "../dtosBD/ProductoDTO";
 
 
 export interface DetalleCarritoProducto {
@@ -7,5 +7,5 @@ export interface DetalleCarritoProducto {
   cantidad: number;
   precioUnitario: string; // Usar el tipo BigDecimal o 'number'
   subtotal: string; // Usar el tipo BigDecimal o 'number'
-  producto: ProductoEnCarrito;
+  producto: ProductoDTO;
 }

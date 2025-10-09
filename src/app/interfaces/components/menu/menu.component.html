@@ -52,6 +52,33 @@
 
       <li
         class="nav-item-sidebar dropdown"
+        *ngIf="authService.hasRole('administrador') || authService.hasRole('dueno') || authService.hasRole('trabajador')"
+      >
+        <a
+          class="nav-link-sidebar dropdown-toggle"
+          
+          id="CategoriasDropdown"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <span class="icon">📦</span>
+          <span class="text">Gestionar Categorias</span>
+        </a>
+         <ul class="dropdown-menu" aria-labelledby="CategoriasDropdown">
+          <li>
+            <a
+              class="dropdown-item"
+              routerLink="/home/Categorias"
+              routerLinkActive="active"
+              >Listar Categorias</a
+            >
+          </li>
+        </ul>
+      </li>
+
+      <li
+        class="nav-item-sidebar dropdown"
         *ngIf="authService.hasRole('administrador') || authService.hasRole('duena') || authService.hasRole('trabajador')"
       >
         <a

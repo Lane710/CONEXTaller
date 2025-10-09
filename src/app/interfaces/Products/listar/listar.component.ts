@@ -13,10 +13,11 @@ import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { stock } from '../../../models/ProductoStockModel/stock';
-import { categoria } from '../../../models/ProductoStockModel/categorias';
+
 import { StockService } from '../../../services/ProductosServis/stock.service';
 import { ProductosService } from '../../../services/ProductosServis/productos.service';
 import { ApiResponse } from '../../../models/api-response';
+import { categorias } from '../../../models/ProductoStockModel/categorias';
 
 declare var bootstrap: any;
 
@@ -30,7 +31,7 @@ declare var bootstrap: any;
 export class ListarComponent implements OnInit, AfterViewInit {
   stocks: stock[] = [];
   stockSeleccionado: stock | null = null;
-  categorias: categoria[] = [];
+  categorias: categorias[] = [];
 
   isLoading: boolean = true;
   errorMessage: string | null = null;
@@ -116,7 +117,7 @@ export class ListarComponent implements OnInit, AfterViewInit {
         const term = this.searchText.toLowerCase();
         switch (this.filterBy) {
           case 'nombre':
-            matchesSearch = item.producto?.nombre?.toLowerCase().includes(term);
+            matchesSearch = item.producto?.nombre?.toLowerCase().includes(term)||false;
             break;
           case 'marca':
             matchesSearch = item.producto?.marca?.toLowerCase().includes(term) ?? false;
@@ -148,7 +149,7 @@ export class ListarComponent implements OnInit, AfterViewInit {
         const term = this.searchText.toLowerCase();
         switch (this.filterBy) {
           case 'nombre':
-            matchesSearch = item.producto?.nombre?.toLowerCase().includes(term);
+            matchesSearch = item.producto?.nombre?.toLowerCase().includes(term)||false;
             break;
           case 'marca':
             matchesSearch = item.producto?.marca?.toLowerCase().includes(term) ?? false;
@@ -223,7 +224,7 @@ export class ListarComponent implements OnInit, AfterViewInit {
     this.productosService.getCategorias().subscribe({
       next: (response: ApiResponse) => {
         if (response.success && response.data) {
-          this.categorias = response.data as categoria[];
+          this.categorias = response.data as categorias[];
         } else {
           this.showModalMessage(
             'Error',

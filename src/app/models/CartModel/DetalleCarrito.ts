@@ -9,7 +9,6 @@ export interface DetalleCarrito {
     cantidad: number;
     precioUnitario: string; // Usa 'string' si el backend usa BigDecimal
     subtotal?: string;       // Usa 'string' si el backend usa BigDecimal
-    
     // El objeto 'producto' ahora incluye la información de stock
     producto: ProductoEnCarrito;
 }

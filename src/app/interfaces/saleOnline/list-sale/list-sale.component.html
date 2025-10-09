@@ -91,9 +91,9 @@
           <div
             class="order-header p-3 d-flex justify-content-between align-items-center cursor-pointer"
             [ngClass]="{
-              'bg-danger-subtle': item.pedido.estado === 'cancelado',
+              'bg-danger-subtle': item.pedido.estado === 'CANCELADO',
               'bg-secondary-subtle text-dark':
-                item.pedido.estado !== 'cancelado'
+                item.pedido.estado !== 'CANCELADO'
             }"
             (click)="item.isExpanded = !item.isExpanded"
           >
@@ -105,11 +105,13 @@
               <span
                 class="badge me-2"
                 [ngClass]="{
-                  'bg-success': item.pedido.estado === 'completado',
-                  'bg-warning text-dark': item.pedido.estado === 'pendiente',
-                  'bg-danger': item.pedido.estado === 'cancelado'
+                  'bg-success': item.pedido.estado === 'CONFIRMADO',
+                  'bg-warning text-dark': item.pedido.estado === 'EN_PROCESO',
+                  'bg-danger': item.pedido.estado === 'ENVIADO',
+                  
                 }"
               >
+              <!--'bg-danger': item.pedido.estado === 'CANCELADO'-->
                 {{ item.pedido.estado }}
               </span>
               <i
@@ -132,7 +134,7 @@
             >
               <div class="d-flex justify-content-between align-items-center">
                 <div class="d-flex flex-column">
-                  <span class="fw-bold">{{ detalle.producto?.nombre }}</span>
+                  <span class="fw-bold">{{ detalle.producto.nombre }}</span>
                   <small class="text-muted"
                     >Cantidad: {{ detalle.cantidad }} | Precio Unitario: Bs
                     {{ detalle.precioUnitario }}</small
@@ -178,7 +180,7 @@
               class="btn rounded-pill btn-icon-expand"
               style="border: 2px solid #ffc107; color: #ffc107"
               (click)="abrirModalCambiarEstado(item.pedido)"
-              [disabled]="item.pedido.estado === 'cancelado'"
+              [disabled]="item.pedido.estado === 'CANCELADO'"
             >
               <img src="/icon_SaleOnline/iconoir--page-edit.svg" alt="" />
               <span class="btn-label">Modificar</span>
@@ -195,8 +197,8 @@
               class="btn rounded-pill btn-icon-expand"
               style="border: 2px solid #dc3545; color: #dc3545"
               [disabled]="
-                item.pedido.estado === 'cancelado' ||
-                item.pedido.estado === 'completado'
+                item.pedido.estado === 'CANCELADO' ||
+                item.pedido.estado === 'CONFIRMADO'
               "
               (click)="abrirModalCancelarPedido(item.pedido)"
             >
@@ -366,7 +368,7 @@
           >
             <div class="d-flex w-100 justify-content-between">
               <h6 class="mb-1">
-                {{ detalle.producto?.nombre }}
+                {{ detalle.producto.nombre }}
                 <span
                   class="badge"
                   [ngClass]="{
@@ -492,19 +494,21 @@
               </p>
               <p>
                 <strong>ID Forma de Pago:</strong>
-                {{ pedidoSeleccionado.idFormaPago }}
+                {{ pedidoSeleccionado.formaPago.idFormaPago }}
               </p>
               <p>
                 <strong>Estado:</strong>
                 <span
                   class="badge"
                   [ngClass]="{
-                    'bg-success': pedidoSeleccionado.estado === 'completado',
+                    'bg-success': pedidoSeleccionado.estado === 'CONFIRMADO',
                     'bg-warning text-dark':
-                      pedidoSeleccionado.estado === 'pendiente',
-                    'bg-danger': pedidoSeleccionado.estado === 'cancelado'
+                      pedidoSeleccionado.estado === 'EN_PROCESO',
+                    'bg-danger': pedidoSeleccionado.estado === 'CANCELADO',
+                    
                   }"
                 >
+                <!--'bg-danger': pedidoSeleccionado.estado === 'ENVIADO'-->
                   {{ pedidoSeleccionado.estado }}
                 </span>
               </p>
@@ -535,7 +539,7 @@
                     }"
                   >
                     <div class="card-body">
-                      <h6 class="card-title">{{ detalle.producto?.nombre }}</h6>
+                      <h6 class="card-title">{{ detalle.producto.nombre }}</h6>
                       <p class="card-text mb-1">
                         Cantidad: <strong>{{ detalle.cantidad }}</strong>
                       </p>
@@ -609,7 +613,7 @@
             *ngFor="let detalle of ListaDetallePedidoSelec"
           >
             <div>
-              {{ detalle.producto?.nombre }}
+              {{ detalle.producto.nombre }}
               <span class="text-muted d-block small"
                 >Cantidad: {{ detalle.cantidad }}</span
               >

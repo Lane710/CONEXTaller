@@ -11,13 +11,16 @@ import { proveedor } from '../../../models/proveedor';
 import { ApiResponse } from '../../../models/api-response';
 import { forkJoin, Observable, of } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http'; // Asegúrate de importar HttpErrorResponse
-import { categoria } from '../../../models/ProductoStockModel/categorias';
+
 
 import { finalize, catchError, concatMap, map } from 'rxjs/operators'; // Importa map
-import { ProductoPropiedad } from '../../../models/ProductoStockModel/ProductoPropiedad'; // Asegúrate de que esta ruta sea correcta
-import { ProductoImagenService } from '../../../services/PersonServis/Secundarios/producto-imagen.service'; // Asegúrate de que esta ruta sea correcta
-import { ProductoPropiedadService } from '../../../services/PersonServis/Secundarios/producto-propiedad.service'; // Asegúrate de que esta ruta sea correcta
+
+import { ProductoImagenService } from '../../../services/ProductosServis/Secundarios/producto-imagen.service'; // Asegúrate de que esta ruta sea correcta
+
 import { ProductoImagen } from '../../../models/ProductoStockModel/ProductoImagen'; // Asegúrate de que esta ruta sea correcta
+import { TipoPropiedadService } from '../../../services/ProductosServis/tipo-propiedad-service.service';
+import { categorias } from '../../../models/ProductoStockModel/categorias';
+import { tipoPropiedad } from '../../../models/ProductoStockModel/tipoPropiedad';
 
 
 declare var bootstrap: any;
@@ -33,7 +36,7 @@ export class ModificarComponent implements OnInit, AfterViewInit {
   productoId: number = 0;
   producto: productos | null = null;
   stock: stock | null = null;
-  categorias: categoria[] = [];
+  categorias: categorias[] = [];
   proveedores: proveedor[] = [];
 
   isLoading: boolean = false;
@@ -48,8 +51,8 @@ export class ModificarComponent implements OnInit, AfterViewInit {
   imageIdsToDelete: number[] = []; // Lista de IDs de imágenes a eliminar
 
   // Propiedades para propiedades del producto
-  newProperty: ProductoPropiedad = { tipo: '', nombre: '', valor: '' };
-  productProperties: ProductoPropiedad[] = [];
+  newProperty: tipoPropiedad = { tipo: '', nombre: '', tipoDato: '' };
+  productProperties: tipoPropiedad[] = [];
   propertyIdsToDelete: number[] = []; // Lista de IDs de propiedades a eliminar
 
   // Propiedades para el modal
@@ -73,7 +76,7 @@ export class ModificarComponent implements OnInit, AfterViewInit {
     private productosService: ProductosService,
     private stockService: StockService,
     private productoImagenService: ProductoImagenService,
-    private productoPropiedadService: ProductoPropiedadService,
+    private productoPropiedadService: TipoPropiedadService,
     private router: Router
   ) {}
 
@@ -84,7 +87,7 @@ export class ModificarComponent implements OnInit, AfterViewInit {
 
       if (this.productoId) {
         console.log('ID del producto a modificar:', this.productoId);
-        this.loadProductAndStock(this.productoId);
+        //this.loadProductAndStock(this.productoId);
         this.loadCategorias();
         this.loadProveedores();
       } else {
@@ -128,7 +131,7 @@ export class ModificarComponent implements OnInit, AfterViewInit {
     }
   }
 
-  loadProductAndStock(idProducto: number): void {
+  /*loadProductAndStock(idProducto: number): void {
     this.isLoading = true;
     forkJoin([
       this.productosService.findById(idProducto),
@@ -139,6 +142,7 @@ export class ModificarComponent implements OnInit, AfterViewInit {
           return of({ success: true, message: 'No se encontraron imágenes secundarias.', data: [], httpStatusCode: err.status || 200 });
         })
       ),
+
       this.productoPropiedadService.listarAtributoProducto(idProducto).pipe(
         catchError((err: HttpErrorResponse) => {
           console.warn(`Error al cargar propiedades para el producto ${idProducto}:`, err);
@@ -206,13 +210,13 @@ export class ModificarComponent implements OnInit, AfterViewInit {
         this.router.navigate(['/home/listarProductos']);
       }
     });
-  }
+  }*/
 
   loadCategorias(): void {
     this.productosService.getCategorias().subscribe({
       next: (response: ApiResponse) => {
         if (response && response.success && response.data) {
-          this.categorias = response.data as categoria[];
+          this.categorias = response.data as categorias[];
         } else {
           this.showResponseModal(
             'Error de Carga',
@@ -347,7 +351,7 @@ export class ModificarComponent implements OnInit, AfterViewInit {
     }
   }
 
-  addProperty(): void {
+  /*addProperty(): void {
     if (this.newProperty.tipo && this.newProperty.nombre && this.newProperty.valor) {
       this.productProperties.push({ ...this.newProperty });
       this.newProperty = { tipo: '', nombre: '', valor: '' };
@@ -388,10 +392,10 @@ export class ModificarComponent implements OnInit, AfterViewInit {
       }
       this.productProperties.splice(index, 1);
     }
-  }
+  }*/
 
-  trackByPropertyId(index: number, property: ProductoPropiedad): any {
-    return property.idPropiedad || index;
+  trackByPropertyId(index: number, property: tipoPropiedad): any {
+    return property.idTipoPropiedad || index;
   }
 
   fileTypeValidator(file: File): ValidationErrors | null {
@@ -517,8 +521,8 @@ export class ModificarComponent implements OnInit, AfterViewInit {
     // Guardar o actualizar propiedades
     const propertiesSaveObservables: Observable<any>[] = this.productProperties.map(prop => {
       const propToSave = { ...prop, id_producto: currentProductId };
-      if (prop.idPropiedad) {
-        return this.productoPropiedadService.update(prop.idPropiedad, propToSave).pipe(
+      if (prop.idTipoPropiedad) {
+        return this.productoPropiedadService.update(prop.idTipoPropiedad||0, propToSave).pipe(
           catchError((err: HttpErrorResponse) => {
             this.modalDetails.push(`Error al actualizar propiedad "${prop.nombre}": ${err.message || 'Desconocido'}`);
             return of({ success: false, message: `Error al actualizar propiedad ${prop.nombre}.`, data: null, httpStatusCode: err.status });

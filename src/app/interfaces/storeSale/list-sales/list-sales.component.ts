@@ -43,7 +43,7 @@ export class ListSalesComponent implements OnInit {
 
   // Propiedades para los filtros
   searchTerm: string = '';
-  filterStatus: 'todos' | 'completada' | 'pendiente' | 'cancelada' = 'todos';
+  filterStatus: 'DEVUELTA' | 'COMPLETA' | 'PENDIENTE' | 'CANCELADA' = 'DEVUELTA';
   sortDirection: 'reciente' | 'antiguo' = 'reciente';
 
   // Propiedades para la paginación
@@ -110,8 +110,16 @@ export class ListSalesComponent implements OnInit {
     }
 
     // 2. Filtrado por estado
-    if (this.filterStatus !== 'todos') {
-      tempVentas = tempVentas.filter(venta => venta.estado === this.filterStatus);
+    if (this.filterStatus !== 'DEVUELTA') {
+      // Map filterStatus to venta.estado values (uppercase)
+      const statusMap: { [key: string]: string } = {
+        'completada': 'COMPLETADA',
+        'pendiente': 'PENDIENTE',
+        'cancelada': 'CANCELADA',
+        'devuelta': 'DEVUELTA'
+      };
+      const mappedStatus = statusMap[this.filterStatus];
+      tempVentas = tempVentas.filter(venta => venta.estado === mappedStatus);
     }
 
     // 3. Ordenamiento por fecha

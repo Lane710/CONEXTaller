@@ -78,9 +78,9 @@
                       <span
                         class="badge"
                         [ngClass]="{
-                          'bg-success': pedido.estado === 'completado',
-                          'bg-warning text-dark': pedido.estado === 'pendiente',
-                          'bg-danger': pedido.estado === 'cancelado'
+                          'bg-success': pedido.estado === 'CONFIRMADO',
+                          'bg-warning text-dark': pedido.estado === 'PENDIENTE',
+                          'bg-danger': pedido.estado === 'CANCELADO',
                         }"
                         >{{ pedido.estado | titlecase }}</span
                       >
@@ -96,7 +96,7 @@
                       (click)="prepararCancelacion(pedido)"
                       data-bs-toggle="modal"
                       data-bs-target="#confirmarCancelacionModal"
-                      [disabled]="pedido.estado === 'cancelado'"
+                      [disabled]="pedido.estado === 'CANCELADO'"
                     >
                       Cancelar pedido
                     </button>
@@ -105,7 +105,7 @@
                       data-bs-toggle="modal"
                       data-bs-target="#detalleEnvioModal"
                       (click)="verEnvio(pedido.idPedido || 0)"
-                      [disabled]="pedido.estado === 'cancelado'"
+                      [disabled]="pedido.estado === 'CANCELADO'"
                     >
                       Ver Envío
                     </button>
@@ -178,12 +178,12 @@
                       class="badge ms-2 text-dark"
                       [ngClass]="{
                         'bg-info':
-                          envioSeleccionado.estado === 'En tránsito' ||
-                          envioSeleccionado.estado === 'Preparando pedido',
-                        'bg-success': envioSeleccionado.estado === 'Entregado',
-                        'bg-danger': envioSeleccionado.estado === 'Problema'
+                          envioSeleccionado.estado === 'PENDIENTE' ||
+                          envioSeleccionado.estado === 'EN_TRANSITO',
+                        'bg-success': envioSeleccionado.estado === 'ENTREGADO',
+                        'bg-danger': envioSeleccionado.estado === 'ENTREGADO'
                       }"
-                    >
+                    >MODIFICAR ESTE MODAL OPOR QUE FALTA
                       {{ envioSeleccionado.estado | titlecase }}
                     </span>
                   </p>
@@ -322,12 +322,12 @@
                 class="d-flex w-100 justify-content-between align-items-center"
               >
                 <div>
-                  <h6 class="mb-1 fw-bold">{{ detalle.producto?.nombre }}</h6>
+                  <h6 class="mb-1 fw-bold">{{ detalle.producto.nombre }}</h6>
                   <p class="mb-1 text-muted">
                     Cantidad: {{ detalle.cantidad }}
                   </p>
                   <p class="mb-0 text-success fw-bold">
-                    Bs {{ detalle.producto?.precio }}
+                    Bs {{ detalle.producto.precio || 0 }}
                   </p>
                 </div>
                 <span class="fw-bold fs-5">Bs {{ detalle.subtotal }}</span>
@@ -414,7 +414,7 @@
           type="button"
           class="btn btn-danger rounded-pill"
           (click)="confirmarCancelacion()"
-          [disabled]="pedidoParaCancelar?.estado=='cancelado'"
+          [disabled]="pedidoParaCancelar?.estado=='CANCELADO'"
         >
           Cancelar Pedido
         </button>

@@ -113,7 +113,7 @@
                     style="border: none"
                     (click)="
                       anadirVentaTemporal(
-                        product,
+                        product.producto,
                         cantidadesEnVenta[(currentPage - 1) * pageSize + i]
                       )
                     "
@@ -155,7 +155,7 @@
                 {{ item.cantidad }}
               </span>
               <span class="fw-bold text-dark producto-nombre">{{
-                item.stock.producto.nombre
+                item.producto.nombre
               }}</span>
             </div>
             <small class="text-muted ms-4">

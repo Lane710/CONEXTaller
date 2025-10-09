@@ -13,10 +13,13 @@ import { catchError, concatMap, forkJoin, of, throwError } from 'rxjs';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { categoria } from '../../../models/ProductoStockModel/categorias';
+
 import { ProductosService } from '../../../services/ProductosServis/productos.service';
 import { FormaPagoService } from '../../../services/PedidosEnviosDetalles/forma-pago.service';
 import { forma_pago } from '../../../models/PedidosEnviosDetalles/forma_pago';
+import { categorias } from '../../../models/ProductoStockModel/categorias';
+import { productos } from '../../../models/ProductoStockModel/productos';
+import { ventas } from '../../../models/Ventas/ventas';
 
 declare var bootstrap: any;
 
@@ -51,12 +54,12 @@ export class SalesComponent implements OnInit {
   cantidadesEnVenta: number[] = [];
   productosPorVender: detalleVenta[] = [];
   filtroTermino: string = '';
-  clienteVenta: clientes = { nombre: '' };
+  clienteVenta: clientes = { ci:'0',nombre: '' };
 
   // Propiedades para el buscador y autocompletado de cliente
   clienteNombreBuscador: string = '';
   clientesFiltrados: clientes[] = [];
-  clienteSeleccionado: clientes ={ci:0,nombre:''};
+  clienteSeleccionado: clientes ={ci:'0',nombre:''};
   clienteExistes: clientes[] = [];
 
   mostrarModalStock: boolean = false;
@@ -68,7 +71,7 @@ export class SalesComponent implements OnInit {
   totalPages: number = 0;
 
   filterCategory: string = 'Todos';
-  categorias: categoria[] = [];
+  categorias: categorias[] = [];
   metodoDePagoSeleccionado: string = 'efectivo';
   codigoMetodoPago: number = 3333;
   //variable para el descuento
@@ -101,7 +104,7 @@ isCiDisabled: boolean = false; // <-- AGREGAR ESTA PROPIEDAD
     this.productosService.getCategorias().subscribe({
       next: (response) => {
         if (response.success && response.data) {
-          this.categorias = response.data as categoria[];
+          this.categorias = response.data as categorias[];
           console.log(this.categorias);
         } else {
           this.showModalMessage(
@@ -169,10 +172,10 @@ isCiDisabled: boolean = false; // <-- AGREGAR ESTA PROPIEDAD
   const celularClient = (document.getElementById('numeroCliente') as HTMLInputElement).value;
   const numeroci = (document.getElementById('ci') as HTMLInputElement).value;
   this.notaVenta= (document.getElementById('ventaNotas') as HTMLInputElement).value;
-  const ciEntero = parseInt(numeroci, 10);
+  const ciEntero = numeroci;
   // Lógica para determinar el cliente a guardar o actualizar
   console.log(this.clienteSeleccionado)
-  if (this.clienteSeleccionado.ci!==0 && this.clienteSeleccionado.nombre!=='') {
+  if (this.clienteSeleccionado.ci!=='0' && this.clienteSeleccionado.nombre!=='') {
     // Si hay un cliente seleccionado, compara los campos.
     console.log("no deberia de entrar ya que no se selecciono a nadie")
     if (
@@ -242,10 +245,10 @@ private iniciarTransaccion(cliente: clientes) {
       concatMap((responseCliente) => {
         console.log('Cliente guardado:', responseCliente);
         clienteId = responseCliente.data.idCliente;
-        const ventaNueva = {
+        const ventaNueva: ventas = {
           cliente: responseCliente.data,
           total: this.calcularTotal(), // Asegúrate de que este método exista y devuelva un número
-          usuarioTrabajador: this.usuarioTrabajador,
+          trabajador: this.usuarioTrabajador,
           formaPago: this.formaPago,
           descuento: this.descuento,
           notas:this.notaVenta,
@@ -363,7 +366,7 @@ private iniciarTransaccion(cliente: clientes) {
       );
       this.cantidadesEnVenta[globalIndex] = productInStock.cantidad;
       this.mostrarModal(
-        productInStock.producto.nombre,
+        productInStock.producto.nombre+'',
         productInStock.cantidad
       );
       return;
@@ -373,9 +376,9 @@ private iniciarTransaccion(cliente: clientes) {
     this.cdr.detectChanges();
   }
 
-  anadirVentaTemporal(producto: stock, cantidad: number) {
+  anadirVentaTemporal(producto: productos, cantidad: number) {
     const productoExistente = this.productosPorVender.find(
-      (item) => item.stock.idStock === producto.idStock
+      (item) => item.producto.idProducto === producto.idProducto
     );
 
     let cantidadTotalVenta = cantidad;
@@ -385,11 +388,11 @@ private iniciarTransaccion(cliente: clientes) {
     }
 
     const productoEnStock = this.products.find(
-      (p) => p.idStock === producto.idStock
+      (p) => p.producto.idProducto === producto.idProducto
     );
 
     const globalIndex = this.products.findIndex(
-      (p) => p.idStock === producto.idStock
+      (p) => p.producto.idProducto === producto.idProducto
     );
 
     if (productoEnStock && cantidadTotalVenta > productoEnStock.cantidad) {
@@ -399,7 +402,7 @@ private iniciarTransaccion(cliente: clientes) {
       }
 
       this.mostrarModal(
-        productoEnStock.producto.nombre,
+        productoEnStock.producto.nombre+'',
         productoEnStock.cantidad
       );
       //productoEnStock.cantidad=0;
@@ -410,15 +413,16 @@ private iniciarTransaccion(cliente: clientes) {
       productoExistente.cantidad = cantidadTotalVenta;
     } else {
       this.productosPorVender.push({
-        stock: producto,
+        producto: producto,
+        venta: { id: 0 } as any, // Temporalmente asignamos un id de venta 0, se actualizará al guardar la venta
         cantidad: cantidadTotalVenta,
-        precioUnitario: producto.producto.precio,
-        subtotal: cantidadTotalVenta * producto.producto.precio,
+        precioUnitario: producto.precio||0,
+        subtotal: cantidadTotalVenta * (producto.precio||0),
       });
     }
 
     const filteredIndex = this.filteredProducts.findIndex(
-      (p) => p.idStock === producto.idStock
+      (p) => p.producto.idProducto === producto.idProducto
     );
     if (filteredIndex !== -1) {
       this.cantidadesEnVenta[filteredIndex] = 1;
@@ -511,8 +515,8 @@ private iniciarTransaccion(cliente: clientes) {
   }
   //limpiar los datos del cliente al apretar cancelar
   limpiarDatosCliente() {
-  this.clienteVenta = { ci: 0, nombre: '', appaterno: '', apmaterno: '', telefono: '' };
-  this.clienteSeleccionado = { ci: 0, nombre: '' };
+  this.clienteVenta = { ci: '0', nombre: '', appaterno: '', apmaterno: '', telefono: '' };
+  this.clienteSeleccionado = { ci: '0', nombre: '' };
   this.clienteNombreBuscador = '';
   this.clientesFiltrados = [];
   this.isCiDisabled = false;

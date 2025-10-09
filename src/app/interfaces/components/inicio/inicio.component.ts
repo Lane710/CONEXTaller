@@ -185,7 +185,7 @@ export class InicioComponent implements OnInit, AfterViewInit {
       const request: DetalleCarrito = {
         producto: stockItem.producto,
         cantidad: 1,
-        precioUnitario: parseFloat(stockItem.producto.precio).toString(),
+        precioUnitario: (stockItem.producto.precio)?.toString() || '0',
         idDetalleCarrito: 0,
         subtotal: ''
       };

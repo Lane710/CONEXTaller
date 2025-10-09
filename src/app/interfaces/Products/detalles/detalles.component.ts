@@ -5,14 +5,16 @@ import { CommonModule, NgIf, NgFor, NgClass, CurrencyPipe } from '@angular/commo
 import { StockDTO } from '../../../DTOs/Produc/StockDTO';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StockService } from '../../../services/ProductosServis/stock.service';
-import { ProductoPropiedadService } from '../../../services/PersonServis/Secundarios/producto-propiedad.service';
-import { ProductoImagenService } from '../../../services/PersonServis/Secundarios/producto-imagen.service'; // ¡Importa este servicio!
+
+import { ProductoImagenService } from '../../../services/ProductosServis/Secundarios/producto-imagen.service'; // ¡Importa este servicio!
 import { ProductoImagen } from '../../../models/ProductoStockModel/ProductoImagen';
 import { CarritoService } from '../../../services/CartServis/carrito.service';
-import { ProductoPropiedad } from '../../../models/ProductoStockModel/ProductoPropiedad';
+
 import { FormsModule } from '@angular/forms';
 import { DetalleCarrito } from '../../../models/CartModel/DetalleCarrito';
 import { DetalleCarritoProducto } from '../../../DTOs/Cart/DetalleCarritoProducto';
+import { TipoPropiedadService } from '../../../services/ProductosServis/tipo-propiedad-service.service';
+import { tipoPropiedad } from '../../../models/ProductoStockModel/tipoPropiedad';
 
 // Interfaz para la estructura de la propiedad
 
@@ -31,9 +33,9 @@ export class DetallesComponent implements OnInit, AfterViewInit {
   isLoading: boolean = true;
   error: string | null = null;
 
-  especificaciones: ProductoPropiedad[] = [];
-  atributos: ProductoPropiedad[] = [];
-  caracteristicas: ProductoPropiedad[] = [];
+  especificaciones: tipoPropiedad[] = [];
+  atributos: tipoPropiedad[] = [];
+  caracteristicas: tipoPropiedad[] = [];
   productosParecidos: StockDTO[]=[]; // Productos similares para mostrar en el carrusel
   // Variables para la galería de imágenes
   mainImageUrl: string = ''; // La URL de la imagen principal mostrada
@@ -54,7 +56,7 @@ cantidadSeleccionada: number = 1; // Declara la variable para la cantidad selecc
     private route: ActivatedRoute,
     private router: Router,
     private stockService: StockService,
-    private ProductoPropiedadService: ProductoPropiedadService,
+    private ProductoPropiedadService: TipoPropiedadService,
     private productoImagenService: ProductoImagenService, // ¡Inyecta este servicio!
     private carritoService: CarritoService // Asegúrate de importar y usar el servicio de carrito
   ) {}
@@ -76,7 +78,7 @@ cantidadSeleccionada: number = 1; // Declara la variable para la cantidad selecc
               this.mainImageUrl = this.productDetails.producto.imagen;
             }
 
-            this.detallesProducto();
+            //this.detallesProducto();
             this.getImagenesSecundariasPRoducto(); // Llama a la función para cargar imágenes secundarias
           },
           error: () => {
@@ -108,7 +110,7 @@ cantidadSeleccionada: number = 1; // Declara la variable para la cantidad selecc
     }
   }
 
-  detallesProducto(): void {
+  /*detallesProducto(): void {
     if (this.productId) {
       this.ProductoPropiedadService.listarAtributoProducto(this.productId).subscribe({
         next: (response) => {
@@ -137,7 +139,7 @@ cantidadSeleccionada: number = 1; // Declara la variable para la cantidad selecc
     } else {
       console.error('No se pudo obtener las propiedades del producto: ID no disponible.');
     }
-  }
+  }*/
 
   // TU FUNCIÓN EXISTENTE PARA IMÁGENES SECUNDARIAS
   getImagenesSecundariasPRoducto(): void {
@@ -196,7 +198,7 @@ AddProductCarrito(producto: StockDTO) {
     const request: DetalleCarrito = {
       producto: producto.producto,
       cantidad: this.cantidadSeleccionada, // ¡Aquí usas la variable!
-      precioUnitario: parseFloat(producto.producto.precio).toString(),
+      precioUnitario: parseFloat(producto.producto.precio||'0').toString(),
     };
 
     this.carritoService.agregarProductoACarrito(usuarioId||'', request).subscribe({

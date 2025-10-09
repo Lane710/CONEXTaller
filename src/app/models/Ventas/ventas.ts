@@ -1,14 +1,17 @@
 import { forma_pago } from "../PedidosEnviosDetalles/forma_pago";
+import { usuarios } from "../PersonModel/usuarios";
 import { clientes } from "./clientes";
 
+
 export interface ventas {
-  idVenta?: number; // 'Long' en Java se mapea a 'number' en TypeScript. Opcional.
-  cliente: clientes; // Relación ManyToOne con 'clientes'. Aquí se usa la interfaz ICliente.
-  usuarioTrabajador: string;
-  fechaVenta?: string; // 'LocalDateTime' en Java se mapea a 'string' (ISO 8601) en TypeScript. Opcional por @PrePersist.
-  total: number; // 'BigDecimal' en Java se mapea a 'number' en TypeScript.
-  formaPago: forma_pago; // Opcional por @PrePersist.
-  estado?: string; // Opcional por @PrePersist.
-  descuento:number;
-  notas?:string;
+  idVenta?: number;                     // Long en Java → number en TS
+  cliente: clientes;                   // Relación ManyToOne con clientes
+  trabajador: usuarios | string;        // Puede ser el objeto completo o solo el username
+  fechaVenta?: string;                 // LocalDate → string ISO (ej. "2025-09-24")
+  horaVenta?: string;                  // LocalTime → string ISO (ej. "14:30:00")
+  total: number;                       // BigDecimal → number
+  descuento?: number;                  // BigDecimal → number, valor por defecto: 0
+  notas?: string;                      // Texto libre
+  formaPago: forma_pago;              // Relación ManyToOne con forma_pago
+  estado?: 'COMPLETADA' | 'PENDIENTE' | 'CANCELADA' | 'DEVUELTA'; // Enum
 }

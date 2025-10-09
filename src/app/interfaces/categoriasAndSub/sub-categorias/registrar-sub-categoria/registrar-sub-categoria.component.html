@@ -1,0 +1,217 @@
+<div class="container mt-4">
+  <!-- Encabezado con navegación -->
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i> Home</a></li>
+      <li class="breadcrumb-item"><a href="/home/Categorias">Categorias</a></li>
+      <li class="breadcrumb-item"><a href="/home/Categorias/SubCategorias/{{this.categoriaId}}">Subcategorías</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Registrar Nueva Subcategoría</li>
+    </ol>
+  </nav>
+
+  <!-- Tarjeta del formulario -->
+  <div class="card shadow-sm border-2">
+    <div class="card-header bg-primary text-white py-3">
+      <h2 class="h4 mb-0">
+        <i class="fas fa-plus-circle me-2"></i>
+        Registrar Nueva Subcategoría
+      </h2>
+    </div>
+    
+    <div class="card-body p-4">
+      <form [formGroup]="subcategoriaForm" (ngSubmit)="onSubmit()" novalidate>
+
+        <!-- Campo Nombre -->
+        <div class="mb-4">
+          <label for="nombre" class="form-label fw-semibold">
+            Nombre de la Subcategoría <span class="text-danger">*</span>
+          </label>
+          <input 
+            type="text" 
+            class="form-control form-control-lg" 
+            id="nombre"
+            formControlName="nombre"
+            [class.is-invalid]="nombreInvalid"
+            placeholder="Ingrese el nombre de la subcategoría"
+          >
+          <div class="invalid-feedback" *ngIf="nombreInvalid">
+            <span *ngIf="subcategoriaForm.get('nombre')?.errors?.['required']">
+              El nombre de la subcategoría es obligatorio
+            </span>
+            <span *ngIf="subcategoriaForm.get('nombre')?.errors?.['minlength']">
+              El nombre debe tener al menos 3 caracteres
+            </span>
+            <span *ngIf="subcategoriaForm.get('nombre')?.errors?.['maxlength']">
+              El nombre no puede exceder los 50 caracteres
+            </span>
+          </div>
+        </div>
+
+        <!-- Campo Descripción -->
+        <div class="mb-4">
+          <label for="descripcion" class="form-label fw-semibold">
+            Descripción <span class="text-danger">*</span>
+          </label>
+          <textarea 
+            class="form-control" 
+            id="descripcion" 
+            rows="4"
+            formControlName="descripcion"
+            [class.is-invalid]="descripcionInvalid"
+            placeholder="Describa la subcategoría..."
+          ></textarea>
+          <div class="invalid-feedback" *ngIf="descripcionInvalid">
+            <span *ngIf="subcategoriaForm.get('descripcion')?.errors?.['required']">
+              La descripción es obligatoria
+            </span>
+            <span *ngIf="subcategoriaForm.get('descripcion')?.errors?.['minlength']">
+              La descripción debe tener al menos 10 caracteres
+            </span>
+            <span *ngIf="subcategoriaForm.get('descripcion')?.errors?.['maxlength']">
+              La descripción no puede exceder los 500 caracteres
+            </span>
+          </div>
+          <div class="form-text">
+            {{ subcategoriaForm.get('descripcion')?.value?.length || 0 }}/500 caracteres
+          </div>
+        </div>
+
+        <!-- Campo Imagen -->
+        <div class="mb-4">
+          <label for="imagen" class="form-label fw-semibold">
+            Imagen de la Subcategoría <span class="text-danger">*</span>
+          </label>
+          
+          <!-- Vista previa de imagen -->
+          <div class="mb-3 text-center" *ngIf="imagenPrevia">
+            <img [src]="imagenPrevia" class="img-thumbnail preview-image" alt="Vista previa">
+          </div>
+
+          <div class="input-group">
+            <input 
+              type="file" 
+              class="form-control" 
+              id="imagen"
+              formControlName="imagen"
+              (change)="onFileSelected($event)"
+             
+              accept="image/*"
+            >
+            <button 
+              class="btn btn-outline-secondary" 
+              type="button"
+              (click)="clearImage()"
+              *ngIf="imagenPrevia"
+            >
+              <i class="fas fa-times"></i> Eliminar
+            </button>
+          </div>
+          
+          <div class="invalid-feedback" >
+            La imagen es obligatoria
+          </div>
+          <div class="form-text">
+            Formatos aceptados: JPG, PNG. Tamaño máximo: 1MB
+          </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="d-flex gap-3 justify-content-end mt-4 pt-3 border-top">
+          <button type="button" class="btn btn-outline-secondary" (click)="onCancel()">
+            <i class="fas fa-times me-2"></i>
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary px-4"
+            [disabled]="subcategoriaForm.invalid || submitting"
+          >
+            <i class="fas fa-save me-2"></i>
+            <span *ngIf="submitting">
+              <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+              Guardando...
+            </span>
+            <span *ngIf="!submitting">Guardar Subcategoría</span>
+          </button>
+        </div>
+
+        <!-- Mensaje de error general -->
+        <div class="alert alert-danger mt-3" *ngIf="errorMessage">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          {{ errorMessage }}
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Modal de Error -->
+<div class="modal fade" id="modalError" tabindex="-1" aria-labelledby="modalErrorLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      
+      <!-- Encabezado -->
+      <div class="modal-header bg-error text-white">
+        <h5 class="modal-title" id="modalErrorLabel">
+          <i class="bi bi-exclamation-triangle me-2"></i>Error en el Sistema
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      
+      <!-- Cuerpo -->
+      <div class="modal-body">
+        <i class="bi bi-exclamation-triangle-fill mb-3 d-block"></i>
+        <h4 class="mb-3">¡Algo salió mal!</h4>
+        <p class="mb-4">No pudimos procesar tu solicitud en este momento. Por favor, inténtalo de nuevo más tarde.</p>
+        
+        <div class="error-details text-start">
+          <p class="small mb-1"><strong>Posibles causas:</strong></p>
+          <ul class="small mb-0 ps-3">
+            <li>Problemas temporales del servidor</li>
+            <li>Error de conexión a la base de datos</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Pie -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-error" data-bs-dismiss="modal">
+          <i class="bi bi-clock me-2"></i>Intentar más tarde
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<!-- Modal de éxito -->
+<!-- Modal de éxito mejorado -->
+<div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-header">
+        <h5 class="modal-title text-white" id="modalExitoLabel">
+          <i class="bi bi-check-circle me-2"></i>Registro Exitoso
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <i class="bi bi-check-circle-fill mb-3 d-block"></i>
+        <h4 class="mb-3" style="color: #28a745;">¡Perfecto!</h4>
+        <p class="mb-0">La subcategoría fue registrada correctamente en el sistema.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal" (click)="redireccionar()">
+          <i class="bi bi-check-lg me-2"></i>Continuar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

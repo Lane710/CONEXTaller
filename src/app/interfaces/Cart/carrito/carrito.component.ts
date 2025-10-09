@@ -62,7 +62,7 @@ cargarCarrito(): void {
               subtotal: new Decimal(item.subtotal).toString(),
               producto: {
                 ...item.producto,
-                precio: new Decimal(item.producto.precio).toString(),
+                precio: Number(item.producto.precio),
               },
             };
           }

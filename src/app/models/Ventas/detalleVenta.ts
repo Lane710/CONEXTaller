@@ -1,12 +1,11 @@
-import { stock } from "../ProductoStockModel/stock";
+import { productos } from "../ProductoStockModel/productos";
 import { ventas } from "./ventas";
 
-
 export interface detalleVenta {
-  idDetalleVenta?: number; // 'Long' en Java se mapea a 'number' en TypeScript. Opcional.
-  venta?: ventas; // Relación ManyToOne con 'ventas'. Aquí se usa la interfaz IVenta.
-  stock: stock; // Relación ManyToOne con 'stock'. Aquí se usa la interfaz IStock.
-  cantidad: number;
-  precioUnitario: number; // 'BigDecimal' en Java se mapea a 'number' en TypeScript para frontend.
-  subtotal: number; // 'BigDecimal' en Java se mapea a 'number' en TypeScript para frontend.W
+  idDetalleVenta?: number;        // Long en Java → number en TS
+  venta: ventas;                  // Relación ManyToOne con ventas
+  producto: productos;            // Relación ManyToOne con productos
+  cantidad: number;               // Integer en Java → number en TS
+  precioUnitario: number;         // BigDecimal en Java → number en TS
+  subtotal?: number;              // Generado en la DB, opcional en TS
 }

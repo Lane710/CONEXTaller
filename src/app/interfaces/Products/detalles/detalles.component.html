@@ -25,7 +25,7 @@
             <div
               class="thumbnail-image-wrapper border rounded d-flex justify-content-center align-items-center"
               [ngClass]="{ active: mainImageUrl === details.producto.imagen }"
-              (click)="changeMainImage(details.producto.imagen)"
+              (click)="changeMainImage(details.producto.imagen||'')"
             >
               <img
                 [src]="details.producto.imagen"
@@ -174,7 +174,7 @@
           <tbody>
             <tr *ngFor="let spec of especificaciones">
               <td>{{ spec.nombre }}</td>
-              <td>{{ spec.valor }}</td>
+              <td>{{ spec.tipo }}</td>
             </tr>
           </tbody>
         </table>
@@ -189,7 +189,7 @@
       </h2>
       <ul class="product-list list-unstyled ps-3">
         <li *ngFor="let attr of atributos" class="mb-2">
-          <strong>{{ attr.nombre }}:</strong> {{ attr.valor }}
+          <strong>{{ attr.nombre }}:</strong> {{ attr.tipo }}
         </li>
       </ul>
     </div>
@@ -202,7 +202,7 @@
       </h2>
       <ul class="product-list list-unstyled ps-3">
         <li *ngFor="let char of caracteristicas" class="mb-2">
-          <strong>{{ char.nombre }}:</strong> {{ char.valor }}
+          <strong>{{ char.nombre }}:</strong> {{ char.tipo }}
         </li>
       </ul>
     </div>

@@ -251,6 +251,28 @@
               <div *ngIf="producto.categoria.idCategoria === -1 && (categoriaSelect.dirty || categoriaSelect.touched)">Debe seleccionar una categoría válida.</div>
             </div>
           </div>
+          <div>
+            <label for="subCategoria" class="form-label">Sub Categoría <span class="text-danger">*</span></label>
+            <select
+              id="subCategoria"
+              class="form-select"
+              [(ngModel)]="producto.categoria.idCategoria"
+              name="subCategoria"
+              required
+              #subCategoriaSelect="ngModel"
+              [class.is-invalid]="subCategoriaSelect.invalid && (subCategoriaSelect.dirty || subCategoriaSelect.touched)"
+            >
+              <option [ngValue]="-1" disabled>Seleccione una Sub categoría</option> 
+              @for (cat of categorias; track cat.idCategoria) {
+                <option [ngValue]="cat.idCategoria">{{ cat.nombre }}</option>
+              }
+            </select>
+            
+            <div *ngIf="subCategoriaSelect.invalid && (subCategoriaSelect.dirty || subCategoriaSelect.touched)" class="invalid-feedback">
+              <div *ngIf="subCategoriaSelect.errors?.['required']">Debe seleccionar una categoría.</div>
+              <div *ngIf="producto.subcategoria?.idSubcategoria === -1 && (subCategoriaSelect.dirty || subCategoriaSelect.touched)">Debe seleccionar una sub Categoria válida.</div>
+            </div>
+          </div>
 
           <div class="col-md-6">
             <label for="proveedor" class="form-label"
@@ -378,7 +400,7 @@
             <select
               id="propertyType"
               class="form-select"
-              [(ngModel)]="newProperty.tipo"
+              [(ngModel)]="newProperty.tipoPropiedad"
               name="newPropertyType"
               #newPropertyTypeField="ngModel"
             >
@@ -395,7 +417,7 @@
               id="propertyName"
               class="form-control"
               placeholder="Ej: Material, RAM, Resolución"
-              [(ngModel)]="newProperty.nombre"
+              [(ngModel)]="newProperty.idProductoValor"
               name="newPropertyName"
               maxlength="100"
               #newPropertyNameField="ngModel"
@@ -447,7 +469,7 @@
             class="btn btn-info btn-sm"
             (click)="addProperty()"
             [disabled]="
-              !newProperty.tipo || !newProperty.nombre || !newProperty.valor
+              !newProperty.tipoPropiedad || !newProperty.idProductoValor
             "
           >
             <i class="bi bi-plus-circle me-1"></i> Añadir Propiedad
@@ -463,8 +485,8 @@
               class="list-group-item d-flex justify-content-between align-items-center"
             >
               <div>
-                <strong>{{ prop.tipo | titlecase }}:</strong>
-                {{ prop.nombre }} = {{ prop.valor }}
+                <strong>{{ prop.tipoPropiedad?.toString() | titlecase }}:</strong>
+                {{ prop.idProductoValor }} = {{ prop.valor }}
               </div>
               <div>
                 <button

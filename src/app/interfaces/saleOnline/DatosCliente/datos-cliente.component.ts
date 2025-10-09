@@ -11,7 +11,6 @@ import { detallePedido } from '../../../models/PedidosEnviosDetalles/detallePedi
 import { stock } from '../../../models/ProductoStockModel/stock';
 import { DetallePedidosService } from '../../../services/PedidosEnviosDetalles/detalle-pedidos.service';
 import { EnviosService } from '../../../services/PedidosEnviosDetalles/envios.service';
-import { DetalleEnviosService } from '../../../services/PedidosEnviosDetalles/detalle-envios.service';
 import { envios } from '../../../models/PedidosEnviosDetalles/envios';
 import { direccionesEnvio } from '../../../models/PedidosEnviosDetalles/direccionesEnvio';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -19,6 +18,7 @@ import { Router } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { StockService } from '../../../services/ProductosServis/stock.service';
+import { DireccionEnvioService } from '../../../services/PedidosEnviosDetalles/direccion-envio-service.service';
 declare var bootstrap: any;
 
 @Component({
@@ -33,22 +33,34 @@ export class DatosClienteComponent implements OnInit {
   username: string = localStorage.getItem('current_username') || '';
   detallesCarrito: DetalleCarritoProducto[] = [];
   subtotalCarrito: string = '0.00';
-  totalCarrito: string = '0.00';
+  totalCarrito = 0.0;
   productosCarrio: DetalleCarritoProducto[] = [];
 
   pedido: pedidos = {
     // Variable para guardar los datos del pedido
     username: '',
-    idFormaPago: 0,
-    totalPedido: '', // Agregado totalPedido aquí
-    estado: 'pendiente',
+    formaPago: { idFormaPago: 0, nombre: '' },
+    totalPedido: 0, // Agregado totalPedido aquí
+    estado: 'PENDIENTE',
     notas: '',
   };
 
   envio: envios = {
-    idPedido: 0,
-    direccionEnvio: undefined,
-    idMetodoEnvio: 0,
+    direccionEnvio: {
+      idDireccionEnvio: 0,
+      username: '',
+      nombreDestinatario: '',
+      apellidosDestinatario: '',
+      direccion: '',
+      barrio: '',
+      ciudad: '',
+      provinciaEstado: '',
+      codigoPostal: '',
+      pais: '',
+      numeroTelefono: '',
+      emailDestinatario: '',
+    },
+
     nombreReceptor: '',
     apellidosReceptor: '',
     telefonoReceptor: '',
@@ -78,7 +90,7 @@ export class DatosClienteComponent implements OnInit {
     private PedidosS: PedidosService,
     private detallePedidoS: DetallePedidosService,
     private enviosS: EnviosService,
-    private direccionEnvioS: DetalleEnviosService,
+    private direccionEnvioS: DireccionEnvioService,
     private router: Router,
     private stockService: StockService
   ) {}
@@ -87,6 +99,7 @@ export class DatosClienteComponent implements OnInit {
     this.cargarProductoCarrito();
   }
 
+ 
   cargarProductoCarrito(): void {
     this.carritoService.listarProductosDeUsuario(this.username).subscribe({
       next: (response: ApiResponse) => {
@@ -97,11 +110,13 @@ export class DatosClienteComponent implements OnInit {
             (item: RawDetalleCarritoProducto) => {
               return {
                 ...item,
+                // CORRECCIÓN: Convierte el objeto Decimal a string para coincidir con el DTO
                 precioUnitario: new Decimal(item.precioUnitario).toString(),
                 subtotal: new Decimal(item.subtotal).toString(),
                 producto: {
                   ...item.producto,
-                  precio: new Decimal(item.producto.precio).toString(),
+                  // CORRECCIÓN: Tu ProductoDTO espera un 'number' en 'precio', por lo que convertimos
+                  precio: new Decimal(item.producto.precio).toNumber(),
                 },
               };
             }
@@ -109,7 +124,10 @@ export class DatosClienteComponent implements OnInit {
           this.productosCarrio = [...this.detallesCarrito];
           this.calcularTotales();
         } else {
-          console.error('Error al listar productos del carrito:', response.message);
+          console.error(
+            'Error al listar productos del carrito:',
+            response.message
+          );
           this.detallesCarrito = [];
           this.calcularTotales();
         }
@@ -128,7 +146,7 @@ export class DatosClienteComponent implements OnInit {
       subtotalCalculado = subtotalCalculado.plus(new Decimal(item.subtotal));
     });
     this.subtotalCarrito = subtotalCalculado.toString();
-    this.totalCarrito = subtotalCalculado.toString();
+    this.totalCarrito = subtotalCalculado.toNumber();
   }
 
   DatosDelCLiente() {
@@ -140,18 +158,41 @@ export class DatosClienteComponent implements OnInit {
 
     // 2. Extrae y valida los valores del formulario (código omitido para brevedad, asumiendo que funciona)
     const inputNombre = document.getElementById('nombre') as HTMLInputElement;
-    const apellidosInput = document.getElementById('apellidos') as HTMLInputElement;
-    const paisRegionInput = document.getElementById('paisRegion') as HTMLInputElement;
-    const direccionCalleInput = document.getElementById('direccionCalle') as HTMLInputElement;
+    const apellidosInput = document.getElementById(
+      'apellidos'
+    ) as HTMLInputElement;
+    const paisRegionInput = document.getElementById(
+      'paisRegion'
+    ) as HTMLInputElement;
+    const direccionCalleInput = document.getElementById(
+      'direccionCalle'
+    ) as HTMLInputElement;
     const barrioInput = document.getElementById('barrio') as HTMLInputElement;
-    const departamentoInput = document.getElementById('departamento') as HTMLInputElement;
-    const numeroTelefonoInput = document.getElementById('whatsapp') as HTMLInputElement;
+    const departamentoInput = document.getElementById(
+      'departamento'
+    ) as HTMLInputElement;
+    const numeroTelefonoInput = document.getElementById(
+      'whatsapp'
+    ) as HTMLInputElement;
     const emailInput = document.getElementById('email') as HTMLInputElement;
-    const notasPedidoInput = document.getElementById('notasPedido') as HTMLTextAreaElement;
+    const notasPedidoInput = document.getElementById(
+      'notasPedido'
+    ) as HTMLTextAreaElement;
 
     // 3. Realiza la validación de los campos obligatorios
-    if (!inputNombre.value || !apellidosInput.value || !direccionCalleInput.value || !barrioInput.value || !departamentoInput.value || !numeroTelefonoInput.value || !this.validarEmail(emailInput.value)) {
-      this.mesagesErrores('Por favor, completa todos los campos obligatorios correctamente.', null);
+    if (
+      !inputNombre.value ||
+      !apellidosInput.value ||
+      !direccionCalleInput.value ||
+      !barrioInput.value ||
+      !departamentoInput.value ||
+      !numeroTelefonoInput.value ||
+      !this.validarEmail(emailInput.value)
+    ) {
+      this.mesagesErrores(
+        'Por favor, completa todos los campos obligatorios correctamente.',
+        null
+      );
       return;
     }
 
@@ -160,9 +201,9 @@ export class DatosClienteComponent implements OnInit {
 
     this.pedido = {
       username: this.username,
-      idFormaPago: idFormaPagoSeleccionada,
+      formaPago: { idFormaPago: idFormaPagoSeleccionada },
       notas: notasPedidoInput.value,
-      estado: 'pendiente',
+      estado: 'PENDIENTE',
       totalPedido: this.totalCarrito, // Se asigna el total calculado del carrito aquí
     };
 
@@ -181,17 +222,16 @@ export class DatosClienteComponent implements OnInit {
     };
 
     this.envio = {
-      idPedido: undefined,
+      pedido: this.pedido, // Se asignará después de guardar el pedido
       direccionEnvio: undefined,
-      idMetodoEnvio: 1, // Asigna el valor adecuado
+      metodoEnvio: { idMetodoEnvio: 1 }, // Ejemplo de método de envío
       nombreReceptor: inputNombre.value,
       apellidosReceptor: apellidosInput.value,
       telefonoReceptor: numeroTelefonoInput.value,
       emailReceptor: emailInput.value,
       empresaEnvio: 'falta',
       notas: notasPedidoInput.value,
-      estado: 'Preparando pedido',
-      
+      estado: 'EN_TRANSITO',
     };
 
     // 5. Encadenar las llamadas de forma secuencial
@@ -203,7 +243,7 @@ export class DatosClienteComponent implements OnInit {
             throw new Error('Error al guardar el pedido principal.');
           }
           this.pedido.idPedido = pedidoGuardado.data as number;
-          this.envio.idPedido = this.pedido.idPedido; // Asigna el ID del pedido al objeto de envío
+          this.envio.pedido = this.pedido; // Asigna el ID del pedido al objeto de envío
           console.log(`Pedido guardado con ID: ${this.pedido.idPedido}`);
 
           // 2. Guardar la dirección de envío
@@ -215,7 +255,9 @@ export class DatosClienteComponent implements OnInit {
             throw new Error('Error al guardar la dirección de envío.');
           }
           this.envio.direccionEnvio = direccionGuardada.data;
-          console.log(`Dirección de envío guardada con ID: ${this.envio.direccionEnvio}`);
+          console.log(
+            `Dirección de envío guardada con ID: ${this.envio.direccionEnvio}`
+          );
           return this.enviosS.save(this.envio);
         }),
         // 4. Guardar los detalles del pedido y actualizar el stock
@@ -225,28 +267,33 @@ export class DatosClienteComponent implements OnInit {
           }
           console.log(`Envío guardado con ID: ${envioGuardado.data}`);
 
-          const operacionesDetalleYStock = this.detallesCarrito.map(item => {
+          const operacionesDetalleYStock = this.detallesCarrito.map((item) => {
             const nuevoDetallePedido: detallePedido = {
-              pedido:this.pedido, // Usamos solo el ID del pedido
+              pedido: this.pedido, // Usamos solo el ID del pedido
               producto: item.producto,
               cantidad: item.cantidad,
-              precioUnitario: item.precioUnitario,
-              subtotal: item.subtotal,
+              precioUnitario: parseFloat(item.precioUnitario), // Convierte la cadena a un número
+              subtotal: parseFloat(item.subtotal),
             };
 
             return this.detallePedidoS.save(nuevoDetallePedido).pipe(
               switchMap(() => {
                 // Actualizar el stock
-                return this.stockService.StockDelProducto(item.producto.idProducto).pipe(
-                  switchMap((stockResponse: ApiResponse) => {
-                    if (stockResponse.success) {
-                      const idStock = stockResponse.data;
-                      const cantidadVendida = item.cantidad;
-                      return this.stockService.addorRestarStockProductos(idStock, -cantidadVendida);
-                    }
-                    return of(null); // Retornar un observable para que forkJoin no falle
-                  })
-                );
+                return this.stockService
+                  .StockDelProducto(item.producto.idProducto)
+                  .pipe(
+                    switchMap((stockResponse: ApiResponse) => {
+                      if (stockResponse.success) {
+                        const idStock = stockResponse.data;
+                        const cantidadVendida = item.cantidad;
+                        return this.stockService.addorRestarStockProductos(
+                          idStock,
+                          -cantidadVendida
+                        );
+                      }
+                      return of(null); // Retornar un observable para que forkJoin no falle
+                    })
+                  );
               })
             );
           });
@@ -255,13 +302,22 @@ export class DatosClienteComponent implements OnInit {
       )
       .subscribe({
         next: (responses) => {
-          console.log('Todas las operaciones de pedido, envío, detalles y stock fueron exitosas.', responses);
+          console.log(
+            'Todas las operaciones de pedido, envío, detalles y stock fueron exitosas.',
+            responses
+          );
           this.limpiarCarrito();
           this.redireccionarMetodoPago();
         },
         error: (err: HttpErrorResponse) => {
-          console.error('Error durante la secuencia de registro del pedido:', err);
-          this.mesagesErrores('Ocurrió un error al procesar el pedido. Por favor, inténtelo de nuevo.', err);
+          console.error(
+            'Error durante la secuencia de registro del pedido:',
+            err
+          );
+          this.mesagesErrores(
+            'Ocurrió un error al procesar el pedido. Por favor, inténtelo de nuevo.',
+            err
+          );
         },
       });
   }
@@ -314,11 +370,12 @@ export class DatosClienteComponent implements OnInit {
   }
 
   limpiarCarrito(): void {
-    this.productosCarrio.forEach(iten => {
+    this.productosCarrio.forEach((iten) => {
       this.carritoService
         .eliminarProductoDeCarrito(this.username, iten.idDetalleCarrito)
         .subscribe({
-          error: (err) => console.error('Error al eliminar producto del carrito:', err),
+          error: (err) =>
+            console.error('Error al eliminar producto del carrito:', err),
         });
     });
   }
@@ -328,9 +385,13 @@ export class DatosClienteComponent implements OnInit {
     if (modalElement) {
       const modal = new bootstrap.Modal(modalElement);
       modal.show();
-      modalElement.addEventListener('hidden.bs.modal', () => {
-        this.router.navigate(['/home']);
-      }, { once: true });
+      modalElement.addEventListener(
+        'hidden.bs.modal',
+        () => {
+          this.router.navigate(['/home']);
+        },
+        { once: true }
+      );
     }
   }
 }

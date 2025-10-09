@@ -106,13 +106,12 @@
                     <span
                       class="badge"
                       [ngClass]="{
-                        'bg-secondary': envio.estado === 'Preparando pedido',
-                        'bg-warning text-dark': envio.estado === 'En camino',
-                        'bg-success': envio.estado === 'Entregado',
+                        'bg-secondary': envio.estado === 'PREPARANDO',
+                        'bg-warning text-dark': envio.estado === 'EN_TRANSITO',
+                        'bg-success': envio.estado === 'ENTREGADO',
                         'bg-danger':
-                          envio.estado === 'No entregado' ||
-                          envio.estado === 'Cancelado',
-                        'bg-primary': envio.estado === 'Devuelto'
+                          envio.estado === 'CANCELADO',
+                        'bg-primary': envio.estado === 'DEVUELTO'
                       }"
                     >
                       {{ envio.estado }}
@@ -149,13 +148,13 @@
                       class="btn btn-sm"
                       data-bs-toggle="modal"
                       data-bs-target="#modificarEstadoEnvioModal"
-                      [disabled]="envio?.estado === 'Cancelado'"
+                      [disabled]="envio?.estado === 'CANCELADO'"
                       style="border: none"
                       (click)="selectEnvio(envio)"
                     >
                       <img
                         [src]="
-                          envio?.estado === 'entregado'
+                          envio?.estado === 'ENTREGADO'
                             ? '/icon_Productos/Listar/deshabilitar.svg'
                             : '/icon_Productos/Listar/deshabilitar.svg'
                         "

@@ -1,16 +1,17 @@
-
 export interface direccionesEnvio {
-  idDireccionEnvio?: number;
-  username: string;
-  nombreDestinatario: string;
-  apellidosDestinatario: string;
-  numeroTelefono: string;
-  emailDestinatario: string;
-  direccion: string;
-  barrio: string;
-  ciudad: string;
-  provinciaEstado: string;
-  codigoPostal: string;
-  pais: string;
-  //esPredeterminada?: boolean;
+  idDireccionEnvio?: number;         // Long en Java → number en TS
+  username: string;                  // Relación con Usuario (solo el username)
+  nombreDestinatario: string;        // Obligatorio
+  apellidosDestinatario: string;     // Obligatorio
+  numeroTelefono?: string;           // Opcional
+  emailDestinatario?: string;        // Opcional
+  direccion: string;                 // Obligatorio
+  barrio: string;                    // Obligatorio
+  ciudad: string;                    // Obligatorio
+  provinciaEstado: string;           // Obligatorio
+  codigoPostal: string;              // Obligatorio
+  pais: string;                      // Obligatorio
+  esPredeterminada?: boolean;        // Opcional, valor por defecto: false
+  fechaCreacion?: string;            // OffsetDateTime → string ISO
+  fechaActualizacion?: string;       // OffsetDateTime → string ISO
 }

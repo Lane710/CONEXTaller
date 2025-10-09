@@ -25,13 +25,11 @@ import { UsuariosService } from '../../../services/PersonServis/usuarios.service
 import { ApiResponse } from '../../../models/api-response';
 import { proveedor } from '../../../models/proveedor';
 import { HttpErrorResponse } from '@angular/common/http';
-import { stock } from '../../../models/ProductoStockModel/stock';
-import { categoria } from '../../../models/ProductoStockModel/categorias';
-import { ProductoPropiedad } from '../../../models/ProductoStockModel/ProductoPropiedad';
-import { ProductoImagenService } from '../../../services/PersonServis/Secundarios/producto-imagen.service';
-import { ProductoPropiedadService } from '../../../services/PersonServis/Secundarios/producto-propiedad.service';
-import { ProductoImagen } from '../../../models/ProductoStockModel/ProductoImagen';
+import { ProductoImagenService } from '../../../services/ProductosServis/Secundarios/producto-imagen.service';
 import { ProductosService } from '../../../services/ProductosServis/productos.service'; // Asegúrate de que ProductosService esté importado
+import { ProductoValorPropiedad } from '../../../models/ProductoStockModel/ProductoValorPropiedad';
+import { categorias } from '../../../models/ProductoStockModel/categorias';
+import { ProductoValorPropiedadService } from '../../../services/ProductosServis/Secundarios/producto-propiedad.service';
 
 // Importar la librería de Bootstrap para poder usar el modal programáticamente
 declare var bootstrap: any;
@@ -68,12 +66,12 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
   secondaryImageUrls: { file: File; url: string }[] = []; // Para previsualización y eliminación temporal
 
   // Estado para propiedades del producto
-  newProperty: ProductoPropiedad = { tipo: '', nombre: '', valor: '' }; // Para el formulario de añadir propiedad
-  productProperties: ProductoPropiedad[] = []; // Lista de propiedades añadidas temporalmente
+  newProperty: ProductoValorPropiedad = {valor: '' }; // Para el formulario de añadir propiedad
+  productProperties: ProductoValorPropiedad[] = []; // Lista de propiedades añadidas temporalmente
 
   private initialProductoState: productos = {
     nombre: '',
-    descripcion: '',
+    descripcion: '',  
     precio: 0,
     categoria: { idCategoria: -1, nombre: '' }, // CAMBIO CLAVE: Inicializado a -1
     idProveedor: null,
@@ -87,7 +85,7 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
   };
   private initialCantidadStockState: number = 0;
 
-  categorias: categoria[] = [];
+  categorias: categorias[] = [];
   proveedores: proveedor[] = [];
 
   idUsuarioRegistro: string | null = null;
@@ -116,7 +114,7 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
     private stockService: StockService,
     private usuariosService: UsuariosService,
     private productoImagenService: ProductoImagenService, // Inyectar ProductoImagenService
-    private productoPropiedadService: ProductoPropiedadService, // Inyectar ProductoPropiedadService
+    private productoValorPropiedadService: ProductoValorPropiedadService, // Inyectar ProductoPropiedadService
     private router: Router
   ) {
     console.log('RegistrarComponent constructor called'); // Log para depuración
@@ -168,7 +166,7 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
     this.secondaryFiles = [];
     this.secondaryImageUrls = [];
     this.productProperties = [];
-    this.newProperty = { tipo: '', nombre: '', valor: '' }; // Resetear el formulario de propiedades
+    this.newProperty = {valor: '' }; // Resetear el formulario de propiedades
     // Asegurarse de resetear los controles de NgModel para las propiedades
     if (this.newPropertyTypeField && this.newPropertyTypeField.control) {
       this.newPropertyTypeField.control.markAsUntouched();
@@ -245,8 +243,8 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
     this.productosService.getCategorias().subscribe({
       next: (response: ApiResponse) => {
         if (response && response.success && response.data) {
-          const uniqueCategories = new Map<number, categoria>();
-          (response.data as categoria[]).forEach((cat) => {
+          const uniqueCategories = new Map<number, categorias>();
+          (response.data as categorias[]).forEach((cat) => {
             if (cat.idCategoria !== undefined) {
               uniqueCategories.set(cat.idCategoria, cat);
             }
@@ -407,18 +405,43 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
     }
   }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   addProperty(): void {
     console.log('addProperty method called'); // Log para depuración
     // Verificar que los campos de la nueva propiedad no estén vacíos
     if (
-      this.newProperty.tipo &&
-      this.newProperty.nombre &&
+      this.newProperty.tipoPropiedad &&
       this.newProperty.valor
     ) {
       // Crear una copia para evitar problemas de referencia si se edita newProperty después
       this.productProperties.push({ ...this.newProperty });
       // Resetear el objeto newProperty
-      this.newProperty = { tipo: '', nombre: '', valor: '' };
+      this.newProperty = { valor: '' };
 
       // Resetear el estado de validación de los campos individuales
       // Esto es CRUCIAL para que los inputs no se queden marcados como inválidos
@@ -458,11 +481,27 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
   }
 
   // Función trackBy para propiedades, para optimizar el rendimiento de la lista
-  trackByPropertyId(index: number, property: ProductoPropiedad): any {
+  trackByPropertyId(index: number, property: ProductoValorPropiedad): any {
     // Para elementos temporales sin ID de backend, el índice es suficiente para la unicidad
     // Si tu ProductoPropiedad tuviera un ID antes de guardarse, lo usarías aquí: property.idPropiedad || index;
     return index;
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // Validadores de archivo (existentes)
   fileTypeValidator(file: File): ValidationErrors | null {
@@ -629,18 +668,18 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
                     const propertiesSaveObservables: Observable<any>[] =
                       this.productProperties.map((prop) => {
                         const propToSave = { ...prop, id_producto: productId };
-                        return this.productoPropiedadService
+                        return this.productoValorPropiedadService
                           .save(propToSave)
                           .pipe(
                             catchError((propError: HttpErrorResponse) => {
                               this.modalDetails.push(
-                                `Error al guardar propiedad "${prop.nombre}": ${
+                                `Error al guardar propiedad "${prop.producto?.nombre}": ${
                                   propError.message || 'Desconocido'
                                 }`
                               );
                               return of({
                                 success: false,
-                                message: `Error al guardar propiedad ${prop.nombre}.`,
+                                message: `Error al guardar propiedad ${prop.producto?.nombre}.`,
                                 data: null,
                                 httpStatusCode: propError.status,
                               });

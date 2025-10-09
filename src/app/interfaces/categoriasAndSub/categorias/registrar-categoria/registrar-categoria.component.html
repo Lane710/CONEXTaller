@@ -1,0 +1,181 @@
+<div class="container mt-4">
+  <!-- Encabezado con navegación -->
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/h"><i class="fas fa-home"></i> Home</a></li>
+      <li class="breadcrumb-item"><a href="/home/Categorias">Categorías</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Registrar Nueva Categoría</li>
+    </ol>
+  </nav>
+
+  <!-- Tarjeta del formulario -->
+  <div class="card shadow-sm border-2">
+    <div class="card-header bg-primary text-white py-3">
+      <h2 class="h4 mb-0">
+        <i class="fas fa-plus-circle me-2"></i>
+        Registrar Nueva Categoría
+      </h2>
+    </div>
+    
+    <div class="card-body p-4">
+      <form [formGroup]="categoriaForm" (ngSubmit)="onSubmit()" novalidate>
+        
+        <!-- Campo Nombre -->
+        <div class="mb-4">
+          <label for="nombre" class="form-label fw-semibold">
+            Nombre de la Categoría <span class="text-danger">*</span>
+          </label>
+          <input 
+            type="text" 
+            class="form-control form-control-lg" 
+            id="nombre"
+            formControlName="nombre"
+            [class.is-invalid]="nombreInvalid"
+            placeholder="Ingrese el nombre de la categoría"
+          >
+          <div class="invalid-feedback" *ngIf="nombreInvalid">
+            <span *ngIf="categoriaForm.get('nombre')?.errors?.['required']">
+              El nombre de la categoría es obligatorio
+            </span>
+            <span *ngIf="categoriaForm.get('nombre')?.errors?.['minlength']">
+              El nombre debe tener al menos 3 caracteres
+            </span>
+            <span *ngIf="categoriaForm.get('nombre')?.errors?.['maxlength']">
+              El nombre no puede exceder los 50 caracteres
+            </span>
+          </div>
+        </div>
+
+        <!-- Campo Descripción -->
+        <div class="mb-4">
+          <label for="descripcion" class="form-label fw-semibold">
+            Descripción <span class="text-danger">*</span>
+          </label>
+          <textarea 
+            class="form-control" 
+            id="descripcion" 
+            rows="4"
+            formControlName="descripcion"
+            [class.is-invalid]="descripcionInvalid"
+            placeholder="Describa la categoría..."
+          ></textarea>
+          <div class="invalid-feedback" *ngIf="descripcionInvalid">
+            <span *ngIf="categoriaForm.get('descripcion')?.errors?.['required']">
+              La descripción es obligatoria
+            </span>
+            <span *ngIf="categoriaForm.get('descripcion')?.errors?.['minlength']">
+              La descripción debe tener al menos 10 caracteres
+            </span>
+            <span *ngIf="categoriaForm.get('descripcion')?.errors?.['maxlength']">
+              La descripción no puede exceder los 500 caracteres
+            </span>
+          </div>
+          <div class="form-text">
+            {{ categoriaForm.get('descripcion')?.value?.length || 0 }}/500 caracteres
+          </div>
+        </div>
+
+        <!-- Campo Imagen -->
+        <div class="mb-4">
+          <label for="imagen" class="form-label fw-semibold">
+            Imagen de la Categoría <span class="text-danger">*</span>
+          </label>
+          
+          <!-- Vista previa de imagen -->
+          <div class="mb-3 text-center" *ngIf="imagenPrevia">
+            <img [src]="imagenPrevia" class="img-thumbnail preview-image" alt="Vista previa">
+          </div>
+
+          <div class="input-group">
+            <input 
+              type="file" 
+              class="form-control" 
+              id="imagen"
+              formControlName="imagen"
+              (change)="onFileSelected($event)"
+              [class.is-invalid]="imagenInvalid"
+              accept="image/*"
+            >
+            <button 
+              class="btn btn-outline-secondary" 
+              type="button"
+              (click)="clearImage()"
+              *ngIf="imagenPrevia"
+            >
+              <i class="fas fa-times"></i> Eliminar
+            </button>
+          </div>
+          
+          <div class="invalid-feedback" *ngIf="imagenInvalid">
+            <span *ngIf="categoriaForm.get('imagen')?.errors?.['required']">
+              La imagen es obligatoria
+            </span>
+          </div>
+          <div class="form-text">
+            Formatos aceptados: JPG, PNG. Tamaño máximo: 1MB
+          </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="d-flex gap-3 justify-content-end mt-4 pt-3 border-top">
+          <button type="button" class="btn btn-outline-secondary" (click)="onCancel()">
+            <i class="fas fa-times me-2"></i>
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary px-4"
+            [disabled]="categoriaForm.invalid || submitting"
+          >
+            <i class="fas fa-save me-2"></i>
+            <span *ngIf="submitting">
+              <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+              Guardando...
+            </span>
+            <span *ngIf="!submitting" >Guardar Categoría</span>
+          </button>
+        </div>
+
+        <!-- Mensaje de error general -->
+        <div class="alert alert-danger mt-3" *ngIf="errorMessage">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          {{ errorMessage }}
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+<!--Modal de confirmacion-->
+
+
+<!-- Modal de éxito para categoría -->
+<div class="modal fade" id="modalExitoCategoria" tabindex="-1" aria-labelledby="modalExitoCategoriaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="modalExitoCategoriaLabel">
+          <i class="bi bi-check-circle me-2"></i>Registro Exitoso
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <i class="bi bi-check-circle-fill mb-3 d-block"></i>
+        <h4 class="mb-3">¡Perfecto!</h4>
+        <p>La categoría fue registrada correctamente en el sistema.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal" (click)="redireccionar()">
+          <i class="bi bi-check-lg me-2"></i>Continuar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

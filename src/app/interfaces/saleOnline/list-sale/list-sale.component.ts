@@ -22,10 +22,9 @@ interface PedidoConDetalles {
   standalone: true,
   imports: [NgFor, FormsModule, NgClass, NgIf, DatePipe],
   templateUrl: './list-sale.component.html',
-  styleUrl: './list-sale.component.css'
+  styleUrl: './list-sale.component.css',
 })
 export class ListPedidoComponent implements OnInit, AfterViewInit {
-
   pedidos: pedidos[] = [];
   pedidosOriginal: pedidos[] = [];
   allPedidosConDetalles: PedidoConDetalles[] = [];
@@ -36,9 +35,16 @@ export class ListPedidoComponent implements OnInit, AfterViewInit {
   totalPages = 0;
   pages: number[] = [];
   private readonly pagesToShow = 5; // Se mostrarán 5 botones de página a la vez
-  
+
   searchText: string = '';
-  filterStatus: 'todos' | 'pendiente' | 'completado' | 'cancelado' = 'todos';
+  filterStatus:
+    | 'PENDIENTE'
+    | 'CONFIRMADO'
+    | 'EN_PROCESO'
+    | 'ENVIADO'
+    | 'ENTREGADO'
+    | 'CANCELADO'
+    | 'todos' = 'todos';
   sortDirection: 'reciente' | 'antiguo' = 'reciente';
 
   displayedPedidos: PedidoConDetalles[] = [];
@@ -48,12 +54,12 @@ export class ListPedidoComponent implements OnInit, AfterViewInit {
   estadoSeleccionado: string = '';
   ListaProductoCancelar: detallePedido[] = [];
   private productosEnProcesoDeCancelacion = new Set<number>();
-  
+
   constructor(
     private pedidosS: PedidosService,
     private detallePedidoS: DetallePedidosService,
     private stockS: StockService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.listadoPedidos();
@@ -86,13 +92,13 @@ export class ListPedidoComponent implements OnInit, AfterViewInit {
     this.currentPage = 1;
     this.applyFiltersAndSort();
   }
-  
+
   applyFiltersAndSort(): void {
     let tempPedidos = [...this.allPedidosConDetalles];
 
     if (this.searchText) {
       const term = this.searchText.toLowerCase();
-      tempPedidos = tempPedidos.filter(item => {
+      tempPedidos = tempPedidos.filter((item) => {
         const pedidoIdStr = `ped${item.pedido.idPedido}`.toLowerCase();
         if (pedidoIdStr.includes(term)) {
           return true;
@@ -101,7 +107,7 @@ export class ListPedidoComponent implements OnInit, AfterViewInit {
         if (userName && userName.includes(term)) {
           return true;
         }
-        return item.detallePedidos.some(detalle => {
+        return item.detallePedidos.some((detalle) => {
           const productName = detalle.producto?.nombre?.toLowerCase();
           return productName && productName.includes(term);
         });
@@ -109,7 +115,9 @@ export class ListPedidoComponent implements OnInit, AfterViewInit {
     }
 
     if (this.filterStatus !== 'todos') {
-      tempPedidos = tempPedidos.filter(item => item.pedido.estado === this.filterStatus);
+      tempPedidos = tempPedidos.filter(
+        (item) => item.pedido.estado === this.filterStatus
+      );
     }
 
     tempPedidos.sort((a, b) => {
@@ -134,48 +142,62 @@ export class ListPedidoComponent implements OnInit, AfterViewInit {
       },
       error: (error) => {
         console.error('Error al obtener pedidos:', error);
-      }
+      },
     });
   }
 
   getAllDetallesPedidos(pedidos: pedidos[]): void {
-    const promises = pedidos.map(pedido => {
-      return lastValueFrom(this.detallePedidoS.getById(pedido.idPedido || 0)).then(response => {
-        return {
-          pedido,
-          detallePedidos: response.data,
-          isExpanded: false
-        } as PedidoConDetalles;
-      }).catch(error => {
-        console.error(`Error al obtener detalles del pedido ${pedido.idPedido}:`, error);
-        return null;
-      });
+    const promises = pedidos.map((pedido) => {
+      return lastValueFrom(this.detallePedidoS.getById(pedido.idPedido || 0))
+        .then((response) => {
+          return {
+            pedido,
+            detallePedidos: response.data,
+            isExpanded: false,
+          } as PedidoConDetalles;
+        })
+        .catch((error) => {
+          console.error(
+            `Error al obtener detalles del pedido ${pedido.idPedido}:`,
+            error
+          );
+          return null;
+        });
     });
 
-    Promise.all(promises).then(allDetails => {
-      this.allPedidosConDetalles = allDetails.filter(item => item !== null) as PedidoConDetalles[];
-      this.applyFiltersAndSort();
-    }).catch(error => {
-      console.error('Error al obtener todos los detalles de los pedidos:', error);
-    });
+    Promise.all(promises)
+      .then((allDetails) => {
+        this.allPedidosConDetalles = allDetails.filter(
+          (item) => item !== null
+        ) as PedidoConDetalles[];
+        this.applyFiltersAndSort();
+      })
+      .catch((error) => {
+        console.error(
+          'Error al obtener todos los detalles de los pedidos:',
+          error
+        );
+      });
   }
-  
+
   /**
-  * @description Calcula el número total de páginas y genera el array de páginas visibles.
-  */
+   * @description Calcula el número total de páginas y genera el array de páginas visibles.
+   */
   updatePagination(): void {
-    this.totalPages = Math.ceil(this.filteredPedidosConDetalles.length / this.itemsPerPage);
+    this.totalPages = Math.ceil(
+      this.filteredPedidosConDetalles.length / this.itemsPerPage
+    );
     // Vuelve a la primera página si la actual no es válida después del filtrado
     if (this.currentPage > this.totalPages) {
-        this.currentPage = 1;
+      this.currentPage = 1;
     }
     this.generatePaginationPages();
   }
 
   /**
-  * @description Cambia a la página seleccionada y actualiza los botones del paginador.
-  * @param page El número de la página a la que se desea ir.
-  */
+   * @description Cambia a la página seleccionada y actualiza los botones del paginador.
+   * @param page El número de la página a la que se desea ir.
+   */
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
@@ -184,8 +206,8 @@ export class ListPedidoComponent implements OnInit, AfterViewInit {
   }
 
   /**
-  * @description Genera el array de números de página a mostrar en el paginador.
-  */
+   * @description Genera el array de números de página a mostrar en el paginador.
+   */
   generatePaginationPages(): void {
     const pages = [];
     let startPage;
@@ -212,11 +234,11 @@ export class ListPedidoComponent implements OnInit, AfterViewInit {
         endPage = this.currentPage + middle;
       }
     }
-    
+
     for (let i = startPage; i <= endPage; i++) {
-        pages.push(i);
+      pages.push(i);
     }
-    
+
     this.pages = pages;
   }
 
@@ -250,23 +272,32 @@ export class ListPedidoComponent implements OnInit, AfterViewInit {
   }
 
   confirmarCambioEstado(): void {
-    if (this.pedidoSeleccionado && this.estadoSeleccionado && this.pedidoSeleccionado.idPedido) {
-      this.pedidosS.actualizarEstado(this.pedidoSeleccionado.idPedido, this.estadoSeleccionado).subscribe({
-        next: (response) => {
-          console.log('Estado del pedido actualizado con éxito:', response);
-          const modalElement = document.getElementById('modalCambiarEstado');
-          if (modalElement) {
-            const modal = bootstrap.Modal.getInstance(modalElement);
-            if (modal) {
-              modal.hide();
+    if (
+      this.pedidoSeleccionado &&
+      this.estadoSeleccionado &&
+      this.pedidoSeleccionado.idPedido
+    ) {
+      this.pedidosS
+        .actualizarEstado(
+          this.pedidoSeleccionado.idPedido,
+          this.estadoSeleccionado
+        )
+        .subscribe({
+          next: (response) => {
+            console.log('Estado del pedido actualizado con éxito:', response);
+            const modalElement = document.getElementById('modalCambiarEstado');
+            if (modalElement) {
+              const modal = bootstrap.Modal.getInstance(modalElement);
+              if (modal) {
+                modal.hide();
+              }
             }
-          }
-          this.listadoPedidos();
-        },
-        error: (error) => {
-          console.error('Error al actualizar el estado del pedido:', error);
-        }
-      });
+            this.listadoPedidos();
+          },
+          error: (error) => {
+            console.error('Error al actualizar el estado del pedido:', error);
+          },
+        });
     }
   }
 
@@ -275,24 +306,36 @@ export class ListPedidoComponent implements OnInit, AfterViewInit {
     this.ListaProductoCancelar = [];
     this.productosEnProcesoDeCancelacion.clear();
 
-    lastValueFrom(this.detallePedidoS.getById(pedido.idPedido || 0)).then(response => {
-      this.ListaDetallePedidoSelec = response.data;
-      const modalElement = document.getElementById('modalConfirmarCancelacion');
-      if (modalElement) {
-        const modal = new bootstrap.Modal(modalElement);
-        modal.show();
-      }
-    }).catch(error => {
-      console.error('Error al obtener los detalles del pedido para la cancelación:', error);
-    });
+    lastValueFrom(this.detallePedidoS.getById(pedido.idPedido || 0))
+      .then((response) => {
+        this.ListaDetallePedidoSelec = response.data;
+        const modalElement = document.getElementById(
+          'modalConfirmarCancelacion'
+        );
+        if (modalElement) {
+          const modal = new bootstrap.Modal(modalElement);
+          modal.show();
+        }
+      })
+      .catch((error) => {
+        console.error(
+          'Error al obtener los detalles del pedido para la cancelación:',
+          error
+        );
+      });
   }
 
   cancelarProductoDePedido(detalle: detallePedido): void {
-    if (detalle.idDetallePedido && !this.productosEnProcesoDeCancelacion.has(detalle.idDetallePedido)) {
+    if (
+      detalle.idDetallePedido &&
+      !this.productosEnProcesoDeCancelacion.has(detalle.idDetallePedido)
+    ) {
       detalle.estado = 'CANCELADO';
       this.ListaProductoCancelar.push(detalle);
       this.productosEnProcesoDeCancelacion.add(detalle.idDetallePedido);
-      console.log(`Producto ${detalle.producto?.nombre} añadido a la lista de cancelación.`);
+      console.log(
+        `Producto ${detalle.producto?.nombre} añadido a la lista de cancelación.`
+      );
     }
   }
 
@@ -305,25 +348,33 @@ export class ListPedidoComponent implements OnInit, AfterViewInit {
     let totalReduccion = 0;
     const productosCancelados = this.ListaProductoCancelar;
     const updateObservables: any[] = [];
-    
+
     for (const detalle of productosCancelados) {
       if (detalle.producto && detalle.producto.idProducto && detalle.cantidad) {
-        const stockUpdate$ = this.stockS.StockDelProducto(detalle.producto.idProducto).pipe(
-          switchMap((stockResponse) => {
-            if (stockResponse?.data) {
-              const stockData = stockResponse.data;
-              return forkJoin([
-                this.stockS.addorRestarStockProductos(stockData, detalle.cantidad),
-                this.detallePedidoS.save({ ...detalle, estado: 'CANCELADO' })
-              ]);
-            } else {
-              console.warn(`No se encontró stock para el producto con ID: ${detalle.producto?.idProducto}.`);
-              return of(null);
-            }
-          })
-        );
+        const stockUpdate$ = this.stockS
+          .StockDelProducto(detalle.producto.idProducto)
+          .pipe(
+            switchMap((stockResponse) => {
+              if (stockResponse?.data) {
+                const stockData = stockResponse.data;
+                return forkJoin([
+                  this.stockS.addorRestarStockProductos(
+                    stockData,
+                    detalle.cantidad
+                  ),
+                  this.detallePedidoS.save({ ...detalle, estado: 'CANCELADO' }),
+                ]);
+              } else {
+                console.warn(
+                  `No se encontró stock para el producto con ID: ${detalle.producto?.idProducto}.`
+                );
+                return of(null);
+              }
+            })
+          );
         updateObservables.push(stockUpdate$);
-        totalReduccion += (Number(detalle.precioUnitario) || 0) * Number(detalle.cantidad);
+        totalReduccion +=
+          (Number(detalle.precioUnitario) || 0) * Number(detalle.cantidad);
       }
     }
 
@@ -331,20 +382,32 @@ export class ListPedidoComponent implements OnInit, AfterViewInit {
       await lastValueFrom(forkJoin(updateObservables));
       console.log('Stocks y detalles de pedido actualizados con éxito.');
 
-      const totalActual = parseFloat(this.pedidoSeleccionado.totalPedido as string || '0');
-      const nuevoTotal = totalActual - totalReduccion;
-      this.pedidoSeleccionado.totalPedido = nuevoTotal.toFixed(2);
+      const totalActual: number = this.pedidoSeleccionado.totalPedido ?? 0;
 
-      const idsCancelados = new Set(productosCancelados.map(p => p.idDetallePedido));
-      this.ListaDetallePedidoSelec = this.ListaDetallePedidoSelec.filter(d => !idsCancelados.has(d.idDetallePedido));
-      
+      const nuevoTotal = totalActual - totalReduccion;
+
+      // Se asigna el nuevo valor como string (con 2 decimales) a la propiedad.
+      this.pedidoSeleccionado.totalPedido = nuevoTotal;
+
+      const idsCancelados = new Set(
+        productosCancelados.map((p) => p.idDetallePedido)
+      );
+      this.ListaDetallePedidoSelec = this.ListaDetallePedidoSelec.filter(
+        (d) => !idsCancelados.has(d.idDetallePedido)
+      );
+
       if (this.ListaDetallePedidoSelec.length === 0) {
         this.pedidoSeleccionado.estado = 'CANCELADO';
       }
 
       if (this.pedidoSeleccionado.idPedido) {
-        console.log(this.pedidoSeleccionado)
-        await lastValueFrom(this.pedidosS.update(this.pedidoSeleccionado.idPedido, this.pedidoSeleccionado));
+        console.log(this.pedidoSeleccionado);
+        await lastValueFrom(
+          this.pedidosS.update(
+            this.pedidoSeleccionado.idPedido,
+            this.pedidoSeleccionado
+          )
+        );
         console.log('Pedido principal actualizado con éxito.');
       }
 
@@ -366,11 +429,14 @@ export class ListPedidoComponent implements OnInit, AfterViewInit {
   }
 
   restablecerListasTemporales(): void {
-    console.log(this.productosEnProcesoDeCancelacion)
+    console.log(this.productosEnProcesoDeCancelacion);
     for (const detalleSeleccionado of this.ListaDetallePedidoSelec) {
       for (const productoACancelar of this.ListaProductoCancelar) {
-        if (detalleSeleccionado.idDetallePedido === productoACancelar.idDetallePedido) {
-          detalleSeleccionado.estado='habilitado';
+        if (
+          detalleSeleccionado.idDetallePedido ===
+          productoACancelar.idDetallePedido
+        ) {
+          detalleSeleccionado.estado = 'CONFIRMADO';
         }
       }
     }
@@ -382,7 +448,7 @@ export class ListPedidoComponent implements OnInit, AfterViewInit {
   modificarRedireccion(pedido: any): void {
     // Implementa la lógica de redirección aquí
   }
-  
+
   sortByEstado = (a: detallePedido, b: detallePedido) => {
     if (a.estado === 'CANCELADO' && b.estado !== 'CANCELADO') {
       return 1;

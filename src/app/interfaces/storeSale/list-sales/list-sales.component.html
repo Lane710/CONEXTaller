@@ -108,9 +108,9 @@
                 <span
                   class="badge"
                   [ngClass]="{
-                    'bg-success': sale.estado === 'completada',
-                    'bg-warning text-dark': sale.estado === 'pendiente',
-                    'bg-danger': sale.estado === 'cancelada'
+                    'bg-success': sale.estado === 'COMPLETADA',
+                    'bg-warning text-dark': sale.estado === 'PENDIENTE',
+                    'bg-danger': sale.estado === 'CANCELADA'
                   }"
                 >
                   {{ sale.estado | titlecase }}
@@ -136,7 +136,7 @@
                 >
                   <img
                     [src]="
-                      sale?.estado === 'completada'
+                      sale?.estado === 'COMPLETADA'
                         ? '/icon_Productos/Listar/habilitar.svg'
                         : '/icon_Productos/Listar/deshabilitar.svg'
                     "

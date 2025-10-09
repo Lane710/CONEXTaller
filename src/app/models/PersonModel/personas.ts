@@ -1,19 +1,17 @@
-// src/app/models/personas.ts
-// Cambiado a PascalCase para seguir la convención de TypeScript
-export interface personas { 
-  ci: string; 
+export interface personas {
+  ci: string;                      // Clave primaria, tipo String
   nombre: string;
-  apellidop: string; 
-  apellidom: string; 
-  fechaNacimiento?: string; // Corresponde a LocalDate
+  apellidop: string;
+  apellidom: string;
+  fechaNacimiento?: string;        // LocalDate → string ISO (ej. "1990-05-20")
   genero?: string;
   telefono?: string;
-  email?: string; 
+  email?: string;
   direccion?: string;
   ciudad?: string;
-  departamento?: string; 
+  departamento?: string;
   pais?: string;
-  codigoPostal?: string; 
+  codigoPostal?: string;
   fotoUrl?: string;
-  fechaRegistro?: string; // Corresponde a LocalDateTime
+  fechaRegistro?: string;          // LocalDateTime → string ISO (ej. "2025-09-24T00:12:30")
 }

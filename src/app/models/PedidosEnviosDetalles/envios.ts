@@ -1,25 +1,31 @@
 
 import { direccionesEnvio } from './direccionesEnvio';
-//import { pedidos } from './pedidos';
+import { metodoEnvio } from './metodosEnvio';
+import { pedidos } from './pedidos';
 
 export interface envios {
-  idEnvio?: number;
-  idPedido?: number;
-  // La clave foránea idDireccionEnvio se reemplaza por el objeto completo
-  // ya que el backend traerá la dirección completa si se carga la relación.
-  direccionEnvio?: direccionesEnvio; 
-  idMetodoEnvio: number;
+  idEnvio?: number;                         // Long en Java → number en TS
+  pedido?: pedidos;                          // Relación OneToOne con pedidos
+  direccionEnvio?: direccionesEnvio;         // Relación ManyToOne con direcciones_envio
+  metodoEnvio?: metodoEnvio;                // Relación ManyToOne con metodos_envio
+
   nombreReceptor: string;
   apellidosReceptor: string;
-  telefonoReceptor: string;
-  emailReceptor: string;
-  empresaEnvio: string;
+  telefonoReceptor?: string;
+  emailReceptor?: string;
+
+  empresaEnvio?: string;
   codigoSeguimiento?: string;
-  estado?: string;
-  fechaEnvio?: string;
-  fechaCreacion?:string;
+
+  estado?: 'PENDIENTE' | 'PREPARANDO' | 'EN_TRANSITO' | 'EN_REPARTO' | 'ENTREGADO' | 'CANCELADO' | 'DEVUELTO';
+
+  fechaEnvio?: string;                      // OffsetDateTime → string ISO
   fechaEntregaEstimada?: string;
-  //fechaEntregaReal?: string;
-  costoEnvio?: number;
-  notas: string;
+  fechaEntregaReal?: string;
+
+  costoEnvio?: number;                       // BigDecimal → number
+  notas?: string;
+
+  fechaCreacion?: string;
+  fechaActualizacion?: string;
 }

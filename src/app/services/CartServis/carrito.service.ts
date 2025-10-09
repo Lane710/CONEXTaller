@@ -2,11 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'; 
 import { Observable } from 'rxjs'; 
 import { ApiResponse } from '../../models/api-response';
-import { RawDetalleCarritoProducto } from '../../DTOs/Cart/ProductoEnCarrito';
 import { DetalleCarrito } from '../../models/CartModel/DetalleCarrito';
-
-// Importa las interfaces necesarias
-
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +11,9 @@ export class CarritoService {
 
   // URL base para todas las operaciones relacionadas con el carrito.
   private baseUrl = 'http://localhost:8080/carrito/';
+  private baseUrl2 = 'http://localhost:8080/detalle-carrito/';
 
+  
   constructor(private http: HttpClient) { }
 
   /**
@@ -29,7 +27,7 @@ export class CarritoService {
   /**
    * Agrega un producto al carrito de un usuario.
    * @param usuario El nombre de usuario.
-   * @param nuevoDetalle El objeto RawDetalleCarritoProducto a agregar.
+   * @param nuevoDetalle El objeto DetalleCarrito a agregar.
    */
   agregarProductoACarrito(usuario: string, nuevoDetalle: DetalleCarrito): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${this.baseUrl}${usuario}/productos`, nuevoDetalle);
@@ -50,7 +48,10 @@ export class CarritoService {
    * @param operacion La operación a realizar (1 para aumentar, 0 para disminuir).
    */
   actualizarCantidadDetalle(idDetalleCarrito: number, operacion: 0 | 1): Observable<ApiResponse> {
-    // Se usa el endpoint de aumento/disminución de cantidad.
-    return this.http.put<ApiResponse>(`${this.baseUrl}actualizarCantidad/${idDetalleCarrito}/${operacion}`, {});
+    return this.http.put<ApiResponse>(`${this.baseUrl2}actualizarCantidad/${idDetalleCarrito}/${operacion}`, {});
   }
+
+  
+
+
 }
