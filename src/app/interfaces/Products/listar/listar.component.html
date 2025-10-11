@@ -91,10 +91,11 @@
             </tr>
 
             <ng-container *ngIf="!isLoading && !errorMessage">
-              <ng-container *ngIf="filteredAndPaginatedStocks.length > 0; else noResults">
+              <ng-container
+                *ngIf="filteredAndPaginatedStocks.length > 0; else noResults"
+              >
                 @for (item of filteredAndPaginatedStocks; track item.idStock) {
-                @if (item.producto) {
-                @let producto = item.producto;
+                @if (item.producto) { @let producto = item.producto;
                 <tr>
                   <td data-label="Foto">
                     <img
@@ -115,7 +116,8 @@
                   </td>
                   <td data-label="Precio Unitario">
                     {{
-                      item.producto.precio | currency : "Bs " : "symbol" : "1.2-2"
+                      item.producto.precio
+                        | currency : "Bs " : "symbol" : "1.2-2"
                     }}
                   </td>
                   <td data-label="Estado">
@@ -136,17 +138,27 @@
                     >
                       <img
                         src="/icon_Productos/Listar/ver_observar.svg"
-                        style="width: 30px; height: 30px; vertical-align: middle"
+                        style="
+                          width: 30px;
+                          height: 30px;
+                          vertical-align: middle;
+                        "
                       />
                     </button>
                     <button
                       class="btn btn-sm me-1"
-                      routerLink="/home/modificarProduc/{{ producto.idProducto }}"
+                      routerLink="/home/modificarProduc/{{
+                        producto.idProducto
+                      }}"
                     >
                       <img
                         src="/icon_Productos/Listar/Modificar.svg"
                         alt=""
-                        style="width: 30px; height: 30px; vertical-align: middle"
+                        style="
+                          width: 30px;
+                          height: 30px;
+                          vertical-align: middle;
+                        "
                       />
                     </button>
                     <button
@@ -162,15 +174,33 @@
                             : '/icon_Productos/Listar/habilitar.svg'
                         "
                         alt="Estado del producto"
-                        style="width: 30px; height: 30px; vertical-align: middle"
+                        style="
+                          width: 30px;
+                          height: 30px;
+                          vertical-align: middle;
+                        "
                       />
                     </button>
+
+                    <!-- BOTÓN PARA MODIFICAR STOCK -->
+<button
+  class="btn btn-sm"
+  (click)="abrirModalStock(item)"
+>
+  <img
+    src="/icon_Productos/Listar/editar_stock.svg"
+    alt="Modificar Stock"
+    style="width: 30px; height: 30px; vertical-align: middle"
+  />
+</button>
+
                   </td>
                 </tr>
                 } @else {
                 <tr>
                   <td colspan="7" class="text-center text-warning py-2">
-                    Producto asociado no encontrado para el registro de stock ID:
+                    Producto asociado no encontrado para el registro de stock
+                    ID:
                     {{ item.idStock }}
                   </td>
                 </tr>
@@ -191,31 +221,35 @@
   </div>
 
   <!-- Paginación -->
-      <div class="d-flex justify-content-center align-items-center flex-wrap mb-3" *ngIf="totalPages > 1">
-        <nav aria-label="Page navigation">
-          <ul class="pagination pagination-sm mb-0">
-            <!-- Botón de página anterior -->
-            <li class="page-item" [class.disabled]="currentPage === 1">
-              <button class="page-link" (click)="goToPage(currentPage - 1)">
-                &laquo;
-              </button>
-            </li>
-            <!-- Botones de página dinámicos -->
-            @for (page of getPagesArray(); track page) {
-              <li class="page-item" [class.active]="currentPage === page">
-                <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
-              </li>
-            }
-            <!-- Botón de página siguiente -->
-            <li class="page-item" [class.disabled]="currentPage === totalPages">
-              <button class="page-link" (click)="goToPage(currentPage + 1)">
-                &raquo;
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </div>
+  <div
+    class="d-flex justify-content-center align-items-center flex-wrap mb-3"
+    *ngIf="totalPages > 1"
+  >
+    <nav aria-label="Page navigation">
+      <ul class="pagination pagination-sm mb-0">
+        <!-- Botón de página anterior -->
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToPage(currentPage - 1)">
+            &laquo;
+          </button>
+        </li>
+        <!-- Botones de página dinámicos -->
+        @for (page of getPagesArray(); track page) {
+        <li class="page-item" [class.active]="currentPage === page">
+          <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
+        </li>
+        }
+        <!-- Botón de página siguiente -->
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="goToPage(currentPage + 1)">
+            &raquo;
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
 </div>
+
 <!-- Modal de Confirmación (ya estaba en Bootstrap) -->
 <div
   class="modal fade"
@@ -223,7 +257,7 @@
   tabindex="-1"
   aria-labelledby="confirmarAccionModalLabel"
   aria-hidden="true"
-  #confirmarAccionModal
+  #confirmarAccionModalRef
 >
   <div class="modal-dialog">
     <div class="modal-content">
@@ -330,6 +364,7 @@
 <!-- CAMBIO: Usar el nuevo getter público para el modal-backdrop -->
 
 <!-- Modal de Detalles del Producto (REVERTIDO A BOOTSTRAP) -->
+
 <div
   class="modal fade"
   id="modalDetallesProducto"
@@ -453,6 +488,79 @@
           (click)="closeDetallesModal()"
         >
           Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Modal stock -->
+<div
+  class="modal fade"
+  id="stockModal"
+  #stockModal
+  tabindex="-1"
+  aria-labelledby="stockModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="stockModalLabel">
+          Modificar Nivel de Stock
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="cerrarModalStock()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Ingrese la nueva cantidad de stock disponible del producto:
+          {{ modStockValue?.producto?.nombre }}.
+        </p>
+        <form id="stockForm">
+          <div class="mb-3">
+            <label for="stockInput" class="form-label">Cantidad</label>
+            <div class="stock-controls">
+              <input
+                type="number"
+                class="form-control stock-input"
+                id="stockInput"
+                name="cantidadStock"
+                [(ngModel)]="cantidadStock"
+                min="0"
+                max="150"
+                step="1"
+              />
+            </div>
+            <div class="form-text">
+              El valor debe ser un número entero entre 0 y 150.
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button 
+          type="button" 
+          class="btn btn-secondary" 
+          data-bs-dismiss="modal"
+          (click)="cerrarModalStock()"
+        >
+          Cancelar
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          id="saveBtn"
+          (click)="ModificarStock()"
+        >
+          Guardar Cambios
         </button>
       </div>
     </div>

@@ -8,4 +8,4 @@ export interface detalleVenta {
   cantidad: number;               // Integer en Java → number en TS
   precioUnitario: number;         // BigDecimal en Java → number en TS
   subtotal?: number;              // Generado en la DB, opcional en TS
-}
+} 

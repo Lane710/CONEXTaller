@@ -14,11 +14,13 @@ export interface ProductoDTO {
   color: string;
   estado: number;
   imagen: string;
-  proveedor: ProveedorDTO;
-  usuarioRegistro: UsuarioDTO;
-  fechaRegistro: string; // ISO format
-  ultimaActualizacion: string; // ISO format
   disponibleOnline: boolean;
   categoria: CategoriaDTO;
   subcategoria: SubcategoriaDTO;
+  proveedor: ProveedorDTO;
+  usuarioRegistro: UsuarioDTO;
+  tipo: string;
+  variante: string;
+  fechaRegistro: string;
+  ultimaActualizacion: string;
 }

@@ -20,6 +20,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   errorMessage: string | null = null;
   successMessage: string | null = null;
+  
+  // Nueva propiedad para controlar la visibilidad de la contraseña
+  showPassword: boolean = false;
 
   throttlingMessage: string | null = null;
   remainingTime: number = 0;
@@ -50,6 +53,11 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   get f() { return this.loginForm.controls; }
+
+  // Nueva función para alternar la visibilidad de la contraseña
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
 
   login(): void {
     this.errorMessage = null;

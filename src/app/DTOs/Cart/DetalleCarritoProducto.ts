@@ -1,4 +1,5 @@
 
+import { productos } from "../../models/ProductoStockModel/productos";
 import { ProductoDTO } from "../dtosBD/ProductoDTO";
 
 
@@ -7,5 +8,5 @@ export interface DetalleCarritoProducto {
   cantidad: number;
   precioUnitario: string; // Usar el tipo BigDecimal o 'number'
   subtotal: string; // Usar el tipo BigDecimal o 'number'
-  producto: ProductoDTO;
+  producto: productos;
 }

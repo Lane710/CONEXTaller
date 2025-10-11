@@ -63,6 +63,16 @@ cargarCarrito(): void {
               producto: {
                 ...item.producto,
                 precio: Number(item.producto.precio),
+                proveedor: {
+                  ...item.producto.proveedor,
+                  nombreEmpresa: item.producto.proveedor.nombre ?? '', // Asegura que nombreEmpresa esté presente
+                },
+                usuarioRegistro: {
+                  ...item.producto.usuarioRegistro,
+                  passwordHash: (item.producto.usuarioRegistro as any)?.passwordHash ?? '',
+                  persona: (item.producto.usuarioRegistro as any)?.persona ?? {},
+                  rol: (item.producto.usuarioRegistro as any)?.rol ?? {},
+                },
               },
             };
           }

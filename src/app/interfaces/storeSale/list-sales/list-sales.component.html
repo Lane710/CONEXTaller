@@ -119,9 +119,8 @@
               <td class="actions-column">
                 <button
                   class="btn btn-sm me-1"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modalDetallesVenta"
                   (click)="selectVentaModalDetalle(sale)"
+                  type="button"
                 >
                   <img
                     src="/icon_Productos/Listar/ver_observar.svg"
@@ -130,13 +129,12 @@
                 </button>
                 <button
                   class="btn btn-sm"
-                  data-bs-toggle="modal"
-                  data-bs-target="#confirmarVentaCompletadaOCanceladaModal"
                   (click)="selectVenta(sale)"
+                  type="button"
                 >
                   <img
                     [src]="
-                      sale?.estado === 'COMPLETADA'
+                      sale?.estado === 'CANCELADA'
                         ? '/icon_Productos/Listar/habilitar.svg'
                         : '/icon_Productos/Listar/deshabilitar.svg'
                     "
@@ -157,64 +155,60 @@
     </div>
   </div>
 
-<!-- Paginación -->
-      <div
-        class="d-flex justify-content-center align-items-center flex-wrap mt-3"
-        *ngIf="totalPages > 1"
-      >
-        <nav>
-          <ul class="pagination pagination-sm mb-0">
-            <!-- Botón para ir a la página anterior -->
-            <li class="page-item" [class.disabled]="currentPage === 1">
-              <button class="page-link" (click)="goToPage(currentPage - 1)">
-                &laquo;
-              </button>
-            </li>
+  <div
+    class="d-flex justify-content-center align-items-center flex-wrap mt-3"
+    *ngIf="totalPages > 1"
+  >
+    <nav>
+      <ul class="pagination pagination-sm mb-0">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToPage(currentPage - 1)">
+            &laquo;
+          </button>
+        </li>
 
-            <!-- Botones de página dinámicos -->
-            @if (pages[0] > 1) {
-              <li class="page-item">
-                <button class="page-link" (click)="goToPage(1)">1</button>
-              </li>
-              @if (pages[0] > 2) {
-                <li class="page-item disabled">
-                  <span class="page-link">...</span>
-                </li>
-              }
-            }
-            @for (page of pages; track page) {
-              <li
-                class="page-item"
-                [class.active]="page === currentPage"
-                [attr.aria-current]="page === currentPage ? 'page' : null"
-              >
-                <button class="page-link" (click)="goToPage(page)">
-                  {{ page }}
-                </button>
-              </li>
-            }
-            @if (pages[pages.length - 1] < totalPages) {
-              @if (pages[pages.length - 1] < totalPages - 1) {
-                <li class="page-item disabled">
-                  <span class="page-link">...</span>
-                </li>
-              }
-              <li class="page-item">
-                <button class="page-link" (click)="goToPage(totalPages)">
-                  {{ totalPages }}
-                </button>
-              </li>
-            }
-
-            <!-- Botón para ir a la página siguiente -->
-            <li class="page-item" [class.disabled]="currentPage === totalPages">
-              <button class="page-link" (click)="goToPage(currentPage + 1)">
-                &raquo;
-              </button>
+        @if (pages[0] > 1) {
+          <li class="page-item">
+            <button class="page-link" (click)="goToPage(1)">1</button>
+          </li>
+          @if (pages[0] > 2) {
+            <li class="page-item disabled">
+              <span class="page-link">...</span>
             </li>
-          </ul>
-        </nav>
-      </div>
+          }
+        }
+        @for (page of pages; track page) {
+          <li
+            class="page-item"
+            [class.active]="page === currentPage"
+            [attr.aria-current]="page === currentPage ? 'page' : null"
+          >
+            <button class="page-link" (click)="goToPage(page)">
+              {{ page }}
+            </button>
+          </li>
+        }
+        @if (pages[pages.length - 1] < totalPages) {
+          @if (pages[pages.length - 1] < totalPages - 1) {
+            <li class="page-item disabled">
+              <span class="page-link">...</span>
+            </li>
+          }
+          <li class="page-item">
+            <button class="page-link" (click)="goToPage(totalPages)">
+              {{ totalPages }}
+            </button>
+          </li>
+        }
+
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="goToPage(currentPage + 1)">
+            &raquo;
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
 </div>
 
 <div
@@ -223,6 +217,8 @@
   tabindex="-1"
   aria-labelledby="confirmarAccionVentaModalLabel"
   aria-hidden="true"
+  #confirmarAccionModal
+  (hidden.bs.modal)="onModalHidden()"
 >
   <div class="modal-dialog">
     <div class="modal-content">
@@ -233,19 +229,23 @@
         <button
           type="button"
           class="btn-close"
-          data-bs-dismiss="modal"
+          (click)="closeConfirmarAccionModal()"
           aria-label="Cerrar"
         ></button>
       </div>
       <div class="modal-body">
         <p>
           ¿Estás seguro de que quieres
-          <strong id="accionVentaTexto">cancelar</strong>
-          la venta <strong id="idVentaTexto">VNT123</strong>?
+          <strong>{{ accionModal }}</strong>
+          la venta <strong>VNT{{ selecVetaEstado?.idVenta }}</strong>?
         </p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="closeConfirmarAccionModal()"
+        >
           Cancelar
         </button>
         <button
@@ -305,6 +305,7 @@
   tabindex="-1"
   aria-labelledby="modalDetallesVenta"
   aria-hidden="true"
+  #detallesVentaModal
 >
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content" *ngIf="ventaSeleccionada">
@@ -318,11 +319,10 @@
         <button
           type="button"
           class="btn-close btn-close-white"
-          data-bs-dismiss="modal"
+          (click)="closeDetallesVentaModal()"
           aria-label="Cerrar"
         ></button>
       </div>
-
       <div class="modal-body p-4">
         <div class="row mb-4">
           <div class="col-md-6 mb-3 mb-md-0">
@@ -347,9 +347,7 @@
                 </div>
                 <div class="d-flex justify-content-between border-bottom py-2">
                   <span class="text-muted">Hora:</span>
-                  <span>{{
-                    ventaSeleccionada.venta.horaVenta.slice(0, 5)
-                  }}</span>
+                  <span>{{ ventaSeleccionada.venta.horaVenta }}</span>
                 </div>
                 <div class="d-flex justify-content-between border-bottom py-2">
                   <span class="text-muted">Método de Pago:</span>
@@ -361,23 +359,23 @@
                     class="badge rounded-pill d-inline-flex align-items-center"
                     [ngClass]="{
                       'bg-success':
-                        ventaSeleccionada.venta.estado === 'completada',
+                        ventaSeleccionada.venta.estado === 'COMPLETADA',
                       'bg-warning text-dark':
-                        ventaSeleccionada.venta.estado === 'pendiente',
+                        ventaSeleccionada.venta.estado === 'PENDIENTE',
                       'bg-danger':
-                        ventaSeleccionada.venta.estado === 'cancelada'
+                        ventaSeleccionada.venta.estado === 'CANCELADA'
                     }"
                   >
                     <i
                       class="fas me-1"
                       [class.fa-check-circle]="
-                        ventaSeleccionada.venta.estado === 'completada'
+                        ventaSeleccionada.venta.estado === 'COMPLETADA'
                       "
                       [class.fa-clock]="
-                        ventaSeleccionada.venta.estado === 'pendiente'
+                        ventaSeleccionada.venta.estado === 'PENDIENTE'
                       "
                       [class.fa-times-circle]="
-                        ventaSeleccionada.venta.estado === 'cancelada'
+                        ventaSeleccionada.venta.estado === 'CANCELADA'
                       "
                     >
                     </i>
@@ -440,16 +438,14 @@
                 </thead>
                 <tbody>
                   <tr *ngFor="let detalle of ListaDetalleVentaSelec">
-                    <td class="ps-4">{{ detalle.stock.producto.nombre }}</td>
+                    <td class="ps-4">{{ detalle.producto.nombre }}</td>
                     <td class="text-center">{{ detalle.cantidad }}</td>
                     <td class="text-center">
                       Bs {{ detalle.precioUnitario.toFixed(2) }}
                     </td>
                     <td class="text-end pe-4">
                       Bs
-                      {{
-                        (detalle.cantidad * detalle.precioUnitario)
-                      }}
+                      {{ (detalle.cantidad * detalle.precioUnitario).toFixed(2) }}
                     </td>
                   </tr>
                 </tbody>
@@ -461,18 +457,15 @@
         <div class="card border-0 mt-3 bg-light p-3">
           <div class="card-body p-0">
             <div class="d-flex justify-content-between align-items-center">
-              <!-- Sección de descuento -->
               <div class="d-flex align-items-center">
                 <span class="text-muted me-2">Descuento:</span>
                 <span class="text-danger fw-bold fs-5"
-                  >Bs {{ ventaSeleccionada.venta.descuento.toFixed(2) }}</span
+                  >Bs {{ ventaSeleccionada.venta.descuento}}</span
                 >
               </div>
 
-              <!-- Separador visual -->
               <div class="vr mx-3"></div>
 
-              <!-- Sección de total -->
               <div class="d-flex align-items-center">
                 <span class="text-muted me-2">Total:</span>
                 <span class="text-success fw-bold fs-5"
@@ -488,7 +481,7 @@
         <button
           type="button"
           class="btn btn-outline-secondary"
-          data-bs-dismiss="modal"
+          (click)="closeDetallesVentaModal()"
         >
           <i class="fas fa-times me-2"></i>Cerrar
         </button>

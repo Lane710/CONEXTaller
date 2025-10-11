@@ -13,13 +13,14 @@ import { catchError, concatMap, forkJoin, of, throwError } from 'rxjs';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
-
 import { ProductosService } from '../../../services/ProductosServis/productos.service';
 import { FormaPagoService } from '../../../services/PedidosEnviosDetalles/forma-pago.service';
 import { forma_pago } from '../../../models/PedidosEnviosDetalles/forma_pago';
 import { categorias } from '../../../models/ProductoStockModel/categorias';
 import { productos } from '../../../models/ProductoStockModel/productos';
 import { ventas } from '../../../models/Ventas/ventas';
+import { usuarios } from '../../../models/PersonModel/usuarios'; // Asegúrate de importar la interfaz usuarios
+import { ApiResponse } from '../../../models/api-response';
 
 declare var bootstrap: any;
 
@@ -44,10 +45,25 @@ export class SalesComponent implements OnInit {
 
   ngOnInit(): void {
     this.listadoProductos();
-    this.buscadorCliente(); // Cargar todos los clientes al iniciar
+    this.buscadorCliente();
+    this.cargarUsuarioTrabajador();
   }
 
-  usuarioTrabajador: string = localStorage.getItem('current_username') || '';
+  // 🔥 NUEVAS PROPIEDADES PARA CONTROLAR MODALES
+  mostrarConfirmModal: boolean = false;
+  mostrarSuccessModal: boolean = false;
+
+  // Propiedades existentes
+  usuarioTrabajador: usuarios = {
+    username: localStorage.getItem('current_username') || '',
+    email: '',
+    estado: 1,
+    fechaCreacion: '',
+    passwordHash: '',
+    persona: {ci: '' , nombre: '', apellidom: '', apellidop: '', direccion: '', telefono: ''},
+    rol: { idRol: 0, nombreRol: '', descripcion: ''}
+  };
+
   products: stock[] = [];
   filteredProducts: stock[] = [];
   paginatedProducts: stock[] = [];
@@ -74,17 +90,63 @@ export class SalesComponent implements OnInit {
   categorias: categorias[] = [];
   metodoDePagoSeleccionado: string = 'efectivo';
   codigoMetodoPago: number = 3333;
-  //variable para el descuento
   
   descuento: number = 0.0;
   notaVenta:string='';
-isCiDisabled: boolean = false; // <-- AGREGAR ESTA PROPIEDAD
+  isCiDisabled: boolean = false;
+
   formaPago: forma_pago = {
     idFormaPago: 3333,
     nombre: 'Efectivo',
     descripcion: 'Pago a través de la plataforma',
     estado: 'Activo',
   };
+
+  // 🔥 MÉTODOS PARA CONTROLAR MODALES
+
+  abrirModalConfirmacion(): void {
+    this.buscadorCliente();
+    this.mostrarConfirmModal = true;
+    // Prevenir scroll del body
+    document.body.style.overflow = 'hidden';
+  }
+
+  cerrarModalConfirmacion(): void {
+    this.mostrarConfirmModal = false;
+    this.limpiarDatosCliente();
+    this.restaurarScrollBody();
+  }
+
+  abrirModalExito(): void {
+    this.mostrarSuccessModal = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  cerrarModalExito(): void {
+    this.mostrarSuccessModal = false;
+    this.restaurarScrollBody();
+    this.cerrarModalYRedirigir();
+  }
+
+  cerrarModales(): void {
+    if (this.mostrarConfirmModal) {
+      this.cerrarModalConfirmacion();
+    }
+    if (this.mostrarSuccessModal) {
+      this.cerrarModalExito();
+    }
+  }
+
+  private restaurarScrollBody(): void {
+    document.body.style.overflow = 'auto';
+  }
+
+  cargarUsuarioTrabajador(): void {
+    const username = localStorage.getItem('current_username');
+    if (username) {
+      this.usuarioTrabajador.username = username;
+    }
+  }
 
   listadoProductos() {
     this.productosConStock.listadoProducStock().subscribe({
@@ -124,8 +186,9 @@ isCiDisabled: boolean = false; // <-- AGREGAR ESTA PROPIEDAD
       },
     });
   }
-  showModalMessage(arg0: string, arg1: string, arg2: boolean) {
-    throw new Error('Method not implemented.');
+
+  showModalMessage(title: string, message: string, isSuccess: boolean) {
+    console.log(`${title}: ${message}`);
   }
 
   aplicarFiltro(): void {
@@ -147,9 +210,10 @@ isCiDisabled: boolean = false; // <-- AGREGAR ESTA PROPIEDAD
           item.producto?.categoria?.nombre?.toLowerCase() === categoryTerm
       );
     }
-
     this.filteredProducts = tempProducts;
-    this.cantidadesEnVenta = this.filteredProducts.map(() => 1);
+    if (this.cantidadesEnVenta.length !== this.filteredProducts.length) {
+  this.cantidadesEnVenta = this.filteredProducts.map(() => 1);
+}
     this.currentPage = 1;
     this.totalPages = Math.ceil(this.filteredProducts.length / this.pageSize);
     this.updatePaginatedProducts();
@@ -166,74 +230,73 @@ isCiDisabled: boolean = false; // <-- AGREGAR ESTA PROPIEDAD
   }
 
   realizarVenta() {
-  let clienteParaGuardar: clientes;
-  const nombreClient = (document.getElementById('clienteNombre') as HTMLInputElement).value;
-  const apellidosClient = (document.getElementById('apellidosClientes') as HTMLInputElement).value;
-  const celularClient = (document.getElementById('numeroCliente') as HTMLInputElement).value;
-  const numeroci = (document.getElementById('ci') as HTMLInputElement).value;
-  this.notaVenta= (document.getElementById('ventaNotas') as HTMLInputElement).value;
-  const ciEntero = numeroci;
-  // Lógica para determinar el cliente a guardar o actualizar
-  console.log(this.clienteSeleccionado)
-  if (this.clienteSeleccionado.ci!=='0' && this.clienteSeleccionado.nombre!=='') {
-    // Si hay un cliente seleccionado, compara los campos.
-    console.log("no deberia de entrar ya que no se selecciono a nadie")
-    if (
-      this.clienteSeleccionado.ci === ciEntero &&
-      this.clienteSeleccionado.nombre === nombreClient &&
-      this.clienteSeleccionado.appaterno === (apellidosClient.split(' ')[0] || '') &&
-      this.clienteSeleccionado.apmaterno === (apellidosClient.split(' ')[1] || '') &&
-      this.clienteSeleccionado.telefono === celularClient
-    ) {
-      // Si los datos son iguales, usa el cliente seleccionado directamente.
-      clienteParaGuardar = this.clienteSeleccionado;
-      console.log('Cliente existente, no se requiere actualización.');
-      // Directamente se puede pasar al siguiente paso de guardar la venta
-      this.iniciarTransaccion(clienteParaGuardar);
-    } else {
-      // Si los datos han cambiado, se actualiza el cliente existente.
-      console.log('Datos de cliente modificados, actualizando...');
-      this.clienteSeleccionado.ci=ciEntero;
-      this.clienteSeleccionado.nombre = nombreClient;
-      this.clienteSeleccionado.appaterno = apellidosClient.split(' ')[0] || '';
-      this.clienteSeleccionado.apmaterno = apellidosClient.split(' ')[1] || '';
-      this.clienteSeleccionado.telefono = celularClient;
-      
-      this.clienteS.update(this.clienteSeleccionado)
-        .pipe(
-          catchError((error) => {
-            console.error('Error al actualizar el cliente:', error);
-            return throwError(() => new Error('Error al actualizar el cliente.'));
-          })
-        )
-        .subscribe({
-          next: (response) => {
-            console.log('Cliente actualizado:', response.data);
-            this.iniciarTransaccion(response.data);
-          },
-          error: (err) => {
-            console.error('Transacción de venta fallida por error en actualización de cliente.', err);
-          }
-        });
-    }
-  } else {
-    console.log('entro por que no se encontreo a nadie o slecciono')
-    // No hay cliente seleccionado, se crea uno nuevo.
-    clienteParaGuardar = {
-      ci: ciEntero,
-      nombre: nombreClient,
-      appaterno: apellidosClient.split(' ')[0] || '',
-      apmaterno: apellidosClient.split(' ')[1] || '',
-      telefono: celularClient,
-    };
-    console.log('Creando nuevo cliente.');
-    this.iniciarTransaccion(clienteParaGuardar);
-  }
-}
+    let clienteParaGuardar: clientes;
+    const nombreClient = (document.getElementById('clienteNombre') as HTMLInputElement).value;
+    const apellidosClient = (document.getElementById('apellidosClientes') as HTMLInputElement).value;
+    const celularClient = (document.getElementById('numeroCliente') as HTMLInputElement).value;
+    const numeroci = (document.getElementById('ci') as HTMLInputElement).value;
+    this.notaVenta= (document.getElementById('ventaNotas') as HTMLInputElement).value;
+    const ciEntero = numeroci;
 
-private iniciarTransaccion(cliente: clientes) {
+    // Lógica para determinar el cliente a guardar o actualizar
+    console.log(this.clienteSeleccionado)
+    if (this.clienteSeleccionado.ci!=='0' && this.clienteSeleccionado.nombre!=='') {
+      // Si hay un cliente seleccionado, compara los campos.
+      console.log("no deberia de entrar ya que no se selecciono a nadie")
+      if (
+        this.clienteSeleccionado.ci === ciEntero &&
+        this.clienteSeleccionado.nombre === nombreClient &&
+        this.clienteSeleccionado.appaterno === (apellidosClient.split(' ')[0] || '') &&
+        this.clienteSeleccionado.apmaterno === (apellidosClient.split(' ')[1] || '') &&
+        this.clienteSeleccionado.telefono === celularClient
+      ) {
+        // Si los datos son iguales, usa el cliente seleccionado directamente.
+        clienteParaGuardar = this.clienteSeleccionado;
+        console.log('Cliente existente, no se requiere actualización.');
+        this.iniciarTransaccion(clienteParaGuardar);
+      } else {
+        // Si los datos han cambiado, se actualiza el cliente existente.
+        console.log('Datos de cliente modificados, actualizando...');
+        this.clienteSeleccionado.ci=ciEntero;
+        this.clienteSeleccionado.nombre = nombreClient;
+        this.clienteSeleccionado.appaterno = apellidosClient.split(' ')[0] || '';
+        this.clienteSeleccionado.apmaterno = apellidosClient.split(' ')[1] || '';
+        this.clienteSeleccionado.telefono = celularClient;
+        
+        this.clienteS.update(this.clienteSeleccionado)
+          .pipe(
+            catchError((error) => {
+              console.error('Error al actualizar el cliente:', error);
+              return throwError(() => new Error('Error al actualizar el cliente.'));
+            })
+          )
+          .subscribe({
+            next: (response) => {
+              console.log('Cliente actualizado:', response.data);
+              this.iniciarTransaccion(response.data);
+            },
+            error: (err) => {
+              console.error('Transacción de venta fallida por error en actualización de cliente.', err);
+            }
+          });
+      }
+    } else {
+      console.log('entro por que no se encontreo a nadie o slecciono')
+      // No hay cliente seleccionado, se crea uno nuevo.
+      clienteParaGuardar = {
+        ci: ciEntero,
+        nombre: nombreClient,
+        appaterno: apellidosClient.split(' ')[0] || '',
+        apmaterno: apellidosClient.split(' ')[1] || '',
+        telefono: celularClient,
+      };
+      console.log('Creando nuevo cliente.');
+      this.iniciarTransaccion(clienteParaGuardar);
+    }
+  }
+
+ private iniciarTransaccion(cliente: clientes) {
   let ventaId: number;
-  let clienteId: number;
   
   this.clienteS
     .save(cliente)
@@ -244,39 +307,55 @@ private iniciarTransaccion(cliente: clientes) {
       }),
       concatMap((responseCliente) => {
         console.log('Cliente guardado:', responseCliente);
-        clienteId = responseCliente.data.idCliente;
+        
         const ventaNueva: ventas = {
           cliente: responseCliente.data,
-          total: this.calcularTotal(), // Asegúrate de que este método exista y devuelva un número
+          total: this.calcularTotal(),
           trabajador: this.usuarioTrabajador,
-          formaPago: this.formaPago,
+          formaPago: { idFormaPago: this.codigoMetodoPago },
           descuento: this.descuento,
-          notas:this.notaVenta,
+          notas: this.notaVenta,
         };
+        
+        console.log('Datos de venta a enviar:', ventaNueva);
+        
         return this.ventasS.save(ventaNueva).pipe(
           catchError((errorVenta) => {
             console.error('Error al guardar la venta. Revirtiendo cliente...', errorVenta);
-            this.clienteS.deleteById(clienteId).subscribe(
-              () => console.log('Cliente revertido con éxito.'),
-              (reversionError) => console.error('Error al revertir el cliente:', reversionError)
-            );
+            const clienteCiNumber = Number(cliente.ci);
+            if (!isNaN(clienteCiNumber)) {
+              this.clienteS.deleteById(clienteCiNumber).subscribe(
+                () => console.log('Cliente revertido con éxito.'),
+                (reversionError) => console.error('Error al revertir el cliente:', reversionError)
+              );
+            } else {
+              console.error('Error: CI del cliente no es un número válido:', cliente.ci);
+            }
             return throwError(() => new Error('Error en el paso de Venta'));
           })
         );
       }),
-      concatMap((responseVenta) => {
-        console.log('Venta realizada:', responseVenta);
-        ventaId = responseVenta.data.id;
+      concatMap((responseVenta:ApiResponse) => {
+        console.log('Venta realizada:', responseVenta.data.idVenta);
+        console.log(responseVenta)
+        ventaId = responseVenta.data.idVenta;
+        
         if (this.productosPorVender.length === 0) {
           return of(responseVenta);
         }
+        
         const detalleVentaSaves = this.productosPorVender.map((producto) => {
           producto.venta = responseVenta.data;
+          producto.venta.formaPago = { idFormaPago: this.codigoMetodoPago };
+          console.log('Guardando detalle de venta:', producto);
+
           return this.detalleVentaS.save(producto);
         });
+        
         return forkJoin(detalleVentaSaves).pipe(
           catchError((errorDetalles) => {
             console.error('Error al guardar detalles. Revirtiendo venta...', errorDetalles);
+            console.log('Venta ID a revertir:', ventaId);
             this.ventasS.deleteById(ventaId).subscribe(
               () => console.log('Venta revertida con éxito.'),
               (reversionError) => console.error('Error al revertir la venta:', reversionError)
@@ -289,30 +368,22 @@ private iniciarTransaccion(cliente: clientes) {
     .subscribe({
       next: (finalResponse) => {
         console.log('Transacción de venta completada exitosamente.');
-        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-        successModal.show();
-
-        const successModalElement = document.getElementById('successModal');
-        if (successModalElement) {
-          successModalElement.addEventListener('hidden.bs.modal', (event: any) => {
-            this.cerrarModalYRedirigir();
-          }, { once: true });
-        }
+        
+        // Cerrar modal de confirmación y abrir modal de éxito
+        this.cerrarModalConfirmacion();
+        this.abrirModalExito();
+        
+        this.productosPorVender = [];
+        this.descuento = 0;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Transacción de venta fallida. Se ha revertido lo necesario.', err);
-        // Aquí puedes agregar un modal de error si lo deseas.
       },
     });
 }
+
   cerrarModalYRedirigir() {
-    const modalElement = document.getElementById('confirmModal');
-    if (modalElement) {
-      const modal = bootstrap.Modal.getInstance(modalElement);
-      if (modal) {
-        modal.hide();
-      }
-    }
     this.router.navigate(['/home/listadoVentasStore']);
   }
 
@@ -405,7 +476,6 @@ private iniciarTransaccion(cliente: clientes) {
         productoEnStock.producto.nombre+'',
         productoEnStock.cantidad
       );
-      //productoEnStock.cantidad=0;
       return;
     }
 
@@ -414,7 +484,7 @@ private iniciarTransaccion(cliente: clientes) {
     } else {
       this.productosPorVender.push({
         producto: producto,
-        venta: { id: 0 } as any, // Temporalmente asignamos un id de venta 0, se actualizará al guardar la venta
+        venta: { id: 0 } as any,
         cantidad: cantidadTotalVenta,
         precioUnitario: producto.precio||0,
         subtotal: cantidadTotalVenta * (producto.precio||0),
@@ -425,10 +495,9 @@ private iniciarTransaccion(cliente: clientes) {
       (p) => p.producto.idProducto === producto.idProducto
     );
     if (filteredIndex !== -1) {
-      this.cantidadesEnVenta[filteredIndex] = 1;
-    }
-
-    this.aplicarFiltro();
+  this.cantidadesEnVenta[filteredIndex] = 1;
+}
+    this.cdr.detectChanges();
 
     console.log('Productos por vender:', this.productosPorVender);
   }
@@ -445,8 +514,9 @@ private iniciarTransaccion(cliente: clientes) {
   }
 
   calcularTotal(): number {
-    return this.calcularSubtotal();
+    return this.calcularSubtotal() - this.descuento;
   }
+
   onCategoryChange(category: string): void {
     this.filterCategory = category;
     this.aplicarFiltro();
@@ -466,7 +536,6 @@ private iniciarTransaccion(cliente: clientes) {
     console.log('Método de pago seleccionado:', this.metodoDePagoSeleccionado);
   }
 
-  // Nuevo método para filtrar clientes (actualizado para incluir apMaterno en el filtro)
   filtrarClientes() {
     if (this.clienteNombreBuscador.length > 0) {
       const terminoBusqueda = this.clienteNombreBuscador.toLowerCase();
@@ -481,30 +550,24 @@ private iniciarTransaccion(cliente: clientes) {
     }
   }
 
-  // MÉTODO MODIFICADO: Combina ambos apellidos en un solo campo
   seleccionarCliente(cliente: clientes) {
-  this.clienteSeleccionado = cliente;
-  console.log(this.clienteSeleccionado);
-  // Concatena apPaterno y apMaterno para el campo del buscador
-  this.clienteNombreBuscador = `${cliente.nombre} ${
-    cliente.appaterno || ''
-  } ${cliente.apmaterno || ''}`;
+    this.clienteSeleccionado = cliente;
+    console.log(this.clienteSeleccionado);
+    
+    this.clienteNombreBuscador = `${cliente.nombre} ${
+      cliente.appaterno || ''
+    } ${cliente.apmaterno || ''}`;
 
-  // Copia todas las propiedades del cliente
-  this.clienteVenta = { ...cliente };
+    this.clienteVenta = { ...cliente };
 
-  // Concatena apPaterno y apMaterno en el campo apPaterno del formulario
-  this.clienteVenta.appaterno = `${cliente.appaterno || ''} ${
-    cliente.apmaterno || ''
-  }`.trim();
+    this.clienteVenta.appaterno = `${cliente.appaterno || ''} ${
+      cliente.apmaterno || ''
+    }`.trim();
 
-  this.clientesFiltrados = [];
+    this.clientesFiltrados = [];
+    this.isCiDisabled = true;
+  }
 
-  // ⚠️ Agrega esta línea para bloquear el input del CI
-  this.isCiDisabled = true;
-}
-
-  // Nuevo método para cargar los clientes existentes
   buscadorCliente() {
     this.clienteS.findAll().subscribe({
       next: (Response) => {
@@ -513,17 +576,18 @@ private iniciarTransaccion(cliente: clientes) {
       },
     });
   }
-  //limpiar los datos del cliente al apretar cancelar
+
   limpiarDatosCliente() {
-  this.clienteVenta = { ci: '0', nombre: '', appaterno: '', apmaterno: '', telefono: '' };
-  this.clienteSeleccionado = { ci: '0', nombre: '' };
-  this.clienteNombreBuscador = '';
-  this.clientesFiltrados = [];
-  this.isCiDisabled = false;
-}
+    this.clienteVenta = { ci: '0', nombre: '', appaterno: '', apmaterno: '', telefono: '' };
+    this.clienteSeleccionado = { ci: '0', nombre: '' };
+    this.clienteNombreBuscador = '';
+    this.clientesFiltrados = [];
+    this.isCiDisabled = false;
+  }
+
   validarDescuento(): void {
     const subtotal = this.calcularSubtotal();
-    const maxDescuento = subtotal * 0.5; // El 50% del subtotal
+    const maxDescuento = subtotal * 0.5;
 
     if (this.descuento > maxDescuento) {
       this.descuento = maxDescuento;
@@ -533,7 +597,7 @@ private iniciarTransaccion(cliente: clientes) {
       this.descuento = 0;
     }
   }
-  // Métodos de prueba
+
   prueba() {
     console.log(this.metodoDePagoSeleccionado);
   }

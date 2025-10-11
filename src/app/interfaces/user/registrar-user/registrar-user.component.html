@@ -1,3 +1,4 @@
+
 <div class="container my-5">
   <div class="card shadow p-4 mx-auto" style="max-width: 800px;">
     <h1 class="text-center mb-4 text-primary">Nuevo Usuario</h1>
@@ -48,39 +49,68 @@
         </div>
       </div>
 
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <label for="password" class="form-label">Contraseña <span class="text-danger">*</span></label>
-          <input
-            type="password"
-            id="password"
-            class="form-control"
-            placeholder="Ingrese su contraseña"
-            formControlName="password"
-            [class.is-invalid]="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched"
-          />
-          <div *ngIf="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched" class="invalid-feedback">
-            <div *ngIf="usuarioForm.get('password')?.errors?.['required']">La contraseña es obligatoria.</div>
-            <div *ngIf="usuarioForm.get('password')?.errors?.['minlength']">Mínimo 8 caracteres.</div>
-            <div *ngIf="usuarioForm.get('password')?.errors?.['pattern']">Debe contener al menos una mayúscula, una minúscula y un número.</div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <label for="confirmPassword" class="form-label">Repetir Contraseña <span class="text-danger">*</span></label>
-          <input
-            type="password"
-            id="confirmPassword"
-            class="form-control"
-            placeholder="Repita su contraseña"
-            formControlName="confirmPassword"
-            [class.is-invalid]="(usuarioForm.get('confirmPassword')?.invalid && usuarioForm.get('confirmPassword')?.touched) || usuarioForm.errors?.['passwordMismatch']"
-          />
-          <div *ngIf="(usuarioForm.get('confirmPassword')?.invalid && usuarioForm.get('confirmPassword')?.touched) || usuarioForm.errors?.['passwordMismatch']" class="invalid-feedback">
-            <div *ngIf="usuarioForm.get('confirmPassword')?.errors?.['required']">Debe confirmar la contraseña.</div>
-            <div *ngIf="usuarioForm.errors?.['passwordMismatch']">Las contraseñas no coinciden.</div>
-          </div>
-        </div>
-      </div>
+   <div class="row mb-3">
+  <div class="col-md-6">
+    <label for="password" class="form-label">Contraseña <span class="text-danger">*</span></label>
+    <div class="password-input-container">
+      <input
+        [type]="showPassword ? 'text' : 'password'"
+        id="password"
+        class="form-control password-input"
+        placeholder="Ingrese su contraseña"
+        formControlName="password"
+        [class.is-invalid]="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched"
+      />
+      <button 
+        type="button" 
+        class="password-toggle-btn"
+        (click)="togglePasswordVisibility()"
+        [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+      >
+        <img 
+          [src]="showPassword ? '/icon_login/mdi--eye-off-outline.svg' : '/icon_login/hugeicons--eye.svg'" 
+          [alt]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+          class="password-icon"
+        />
+      </button>
+    </div>
+    <div *ngIf="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched" class="invalid-feedback">
+      <div *ngIf="usuarioForm.get('password')?.errors?.['required']">La contraseña es obligatoria.</div>
+      <div *ngIf="usuarioForm.get('password')?.errors?.['minlength']">Mínimo 8 caracteres.</div>
+      <div *ngIf="usuarioForm.get('password')?.errors?.['pattern']">Debe contener al menos una mayúscula, una minúscula y un número.</div>
+    </div>
+  </div>
+  
+  <div class="col-md-6">
+    <label for="confirmPassword" class="form-label">Repetir Contraseña <span class="text-danger">*</span></label>
+    <div class="password-input-container">
+      <input
+        [type]="showConfirmPassword ? 'text' : 'password'"
+        id="confirmPassword"
+        class="form-control password-input"
+        placeholder="Repita su contraseña"
+        formControlName="confirmPassword"
+        [class.is-invalid]="(usuarioForm.get('confirmPassword')?.invalid && usuarioForm.get('confirmPassword')?.touched) || usuarioForm.errors?.['passwordMismatch']"
+      />
+      <button 
+        type="button" 
+        class="password-toggle-btn"
+        (click)="toggleConfirmPasswordVisibility()"
+        [attr.aria-label]="showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+      >
+        <img 
+          [src]="showConfirmPassword ? '/icon_login/mdi--eye-off-outline.svg' : '/icon_login/hugeicons--eye.svg'" 
+          [alt]="showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+          class="password-icon"
+        />
+      </button>
+    </div>
+    <div *ngIf="(usuarioForm.get('confirmPassword')?.invalid && usuarioForm.get('confirmPassword')?.touched) || usuarioForm.errors?.['passwordMismatch']" class="invalid-feedback">
+      <div *ngIf="usuarioForm.get('confirmPassword')?.errors?.['required']">Debe confirmar la contraseña.</div>
+      <div *ngIf="usuarioForm.errors?.['passwordMismatch']">Las contraseñas no coinciden.</div>
+    </div>
+  </div>
+</div>
 
       <hr>
       <div formGroupName="persona">
@@ -186,35 +216,38 @@
         </div>
 
         <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="ciudad" class="form-label">Ciudad <span class="text-danger">*</span></label>
-            <input
-              type="text"
-              id="ciudad"
-              class="form-control"
-              placeholder="Ingrese su ciudad"
-              formControlName="ciudad" [class.is-invalid]="usuarioForm.get('persona.ciudad')?.invalid && usuarioForm.get('persona.ciudad')?.touched"
-            />
-            <div *ngIf="usuarioForm.get('persona.ciudad')?.invalid && usuarioForm.get('persona.ciudad')?.touched" class="invalid-feedback">
-              <div *ngIf="usuarioForm.get('persona.ciudad')?.errors?.['required']">La ciudad es obligatoria.</div>
-              <div *ngIf="usuarioForm.get('persona.ciudad')?.errors?.['maxlength']">Máximo 50 caracteres.</div>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <label for="pais" class="form-label">País <span class="text-danger">*</span></label>
-            <input
-              type="text"
-              id="pais"
-              class="form-control"
-              placeholder="Ingrese su país"
-              formControlName="pais" [class.is-invalid]="usuarioForm.get('persona.pais')?.invalid && usuarioForm.get('persona.pais')?.touched"
-            />
-            <div *ngIf="usuarioForm.get('persona.pais')?.invalid && usuarioForm.get('persona.pais')?.touched" class="invalid-feedback">
-              <div *ngIf="usuarioForm.get('persona.pais')?.errors?.['required']">El país es obligatorio.</div>
-              <div *ngIf="usuarioForm.get('persona.pais')?.errors?.['maxlength']">Máximo 50 caracteres.</div>
-            </div>
-          </div>
-        </div>
+  <div class="col-md-6">
+    <label for="ciudad" class="form-label">Ciudad <span class="text-danger">*</span></label>
+    <select
+      id="ciudad"
+      class="form-select"
+      formControlName="ciudad"
+      [class.is-invalid]="usuarioForm.get('persona.ciudad')?.invalid && usuarioForm.get('persona.ciudad')?.touched"
+    >
+      <option value="" disabled selected>Seleccione su ciudad</option>
+      <option value="Tarija">Tarija</option>
+    </select>
+    <div *ngIf="usuarioForm.get('persona.ciudad')?.invalid && usuarioForm.get('persona.ciudad')?.touched" class="invalid-feedback">
+      <div *ngIf="usuarioForm.get('persona.ciudad')?.errors?.['required']">La ciudad es obligatoria.</div>
+    </div>
+  </div>
+  
+  <div class="col-md-6">
+    <label for="pais" class="form-label">País <span class="text-danger">*</span></label>
+    <select
+      id="pais"
+      class="form-select"
+      formControlName="pais"
+      [class.is-invalid]="usuarioForm.get('persona.pais')?.invalid && usuarioForm.get('persona.pais')?.touched"
+    >
+      <option value="" disabled selected>Seleccione su país</option>
+      <option value="Bolivia">Bolivia</option>
+    </select>
+    <div *ngIf="usuarioForm.get('persona.pais')?.invalid && usuarioForm.get('persona.pais')?.touched" class="invalid-feedback">
+      <div *ngIf="usuarioForm.get('persona.pais')?.errors?.['required']">El país es obligatorio.</div>
+    </div>
+  </div>
+</div>
 
         <div class="row mb-4">
           <div class="col-md-6">
@@ -259,5 +292,40 @@
         <button type="button" class="btn btn-secondary btn-lg px-5" (click)="goToLogin()">Cancelar</button>
       </div>
     </form>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<!-- Modal de éxito -->
+<!-- Modal de éxito mejorado -->
+<div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-header">
+        <h5 class="modal-title text-white" id="modalExitoLabel">
+          <i class="bi bi-check-circle me-2"></i>Registro Exitoso
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <i class="bi bi-check-circle-fill mb-3 d-block"></i>
+        <h4 class="mb-3" style="color: #28a745;">¡Perfecto!</h4>
+        <p class="mb-0">El Usuario fue registrada correctamente en el sistema.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal" (click)="redireccionar()">
+          <i class="bi bi-check-lg me-2"></i>Continuar
+        </button>
+      </div>
+    </div>
   </div>
 </div>

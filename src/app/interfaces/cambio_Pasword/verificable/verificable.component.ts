@@ -56,34 +56,29 @@ export class VerificableComponent implements OnInit {
     const emailToReset = this.emailControl.value;
 
     this.usuariosService.requestPasswordReset(emailToReset).subscribe({
-      next: (response: ApiResponse) => {
-        this.isLoading = false;
+  next: (response: ApiResponse) => {
+    this.isLoading = false;
 
-        // --- LÓGICA DE MANEJO DE RESPUESTA MODIFICADA AQUÍ ---
-        if (response.success) {
-          // Correo registrado y código enviado exitosamente
-          this.successMessage = response.message;
-          localStorage.setItem('resetPasswordEmail', emailToReset);
-          setTimeout(() => {
-            this.router.navigate(['/cambiarPassword']);
-          }, 2000);
-        } else {
-          // Correo NO registrado, pero el backend devuelve 200 OK con success: false
-          // Mostramos el mensaje del backend y procedemos al siguiente paso como si fuera un "éxito" de flujo
-          this.successMessage = response.message; // Muestra el mensaje "El correo electrónico no está registrado..."
-          localStorage.setItem('resetPasswordEmail', emailToReset); // Aún así pasamos el email para el siguiente componente
-          setTimeout(() => {
-            this.router.navigate(['/cambiarPassword']);
-          }, 2000);
-        }
-      },
-      error: (errorResponse: HttpErrorResponse) => {
-        // Este bloque solo se activará para errores HTTP reales (ej. 500 Internal Server Error, red)
-        this.isLoading = false;
-        this.errorMessage = errorResponse.error?.message || 'Error de conexión al solicitar el código. Por favor, inténtalo de nuevo más tarde.';
-        console.error('Error en requestPasswordReset (HTTP Error):', errorResponse);
-      }
-    });
+    if (response.success) {
+      // Correo registrado y código enviado
+      this.successMessage = response.message;
+      localStorage.setItem('resetPasswordEmail', emailToReset);
+      setTimeout(() => {
+        this.router.navigate(['/cambiarPassword']);
+      }, 2000);
+    } else {
+      // Correo NO registrado
+      this.errorMessage = response.message || 'Correo no registrado, inténtelo de nuevo.';
+      // No navegamos al siguiente paso
+    }
+  },
+  error: (errorResponse: HttpErrorResponse) => {
+    this.isLoading = false;
+    this.errorMessage = errorResponse.error?.message || 'Error de conexión. Por favor, inténtalo más tarde.';
+    console.error('Error en requestPasswordReset (HTTP Error):', errorResponse);
+  }
+});
+
   }
 
   // Método para navegar a la página de login

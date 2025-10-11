@@ -15,7 +15,7 @@ declare var bootstrap: any;
 @Component({
   selector: 'app-listar-usuarios',
   standalone: true,
-  imports: [CommonModule, NgIf, NgClass, RouterLink, FormsModule], // <-- Agrega FormsModule aquí
+  imports: [CommonModule, NgIf, NgClass, FormsModule], // <-- Agrega FormsModule aquí
   templateUrl: './listar-user.component.html',
   styleUrl: './listar-user.component.css',
 })

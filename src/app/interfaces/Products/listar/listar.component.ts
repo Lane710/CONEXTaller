@@ -42,11 +42,19 @@ export class ListarComponent implements OnInit, AfterViewInit {
   modalDetails: string[] = [];
   isSuccessModal: boolean = false;
 
+  //variable modificar stock
+  modStockValue: stock | null = null;
+  cantidadStock: number = 1;
+  private isStockModalClosing: boolean = false;
+
   @ViewChild('confirmarAccionModalRef') confirmarAccionModalRef!: ElementRef;
   private confirmarAccionModal: any;
 
   @ViewChild('modalDetallesProductoRef') modalDetallesProductoRef!: ElementRef;
   private modalDetallesProducto: any;
+
+  @ViewChild('stockModal') stockModalRef!: ElementRef;
+  private stockModalInstance: any;
 
   // --- PROPIEDADES DE PAGINACIÓN ---
   currentPage: number = 1;
@@ -76,10 +84,21 @@ export class ListarComponent implements OnInit, AfterViewInit {
         this.confirmarAccionModalRef.nativeElement
       );
     }
+
     if (this.modalDetallesProductoRef) {
       this.modalDetallesProducto = new bootstrap.Modal(
         this.modalDetallesProductoRef.nativeElement
       );
+    }
+
+    // Inicializar el modal de stock
+    if (this.stockModalRef) {
+      this.stockModalInstance = new bootstrap.Modal(this.stockModalRef.nativeElement);
+      
+      // Escuchar evento cuando el modal se cierra completamente
+      this.stockModalRef.nativeElement.addEventListener('hidden.bs.modal', () => {
+        this.limpiarModalStock();
+      });
     }
   }
 
@@ -117,7 +136,7 @@ export class ListarComponent implements OnInit, AfterViewInit {
         const term = this.searchText.toLowerCase();
         switch (this.filterBy) {
           case 'nombre':
-            matchesSearch = item.producto?.nombre?.toLowerCase().includes(term)||false;
+            matchesSearch = item.producto?.nombre?.toLowerCase().includes(term) || false;
             break;
           case 'marca':
             matchesSearch = item.producto?.marca?.toLowerCase().includes(term) ?? false;
@@ -149,13 +168,13 @@ export class ListarComponent implements OnInit, AfterViewInit {
         const term = this.searchText.toLowerCase();
         switch (this.filterBy) {
           case 'nombre':
-            matchesSearch = item.producto?.nombre?.toLowerCase().includes(term)||false;
+            matchesSearch = item.producto?.nombre?.toLowerCase().includes(term) || false;
             break;
           case 'marca':
             matchesSearch = item.producto?.marca?.toLowerCase().includes(term) ?? false;
             break;
           case 'sku':
-            matchesSearch = item.producto?.sku?.toLowerCase().includes(term)?? false;
+            matchesSearch = item.producto?.sku?.toLowerCase().includes(term) ?? false;
             break;
         }
       }
@@ -260,6 +279,7 @@ export class ListarComponent implements OnInit, AfterViewInit {
   }
 
   abrirModalConfirmacion(stockItem: stock): void {
+    console.log('Stock seleccionado para cambio de estado:', stockItem);
     this.stockSeleccionado = stockItem;
     this.confirmarAccionModal?.show();
   }
@@ -326,5 +346,101 @@ export class ListarComponent implements OnInit, AfterViewInit {
 
   trackById(index: number, stockItem: stock): number | undefined {
     return stockItem.idStock;
+  }
+
+  // Método para abrir el modal de stock
+  abrirModalStock(stock: stock): void {
+    this.modStockValue = stock;
+    this.cantidadStock = stock.cantidad;
+    console.log('Cargar stock cantidad:', this.cantidadStock);
+    console.log('Modificar stock para:', stock);
+    
+    // Usar setTimeout para asegurar que el DOM esté listo
+    setTimeout(() => {
+      if (this.stockModalInstance) {
+        this.stockModalInstance.show();
+      }
+    }, 0);
+  }
+
+  // Método para cerrar el modal de stock
+  cerrarModalStock(): void {
+    if (this.isStockModalClosing) return;
+    
+    this.isStockModalClosing = true;
+    
+    if (this.stockModalInstance) {
+      this.stockModalInstance.hide();
+    }
+    
+    // Limpiar después de un tiempo
+    setTimeout(() => {
+      this.isStockModalClosing = false;
+    }, 300);
+  }
+
+  // Limpiar estado del modal de stock
+  private limpiarModalStock(): void {
+    this.modStockValue = null;
+    this.cantidadStock = 1;
+  }
+
+  // Método principal para modificar stock
+  ModificarStock(): void {
+    if (!this.modStockValue || this.modStockValue.idStock === undefined) {
+      this.showModalMessage('Error', 'No se ha seleccionado un stock válido.', false);
+      return;
+    }
+
+    // Validar que la cantidad esté en el rango permitido
+    if (this.cantidadStock < 0 || this.cantidadStock > 150) {
+      this.showModalMessage('Error', 'La cantidad debe estar entre 0 y 150.', false);
+      return;
+    }
+
+    // Calcular la diferencia
+    const nuevoStock = this.cantidadStock - this.modStockValue.cantidad;
+
+    console.log(`Modificando stock: ID=${this.modStockValue.idStock}, Diferencia=${nuevoStock}`);
+
+    this.stockService.addorRestarStockProductos(this.modStockValue.idStock, nuevoStock)
+      .subscribe({
+        next: (response: ApiResponse) => {
+          if (response.success) {
+            // Cerrar el modal primero
+            this.cerrarModalStock();
+            
+            // Mostrar mensaje de éxito
+            this.showModalMessage(
+              'Éxito',
+              response.message || 'Stock modificado con éxito.',
+              true
+            );
+
+            // Actualizar la lista de stocks
+            this.getStocks();
+
+          } else {
+            this.showModalMessage(
+              'Error',
+              response.message || 'Error al modificar el stock.',
+              false
+            );
+          }
+        },
+        error: (err) => {
+          console.error('Error al modificar stock:', err);
+          this.showModalMessage(
+            'Error', 
+            'No se pudo modificar el stock. Por favor, intente nuevamente.', 
+            false
+          );
+        }
+      });
+  }
+
+  // Método alternativo para cargar stock (mantener por compatibilidad)
+  cargarStock(stock: stock): void {
+    this.abrirModalStock(stock);
   }
 }

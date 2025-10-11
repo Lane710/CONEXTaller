@@ -37,14 +37,30 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <input
-            type="password"
-            class="form-control"
-            placeholder="Contraseña"
-            formControlName="password"
-            [class.is-invalid]="f['password'].invalid && f['password'].touched"
-          />
+        <div class="form-group password-group">
+          <div class="password-input-container">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              class="form-control password-input"
+              placeholder="Contraseña"
+              formControlName="password"
+              [class.is-invalid]="f['password'].invalid && f['password'].touched"
+            />
+            <button 
+              type="button" 
+              class="password-toggle-btn"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            >
+             <i class="password-icon" [class.visible]="showPassword">
+  <img 
+    [src]="showPassword ? '/icon_login/mdi--eye-off-outline.svg' : '/icon_login/hugeicons--eye.svg'" 
+    [alt]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+    class="icon-image"
+  />
+</i>
+            </button>
+          </div>
           <div *ngIf="f['password'].invalid && f['password'].touched" class="invalid-feedback">
             La contraseña es obligatoria.
           </div>

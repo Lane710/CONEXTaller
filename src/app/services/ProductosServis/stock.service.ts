@@ -28,7 +28,7 @@ export class StockService { // Renombrado a StockService
     // Si tu backend realmente devuelve el producto anidado, esta llamada es directa.
     // Si tu backend solo devuelve el ID del producto, necesitarías la lógica de switchMap y forkJoin de antes.
     return this.http.get<ApiResponse>(`${this.apiUrl}findAll`);
-  }
+  } 
 
   /**
    * Obtiene un ítem de stock por su ID.

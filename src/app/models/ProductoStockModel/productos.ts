@@ -1,27 +1,32 @@
-
+import { usuarios } from "../PersonModel/usuarios";
+import { proveedor } from "../proveedor";
 import { categorias } from "./categorias";
 import { subcategoria } from "./subcategorias";
 
 export interface productos {
-  idProducto?: number;                 // Long en Java → number en TS
-  nombre?: string;
+  idProducto?: number;
+  nombre: string;
   descripcion?: string;
-  precio?: number;                      // BigDecimal → number
+  precio?: number;
   sku?: string | null;
   codigoBarras?: string | null;
   marca?: string;
   color?: string;
-  estado?: number;                    // Valor por defecto: 1
+  estado?: number;
   imagen?: string | null;
-  disponibleOnline?: boolean;         // Valor por defecto: true
+  disponibleOnline?: boolean;
+
+  // CAMBIO: Tipo y variante ahora son strings
+  tipo?: string | null;
+  variante?: string | null;
 
   // Relaciones
   categoria: categorias;
-  subcategoria?: subcategoria;
+  subcategoria: subcategoria;
+  proveedor: proveedor;
+  usuarioRegistro?: usuarios;
 
-  // Datos del registro
-  idProveedor?: number | null;        // Si no se carga el objeto proveedor completo
-  idUsuarioRegistro?: string;         // Si no se carga el objeto usuario completo
-  fechaRegistro?: string;             // LocalDateTime → string ISO
-  ultimaActualizacion?: string;       // LocalDateTime → string ISO
+  // Fechas
+  fechaRegistro?: string;          // LocalDateTime → string ISO
+  ultimaActualizacion?: string;    // LocalDateTime → string ISO
 }

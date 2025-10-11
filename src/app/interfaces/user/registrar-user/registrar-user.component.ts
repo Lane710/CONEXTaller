@@ -13,7 +13,7 @@ import { UsuariosService } from '../../../services/PersonServis/usuarios.service
 import { personas } from '../../../models/PersonModel/personas';
 import { roles } from '../../../models/PersonModel/roles';
 import { usuarios } from '../../../models/PersonModel/usuarios';
-
+import Modal from 'bootstrap/js/dist/modal';
 
 import { ApiResponse } from '../../../models/api-response';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -35,6 +35,10 @@ export class RegistrarUserComponent implements OnInit {
 
   // ¡NUEVA PROPIEDAD! Para el atributo max del input de fecha
   maxDateAllowed: string = '';
+
+  //ver la contrasena
+  showPassword: boolean = false;
+showConfirmPassword: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -312,7 +316,16 @@ export class RegistrarUserComponent implements OnInit {
                                               responseUsuario
                                             );
                                             this.initForm();
-                                            this.router.navigate(['/login']);
+
+                                              // ✅ Mostrar el modal de éxito
+                                                    const modalElement = document.getElementById('modalExito');
+                                                    if (modalElement) {
+                                                      const modalExito = new Modal(modalElement);
+                                                      modalExito.show();
+                                                    } else {
+                                                      console.error('No se encontró el modal de éxito');
+                                                    }
+                                            
                                           } else {
                                             this.errorMessage =
                                               responseUsuario.message ||
@@ -409,6 +422,21 @@ export class RegistrarUserComponent implements OnInit {
   }
 
   goToLogin(): void {
+    this.router.navigate(['/login']);
+  }
+
+  //para ver la contrasena
+  togglePasswordVisibility(): void {
+  this.showPassword = !this.showPassword;
+}
+
+toggleConfirmPasswordVisibility(): void {
+  this.showConfirmPassword = !this.showConfirmPassword;
+}
+
+
+//redireccionamiento usuario exitoso
+ redireccionar(): void {
     this.router.navigate(['/login']);
   }
 }

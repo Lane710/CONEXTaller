@@ -5,184 +5,258 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh; /* Usa min-height para asegurar que ocupe al menos toda la altura de la vista */
-  background: linear-gradient to bottom right, #e0f7fa, #bbdefb; /* Gradiente suave */
-  font-family: 'Inter', sans-serif; /* Fuente moderna */
-  padding: 20px; /* Padding para evitar que el contenido toque los bordes en móviles */
-  box-sizing: border-box; /* Incluye padding y borde en el ancho/alto total */
+  min-height: 100vh;
+  
+  font-family: 'Inter', sans-serif;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-/* Tarjeta de login (contenedor principal de los dos paneles) */
+/* Tarjeta de login */
 .login-card {
   display: flex;
   background-color: #ffffff;
-  border-radius: 15px; /* Bordes más suaves */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Sombra más pronunciada para un efecto flotante */
-  overflow: hidden; /* Asegura que los bordes redondeados se apliquen a los hijos */
-  max-width: 900px; /* Ancho máximo para el contenedor */
-  width: 100%; /* Ocupa todo el ancho disponible hasta el max-width */
-  min-height: 500px; /* Altura mínima para que no se vea muy pequeño */
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  max-width: 900px;
+  width: 100%;
+  min-height: 500px;
 }
 
 /* Panel de branding (izquierda) */
 .login-branding {
-  flex: 1; /* Ocupa el espacio restante */
-  background-color: #1E8099; /* Color de fondo */
-  color: #ffffff; /* Texto blanco */
+  flex: 1;
+  background-color: #1E8099;
+  color: #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 30px;
   text-align: center;
-  position: relative; /* Para posibles efectos */
+  position: relative;
 }
 
 .branding-title {
-  font-size: 2.2rem; /* Título más grande */
-  font-weight: 700; /* Negrita */
+  font-size: 2.2rem;
+  font-weight: 700;
   line-height: 1.2;
-  margin-bottom: 30px; /* Espacio debajo del título */
+  margin-bottom: 30px;
 }
 
 .branding-logo {
-  width: 250px; /* Imagen más grande */
+  width: 250px;
   height: 250px;
-  border-radius: 50%; /* Circular */
-  object-fit: cover; /* Asegura que la imagen no se distorsione */
-  border: 5px solid rgba(255, 255, 255, 0.3); /* Borde blanco semitransparente */
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Sombra para la imagen */
+  border-radius: 50%;
+  object-fit: cover;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 /* Panel del formulario (derecha) */
 .login-form-area {
-  flex: 1; /* Ocupa el espacio restante */
+  flex: 1;
   background-color: #ffffff;
-  padding: 40px; /* Más padding para un mejor respiro */
+  padding: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
+/* Título de bienvenida mejorado */
 .welcome-title {
-  font-size: 1.8rem; /* Título de bienvenida */
-  color: #333333;
+  font-size: 2rem;
+  color: #1E8099;
   margin-bottom: 30px;
-  font-weight: 600;
+  font-weight: 700;
+  text-align: center;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.welcome-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #1E8099, #007bff);
+  border-radius: 2px;
 }
 
 /* Formulario */
 .login-form {
   width: 100%;
-  max-width: 350px; /* Ancho máximo para el formulario */
+  max-width: 350px;
 }
 
 .form-group {
-  margin-bottom: 20px; /* Espacio entre grupos de formulario */
-  width: 100%; /* Asegura que el grupo ocupe todo el ancho */
+  margin-bottom: 25px;
+  width: 100%;
 }
 
+/* Inputs mejorados */
 .form-control {
   width: 100%;
-  padding: 12px 20px; /* Más padding para inputs */
-  border: 1px solid #ced4da; /* Borde suave */
-  border-radius: 30px; /* Bordes más redondeados */
+  padding: 14px 20px;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
   font-size: 1rem;
   color: #495057;
-  background-color: #f8f9fa; /* Fondo ligeramente gris */
-  transition: all 0.3s ease-in-out; /* Transición suave para focus */
+  background-color: #f8f9fa;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Inter', sans-serif;
 }
 
 .form-control:focus {
-  border-color: #007bff; /* Borde azul al enfocar */
-  box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25); /* Sombra de enfoque */
-  background-color: #ffffff; /* Fondo blanco al enfocar */
-  outline: none; /* Eliminar el outline por defecto del navegador */
+  border-color: #1E8099;
+  box-shadow: 0 0 0 3px rgba(30, 128, 153, 0.1);
+  background-color: #ffffff;
+  outline: none;
+  transform: translateY(-2px);
 }
 
-/* Estilos de validación de Bootstrap */
+.form-control::placeholder {
+  color: #6c757d;
+  font-weight: 400;
+}
+
+/* Estilos de validación */
 .form-control.is-invalid {
   border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
 }
 
 .invalid-feedback {
   color: #dc3545;
   font-size: 0.875em;
-  margin-top: 5px; /* Ajusta el margen superior */
+  margin-top: 8px;
   text-align: left;
-  padding-left: 15px; /* Alinea con el padding del input */
+  padding-left: 15px;
+  font-weight: 500;
 }
 
-/* Botones */
+/* Botones mejorados */
 .btn {
   width: 100%;
-  padding: 12px 20px;
-  border-radius: 30px; /* Bordes redondeados */
-  font-size: 1.1rem; /* Fuente más grande */
-  font-weight: 600; /* Negrita */
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  margin-top: 15px; /* Espacio entre el último input y el botón */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 15px;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn:hover::before {
+  left: 100%;
 }
 
 .login-btn {
-  background-color: #007bff; /* Azul primario de Bootstrap */
+  background: linear-gradient(135deg, #1E8099 0%, #007bff 100%);
   color: white;
-  border: none;
-  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2); /* Sombra para el botón */
+  box-shadow: 0 4px 15px rgba(30, 128, 153, 0.3);
 }
 
 .login-btn:hover:not(:disabled) {
-  background-color: #0056b3; /* Tono más oscuro al pasar el ratón */
-  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(30, 128, 153, 0.4);
+}
+
+.login-btn:active:not(:disabled) {
+  transform: translateY(-1px);
 }
 
 .login-btn:disabled {
-  background-color: #cccccc;
+  background: #6c757d;
   cursor: not-allowed;
   opacity: 0.7;
   box-shadow: none;
+  transform: none;
 }
 
 .register-btn {
-  background-color: #6c757d; /* Gris secundario de Bootstrap */
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
   color: white;
-  border: none;
-  margin-top: 20px; /* Más espacio para el botón de registro */
-  box-shadow: 0 4px 10px rgba(108, 117, 125, 0.2);
+  box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+  margin-top: 20px;
 }
 
 .register-btn:hover:not(:disabled) {
-  background-color: #5a6268; /* Tono más oscuro al pasar el ratón */
-  box-shadow: 0 6px 15px rgba(108, 117, 125, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
 }
 
-/* Enlaces */
+.register-btn:active:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+/* Enlace de "Olvidé mi contraseña" mejorado */
 .forgot-password-link {
-  display: block; /* Para que ocupe su propia línea */
-  margin-top: 20px;
-  color: #007bff; /* Azul primario */
+  display: block;
+  margin-top: 25px;
+  color: #1E8099;
   text-decoration: none;
   font-size: 0.95rem;
-  transition: color 0.3s ease;
-  margin-bottom: 10px; /* Espacio antes del botón de registro */
+  transition: all 0.3s ease;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: 500;
+  position: relative;
+  padding: 8px 0;
+}
+
+.forgot-password-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: #1E8099;
+  transition: width 0.3s ease;
 }
 
 .forgot-password-link:hover {
   color: #0056b3;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
-/* Mensajes de estado (Bootstrap alerts) */
+.forgot-password-link:hover::after {
+  width: 100%;
+}
+
+/* Mensajes de estado */
 .alert {
-  padding: 10px 15px;
+  padding: 12px 18px;
   margin-bottom: 20px;
-  border-radius: 8px; /* Bordes redondeados */
+  border-radius: 10px;
   font-size: 0.95rem;
   width: 100%;
   max-width: 350px;
   text-align: center;
+  border: 1px solid transparent;
+  font-weight: 500;
 }
 
 .alert-danger {
@@ -206,44 +280,44 @@
 /* Responsividad */
 @media (max-width: 768px) {
   .login-card {
-    flex-direction: column; /* Apila los paneles en pantallas pequeñas */
-    max-width: 450px; /* Ajusta el ancho máximo para móviles */
-    min-height: auto; /* Altura automática */
+    flex-direction: column;
+    max-width: 450px;
+    min-height: auto;
   }
 
   .login-branding,
   .login-form-area {
-    width: 100%; /* Ambos paneles ocupan todo el ancho */
-    padding: 30px; /* Ajusta el padding para móviles */
+    width: 100%;
+    padding: 30px;
   }
 
   .branding-title {
-    font-size: 1.8rem; /* Reduce el tamaño del título de branding */
+    font-size: 1.8rem;
   }
 
   .branding-logo {
-    width: 180px; /* Reduce el tamaño de la imagen en móviles */
+    width: 180px;
     height: 180px;
   }
 
   .welcome-title {
-    font-size: 1.5rem; /* Reduce el tamaño del título de bienvenida */
+    font-size: 1.6rem;
   }
 
   .login-form,
   .alert {
-    max-width: 100%; /* Asegura que el formulario y las alertas ocupen todo el ancho disponible */
+    max-width: 100%;
   }
 }
 
 @media (max-width: 480px) {
   .login-branding,
   .login-form-area {
-    padding: 20px; /* Más reducción de padding para pantallas muy pequeñas */
+    padding: 25px;
   }
 
   .branding-logo {
-    width: 150px; /* Más reducción de tamaño de imagen */
+    width: 150px;
     height: 150px;
   }
 
@@ -252,6 +326,96 @@
   }
 
   .welcome-title {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
+  }
+  
+  .btn {
+    padding: 12px 18px;
+    font-size: 1rem;
+  }
+  
+  .form-control {
+    padding: 12px 18px;
+  }
+}
+
+
+
+/* ver la contrasena estilos */
+/* Estilos para el grupo de contraseña */
+.password-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.password-input-container {
+  position: relative;
+  width: 100%;
+}
+
+.password-input {
+  padding-right: 50px; /* Espacio para el botón */
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+
+.password-toggle-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.password-toggle-btn:active {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.password-icon {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+  line-height: 1;
+}
+
+.password-icon.visible {
+  transform: scale(1.1);
+}
+
+/* Asegurar que el input mantenga sus estilos focus */
+.password-input:focus {
+  border-color: #1E8099;
+  box-shadow: 0 0 0 3px rgba(30, 128, 153, 0.1);
+  background-color: #ffffff;
+  outline: none;
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .password-toggle-btn {
+    right: 10px;
+    padding: 6px;
+    width: 32px;
+    height: 32px;
+  }
+  
+  .password-icon {
+    font-size: 1.1rem;
+  }
+  
+  .password-input {
+    padding-right: 45px;
   }
 }

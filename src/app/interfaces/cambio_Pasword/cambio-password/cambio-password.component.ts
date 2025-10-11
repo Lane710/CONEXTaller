@@ -134,7 +134,7 @@ export class CambioPasswordComponent implements OnInit {
 
   // Método para volver a la página de solicitud de código
   goToRequestCodePage(): void {
-    this.router.navigate(['/verificable']);
+    this.router.navigate(['/verificacion']);
   }
 
   // Método para navegar a la página de login

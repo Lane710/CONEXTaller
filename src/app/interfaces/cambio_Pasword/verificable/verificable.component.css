@@ -1,30 +1,266 @@
+/* src/app/components/verificable/verificable.component.css */
+
 /* Centrar el contenedor del formulario */
 .contact-form-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh; /* Ocupa toda la altura de la ventana */
+    min-height: 100vh;
     margin: 0;
-    background-color: #f8f9fa; /* Color de fondo ligero */
+    background: linear-gradient(135deg, #e0f7fa 0%, #bbdefb 100%);
+    font-family: 'Inter', sans-serif;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 /* Estilos de la tarjeta (card) */
 .contact-form-container .card {
     width: 100%;
-    max-width: 450px; /* Ancho máximo del formulario */
-    padding: 30px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra suave */
-    border-radius: 8px; /* Bordes ligeramente redondeados */
-    background-color: #fff; /* Fondo blanco para la tarjeta */
+    max-width: 500px;
+    padding: 40px 35px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border-radius: 15px;
+    background-color: #fff;
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Estilos específicos del botón de Bootstrap */
-.contact-form-container .btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
+.contact-form-container .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
 }
 
-.contact-form-container .btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
+/* Título principal */
+.card-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1E8099;
+    margin-bottom: 30px;
+    text-align: center;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.card-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #1E8099, #007bff);
+    border-radius: 2px;
+}
+
+/* Texto descriptivo */
+.text-muted {
+    color: #6c757d !important;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* Formulario y controles */
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.form-control {
+    padding: 14px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 1rem;
+    color: #495057;
+    background-color: #f8f9fa;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Inter', sans-serif;
+}
+
+.form-control:focus {
+    border-color: #1E8099;
+    box-shadow: 0 0 0 3px rgba(30, 128, 153, 0.1);
+    background-color: #ffffff;
+    outline: none;
+    transform: translateY(-2px);
+}
+
+.form-control::placeholder {
+    color: #6c757d;
+    font-weight: 400;
+}
+
+/* Validación */
+.form-control.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875em;
+    margin-top: 8px;
+    font-weight: 500;
+    padding-left: 5px;
+}
+
+/* Botones */
+.d-grid {
+    gap: 15px !important;
+    margin-top: 25px;
+}
+
+.btn {
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+/* Botón primario */
+.btn-primary {
+    background: linear-gradient(135deg, #1E8099 0%, #007bff 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(30, 128, 153, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(30, 128, 153, 0.4);
+    background: linear-gradient(135deg, #1E8099 0%, #007bff 100%);
+}
+
+.btn-primary:active:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.7;
+    box-shadow: none;
+    transform: none;
+}
+
+/* Botón secundario */
+.btn-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+}
+
+.btn-secondary:active:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+/* Alertas mejoradas */
+.alert {
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    text-align: center;
+    border: 1px solid transparent;
+    font-weight: 500;
+    margin-bottom: 20px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-color: #bee5eb;
+}
+
+/* Responsividad */
+@media (max-width: 576px) {
+    .contact-form-container {
+        padding: 15px;
+    }
+    
+    .contact-form-container .card {
+        padding: 30px 25px;
+        max-width: 100%;
+    }
+    
+    .card-title {
+        font-size: 1.7rem;
+        margin-bottom: 25px;
+    }
+    
+    .btn {
+        padding: 12px 18px;
+        font-size: 1rem;
+    }
+    
+    .form-control {
+        padding: 12px 16px;
+    }
+}
+
+@media (max-width: 400px) {
+    .contact-form-container .card {
+        padding: 25px 20px;
+    }
+    
+    .card-title {
+        font-size: 1.5rem;
+    }
+    
+    .text-muted {
+        font-size: 0.9rem;
+    }
 }

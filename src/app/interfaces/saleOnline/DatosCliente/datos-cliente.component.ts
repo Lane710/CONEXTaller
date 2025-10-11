@@ -110,15 +110,23 @@ export class DatosClienteComponent implements OnInit {
             (item: RawDetalleCarritoProducto) => {
               return {
                 ...item,
-                // CORRECCIÓN: Convierte el objeto Decimal a string para coincidir con el DTO
                 precioUnitario: new Decimal(item.precioUnitario).toString(),
                 subtotal: new Decimal(item.subtotal).toString(),
                 producto: {
                   ...item.producto,
-                  // CORRECCIÓN: Tu ProductoDTO espera un 'number' en 'precio', por lo que convertimos
                   precio: new Decimal(item.producto.precio).toNumber(),
+                  proveedor: {
+                    ...item.producto.proveedor,
+                    nombreEmpresa: item.producto.proveedor.nombre,
+                  },
+                  usuarioRegistro: {
+                    ...item.producto.usuarioRegistro,
+                    passwordHash: (item.producto.usuarioRegistro as any)?.passwordHash ?? '',
+                    persona: (item.producto.usuarioRegistro as any)?.persona ?? null,
+                    rol: (item.producto.usuarioRegistro as any)?.rol ?? null,
+                  },
                 },
-              };
+              } as DetalleCarritoProducto;
             }
           );
           this.productosCarrio = [...this.detallesCarrito];

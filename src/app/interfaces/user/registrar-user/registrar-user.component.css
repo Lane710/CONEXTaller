@@ -1,14 +1,116 @@
-/* registrar-user.component.css */
+/* Estilos para los contenedores de contraseña */
+.password-input-container {
+  position: relative;
+  width: 100%;
+}
 
-/* Solo si necesitas algún ajuste fino que Bootstrap no maneja directamente */
+.password-input {
+  padding-right: 50px; /* Espacio para el botón del ojo */
+}
 
-/* Si prefieres que el color del título sea diferente al default de Bootstrap, puedes especificarlo aquí.
-   De lo contrario, 'text-primary' en el HTML es suficiente. */
-/* .register-title {
-  color: #333;
-} */
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  z-index: 2;
+}
 
-/* Pequeño ajuste para el span requerido, si es necesario */
-.text-danger {
-  font-weight: bold; /* Hacer el asterisco más visible si se desea */
+.password-toggle-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.password-toggle-btn:active {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.password-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 20px;
+  transition: all 0.3s ease;
+}
+
+.password-toggle-btn:hover .password-icon {
+  transform: scale(1.1);
+  opacity: 0.8;
+}
+
+/* Asegurar que los inputs mantengan sus estilos focus */
+.password-input:focus {
+  border-color: #1E8099;
+  box-shadow: 0 0 0 3px rgba(30, 128, 153, 0.1);
+  background-color: #ffffff;
+  outline: none;
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .password-toggle-btn {
+    right: 10px;
+    padding: 6px;
+    width: 32px;
+    height: 32px;
+  }
+  
+  .password-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .password-input {
+    padding-right: 45px;
+  }
+}
+
+@media (max-width: 576px) {
+  .password-toggle-btn {
+    right: 8px;
+    width: 30px;
+    height: 30px;
+  }
+  
+  .password-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .password-input {
+    padding-right: 40px;
+  }
+}
+
+/* Asegurar que los inputs de contraseña tengan el mismo estilo que los demás */
+.form-control {
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+  padding: 10px 15px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+}
+
+/* Mantener consistencia con los otros inputs */
+.password-input {
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+  padding: 10px 15px;
+  font-size: 16px;
+  transition: all 0.3s ease;
 }

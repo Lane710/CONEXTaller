@@ -68,9 +68,14 @@ export class ProductosService {
   }
 
   checkProductExistence(productToCheck: productos): Observable<ApiResponse> {
-    console.log('Verificando existencia del producto:', productToCheck);
-    return this.http.post<ApiResponse>(`${this.apiUrl}check-existence`, productToCheck);
-  }
+  console.log('Verificando existencia del producto:', productToCheck);
 
-  
+  const payload = {
+    nombre: productToCheck.nombre,
+    sku: productToCheck.sku,
+    codigoBarras: productToCheck.codigoBarras
+  };
+
+  return this.http.post<ApiResponse>(`${this.apiUrl}check-existence`, payload);
+}
 }

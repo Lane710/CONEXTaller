@@ -25,10 +25,10 @@ export class ProductoValorPropiedadService { // <-- Nombre de clase cambiado
     return this.http.get<any>(`${this.baseUrl}findById/${id}`);
   }
 
-  save(productoValorPropiedad: ProductoValorPropiedad): Observable<any> {
-    // POST: /producto-valores-propiedad/save
-    return this.http.post<any>(`${this.baseUrl}save`, productoValorPropiedad);
-  }
+save(productoValorPropiedad: ProductoValorPropiedad): Observable<any> {
+  // POST: /producto-valores-propiedad/save
+  return this.http.post<any>(`${this.baseUrl}save`, productoValorPropiedad);
+}
 
   update(id: number, productoValorPropiedad: ProductoValorPropiedad): Observable<any> {
     // PUT: /producto-valores-propiedad/updateById/{id}

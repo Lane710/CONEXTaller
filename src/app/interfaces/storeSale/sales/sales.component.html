@@ -1,4 +1,4 @@
-<div class="row g-4 d-flex flex-column flex-lg-row" >
+<div class="row g-4 d-flex flex-column flex-lg-row">
   <div class="col-lg-7">
     <h2 class="mt-5 mb-4">Productos Disponibles</h2>
 
@@ -141,6 +141,57 @@
         </span>
       </div>
 
+      <div class="totales-section bg-light p-4 rounded-4 shadow-sm mb-4">
+        <h5 class="border-bottom pb-2 mb-3 fw-semibold">Resumen de compra</h5>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="text-secondary">Subtotal:</span>
+          <span class="fw-semibold">{{
+            calcularSubtotal() | currency : "Bs " : "symbol" : "1.2-2"
+          }}</span>
+        </div>
+        <div
+          class="descuento d-flex justify-content-between align-items-center mb-3 py-2"
+        >
+          <span class="text-secondary">Descuento:</span>
+          <div class="input-group input-group-sm" style="width: 120px">
+            <span class="input-group-text bg-white">Bs</span>
+            <input
+              type="number"
+              class="form-control form-control-sm"
+              step="0.01"
+              min="0"
+              placeholder="0.00"
+              [disabled]="productosPorVender.length === 0"
+              [(ngModel)]="descuento"
+              (input)="validarDescuento()"
+            />
+          </div>
+        </div>
+        <div
+          class="d-flex justify-content-between align-items-center pt-2 border-top fw-bold fs-5 text-primary"
+        >
+          <span>Total:</span>
+          <span>{{
+            calcularTotal() | currency : "Bs " : "symbol" : "1.2-2"
+          }}</span>
+        </div>
+      </div>
+      <div class="d-grid gap-3">
+        <button
+          class="btn btn-outline-danger btn-lg py-2 rounded-3"
+          routerLink="/home/listadoVentasStore"
+        >
+          <i class="fas fa-times-circle me-2"></i> Cancelar Venta
+        </button>
+        <button
+          class="btn btn-success btn-lg py-2 rounded-3"
+          [disabled]="productosPorVender.length === 0"
+          (click)="abrirModalConfirmacion()"
+        >
+          <i class="fas fa-check-circle me-2"></i> Registrar Venta
+        </button>
+      </div>
+
       <div
         class="VentaPendiente list-group list-group-flush mb-4"
         id="ticket-items"
@@ -193,63 +244,12 @@
           <p class="mb-0">No hay productos por vender.</p>
         </div>
       </div>
-
-      <div class="totales-section bg-light p-4 rounded-4 shadow-sm mb-4">
-        <h5 class="border-bottom pb-2 mb-3 fw-semibold">Resumen de compra</h5>
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <span class="text-secondary">Subtotal:</span>
-          <span class="fw-semibold">{{
-            calcularSubtotal() | currency : "Bs " : "symbol" : "1.2-2"
-          }}</span>
-        </div>
-        <div
-          class="descuento d-flex justify-content-between align-items-center mb-3 py-2"
-        >
-          <span class="text-secondary">Descuento:</span>
-          <div class="input-group input-group-sm" style="width: 120px">
-            <span class="input-group-text bg-white">Bs</span>
-            <input
-              type="number"
-              class="form-control form-control-sm"
-              step="0.01"
-              min="0"
-              placeholder="0.00"
-              [disabled]="productosPorVender.length === 0"
-              [(ngModel)]="descuento"
-              (input)="validarDescuento()"
-            />
-          </div>
-        </div>
-        <div
-          class="d-flex justify-content-between align-items-center pt-2 border-top fw-bold fs-5 text-primary"
-        >
-          <span>Total:</span>
-          <span>{{
-            calcularTotal() | currency : "Bs " : "symbol" : "1.2-2"
-          }}</span>
-        </div>
-      </div>
-      <div class="d-grid gap-3">
-        <button
-          class="btn btn-outline-danger btn-lg py-2 rounded-3"
-          routerLink="/home/listadoVentasStore"
-        >
-          <i class="fas fa-times-circle me-2"></i> Cancelar Venta
-        </button>
-        <button
-          class="btn btn-success btn-lg py-2 rounded-3"
-          data-bs-toggle="modal"
-          data-bs-target="#confirmModal"
-          [disabled]="productosPorVender.length === 0"
-          (click)="buscadorCliente()"
-        >
-          <i class="fas fa-check-circle me-2"></i> Registrar Venta
-        </button>
-      </div>
     </div>
   </div>
 </div>
-<div class="modal fade" id="confirmModal" tabindex="-1">
+
+<!-- Modal de Confirmación -->
+<div class="modal fade" [class.show]="mostrarConfirmModal" [style.display]="mostrarConfirmModal ? 'block' : 'none'" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
@@ -257,7 +257,7 @@
                 <button
                     type="button"
                     class="btn-close btn-close-white"
-                    data-bs-dismiss="modal"
+                    (click)="cerrarModalConfirmacion()"
                 ></button>
             </div>
             <div class="modal-body">
@@ -349,6 +349,8 @@
                             id="ventaNotas"
                             rows="2"
                             placeholder="Ej: Se realizo un descuento de promocion"
+                            [(ngModel)]="notaVenta"
+                            name="notaVenta"
                         ></textarea>
                     </div>
                     <div class="col-12 col-md-auto">
@@ -371,8 +373,7 @@
                 <button
                     type="button"
                     class="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                    (click)="limpiarDatosCliente()"
+                    (click)="cerrarModalConfirmacion()"
                 >
                     Cancelar
                 </button>
@@ -389,18 +390,22 @@
     </div>
 </div>
 
-
-<!--MODAL DE CONFIRMACION DE LA VENTA REALIZADA-->
-
-<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+<!-- Modal de Éxito -->
+<div class="modal fade" [class.show]="mostrarSuccessModal" [style.display]="mostrarSuccessModal ? 'block' : 'none'" aria-labelledby="successModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-body text-center p-5">
         <i class="bi bi-check-circle-fill success-icon mb-4"></i>
         <h5 class="modal-title mb-3" id="successModalLabel">¡Venta Registrada con Éxito!</h5>
         <p class="mb-4">La transacción se ha completado correctamente.</p>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+        <button type="button" class="btn btn-primary" (click)="cerrarModalExito()">Aceptar</button>
       </div>
     </div>
   </div>
+</div>
+
+<!-- Backdrop para los modales -->
+<div class="modal-backdrop fade show" 
+     [style.display]="(mostrarConfirmModal || mostrarSuccessModal) ? 'block' : 'none'"
+     (click)="cerrarModales()">
 </div>
