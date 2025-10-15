@@ -514,7 +514,7 @@ export class SalesComponent implements OnInit {
   }
 
   calcularTotal(): number {
-    return this.calcularSubtotal() - this.descuento;
+    return this.calcularSubtotal();
   }
 
   onCategoryChange(category: string): void {

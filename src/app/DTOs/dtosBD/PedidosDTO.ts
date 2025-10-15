@@ -1,8 +1,11 @@
+import { forma_pago } from "../../models/PedidosEnviosDetalles/forma_pago";
+import { UsuarioDTO } from "./UsuarioDTO";
+
 export interface PedidosDTO {
   idPedido: number;
-  username: string;
-  estado: 'PENDIENTE' | 'EN_PROCESO' | 'ENVIADO' | 'ENTREGADO' | 'CANCELADO'; // Enum del backend
+  usuario: UsuarioDTO; // ya no es solo username
+  estado: 'PENDIENTE' | 'CONFIRMADO' | 'EN_PROCESO' | 'ENVIADO' | 'ENTREGADO' | 'CANCELADO';
   totalPedido: string; // BigDecimal → string
-  metodoPago: string;
-  fechaPedido: string; // OffsetDateTime → string (ISO format)
+  fechaPedido: string; // LocalDate → string (ISO)
+  formaPago: forma_pago; // nuevo subobjeto
 }

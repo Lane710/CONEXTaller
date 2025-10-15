@@ -10,15 +10,19 @@ import { ProductosService } from './productos.service'; // Mantener si es necesa
 import { stock } from '../../models/ProductoStockModel/stock';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-export class StockService { // Renombrado a StockService
+export class StockService {
+  // Renombrado a StockService
 
   // ¡IMPORTANTE! Asegúrate de que este puerto y ruta base sean correctos para tu backend de stock.
   private apiUrl = 'http://localhost:8080/stock/'; // URL del API actualizada a /stock/
   private apiUrlP = 'http://localhost:8080/productos/';
 
-  constructor(private http: HttpClient, private productosService: ProductosService) { } // Mantener productosService si es usado
+  constructor(
+    private http: HttpClient,
+    private productosService: ProductosService
+  ) {} // Mantener productosService si es usado
 
   /**
    * Obtiene todos los ítems de stock.
@@ -28,13 +32,14 @@ export class StockService { // Renombrado a StockService
     // Si tu backend realmente devuelve el producto anidado, esta llamada es directa.
     // Si tu backend solo devuelve el ID del producto, necesitarías la lógica de switchMap y forkJoin de antes.
     return this.http.get<ApiResponse>(`${this.apiUrl}findAll`);
-  } 
+  }
 
   /**
    * Obtiene un ítem de stock por su ID.
    * Asume que la API de stock devuelve el objeto 'producto' completo dentro del 'stock'.
    */
-  findByIdStock(idStock: number): Observable<ApiResponse> { // Renombrado a findByIdStock
+  findByIdStock(idStock: number): Observable<ApiResponse> {
+    // Renombrado a findByIdStock
     // Similar a findAll, asume que el backend devuelve el producto anidado.
     return this.http.get<ApiResponse>(`${this.apiUrl}findById/${idStock}`); // Uso de idStock
   }
@@ -44,7 +49,7 @@ export class StockService { // Renombrado a StockService
    * Envía el objeto 'stock' completo al backend, incluyendo el objeto 'producto' anidado.
    * @param stockData El objeto stock a guardar.
    */
-  saveStock(stockData: stock): Observable<ApiResponse> { 
+  saveStock(stockData: stock): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${this.apiUrl}save`, stockData);
   }
 
@@ -54,35 +59,83 @@ export class StockService { // Renombrado a StockService
    * @param stockData El objeto stock con los datos actualizados.
    * @param idStock El ID del stock a actualizar.
    */
-  updateStock(stockData: stock, idStock: number): Observable<ApiResponse> { // Renombrado a updateStock, tipo stock, idStock
+  updateStock(stockData: stock, idStock: number): Observable<ApiResponse> {
+    // Renombrado a updateStock, tipo stock, idStock
     // Enviar el objeto 'stock' tal como lo recibimos del componente.
-    return this.http.put<ApiResponse>(`${this.apiUrl}updateById/${idStock}`, stockData);
+    return this.http.put<ApiResponse>(
+      `${this.apiUrl}updateById/${idStock}`,
+      stockData
+    );
   }
 
   /**
    * Elimina un item de stock por su ID.
    * @param idStock El ID del stock a eliminar.
    */
-  deleteByIdStock(idStock: number): Observable<ApiResponse> { // Nuevo método de eliminación, renombrado a deleteByIdStock
+  deleteByIdStock(idStock: number): Observable<ApiResponse> {
+    // Nuevo método de eliminación, renombrado a deleteByIdStock
     return this.http.delete<ApiResponse>(`${this.apiUrl}deleteById/${idStock}`);
   }
 
-  addorRestarStockProductos(idStock: number, cantidad:number): Observable<ApiResponse> {
-
-    return this.http.put<ApiResponse>(`${this.apiUrl}add-quantity/${idStock}/${cantidad}`, {});
+  addorRestarStockProductos(
+    idStock: number,
+    cantidad: number
+  ): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(
+      `${this.apiUrl}add-quantity/${idStock}/${cantidad}`,
+      {}
+    );
   }
-  
- 
 
-  ProductoporCategoria(num1: number,num2: number,num3: number): Observable<ApiResponse> {
-    return this.http.get<ApiResponse>(`${this.apiUrlP}ProductoCategorias/${num1}/${num2}/${num3}`);
+  ProductoporCategoria(
+    num1: number,
+    num2: number,
+    num3: number
+  ): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(
+      `${this.apiUrlP}ProductoCategorias/${num1}/${num2}/${num3}`
+    );
   }
 
-  StockDelProducto(num:number|undefined): Observable<ApiResponse> {
+  StockDelProducto(num: number | undefined): Observable<ApiResponse> {
     return this.http.get<ApiResponse>(`${this.apiUrl}producto/${num}`);
   }
 
   listadoProducStock(): Observable<ApiResponse> {
     return this.http.get<ApiResponse>(`${this.apiUrl}listaProductConStock`);
+  }
+
+  // Obtener los 15 productos más recientes con stock
+  getLatestProductsWithStock(): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.apiUrl}latest-with-stock`);
+  }
+
+  // Obtener productos por categoría
+  getProductsByCategory(idCategoria: number): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.apiUrl}categoria/${idCategoria}`);
+  }
+
+  // Obtener todos los productos con stock (opcional)
+  getAllProductsWithStock(): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.apiUrl}listaProductConStock`);
+  }
+
+  /**
+   * Obtiene los últimos N productos registrados con stock.
+   */
+  getLatestProducts(limit: number = 50): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.apiUrl}ultimos?limit=${limit}`);
+  }
+
+  /**
+   * Filtra productos por categoría y subcategoría.
+   */
+  getProductsByCategoryAndSubcategory(
+    idCategoria: number,
+    idSubcategoria: number
+  ): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(
+      `${this.apiUrl}filtrar?idCategoria=${idCategoria}&idSubcategoria=${idSubcategoria}`
+    );
   }
 }

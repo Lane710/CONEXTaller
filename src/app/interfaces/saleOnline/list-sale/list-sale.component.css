@@ -204,3 +204,147 @@
 .card-canceled {
   border: 2px solid #dc3545; /* Borde rojo */
 }
+
+
+
+
+/* Estilos específicos para el modal de detalles */
+.modal-detalle-pedido {
+  border: none;
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%) !important;
+}
+
+/* Estilos para la sección de información del pedido */
+.info-pedido-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+}
+
+.total-pedido-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 1px solid #dee2e6;
+}
+
+/* Estilos para los productos */
+.productos-container-custom {
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.productos-container-custom::-webkit-scrollbar {
+  width: 6px;
+}
+
+.productos-container-custom::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.productos-container-custom::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+.productos-container-custom::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.producto-card-wrapper {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.producto-card-wrapper:hover {
+  transform: translateY(-2px);
+}
+
+.producto-card {
+  border-radius: 12px !important;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.producto-activo {
+  border-left: 4px solid #198754 !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fff9 100%);
+}
+
+.producto-cancelado {
+  border-left: 4px solid #dc3545 !important;
+  background: linear-gradient(135deg, #ffffff 0%, #fff8f8 100%);
+  opacity: 0.8;
+}
+
+.producto-nombre {
+  color: #2c3e50;
+  line-height: 1.3;
+}
+
+/* Estilos para los badges */
+.badge {
+  font-size: 0.75em;
+  padding: 0.35em 0.65em;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .modal-dialog {
+    margin: 1rem;
+  }
+  
+  .productos-container-custom {
+    max-height: 300px;
+  }
+  
+  .producto-card {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Animaciones suaves */
+.modal-content {
+  animation: modalEnter 0.3s ease-out;
+}
+
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Mejoras para los íconos */
+.bi::before {
+  vertical-align: middle;
+}
+
+/* Estilos para los textos */
+.text-muted {
+  font-size: 0.875rem;
+}
+
+.fw-semibold {
+  font-weight: 600;
+}
+
+/* Efectos hover mejorados */
+.btn-outline-secondary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Mejora en la visualización de cantidades y precios */
+.row.g-2 > .col-6 {
+  padding: 0.5rem;
+}
+
+.row.g-2 > .col-6:first-child {
+  border-right: 1px solid #e9ecef;
+}

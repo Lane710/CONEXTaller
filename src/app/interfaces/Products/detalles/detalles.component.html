@@ -129,7 +129,7 @@
           <div class="product-meta text-muted border-top pt-3">
             <span class="d-block mb-1">SKU: N/D</span>
             <span class="d-block mb-1"
-              >Categoría: {{ details.producto.nombreCategoria }}</span
+              >Categoría: {{ details.producto.categoria.nombre }}</span
             >
             <span class="d-block mb-1">Estado: Nuevo</span>
             <span class="d-block mb-1">Envíos: A toda Tarija</span>
@@ -243,7 +243,7 @@
               class="card-body product-info text-center d-flex flex-column justify-content-between"
             >
               <h3 class="product-name card-title fs-5 fw-bold mb-2">
-                {{ product.producto.nombre }}
+                {{ product.producto.descripcion }}
               </h3>
               <p class="product-price fs-4 fw-bolder text-success mb-2">
                 {{
@@ -254,7 +254,7 @@
              
               <button
                 class="btn btn-primary add-to-cart-btn-sm d-flex align-items-center justify-content-center gap-2"
-                [disabled]="product.disponible || product.stock > 0"
+                [disabled]="product.cantidad"
                 (click)="AddProductCarrito(product)"
               >
                 <i class="fas fa-cart-plus"></i> Añadir

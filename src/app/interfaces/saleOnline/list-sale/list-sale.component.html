@@ -10,19 +10,8 @@
 
   <h1 class="mb-4 text-center text-md-start">Lista de Pedidos Online</h1>
 
-  <div
-    class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3"
-  >
+  <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3">
     <div class="d-flex flex-wrap gap-2 flex-grow-1">
-      <div class="col-12 col-md-auto">
-        <button
-          class="btn btn-primary rounded-pill w-100"
-          routerLink="/home/registrarPedido"
-        >
-          <i class="bi bi-plus-lg me-2"></i>Registrar Pedido
-        </button>
-      </div>
-
       <div class="col-12 col-md flex-grow-1">
         <div class="input-group w-100">
           <input
@@ -45,9 +34,12 @@
           (ngModelChange)="onFilterChange()"
         >
           <option value="todos">Todos los estados</option>
-          <option value="pendiente">Pendiente</option>
-          <option value="completado">Completado</option>
-          <option value="cancelado">Cancelado</option>
+          <option value="PENDIENTE">Pendiente</option>
+          <option value="CONFIRMADO">Confirmado</option>
+          <option value="EN_PROCESO">En Proceso</option>
+          <option value="ENVIADO">Enviado</option>
+          <option value="ENTREGADO">Entregado</option>
+          <option value="CANCELADO">Cancelado</option>
         </select>
       </div>
     </div>
@@ -64,16 +56,12 @@
           </button>
           <ul class="dropdown-menu">
             <li>
-              <a
-                class="dropdown-item"
-                (click)="ordenarPorFechaReciente()"
+              <a class="dropdown-item" (click)="ordenarPorFechaReciente()"
                 >Más Reciente</a
               >
             </li>
             <li>
-              <a
-                class="dropdown-item"
-                (click)="ordenarPorFechaAntigua()"
+              <a class="dropdown-item" (click)="ordenarPorFechaAntigua()"
                 >Más Antiguo</a
               >
             </li>
@@ -82,194 +70,191 @@
       </div>
     </div>
   </div>
-  <div class="d-flex flex-column gap-3">
-    @if (filteredAndPaginatedPedidos.length > 0) { @for (item of
-    filteredAndPaginatedPedidos; track item.pedido.idPedido) {
-    <div class="card shadow-sm order-card">
-      <div class="card-body p-0 d-flex flex-column flex-md-row">
-        <div class="order-details-section">
-          <div
-            class="order-header p-3 d-flex justify-content-between align-items-center cursor-pointer"
-            [ngClass]="{
-              'bg-danger-subtle': item.pedido.estado === 'CANCELADO',
-              'bg-secondary-subtle text-dark':
-                item.pedido.estado !== 'CANCELADO'
-            }"
-            (click)="item.isExpanded = !item.isExpanded"
-          >
-            <h6 class="mb-0">
-              Pedido ID:
-              <span class="fw-bold">PED{{ item.pedido.idPedido }}</span>
-            </h6>
-            <div class="d-flex align-items-center">
-              <span
-                class="badge me-2"
-                [ngClass]="{
-                  'bg-success': item.pedido.estado === 'CONFIRMADO',
-                  'bg-warning text-dark': item.pedido.estado === 'EN_PROCESO',
-                  'bg-danger': item.pedido.estado === 'ENVIADO',
-                  
-                }"
-              >
-              <!--'bg-danger': item.pedido.estado === 'CANCELADO'-->
-                {{ item.pedido.estado }}
-              </span>
-              <i
-                class="bi"
-                [ngClass]="
-                  item.isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'
-                "
-              ></i>
-            </div>
-          </div>
 
-          <div
-            class="products-list-container p-3"
-            [ngClass]="{ 'is-expanded': item.isExpanded }"
-          >
-            @if (item.detallePedidos.length > 0) {
+  <div class="d-flex flex-column gap-3">
+    @if (filteredAndPaginatedPedidos.length > 0) { 
+      @for (item of filteredAndPaginatedPedidos; track item.pedido.idPedido) {
+      <div class="card shadow-sm order-card">
+        <div class="card-body p-0 d-flex flex-column flex-md-row">
+          <div class="order-details-section flex-grow-1">
             <div
-              *ngFor="let detalle of item.detallePedidos"
-              class="product-item mb-2 p-2 rounded-3"
+              class="order-header p-3 d-flex justify-content-between align-items-center cursor-pointer"
+              [ngClass]="{
+                'bg-danger-subtle': item.pedido.estado === 'CANCELADO',
+                'bg-secondary-subtle text-dark':
+                  item.pedido.estado !== 'CANCELADO'
+              }"
+              (click)="item.isExpanded = !item.isExpanded"
             >
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="d-flex flex-column">
-                  <span class="fw-bold">{{ detalle.producto.nombre }}</span>
-                  <small class="text-muted"
-                    >Cantidad: {{ detalle.cantidad }} | Precio Unitario: Bs
-                    {{ detalle.precioUnitario }}</small
-                  >
-                </div>
-                <span class="text-end fw-bold"
-                  >Bs {{ detalle.subtotal }}</span
+              <div class="d-flex align-items-center gap-3">
+                <h6 class="mb-0">
+                  Pedido ID:
+                  <span class="fw-bold">PED{{ item.pedido.idPedido }}</span>
+                </h6>
+                <small class="text-muted">
+                  {{ item.pedido.fechaPedido | date : "dd/MM/yyyy" }}
+                </small>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span
+                  class="badge me-2"
+                  [ngClass]="{
+                    'bg-warning': item.pedido.estado === 'PENDIENTE',
+                    'bg-primary': item.pedido.estado === 'CONFIRMADO',
+                    'bg-info': item.pedido.estado === 'EN_PROCESO',
+                    'bg-secondary': item.pedido.estado === 'ENVIADO',
+                    'bg-success': item.pedido.estado === 'ENTREGADO',
+                    'bg-danger': item.pedido.estado === 'CANCELADO'
+                  }"
                 >
+                  {{ item.pedido.estado | lowercase | titlecase }}
+                </span>
+                <i
+                  class="bi"
+                  [ngClass]="
+                    item.isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'
+                  "
+                ></i>
               </div>
             </div>
-            } @else {
-            <p class="text-muted text-center m-0">
-              No hay productos en este pedido.
-            </p>
-            }
-          </div>
 
-          <div class="order-footer p-3">
-            <p class="mb-0 fw-bold fs-5 text-end text-success">
-              Total: Bs {{ item.pedido.totalPedido }}
-            </p>
-          </div>
-        </div>
-
-        <div
-          class="order-actions-section d-flex align-items-center justify-content-center p-3"
-        >
-          <div class="d-flex flex-column gap-2">
-            <button
-              class="btn rounded-pill btn-icon-expand"
-              style="border: 2px solid #29aaca; color: #29aaca"
-              data-bs-toggle="modal"
-              data-bs-target="#modalDetallesPedido"
-              (click)="selectPedidoModalDetalle(item)"
+            <div
+              class="products-list-container p-3"
+              [ngClass]="{ 'is-expanded': item.isExpanded }"
             >
-              <img
+              @if (item.detallePedidos.length > 0) {
+                @for (detalle of item.detallePedidos; track detalle.idDetallePedido) {
+                <div class="product-item mb-2 p-2 rounded-3 border">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex flex-column">
+                      <span class="fw-bold">{{ detalle.producto.nombre }}</span>
+                      <small class="text-muted"
+                        >Cantidad: {{ detalle.cantidad }} | Precio Unitario: Bs
+                        {{ detalle.precioUnitario }}</small
+                      >
+                    </div>
+                    <span class="text-end fw-bold"
+                      >Bs {{ detalle.subtotal }}</span
+                    >
+                  </div>
+                </div>
+                }
+              } @else {
+                <p class="text-muted text-center m-0">
+                  No hay productos en este pedido.
+                </p>
+              }
+            </div>
+
+            <div class="order-footer p-3 border-top">
+              <p class="mb-0 fw-bold fs-5 text-end text-success">
+                Total: Bs {{ item.pedido.totalPedido }}
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="order-actions-section d-flex align-items-center justify-content-center p-3 border-start"
+          >
+            <div class="d-flex flex-column gap-2">
+              <button
+                class="btn rounded-pill btn-icon-expand"
+                style="border: 2px solid #29aaca; color: #29aaca"
+                data-bs-toggle="modal"
+                data-bs-target="#modalDetallesPedido"
+                (click)="selectPedidoModalDetalle(item)"
+              >
+                <img
                 src="icon_SaleOnline/ic--outline-remove-red-eye.svg"
                 alt=""
               />
-              <span class="btn-label">Ver Detalle</span>
-            </button>
-            <button
-              class="btn rounded-pill btn-icon-expand"
-              style="border: 2px solid #ffc107; color: #ffc107"
-              (click)="abrirModalCambiarEstado(item.pedido)"
-              [disabled]="item.pedido.estado === 'CANCELADO'"
-            >
-              <img src="/icon_SaleOnline/iconoir--page-edit.svg" alt="" />
-              <span class="btn-label">Modificar</span>
-            </button>
-            <button
-              class="btn rounded-pill btn-icon-expand"
-              style="border: 2px solid #29aaca; color: #29aaca"
-              (click)="abrirModalCambiarEstado(item.pedido)"
-            >
-              <img src="icon_SaleOnline/ic--outline-change-circle.svg" alt="" />
-              <span class="btn-label">Estado</span>
-            </button>
-            <button
-              class="btn rounded-pill btn-icon-expand"
-              style="border: 2px solid #dc3545; color: #dc3545"
-              [disabled]="
-                item.pedido.estado === 'CANCELADO' ||
-                item.pedido.estado === 'CONFIRMADO'
-              "
-              (click)="abrirModalCancelarPedido(item.pedido)"
-            >
-              <img src="/icon_SaleOnline/ic--outline-cancel.svg" alt="" />
-              <span class="btn-label">Cancelar</span>
-            </button>
+<span class="btn-label">Ver Detalle</span>
+              </button>
+              <button
+                class="btn rounded-pill btn-icon-expand"
+                style="border: 2px solid rgb(239, 239, 45); color: rgb(239, 239, 46)"
+                (click)="abrirModalCambiarEstado(item)"
+                [disabled]="item.pedido.estado === 'CANCELADO'"
+              >
+                 <img src="/icon_SaleOnline/iconoir--page-edit.svg" alt="" />
+                <span class="btn-label">Estado</span>
+              </button>
+              <button
+                class="btn rounded-pill btn-icon-expand"
+                style="border: 2px solid #dc3545; color: #dc3545"
+                [disabled]="item.pedido.estado === 'CANCELADO'"
+                (click)="abrirModalCancelarPedido(item.pedido)"
+              >
+                <img src="/icon_SaleOnline/ic--outline-cancel.svg" alt="" />
+                <span class="btn-label">Cancelar</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    } } @else {
-    <div class="card shadow-sm">
-      <div class="card-body text-center text-muted">
-        No se encontraron pedidos.
+      } 
+    } @else {
+      <div class="card shadow-sm">
+        <div class="card-body text-center text-muted py-5">
+          <i class="bi bi-inbox display-4 d-block mb-3"></i>
+          No se encontraron pedidos.
+        </div>
       </div>
-    </div>
     }
   </div>
 
- <div
-      class="d-flex justify-content-center align-items-center flex-wrap mb-3 mt-4"
-      *ngIf="totalPages > 1"
-    >
-      <nav>
-        <ul class="pagination pagination-sm mb-0">
-          <li class="page-item" [class.disabled]="currentPage === 1">
-            <button class="page-link" (click)="goToPage(currentPage - 1)">
-              &laquo;
-            </button>
+  <!-- Paginación -->
+  <div class="d-flex justify-content-center align-items-center flex-wrap mb-3 mt-4" *ngIf="totalPages > 1">
+    <nav>
+      <ul class="pagination pagination-sm mb-0">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToPage(currentPage - 1)">
+            &laquo;
+          </button>
+        </li>
+        @if (pages[0] > 1) {
+          <li class="page-item">
+            <button class="page-link" (click)="goToPage(1)">1</button>
           </li>
-          @if (pages[0] > 1) {
-            <li class="page-item">
-              <button class="page-link" (click)="goToPage(1)">1</button>
-            </li>
-            @if (pages[0] > 2) {
-              <li class="page-item disabled">
-                <span class="page-link">...</span>
-              </li>
-            }
-          }
-          @for (page of pages; track page) {
-          <li
-            class="page-item"
-            [class.active]="page === currentPage"
-            [attr.aria-current]="page === currentPage ? 'page' : null"
-          >
-            <button class="page-link" (click)="goToPage(page)">
-              {{ page }}
-            </button>
-          </li>
-          }
-          @if (pages[pages.length - 1] < totalPages) {
-            @if (pages[pages.length - 1] < totalPages - 1) {
-              <li class="page-item disabled">
-                <span class="page-link">...</span>
-              </li>
-            }
-            <li class="page-item">
-              <button class="page-link" (click)="goToPage(totalPages)">
-                {{ totalPages }}
-              </button>
+          @if (pages[0] > 2) {
+            <li class="page-item disabled">
+              <span class="page-link">...</span>
             </li>
           }
-          <li class="page-item" [class.disabled]="currentPage === totalPages">
-            <button class="page-link" (click)="goToPage(currentPage + 1)">
-              &raquo;
+        }
+        @for (page of pages; track page) {
+        <li
+          class="page-item"
+          [class.active]="page === currentPage"
+          [attr.aria-current]="page === currentPage ? 'page' : null"
+        >
+          <button class="page-link" (click)="goToPage(page)">
+            {{ page }}
+          </button>
+        </li>
+        }
+        @if (pages[pages.length - 1] < totalPages) {
+          @if (pages[pages.length - 1] < totalPages - 1) {
+            <li class="page-item disabled">
+              <span class="page-link">...</span>
+            </li>
+          }
+          <li class="page-item">
+            <button class="page-link" (click)="goToPage(totalPages)">
+              {{ totalPages }}
             </button>
-          </li>
-        </ul>
-      </nav>
-    </div>
+            </li>
+        }
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="goToPage(currentPage + 1)">
+            &raquo;
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Modal para Cambiar Estado -->
   <div
     class="modal fade"
     id="modalCambiarEstado"
@@ -279,9 +264,9 @@
   >
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header bg-warning text-white">
+        <div class="modal-header bg-primary text-white">
           <h5 class="modal-title" id="modalCambiarEstadoLabel">
-            Cambiar estado del Pedido
+            Cambiar Estado del Pedido
           </h5>
           <button
             type="button"
@@ -294,7 +279,7 @@
           <p class="text-center">
             Seleccione el nuevo estado para el pedido
             <span class="fw-bold text-primary"
-              >#PED{{ pedidoSeleccionado?.idPedido }}</span
+              >#PED{{ pedidoSeleccionado?.pedido?.idPedido }}</span
             >.
           </p>
           <div class="form-group mb-3">
@@ -304,9 +289,12 @@
               id="estadoSelect"
               [(ngModel)]="estadoSeleccionado"
             >
-              <option value="pendiente">Pendiente</option>
-              <option value="completado">Completado</option>
-              <option value="cancelado">Cancelado</option>
+              <option value="PENDIENTE">Pendiente</option>
+              <option value="CONFIRMADO">Confirmado</option>
+              <option value="EN_PROCESO">En Proceso</option>
+              <option value="ENVIADO">Enviado</option>
+              <option value="ENTREGADO">Entregado</option>
+              <option value="CANCELADO">Cancelado</option>
             </select>
           </div>
         </div>
@@ -320,7 +308,7 @@
           </button>
           <button
             type="button"
-            class="btn btn-warning"
+            class="btn btn-primary"
             (click)="confirmarCambioEstado()"
           >
             Confirmar
@@ -330,138 +318,77 @@
     </div>
   </div>
 
+  <!-- Modal para Confirmar Cancelación -->
   <div
-  class="modal fade"
-  id="modalConfirmarCancelacion"
-  tabindex="-1"
-  aria-labelledby="modalConfirmarCancelacionLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="modalConfirmarCancelacionLabel">
-          Cancelar Productos del Pedido
-        </h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <p class="text-center">
-          Seleccione los productos que desea cancelar del pedido
-          <span class="fw-bold text-primary"
-            >#PED{{ pedidoSeleccionado?.idPedido }}</span
-          >
-        </p>
-        <div class="list-group">
-          @for (detalle of ListaDetallePedidoSelec.sort(sortByEstado); track
-          detalle.idDetallePedido) {
+    class="modal fade"
+    id="modalConfirmarCancelacion"
+    tabindex="-1"
+    aria-labelledby="modalConfirmarCancelacionLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="modalConfirmarCancelacionLabel">
+            Confirmar Cancelación
+          </h5>
           <button
             type="button"
-            class="list-group-item list-group-item-action"
-            [disabled]="detalle.estado === 'CANCELADO'"
-            (click)="cancelarProductoDePedido(detalle)"
-          >
-            <div class="d-flex w-100 justify-content-between">
-              <h6 class="mb-1">
-                {{ detalle.producto.nombre }}
-                <span
-                  class="badge"
-                  [ngClass]="{
-                    'bg-danger': detalle.estado === 'CANCELADO',
-                    'bg-success': detalle.estado !== 'CANCELADO'
-                  }"
-                  >{{ detalle.estado }}</span
-                >
-              </h6>
-              <small class="text-end">Cantidad: {{ detalle.cantidad }}</small>
-            </div>
-            <small>Bs {{ detalle.subtotal }}</small>
-          </button>
-          }
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-          Cerrar
-        </button>
-        <button
-          type="button"
-          class="btn btn-danger"
-          (click)="confirmarCancelacion()"
-          [disabled]="ListaProductoCancelar.length === 0"
-        >
-          Confirmar Cancelación
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-<!-- Modal para Cambiar el Estado del Pedido -->
-<div
-  class="modal fade"
-  id="modalCambiarEstado"
-  tabindex="-1"
-  aria-labelledby="modalCambiarEstadoLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="modalCambiarEstadoLabel">
-          Cambiar Estado de Pedido
-        </h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <div *ngIf="pedidoSeleccionado">
-          <p>
-            Estás a punto de cambiar el estado del pedido:
-            <strong>PED{{ pedidoSeleccionado.idPedido }}</strong
-            >.
-          </p>
-          <div class="mb-3">
-            <label for="nuevoEstado" class="form-label"
-              >Selecciona el nuevo estado:</label
-            >
-            <select
-              class="form-select"
-              id="nuevoEstado"
-              [(ngModel)]="estadoSeleccionado"
-            >
-              <option value="pendiente">Pendiente</option>
-              <option value="completado">Completado</option>
-              <option value="cancelado">Cancelado</option>
-            </select>
+        <div class="modal-body">
+          <div class="text-center">
+            <i class="bi bi-exclamation-triangle text-danger display-4 d-block mb-3"></i>
+            <h5>¿Estás seguro de cancelar este pedido?</h5>
+            <p class="mb-3">
+              Estás a punto de cancelar el pedido 
+              <strong>#PED{{ pedidoParaCancelar?.idPedido }}</strong>.
+              Esta acción no se puede deshacer.
+            </p>
+            <div class="alert alert-warning">
+              <small>
+                <i class="bi bi-info-circle"></i>
+                El pedido será marcado como cancelado y no podrá ser modificado.
+              </small>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-          Cancelar
-        </button>
-        <button
-          type="button"
-          class="btn btn-primary"
-          (click)="confirmarCambioEstado()"
-        >
-          Guardar cambios
-        </button>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Volver
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            (click)="confirmarCancelacion()"
+          >
+            Sí, Cancelar Pedido
+          </button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Modal para Detalles del Pedido -->
 <!-- Modal para Detalles del Pedido -->
 <div
   class="modal fade"
@@ -471,188 +398,186 @@
   aria-hidden="true"
 >
   <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content rounded-3 shadow-lg" *ngIf="pedidoSeleccionado">
-      <div class="modal-header bg-primary text-white rounded-top-3">
-        <h5 class="modal-title fw-bold" id="modalDetallesPedidoLabel">
-          Detalles del Pedido PED{{ pedidoSeleccionado.idPedido }}
+    <div class="modal-content rounded-4 shadow-lg modal-detalle-pedido" *ngIf="pedidoSeleccionado">
+      <div class="modal-header bg-gradient-primary text-white rounded-top-4">
+        <h5 class="modal-title fw-bold" id="modalDetallesPedidoLabel" style="color: black;">
+
+          Detalles del Pedido PED{{ pedidoSeleccionado.pedido.idPedido }}
         </h5>
         <button
           type="button"
-          class="btn-close btn-close-white"
+          class="btn-close "
           data-bs-dismiss="modal"
           aria-label="Cerrar"
         ></button>
       </div>
       <div class="modal-body p-4">
         <div class="row">
-          <div class="col-md-6 d-flex flex-column justify-content-between">
-            <div>
-              <p><strong>Usuario:</strong> {{ pedidoSeleccionado.username }}</p>
-              <p>
-                <strong>Fecha del Pedido:</strong>
-                {{ pedidoSeleccionado.fechaPedido | date : "dd MMM, yyyy" }}
-              </p>
-              <p>
-                <strong>ID Forma de Pago:</strong>
-                {{ pedidoSeleccionado.formaPago.idFormaPago }}
-              </p>
-              <p>
-                <strong>Estado:</strong>
-                <span
-                  class="badge"
-                  [ngClass]="{
-                    'bg-success': pedidoSeleccionado.estado === 'CONFIRMADO',
-                    'bg-warning text-dark':
-                      pedidoSeleccionado.estado === 'EN_PROCESO',
-                    'bg-danger': pedidoSeleccionado.estado === 'CANCELADO',
-                    
-                  }"
-                >
-                <!--'bg-danger': pedidoSeleccionado.estado === 'ENVIADO'-->
-                  {{ pedidoSeleccionado.estado }}
-                </span>
-              </p>
-            </div>
-            <div class="mt-4">
-              <p class="fw-bold fs-5 text-success">
-                Total: Bs {{ pedidoSeleccionado.totalPedido }}
-              </p>
-            </div>
-          </div>
-
-          <div class="col-md-6 border-start ps-4">
-            <h6>Productos del Pedido:</h6>
-            <div
-              *ngIf="ListaDetallePedidoSelec.length > 0; else sinProductos"
-              class="productos-container"
-            >
-              <div class="d-flex flex-column gap-3">
-                <div
-                  *ngFor="
-                    let detalle of ListaDetallePedidoSelec.sort(sortByEstado)
-                  "
-                >
-                  <div
-                    class="card h-100 shadow-sm"
-                    [ngClass]="{
-                      'card-canceled': detalle.estado === 'CANCELADO'
-                    }"
-                  >
-                    <div class="card-body">
-                      <h6 class="card-title">{{ detalle.producto.nombre }}</h6>
-                      <p class="card-text mb-1">
-                        Cantidad: <strong>{{ detalle.cantidad }}</strong>
-                      </p>
-                      <p class="card-text mb-1">
-                        Precio Unitario:
-                        <strong>Bs {{ detalle.precioUnitario }}</strong>
-                      </p>
-                      <p class="card-text fw-bold text-end mb-0">
-                        Subtotal: Bs {{ detalle.subtotal }}
-                      </p>
-                    </div>
+          <!-- Información del Pedido -->
+          <div class="col-md-5 d-flex flex-column">
+            <div class="info-pedido-card p-3 rounded-3 shadow-sm mb-4">
+              <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">
+                <i class="bi bi-info-circle me-2"></i>Información del Pedido
+              </h6>
+              <div class="d-flex flex-column gap-2">
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-person me-2 text-muted"></i>
+                  <div>
+                    <small class="text-muted">Usuario</small>
+                    <div class="fw-semibold">{{ pedidoSeleccionado.pedido.usuario.username || 'N/A' }}</div>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-calendar me-2 text-muted"></i>
+                  <div>
+                    <small class="text-muted">Fecha</small>
+                    <div class="fw-semibold">{{ pedidoSeleccionado.pedido.fechaPedido | date : "dd MMM, yyyy 'a las' HH:mm" }}</div>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-credit-card me-2 text-muted"></i>
+                  <div>
+                    <small class="text-muted">Forma de Pago</small>
+                    <div class="fw-semibold">{{ pedidoSeleccionado.pedido.formaPago.nombre || 'N/A' }}</div>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-tag me-2 text-muted"></i>
+                  <div>
+                    <small class="text-muted">Estado</small>
+                    <span
+                      class="badge fw-semibold"
+                      [ngClass]="{
+                        'bg-warning': pedidoSeleccionado.pedido.estado === 'PENDIENTE',
+                        'bg-primary': pedidoSeleccionado.pedido.estado === 'CONFIRMADO',
+                        'bg-info': pedidoSeleccionado.pedido.estado === 'EN_PROCESO',
+                        'bg-secondary': pedidoSeleccionado.pedido.estado === 'ENVIADO',
+                        'bg-success': pedidoSeleccionado.pedido.estado === 'ENTREGADO',
+                        'bg-danger': pedidoSeleccionado.pedido.estado === 'CANCELADO'
+                      }"
+                    >
+                      {{ pedidoSeleccionado.pedido.estado | lowercase | titlecase }}
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
-            <ng-template #sinProductos>
-              <p>No hay productos para mostrar.</p>
-            </ng-template>
+
+            <!-- Total del Pedido -->
+            <div class="total-pedido-card p-3 rounded-3 shadow-sm bg-light">
+              <div class="text-center">
+                <small class="text-muted d-block">TOTAL DEL PEDIDO</small>
+                <h3 class="fw-bold text-success mb-0">
+                  Bs {{ pedidoSeleccionado.pedido.totalPedido }}
+                </h3>
+              </div>
+            </div>
+          </div>
+
+          <!-- Productos del Pedido -->
+          <div class="col-md-7">
+            <div class="productos-section">
+              <h6 class="fw-bold text-primary mb-3">
+                <i class="bi bi-basket me-2"></i>Productos del Pedido
+                <span class="badge bg-primary ms-2">{{ pedidoSeleccionado.detallePedidos.length || 0 }}</span>
+              </h6>
+              
+              <div
+                *ngIf="pedidoSeleccionado.detallePedidos && pedidoSeleccionado.detallePedidos.length > 0; else sinProductos"
+                class="productos-container-custom"
+              >
+                <div class="d-flex flex-column gap-3">
+                  <div
+                    *ngFor="let detalle of pedidoSeleccionado.detallePedidos; trackBy: trackByDetalleId"
+                    class="producto-card-wrapper"
+                  >
+                    <div
+                      class="card producto-card h-100 border-0 shadow-sm"
+                      [ngClass]="{
+                        'producto-cancelado': detalle?.estado === 'CANCELADO',
+                        'producto-activo': detalle?.estado !== 'CANCELADO'
+                      }"
+                    >
+                      <div class="card-body p-3">
+                        <!-- Header del Producto -->
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                          <div class="flex-grow-1">
+                            <h6 class="card-title fw-bold mb-1 producto-nombre">
+                              {{ detalle?.producto?.nombre || 'Producto no disponible' }}
+                            </h6>
+                            <small class="text-muted">SKU: {{ detalle?.producto?.sku || 'N/A' }}</small>
+                          </div>
+                          <span 
+                            *ngIf="detalle?.estado === 'CANCELADO'" 
+                            class="badge bg-danger ms-2"
+                          >
+                            <i class="bi bi-x-circle me-1"></i>Cancelado
+                          </span>
+                          <span 
+                            *ngIf="detalle?.estado !== 'CANCELADO'" 
+                            class="badge bg-success ms-2"
+                          >
+                            <i class="bi bi-check-circle me-1"></i>Activo
+                          </span>
+                        </div>
+
+                        <!-- Detalles del Producto -->
+                        <div class="row g-2 mt-2">
+                          <div class="col-6">
+                            <div class="d-flex align-items-center">
+                              <i class="bi bi-123 me-2 text-primary"></i>
+                              <div>
+                                <small class="text-muted d-block">Cantidad</small>
+                                <strong class="text-dark">{{ detalle?.cantidad || 0 }}</strong>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-6">
+                            <div class="d-flex align-items-center">
+                              <i class="bi bi-currency-dollar me-2 text-primary"></i>
+                              <div>
+                                <small class="text-muted d-block">Precio Unit.</small>
+                                <strong class="text-dark">Bs {{ detalle?.precioUnitario || 0 }}</strong>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Subtotal -->
+                        <div class="mt-3 pt-2 border-top">
+                          <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Subtotal</small>
+                            <strong class="text-primary fs-5">
+                              Bs {{ detalle?.subtotal || 0  }}
+                            </strong>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <ng-template #sinProductos>
+                <div class="text-center py-5">
+                  <i class="bi bi-inbox display-4 text-muted mb-3"></i>
+                  <p class="text-muted mb-0">No hay productos para mostrar</p>
+                </div>
+              </ng-template>
+            </div>
           </div>
         </div>
       </div>
 
-      <div
-        class="modal-footer justify-content-center bg-light border-top-0 rounded-bottom-3"
-      >
+      <div class="modal-footer bg-light rounded-bottom-4">
         <button
           type="button"
-          class="btn btn-secondary px-4"
+          class="btn btn-outline-secondary px-4 rounded-pill"
           data-bs-dismiss="modal"
         >
-          Cerrar
+          <i class="bi bi-x-circle me-2"></i>Cerrar
         </button>
       </div>
     </div>
   </div>
-</div>
-<!-- Modal para Confirmación de Cancelación -->
-<div
-  class="modal fade"
-  id="modalConfirmarCancelacion"
-  tabindex="-1"
-  aria-labelledby="modalConfirmarCancelacionLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-3 shadow-lg">
-      <div class="modal-header bg-danger text-white rounded-top-3">
-        <h5 class="modal-title fw-bold" id="modalConfirmarCancelacionLabel">
-          Confirmar Cancelación
-        </h5>
-        <button
-          type="button"
-          class="btn-close btn-close-white"
-          data-bs-dismiss="modal"
-          aria-label="Cerrar"
-        ></button>
-      </div>
-      <div class="modal-body p-4" *ngIf="pedidoSeleccionado">
-        <p class="mb-3">
-          ¿Estás seguro de que deseas cancelar el pedido
-          <strong>PED{{ pedidoSeleccionado.idPedido }}</strong
-          >? Esta acción no se puede deshacer.
-        </p>
-        <p class="fw-bold mb-2">Productos del pedido:</p>
-        <ul class="list-group list-group-flush">
-          <li
-            class="list-group-item d-flex justify-content-between align-items-center"
-            [class.is-cancelled]="detalle.estado === 'CANCELADO'"
-            [class.border-red]="detalle.estado === 'CANCELADO'"
-            [class.border-blue]="detalle.estado !== 'CANCELADO'"
-            *ngFor="let detalle of ListaDetallePedidoSelec"
-          >
-            <div>
-              {{ detalle.producto.nombre }}
-              <span class="text-muted d-block small"
-                >Cantidad: {{ detalle.cantidad }}</span
-              >
-            </div>
-            <div class="d-flex align-items-center">
-              <span class="badge bg-secondary rounded-pill me-2"
-                >Bs {{ detalle.subtotal }}</span
-              >
-              <button
-                class="btn btn-sm btn-outline-danger"
-                [disabled]="detalle.estado === 'CANCELADO'"
-                style="border: none"
-                (click)="cancelarProductoDePedido(detalle)"
-              >
-                <img src="/icon_SaleOnline/ic--outline-cancel.svg" alt="" />
-              </button>
-            </div>
-          </li>
-        </ul>
-      </div>
-      <div
-        class="modal-footer justify-content-center bg-light border-top-0 rounded-bottom-3"
-      >
-        <button
-          type="button"
-          class="btn btn-secondary px-4"
-          data-bs-dismiss="modal"
-          (click)="restablecerListasTemporales()"
-        >
-          No, volver
-        </button>
-        <button
-          type="button"
-          class="btn btn-danger px-4"
-          (click)="confirmarCancelacion()"
-        >
-          Sí, cancelar pedido
-        </button>
-      </div>
-    </div>
   </div>
-</div>

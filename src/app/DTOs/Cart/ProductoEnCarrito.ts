@@ -1,6 +1,8 @@
 // src/app/DTOs/Carrito/ProductoEnCarritoDTO.ts
 
 import { ProductoDTO } from "../dtosBD/ProductoDTO";
+import { StockDTO } from "../Produc/StockDTO";
+
 
 export interface ProductoEnCarrito {
     idProducto: number;
@@ -26,5 +28,5 @@ export interface RawDetalleCarritoProducto {
     subtotal: string;       // Viene como string del backend
     
     // Usamos la interfaz de ProductoEnCarritoDTO aquí
-    producto: ProductoDTO; 
+    stock: StockDTO; 
 }

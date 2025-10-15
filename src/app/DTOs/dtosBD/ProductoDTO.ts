@@ -8,6 +8,7 @@ export interface ProductoDTO {
   nombre: string;
   descripcion: string;
   precio: number;
+  precioCompra: number;  // NUEVO CAMPO
   sku: string;
   codigoBarras: string;
   marca: string;

@@ -1,16 +1,14 @@
-// Si tu ProductoEnCarrito usa Decimal, asegúrate de importarlo aquí también
-// import Decimal from 'decimal.js'; // Solo si precioUnitario es de tipo Decimal
+// src/app/models/CartModel/carrito.ts
 
-import { productos } from "../ProductoStockModel/productos";
+import { DetalleCarrito } from "./DetalleCarrito";
 
-export interface carrito {
-    idCarrito?:number;
-    usernameUsuario:string;
-    cantidad: number;
-    precioUnitario: number;
-    fechaCreacion:string;
-    fechaActualizacion:string;
-    estado:boolean;
+export interface Carrito {
+    idCarrito?: number;
+    usernameUsuario: string;
+    fechaCreacion: string;
+    fechaActualizacion: string;
+    estado: boolean;
 
-    producto?:productos;
+    // Ya no tiene cantidad ni precioUnitario directo
+    detallesCarrito?: DetalleCarrito[];
 }

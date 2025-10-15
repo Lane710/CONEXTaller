@@ -1,14 +1,10 @@
-// src/app/DTOs/Cart/DetalleCarritoProducto.ts
-
-import { ProductoEnCarrito } from "../../DTOs/Cart/ProductoEnCarrito";
-import { productos } from "../ProductoStockModel/productos";
+import { StockDTO } from "../../DTOs/dtosBD/StockDTO";
 
 
 export interface DetalleCarrito {
     idDetalleCarrito?: number;
     cantidad: number;
-    precioUnitario: string; // Usa 'string' si el backend usa BigDecimal
-    subtotal?: string;       // Usa 'string' si el backend usa BigDecimal
-    // El objeto 'producto' ahora incluye la información de stock
-    producto: ProductoEnCarrito;
+    precioUnitario: string; // BigDecimal del backend como string
+    subtotal?: string;       // BigDecimal del backend como string
+    stock: StockDTO; // Ahora apunta al stock, que contiene el producto
 }

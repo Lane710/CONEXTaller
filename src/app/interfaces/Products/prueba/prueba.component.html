@@ -1,110 +1,23 @@
-<!-- src/app/prueba.component.html -->
-<div class="container mt-5">
-
-    <h2 class="mb-4 text-primary text-center">Nuestros Productos</h2>
-
-<h1 style="text-align: center; font-size: 100px;">
-    Flata hacer la interfaz Recuerda
-</h1>
-
-
-
-    <!-- Botón para abrir el modal (ejemplo) -->
-    <button type="button" class="btn btn-info mb-4" (click)="abrirModal()">
-        Abrir Modal de Ejemplo
-    </button>
-
-    <!-- Mensaje de error -->
-    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
-        {{ errorMessage }}
+<!-- Modal de éxito -->
+<div class="modal fade" id="modalExitoCategoria" tabindex="-1" aria-labelledby="modalExitoCategoriaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="modalExitoCategoriaLabel">
+          <i class="bi bi-check-circle me-2"></i> Registro Exitoso
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <i class="bi bi-check-circle-fill mb-3 d-block"></i>
+        <h4 class="mb-3">¡Perfecto!</h4>
+        <p>La operación se completó correctamente.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal" (click)="onContinuar()">
+          <i class="bi bi-check-lg me-2"></i>Continuar
+        </button>
+      </div>
     </div>
-
-    <div class="products-container">
-        @for (item of paginatedProducts; track item.idProducto) {
-            <div class="product-card">
-                <div class="product-image-wrapper">
-                    <img [src]="item.imagen || 'https://placehold.co/250x250/ffffff/000000?text=Sin+Imagen'"
-                         alt="{{item.nombre}}"
-                         class="product-image"
-                         onerror="this.onerror=null; this.src='https://placehold.co/250x250/ffffff/000000?text=Error+Imagen';" />
-                </div>
-                <div class="product-details">
-                    <h3 class="product-title">{{item.nombre}}</h3>
-                    <p class="product-description">
-                        {{item.descripcion}}
-                    </p>
-                    <div class="product-info">
-                        <span class="product-availability">
-                            <!-- Ejemplo de disponibilidad, puedes ajustar la lógica según tu 'estado' o 'cantidad' -->
-                            <ng-container *ngIf="item.estado === 1">Hay existencias</ng-container>
-                            <ng-container *ngIf="item.estado === 0">Sin stock</ng-container>
-                            <ng-container *ngIf="item.estado === 2">Solo 1 unidad ¡Apresúrate!</ng-container>
-                            <!-- Puedes añadir más lógica aquí si 'cantidad' es un campo en 'productos' -->
-                        </span>
-                        <span class="product-price">{{item.precio | currency:'Bs. ':'symbol':'1.2-2'}}</span>
-                        <span class="product-brand">Marca: {{item.marca || 'N/A'}}</span>
-                    </div>
-                    <div class="product-buttons">
-                        <button class="btn add-to-cart-btn">
-                            Añadir al carrito
-                        </button>
-                       
-                    </div>
-                </div>
-            </div>
-        }
-        @empty {
-            <div *ngIf="!errorMessage" class="col-12 text-center text-muted">
-                No hay productos disponibles.
-            </div>
-        }
-    </div>
-
-    <!-- Paginación de Bootstrap -->
-    <nav aria-label="Navegación de productos" class="mt-4">
-        <ul class="pagination justify-content-center">
-            <li class="page-item" [class.disabled]="currentPage === 1">
-                <a class="page-link" (click)="prevPage()" aria-label="Anterior">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-            <!-- Mostrar "..." si no estamos cerca del inicio -->
-            <li class="page-item disabled" *ngIf="pageNumbers[0] > 1">
-                <a class="page-link">...</a>
-            </li>
-            @for (page of pageNumbers; track page) {
-                <li class="page-item" [class.active]="currentPage === page">
-                    <a class="page-link" (click)="goToPage(page)">{{ page }}</a>
-                </li>
-            }
-            <!-- Mostrar "..." si no estamos cerca del final -->
-            <li class="page-item disabled" *ngIf="pageNumbers[pageNumbers.length - 1] < totalPages">
-                <a class="page-link">...</a>
-            </li>
-            <li class="page-item" [class.disabled]="currentPage === totalPages || totalPages === 0">
-                <a class="page-link" (click)="nextPage()" aria-label="Siguiente">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</div>
-
-<!-- Modal de Ejemplo (del código original) -->
-<div class="modal fade" id="miModal" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true" #miModal>
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="miModalLabel">Título del Modal</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Este es el contenido de tu modal de ejemplo.
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
-                <button type="button" class="btn btn-primary">Guardar cambios</button>
-            </div>
-        </div>
-    </div>
+  </div>
 </div>

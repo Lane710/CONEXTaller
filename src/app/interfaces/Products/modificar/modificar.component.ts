@@ -22,7 +22,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 // Importaciones de modelos
 import { productos } from '../../../models/ProductoStockModel/productos';
 import { stock } from '../../../models/ProductoStockModel/stock';
-import { proveedor } from '../../../models/proveedor';
+
 import { categorias } from '../../../models/ProductoStockModel/categorias';
 import { subcategoria } from '../../../models/ProductoStockModel/subcategorias';
 import { tipoPropiedad } from '../../../models/ProductoStockModel/tipoPropiedad';
@@ -41,6 +41,7 @@ import { SubcategoriaService } from '../../../services/ProductosServis/subcatego
 import { TipoPropiedadService } from '../../../services/ProductosServis/tipo-propiedad-service.service';
 import { TipoService } from '../../../services/ProductosServis/tipo.service';
 import { VariantesService } from '../../../services/ProductosServis/variantes.service';
+import { proveedores } from '../../../models/ProductoStockModel/proveedores';
 
 declare var bootstrap: any;
 
@@ -107,7 +108,7 @@ export class ModificarComponent implements OnInit, AfterViewInit {
   // ========== LISTAS DE DATOS ==========
   categorias: categorias[] = [];
   subcategorias: subcategoria[] = [];
-  proveedores: proveedor[] = [];
+  proveedores: proveedores[] = [];
 
   // ========== LISTAS FILTRADAS ==========
   subcategoriasFiltradas: subcategoria[] = [];

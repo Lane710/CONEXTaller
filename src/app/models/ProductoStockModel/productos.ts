@@ -1,6 +1,6 @@
 import { usuarios } from "../PersonModel/usuarios";
-import { proveedor } from "../proveedor";
 import { categorias } from "./categorias";
+import { proveedores } from "./proveedores";
 import { subcategoria } from "./subcategorias";
 
 export interface productos {
@@ -8,6 +8,7 @@ export interface productos {
   nombre: string;
   descripcion?: string;
   precio?: number;
+  precioCompra?: number;  // NUEVO CAMPO
   sku?: string | null;
   codigoBarras?: string | null;
   marca?: string;
@@ -23,7 +24,7 @@ export interface productos {
   // Relaciones
   categoria: categorias;
   subcategoria: subcategoria;
-  proveedor: proveedor;
+  proveedor: proveedores;
   usuarioRegistro?: usuarios;
 
   // Fechas

@@ -12,3 +12,5 @@ export interface detallePedido {
   fechaCreacion?: string;          // OffsetDateTime en Java → string ISO en TS
   fechaActualizacion?: string;     // OffsetDateTime en Java → string ISO en TS
 }
+
+              

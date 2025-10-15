@@ -121,12 +121,12 @@
             <!-- Aquí se mantienen las directivas de Angular para que el template funcione -->
             <tr *ngFor="let item of detallesCarrito">
               <td>
-                {{ item.producto.nombre }} &times; {{ item.cantidad }}
+                {{ item.stock.producto.nombre }} &times; {{ item.cantidad }}
                 <br />
                 <small class="text-success" *ngIf="item.cantidad"
                   >Hay existencias</small
                 >
-                <small class="text-danger" *ngIf="item.cantidad <= 0"
+                <small class="text-danger" *ngIf="item.cantidad"
                   >Sin existencias</small
                 >
               </td>

@@ -1,0 +1,358 @@
+<div class="container mt-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">
+        Lista de Proveedores
+      </li>
+    </ol>
+  </nav>
+
+  <h1 class="mb-4 text-center text-md-start">Lista de Proveedores</h1>
+
+  <div
+    class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3"
+  >
+    <div class="d-flex flex-wrap gap-2 flex-grow-1">
+      <div class="col-12 col-md-auto">
+        <button
+          class="btn btn-primary rounded-pill w-100"
+          (click)="navigateToRegistrar()"
+        >
+          <i class="bi bi-plus-lg me-2"></i>Registrar Proveedor
+        </button>
+      </div>
+
+      <div class="col-12 col-md flex-grow-1">
+        <div class="input-group w-100">
+          <input
+            type="text"
+            class="form-control rounded-pill-start"
+            placeholder="Buscar por empresa o contacto"
+            [(ngModel)]="searchTerm"
+            (input)="onSearchChange()"
+          />
+          <span class="input-group-text rounded-pill-end"
+            ><i class="bi bi-search"></i
+          ></span>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-auto">
+        <select
+          class="form-select rounded-pill w-100"
+          [(ngModel)]="filterStatus"
+          (ngModelChange)="onStatusChange()"
+        >
+          <option value="todos">Todos los estados</option>
+          <option value="activo">Activo</option>
+          <option value="inactivo">Inactivo</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 justify-content-end">
+      <div class="col-12 col-sm-auto">
+        <div class="dropdown w-100">
+          <button
+            class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
+            type="button"
+            data-bs-toggle="dropdown"
+          >
+            {{ sortDirection === "reciente" ? "Más Reciente" : "Más Antiguo" }}
+          </button>
+          <ul class="dropdown-menu">
+            <li>
+              <a
+                class="dropdown-item"
+                (click)="sortDirection = 'reciente'; onSortChange()"
+                >Más Reciente</a
+              >
+            </li>
+            <li>
+              <a
+                class="dropdown-item"
+                (click)="sortDirection = 'antiguo'; onSortChange()"
+                >Más Antiguo</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Empresa</th>
+              <th>Contacto</th>
+              <th>Teléfono</th>
+              <th>Email</th>
+              <th>Ciudad</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let proveedor of paginatedProveedores">
+              <td data-label="Empresa">{{ proveedor.nombreEmpresa }}</td>
+              <td data-label="Contacto">{{ proveedor.nombreContacto }}</td>
+              <td data-label="Teléfono">{{ proveedor.telefonoContacto }}</td>
+              <td data-label="Email">{{ proveedor.emailContacto }}</td>
+              <td data-label="Ciudad">{{ proveedor.ciudad }}</td>
+              <td>
+                <span
+                  class="badge"
+                  [ngClass]="{
+                    'bg-success': proveedor.estado,
+                    'bg-secondary': !proveedor.estado
+                  }"
+                >
+                  {{ proveedor.estado ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="actions-column">
+                <button
+                  class="btn btn-sm me-1"
+                  (click)="verDetalles(proveedor)"
+                  type="button"
+                  title="Ver detalles"
+                >
+                  <img
+                    src="/icon_Productos/Listar/ver_observar.svg"
+                    style="width: 30px; height: 30px; vertical-align: middle"
+                  />
+                </button>
+                <button
+                  class="btn btn-sm me-1"
+                  (click)="editarProveedor(proveedor)"
+                  type="button"
+                  title="Editar"
+                >
+                  <img
+                    src="/icon_Productos/Listar/Modificar.svg"
+                    style="width: 30px; height: 30px; vertical-align: middle"
+                  />
+                </button>
+                <button
+                  class="btn btn-sm"
+                  (click)="cambiarEstado(proveedor)"
+                  type="button"
+                  [title]="proveedor.estado ? 'Desactivar' : 'Activar'"
+                >
+                  <img
+                    [src]="proveedor.estado ? '/icon_Productos/Listar/deshabilitar.svg' : '/icon_Productos/Listar/habilitar.svg'"
+                    alt="Estado del proveedor"
+                    style="width: 30px; height: 30px; vertical-align: middle"
+                  />
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="paginatedProveedores.length === 0">
+              <td colspan="7" class="text-center py-3">
+                No hay proveedores para mostrar.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="d-flex justify-content-center align-items-center flex-wrap mt-3"
+    *ngIf="totalPages > 1"
+  >
+    <nav>
+      <ul class="pagination pagination-sm mb-0">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToPage(currentPage - 1)">
+            &laquo;
+          </button>
+        </li>
+
+        @if (pages[0] > 1) {
+          <li class="page-item">
+            <button class="page-link" (click)="goToPage(1)">1</button>
+          </li>
+          @if (pages[0] > 2) {
+            <li class="page-item disabled">
+              <span class="page-link">...</span>
+            </li>
+          }
+        }
+        @for (page of pages; track page) {
+          <li
+            class="page-item"
+            [class.active]="page === currentPage"
+            [attr.aria-current]="page === currentPage ? 'page' : null"
+          >
+            <button class="page-link" (click)="goToPage(page)">
+              {{ page }}
+            </button>
+          </li>
+        }
+        @if (pages[pages.length - 1] < totalPages) {
+          @if (pages[pages.length - 1] < totalPages - 1) {
+            <li class="page-item disabled">
+              <span class="page-link">...</span>
+            </li>
+          }
+          <li class="page-item">
+            <button class="page-link" (click)="goToPage(totalPages)">
+              {{ totalPages }}
+            </button>
+          </li>
+        }
+
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="goToPage(currentPage + 1)">
+            &raquo;
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<!-- Modal de Confirmación de Cambio de Estado -->
+<div
+  class="modal fade"
+  id="confirmarCambioEstadoModal"
+  tabindex="-1"
+  aria-labelledby="confirmarCambioEstadoModalLabel"
+  aria-hidden="true"
+  #confirmarCambioEstadoModal
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmarCambioEstadoModalLabel">
+          Confirmar Cambio de Estado
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Cerrar"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          ¿Estás seguro de que quieres
+          <strong>{{ proveedorSeleccionado?.estado ? 'desactivar' : 'activar' }}</strong>
+          al proveedor <strong>{{ proveedorSeleccionado?.nombreEmpresa }}</strong>?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="confirmarCambioEstado()"
+        >
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Detalles del Proveedor -->
+<div
+  class="modal fade"
+  id="detallesProveedorModal"
+  tabindex="-1"
+  aria-labelledby="detallesProveedorModalLabel"
+  aria-hidden="true"
+  #detallesProveedorModal
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" *ngIf="proveedorSeleccionado">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="detallesProveedorModalLabel">
+          <i class="bi bi-building me-2"></i>Detalles del Proveedor
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          aria-label="Cerrar"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <h6 class="text-muted">Información de la Empresa</h6>
+            <div class="card">
+              <div class="card-body">
+                <p><strong>Empresa:</strong> {{ proveedorSeleccionado.nombreEmpresa }}</p>
+                <p><strong>País:</strong> {{ proveedorSeleccionado.pais }}</p>
+                <p><strong>Ciudad:</strong> {{ proveedorSeleccionado.ciudad }}</p>
+                <p><strong>Fecha Registro:</strong> {{ proveedorSeleccionado.fechaRegistro | date:'dd/MM/yyyy' }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <h6 class="text-muted">Información de Contacto</h6>
+            <div class="card">
+              <div class="card-body">
+                <p><strong>Contacto:</strong> {{ proveedorSeleccionado.nombreContacto }}</p>
+                <p><strong>Teléfono:</strong> {{ proveedorSeleccionado.telefonoContacto }}</p>
+                <p><strong>Email:</strong> {{ proveedorSeleccionado.emailContacto }}</p>
+                <p>
+                  <strong>Estado:</strong>
+                  <span
+                    class="badge ms-2"
+                    [ngClass]="{
+                      'bg-success': proveedorSeleccionado.estado,
+                      'bg-secondary': !proveedorSeleccionado.estado
+                    }"
+                  >
+                    {{ proveedorSeleccionado.estado ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row" *ngIf="proveedorSeleccionado.notas">
+          <div class="col-12">
+            <h6 class="text-muted">Notas Adicionales</h6>
+            <div class="card">
+              <div class="card-body">
+                <p class="mb-0">{{ proveedorSeleccionado.notas }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Cerrar
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="editarProveedor(proveedorSeleccionado)"
+        >
+          Editar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

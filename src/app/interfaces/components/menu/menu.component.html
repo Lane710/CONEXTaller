@@ -334,7 +334,7 @@
           <li>
             <a
               class="dropdown-item"
-              routerLink="/home/listarProveedores"
+              routerLink="/home/listaProveedores"
               routerLinkActive="active"
               >Listar Proveedores</a
             >
@@ -342,7 +342,7 @@
           <li *ngIf="authService.hasRole('administrador') || authService.hasRole('duena')">
             <a
               class="dropdown-item"
-              routerLink="/proveedores/registrar"
+              routerLink="/home/registrarProveedores"
               routerLinkActive="active"
               >Registrar Proveedor</a
             >

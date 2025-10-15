@@ -7,7 +7,6 @@
   padding-bottom: 0.2rem;
   margin-bottom: 1.5rem;
 }
-
 /* Estilos para las tarjetas de producto individuales */
 .card {
   border: none;
@@ -53,7 +52,7 @@
 
 /* Botón "Añadir al carrito" o similar */
 .btn-cart {
-  background-color: #d41616;
+  
   border: none;
   font-size: 0.85rem;
   color: white;
@@ -64,9 +63,6 @@
   transition: background-color 0.3s ease;
 }
 
-.btn-cart:hover {
-  background-color: #af1212;
-}
 
 /* --- Media Queries para responsividad --- */
 

@@ -1,6 +1,8 @@
+import { usuarios } from "../PersonModel/usuarios";
+
 export interface direccionesEnvio {
   idDireccionEnvio?: number;         // Long en Java → number en TS
-  username: string;                  // Relación con Usuario (solo el username)
+  usuario?: usuarios;                  // Relación con Usuario (solo el username)
   nombreDestinatario: string;        // Obligatorio
   apellidosDestinatario: string;     // Obligatorio
   numeroTelefono?: string;           // Opcional

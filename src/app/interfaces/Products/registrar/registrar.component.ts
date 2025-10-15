@@ -22,7 +22,7 @@ import { productos } from '../../../models/ProductoStockModel/productos';
 import { StockService } from '../../../services/ProductosServis/stock.service';
 import { UsuariosService } from '../../../services/PersonServis/usuarios.service';
 import { ApiResponse } from '../../../models/api-response';
-import { proveedor } from '../../../models/proveedor';
+
 import { HttpErrorResponse } from '@angular/common/http';
 import { ProductoImagenService } from '../../../services/ProductosServis/Secundarios/producto-imagen.service';
 import { ProductosService } from '../../../services/ProductosServis/productos.service';
@@ -38,6 +38,7 @@ import { TipoService } from '../../../services/ProductosServis/tipo.service';
 import { VariantesService } from '../../../services/ProductosServis/variantes.service';
 import { tipo } from '../../../models/ProductoStockModel/tipo';
 import { variante } from '../../../models/ProductoStockModel/variante';
+import { proveedores } from '../../../models/ProductoStockModel/proveedores';
 
 // CAMBIO: Eliminar importaciones de tipo y variante si ya no se usan
 // import { tipo } from '../../../models/ProductoStockModel/tipo';
@@ -159,7 +160,7 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
   // ========== LISTAS DE DATOS ==========
   categorias: categorias[] = [];
   subcategorias: subcategoria[] = [];
-  proveedores: proveedor[] = [];
+  proveedores: proveedores[] = [];
 
   // ========== LISTAS FILTRADAS ==========
   subcategoriasFiltradas: subcategoria[] = [];
@@ -358,24 +359,32 @@ private validarFormulario(): boolean {
   }
 
   if (!this.producto.precio || this.producto.precio <= 0) {
-    errores.push('El precio debe ser mayor a 0.');
+    errores.push('El precio de venta debe ser mayor a 0.');
+  }
+
+  // NUEVO: Validación de precio de compra
+  if (this.producto.precioCompra !== undefined && this.producto.precioCompra !== null) {
+    if (this.producto.precioCompra < 0) {
+      errores.push('El precio de compra no puede ser negativo.');
+    }
+    
+    if (this.producto.precio && this.producto.precioCompra > this.producto.precio) {
+      errores.push('El precio de compra no puede ser mayor que el precio de venta.');
+    }
   }
 
   if (!this.producto.marca) {
     errores.push('La marca es obligatoria.');
   }
 
-  // CAMBIO: Validar con null en lugar de -1
   if (!this.producto.categoria?.idCategoria) {
     errores.push('Debe seleccionar una categoría.');
   }
 
-  // CAMBIO: Validar con null en lugar de -1
   if (!this.producto.subcategoria.idSubcategoria) {
     errores.push('Debe seleccionar una subcategoría.');
   }
 
-  // CAMBIO: Validar con null en lugar de -1
   if (!this.producto.proveedor.idProveedor) {
     errores.push('Debe seleccionar un proveedor.');
   }

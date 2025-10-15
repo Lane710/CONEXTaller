@@ -5,13 +5,13 @@ import {
   Renderer2,
   ElementRef,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { NgFor, NgIf } from '@angular/common';
 import { StockService } from '../../../services/ProductosServis/stock.service';
-import { StockDTO } from '../../../DTOs/Produc/StockDTO'; // ¡Asegúrate de importar StockDTO!
 import { CarritoService } from '../../../services/CartServis/carrito.service';
-import { DetalleCarritoProducto } from '../../../DTOs/Cart/DetalleCarritoProducto';
 import { DetalleCarrito } from '../../../models/CartModel/DetalleCarrito';
+import { StockDTO } from '../../../DTOs/Produc/StockDTO';
+
 declare var bootstrap: any;
 
 @Component({
@@ -19,31 +19,123 @@ declare var bootstrap: any;
   standalone: true,
   imports: [NgFor, NgIf],
   templateUrl: './inicio.component.html',
-  styleUrl: './inicio.component.css',
+  styleUrls: ['./inicio.component.css'],
 })
 export class InicioComponent implements OnInit, AfterViewInit {
-  ListadoProductos1: StockDTO[] = []; // Computadoras
-  ListadoProductos2: StockDTO[] = []; // Accesorios
-  ListadoProductos3: StockDTO[] = []; // Impresoras
-  ListadoProductos4: StockDTO[] = []; // Otros
+  // Nuevas propiedades para los nuevos servicios
+  latestProducts: StockDTO[] = [];
+  categoryProducts: { [key: string]: StockDTO[] } = {};
+  
+  // Propiedades existentes
+  ListadoProductos1: StockDTO[] = [];
+  ListadoProductos2: StockDTO[] = [];
+  ListadoProductos3: StockDTO[] = [];
+  ListadoProductos4: StockDTO[] = [];
+  
+  loading = true;
+  errorMessage: string | null = null;
   currentIndex = 0;
   intervalId: any;
   usuarioValido: boolean = false;
-  errorMessage: string | null = null; // Variable para mostrar errores al usuario
+
+  // Definir las categorías principales
+  mainCategories = [
+    { id: 1, name: 'Computadoras' },
+    { id: 2, name: 'Periféricos' },
+    { id: 3, name: 'Impresión' },
+    { id: 12, name: 'Componentes' },
+    { id: 5, name: 'Almacenamiento' }
+  ];
 
   constructor(
-    private router: Router,
-    private stockPRoductService: StockService,
+    public router: Router, // Cambiado de private a public
+    private stockService: StockService,
     private carritoService: CarritoService,
     private renderer: Renderer2,
     private el: ElementRef
   ) {}
 
   ngOnInit(): void {
-    this.ProductosConSuCategoria();
+    this.loadHomepageData();
   }
 
   ngAfterViewInit(): void {
+    this.inicializarCarousels();
+    this.enableDragScroll();
+  }
+
+  // Cambiado de private a public para poder usarlo en el template
+  loadHomepageData(): void {
+    this.loading = true;
+    this.errorMessage = null;
+
+    // Cargar productos recientes
+    this.stockService.getLatestProductsWithStock().subscribe({
+      next: (response) => {
+        console.log("Respuesta del servicio:", response)
+        if (response.data) {
+          console.log("aaaaaaaaaaaaaaa",response.data)
+          // CORRECCIÓN 1: Aplicar .slice(0, 15) para limitar los productos recientes
+          this.latestProducts = response.data.slice(0, 15).map((item: StockDTO) => ({
+            ...item,
+            anadidoAlCarrito: false
+          }));
+        }
+        this.loadCategoryProducts();
+      },
+      error: (error) => {
+        console.error('Error loading latest products:', error);
+        this.errorMessage = 'Error al cargar productos recientes';
+        this.loading = false;
+      }
+    });
+  }
+
+  private loadCategoryProducts(): void {
+    let loadedCategories = 0;
+    const totalCategories = this.mainCategories.length;
+
+    if (totalCategories === 0) {
+      this.loading = false;
+      return;
+    }
+
+    this.mainCategories.forEach(category => {
+      this.stockService.getProductsByCategory(category.id).subscribe({
+        next: (response) => {
+          if (response.data && response.data.length > 0) {
+            this.categoryProducts[category.name] = response.data
+              .slice(0, 15) // Solo primeros 5 productos
+              .map((item: StockDTO) => ({
+                ...item,
+                anadidoAlCarrito: false
+              }));
+          }
+          loadedCategories++;
+          
+          // Cuando todas las categorías se carguen, ocultar loading
+          if (loadedCategories === totalCategories) {
+            this.loading = false;
+          }
+        },
+        error: (error) => {
+          console.error(`Error loading category ${category.name}:`, error);
+          loadedCategories++;
+          if (loadedCategories === totalCategories) {
+            this.loading = false;
+          }
+        }
+      });
+    });
+  }
+
+  // Método para navegar al login - agregado
+  navigateToLogin(): void {
+    this.router.navigate(['/login']);
+  }
+
+  // Métodos existentes (se mantienen igual)
+  private inicializarCarousels(): void {
     const carousels = this.el.nativeElement.querySelectorAll(
       '.carousel-inner.draggable'
     );
@@ -53,158 +145,169 @@ export class InicioComponent implements OnInit, AfterViewInit {
       let startX: number;
       let scrollLeft: number;
 
-      // Mouse events
-      this.renderer.listen(carousel, 'mousedown', (e: MouseEvent) => {
+      const iniciarArrastre = (x: number) => {
         isDragging = true;
-        startX = e.pageX - carousel.offsetLeft;
+        startX = x - carousel.offsetLeft;
         scrollLeft = carousel.scrollLeft;
         this.renderer.addClass(carousel, 'dragging');
-      });
+      };
 
-      this.renderer.listen(carousel, 'mouseleave', () => {
+      const detenerArrastre = () => {
         isDragging = false;
         this.renderer.removeClass(carousel, 'dragging');
-      });
+      };
 
-      this.renderer.listen(carousel, 'mouseup', () => {
-        isDragging = false;
-        this.renderer.removeClass(carousel, 'dragging');
-      });
-
-      this.renderer.listen(carousel, 'mousemove', (e: MouseEvent) => {
+      const moverArrastre = (x: number) => {
         if (!isDragging) return;
-        e.preventDefault();
-        const x = e.pageX - carousel.offsetLeft;
-        const walk = (x - startX) * 2; // Multiplicador para velocidad de arrastre
-        carousel.scrollLeft = scrollLeft - walk;
-      });
-
-      // Touch events
-      this.renderer.listen(carousel, 'touchstart', (e: TouchEvent) => {
-        isDragging = true;
-        startX = e.touches[0].pageX - carousel.offsetLeft;
-        scrollLeft = carousel.scrollLeft;
-        this.renderer.addClass(carousel, 'dragging');
-      });
-
-      this.renderer.listen(carousel, 'touchend', () => {
-        isDragging = false;
-        this.renderer.removeClass(carousel, 'dragging');
-      });
-
-      this.renderer.listen(carousel, 'touchmove', (e: TouchEvent) => {
-        if (!isDragging) return;
-        e.preventDefault();
-        const x = e.touches[0].pageX - carousel.offsetLeft;
         const walk = (x - startX) * 2;
         carousel.scrollLeft = scrollLeft - walk;
-      });
+      };
+
+      // Eventos de mouse
+      this.renderer.listen(carousel, 'mousedown', (e: MouseEvent) =>
+        iniciarArrastre(e.pageX)
+      );
+      this.renderer.listen(carousel, 'mouseup', detenerArrastre);
+      this.renderer.listen(carousel, 'mouseleave', detenerArrastre);
+      this.renderer.listen(carousel, 'mousemove', (e: MouseEvent) =>
+        moverArrastre(e.pageX)
+      );
+
+      // Eventos táctiles
+      this.renderer.listen(carousel, 'touchstart', (e: TouchEvent) =>
+        iniciarArrastre(e.touches[0].pageX)
+      );
+      this.renderer.listen(carousel, 'touchend', detenerArrastre);
+      this.renderer.listen(carousel, 'touchmove', (e: TouchEvent) =>
+        moverArrastre(e.touches[0].pageX)
+      );
     });
   }
 
-  ProductosConSuCategoria() {
-  // Sección 1: Computadoras
-  this.stockPRoductService
-    .ProductoporCategoria(2, 3,0)
-    .subscribe((response) => {
-      this.ListadoProductos1 = response.data.map((item: StockDTO) => ({
-        ...item,
-        anadidoAlCarrito: false,
-      }));
-    });
-
-  // Sección 2: Pantallas e Impresión
-  this.stockPRoductService
-    .ProductoporCategoria(4, 5,0)
-    .subscribe((response) => {
-      this.ListadoProductos2 = response.data.map((item: StockDTO) => ({
-        ...item,
-        anadidoAlCarrito: false,
-      }));
-    });
-
-  // Sección 3: Periféricos y Accesorios
-  this.stockPRoductService
-    .ProductoporCategoria(1, 6,0)
-    .subscribe((response) => {
-      this.ListadoProductos3 = response.data.map((item: StockDTO) => ({
-        ...item,
-        anadidoAlCarrito: false,
-      }));
-    });
-
-  // Sección 4: Conectividad y Componentes
-  this.stockPRoductService
-    .ProductoporCategoria(7, 8,0)
-    .subscribe((response) => {
-      this.ListadoProductos4 = response.data.map((item: StockDTO) => ({
-        ...item,
-        anadidoAlCarrito: false,
-      }));
-    });
-}
   paginateProducts(items: StockDTO[], itemsPerPage: number): StockDTO[][] {
     const result: StockDTO[][] = [];
-    if (!items || items.length === 0) {
-      return result;
-    }
+    if (!items || items.length === 0) return result;
     for (let i = 0; i < items.length; i += itemsPerPage) {
       result.push(items.slice(i, i + itemsPerPage));
     }
     return result;
   }
 
-  AddProductCarrito(stockItem: StockDTO) {
+  AddProductCarrito(stockItem: StockDTO): void {
     const usuarioId = localStorage.getItem('current_username');
-    this.errorMessage = null; // Limpiamos cualquier error anterior
+    this.errorMessage = null;
 
-    if(usuarioId==null || usuarioId==undefined || usuarioId==''){
-      const modalElement = document.getElementById('modalSesionRequerida');
+    if (!usuarioId) {
+      this.mostrarModalSesionRequerida();
+      return;
+    }
 
-        if (modalElement) {
-          const modal = new bootstrap.Modal(modalElement);
-          modal.show();
+    const detalle: DetalleCarrito = {
+      stock: stockItem,
+      cantidad: 1,
+      precioUnitario: (stockItem.producto.precio ?? 0).toString(),
+      idDetalleCarrito: 0,
+      subtotal: '',
+    };
 
-          // Opcional: Manejar los botones dentro de esta misma función
-          const btnIrLogin = document.getElementById('btnIrLogin');
-          if (btnIrLogin) {
-            btnIrLogin.onclick = () => {
-              modal.hide();
-              this.router.navigate(['/login']); // Asume que tienes el Router inyectado
-            };
-          }
+    this.carritoService.agregarProductoACarrito(usuarioId, detalle).subscribe({
+      next: () => {
+        console.log('Producto agregado al carrito con éxito');
+        // Actualizar estado visual del botón
+        stockItem.anadidoAlCarrito = true;
+        setTimeout(() => {
+          stockItem.anadidoAlCarrito = false;
+        }, 2000);
+      },
+      error: (err) => {
+        console.error('Error al agregar producto al carrito:', err);
+        this.errorMessage =
+          'Hubo un problema al añadir el producto al carrito. Inténtalo de nuevo.';
+      },
+    });
+  }
 
-          const btnOkModal = document.getElementById('btnOkModal');
-          if (btnOkModal) {
-            btnOkModal.onclick = () => {
-              modal.hide();
-            };
-          }
-        }
-    }else{
-      const request: DetalleCarrito = {
-        producto: stockItem.producto,
-        cantidad: 1,
-        precioUnitario: (stockItem.producto.precio)?.toString() || '0',
-        idDetalleCarrito: 0,
-        subtotal: ''
-      };
+  private mostrarModalSesionRequerida(): void {
+    const modalElement = document.getElementById('modalSesionRequerida');
+    if (!modalElement) return;
 
-      this.carritoService.agregarProductoACarrito(usuarioId, request).subscribe({
-        next: (response) => {
-          console.log('Producto agregado al carrito con éxito:');
-          stockItem.anadidoAlCarrito = true;
-        },
-        error: (error) => {
-          console.error('Error al agregar producto al carrito:', error);
-          this.errorMessage = 'Hubo un problema al añadir el producto al carrito. Inténtalo de nuevo.';
-        },
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+
+    const btnIrLogin = document.getElementById('btnIrLogin');
+    if (btnIrLogin) btnIrLogin.onclick = () => {
+      modal.hide();
+      this.router.navigate(['/login']);
+    };
+
+    const btnOkModal = document.getElementById('btnOkModal');
+    if (btnOkModal) btnOkModal.onclick = () => modal.hide();
+  }
+
+  Details(stockItem: StockDTO): void {
+    this.router.navigate(['/home/DetailProduct', stockItem.idStock]);
+    console.log('Detalles del producto');
+  }
+
+  // En tu inicio.component.ts
+  scrollCarousel(carouselId: string, direction: number): void {
+    const carousel = document.getElementById(`carousel-${carouselId}`);
+    if (carousel) {
+      const scrollAmount = 300; // Ajusta este valor según el ancho de tus productos
+      carousel.scrollBy({
+        left: direction * scrollAmount,
+        behavior: 'smooth'
       });
     }
   }
 
-  Details(prodcut: StockDTO) {
-    this.router.navigate(['/home/DetailProduct', prodcut.idStock]);
-    console.log('Detalles del producto');
+  
+  // Opcional: Agregar soporte para arrastrar con el mouse
+  enableDragScroll(): void {
+    const carousels = document.querySelectorAll('.products-carousel');
+    
+    carousels.forEach((carousel) => {
+      // Verificar que es un HTMLElement antes de hacer el casting
+      if (!(carousel instanceof HTMLElement)) {
+        console.warn('Elemento del carrusel no es un HTMLElement');
+        return;
+      }
+
+      const htmlCarousel = carousel as HTMLElement;
+      let isDown = false;
+      let startX: number;
+      let scrollLeft: number;
+
+      const handleMouseDown = (e: MouseEvent) => {
+        isDown = true;
+        htmlCarousel.classList.add('active');
+        startX = e.pageX - htmlCarousel.offsetLeft;
+        scrollLeft = htmlCarousel.scrollLeft;
+      };
+
+      const handleMouseLeave = () => {
+        isDown = false;
+        htmlCarousel.classList.remove('active');
+      };
+
+      const handleMouseUp = () => {
+        isDown = false;
+        htmlCarousel.classList.remove('active');
+      };
+
+      const handleMouseMove = (e: MouseEvent) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - htmlCarousel.offsetLeft;
+        const walk = (x - startX) * 2;
+        htmlCarousel.scrollLeft = scrollLeft - walk;
+      };
+
+      // Agregar event listeners
+      htmlCarousel.addEventListener('mousedown', handleMouseDown);
+      htmlCarousel.addEventListener('mouseleave', handleMouseLeave);
+      htmlCarousel.addEventListener('mouseup', handleMouseUp);
+      htmlCarousel.addEventListener('mousemove', handleMouseMove);
+    });
   }
 }
