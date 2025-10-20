@@ -16,7 +16,7 @@ import { LoadingService } from '../../../services/LoadingService.service';
   imports: [
     HeaderComponent,
     MenuComponent,
-    FooterComponent,
+    //FooterComponent,
     RouterOutlet,
     CommonModule,
     SpinnerComponent

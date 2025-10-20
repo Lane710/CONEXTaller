@@ -1,0 +1,131 @@
+<!-- ===================== CONTENIDO ESPECÍFICO DE VENTAS ==================== -->
+<div class="p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">Reporte de Ventas</h4>
+        <div>
+            <button class="btn btn-primary btn-sm" (click)="aplicarFiltrosVentas()"><i class="bi bi-arrow-clockwise"></i> Actualizar</button>
+            <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-box-arrow-up-right"></i> Exportar</button>
+        </div>
+    </div>
+
+    <!-- ================ FILTROS DE BÚSQUEDA PARA VENTAS (4 FILTROS) ================ -->
+    <div class="row g-3 mb-4 p-3 border bg-light rounded align-items-end">
+        
+        <!-- Fecha Inicio -->
+        <div class="col-md">
+            <label for="fecha-inicio" class="form-label">Fecha Inicio</label>
+            <input type="date" class="form-control form-control-sm" id="fecha-inicio" 
+                   [(ngModel)]="filtrosVentas.fechaInicio" [max]="filtrosVentas.fechaFin" (change)="validarFechas()">
+        </div>
+
+        <!-- Fecha Fin -->
+        <div class="col-md">
+            <label for="fecha-fin" class="form-label">Fecha Fin</label>
+            <input type="date" class="form-control form-control-sm" id="fecha-fin" 
+                   [(ngModel)]="filtrosVentas.fechaFin" [max]="maxDate" (change)="validarFechas()">
+        </div>
+
+        <!-- Estado de Venta -->
+        <div class="col-md">
+            <label for="estado-venta" class="form-label">Estado</label>
+            <select id="estado-venta" class="form-select form-select-sm" 
+                    [(ngModel)]="filtrosVentas.estado">
+                <option selected value="">Todos...</option>
+                <option *ngFor="let estado of estadosVenta" [value]="estado.value">{{ estado.viewValue }}</option>
+            </select>
+        </div>
+
+        <!-- Forma de Pago -->
+        <div class="col-md">
+            <label for="forma-pago" class="form-label">Forma de Pago</label>
+            <select id="forma-pago" class="form-select form-select-sm" 
+                    [(ngModel)]="filtrosVentas.formaPagoId">
+                <option selected value="">Todas...</option>
+                <option *ngFor="let pago of formasDePago" [value]="pago.idFormaPago">{{ pago.nombre }}</option>
+            </select>
+        </div>
+
+        <!-- Trabajador -->
+        <div class="col-md">
+            <label for="trabajador" class="form-label">Trabajador</label>
+            <select id="trabajador" class="form-select form-select-sm" 
+                    [(ngModel)]="filtrosVentas.trabajadorUsername">
+                <option selected value="">Todos...</option>
+                <option *ngFor="let trabajador of trabajadoresVentas" [value]="trabajador.username">{{ trabajador.email }}</option>
+            </select>
+        </div>
+
+        <!-- Botón Filtrar -->
+        <div class="col-md-auto">
+            <button class="btn btn-secondary btn-sm w-100" (click)="aplicarFiltrosVentas()">Filtrar</button>
+        </div>
+    </div>
+    <!-- ============ FIN DE FILTROS DE BÚSQUEDA ============ -->
+
+    <!-- =================== SECCIÓN DE RESULTADOS =================== -->
+    
+    <div *ngIf="cargandoReporte" class="text-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-2">Generando reporte, por favor espere...</p>
+    </div>
+
+    <!-- Resultados (Tabla) -->
+    <div *ngIf="!cargandoReporte && reporteVentasAgrupado.length > 0">
+        <h5>Resultados del Reporte</h5>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-sm">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 35%;">Producto</th>
+                        <th style="width: 15%;" class="text-end">Cantidad</th>
+                        <th style="width: 25%;" class="text-end">Precio Unit.</th>
+                        <th style="width: 25%;" class="text-end">Subtotal</th>
+                    </tr>
+                </thead>
+                
+                <ng-container *ngFor="let venta of reporteVentasAgrupado">
+                    <tbody class="table-group-divider">
+                        <tr class="table-primary">
+                            <td colspan="4">
+                                <div class="d-flex justify-content-between fw-bold">
+                                    <span>Venta #{{ venta.idVenta }} - {{ venta.fechaVenta | date:'dd/MM/yyyy' }} {{ venta.horaVenta }}</span>
+                                    <span>Cliente: {{ venta.cliente }}</span>
+                                    <span>Empleado: {{ venta.empleado }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr *ngFor="let detalle of venta.detalles">
+                            <td>{{ detalle.producto }}</td>
+                            <td class="text-end">{{ detalle.cantidad }}</td>
+                            <td class="text-end">{{ detalle.precioUnitario | currency:'Bs.' }}</td>
+                            <td class="text-end">{{ detalle.subtotal | currency:'Bs.' }}</td>
+                        </tr>
+
+                        <tr class="fw-bold">
+                            <td colspan="2"></td>
+                            <td class="text-end">Total Venta:</td>
+                            <td class="text-end">{{ venta.totalNeto | currency:'Bs.' }}</td>
+                        </tr>
+                    </tbody>
+                </ng-container>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3 alert alert-success">
+            <h4 class="fw-bold mb-0">Total General de Ventas: {{ totalGeneralVentas | currency:'Bs.' }}</h4>
+        </div>
+    </div>
+
+    <!-- Mensajes sin resultados -->
+    <div *ngIf="!cargandoReporte && reporteVentasAgrupado.length === 0" class="mt-3">
+        <div *ngIf="!busquedaRealizada" class="alert alert-info" role="alert">
+            Seleccione los filtros y presione "Filtrar" para ver los resultados.
+        </div>
+        <div *ngIf="busquedaRealizada" class="alert alert-warning" role="alert">
+            No se encontraron resultados para los filtros seleccionados.
+        </div>
+    </div>
+</div>

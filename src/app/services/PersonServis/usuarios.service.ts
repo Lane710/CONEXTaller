@@ -223,4 +223,13 @@ export class UsuariosService {
         })
       );
   }
+
+  /**
+   * Obtiene la lista de usuarios con rol de Trabajador, Dueña o Administrador.
+   * Llama al endpoint GET /usuarios/findTrabajadoresParaFiltro.
+   * @returns Un Observable con la ApiResponse que contiene la lista de UsuarioFiltro.
+   */
+  findTrabajadoresParaFiltro(): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.apiUrl}findTrabajadoresParaFiltro`);
+  }
 }

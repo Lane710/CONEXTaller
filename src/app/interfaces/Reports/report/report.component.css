@@ -1,0 +1,25 @@
+ body {
+            background-color: #f8f9fa; /* Un gris muy claro para el fondo general */
+        }
+        .header-bar {
+            background-color: #f06a2e; /* Color naranja de la barra superior */
+            padding: 10px 0;
+            margin-bottom: 2rem;
+        }
+        /* Ajuste para que el contenido de los tabs tenga un borde y padding */
+        .tab-content {
+            border: 1px solid #dee2e6;
+            border-top: 0;
+            padding: 1.5rem;
+            border-radius: 0 0 0.25rem 0.25rem;
+        }
+        /* Estilo para que el tab activo se vea más integrado */
+        .nav-tabs .nav-link.active {
+            border-bottom-color: #fff;
+        }
+        
+        /* ============== NUEVO ESTILO PARA HACER LAS PESTAÑAS MÁS GRANDES ============== */
+        .nav-tabs .nav-link {
+            font-size: 1.1rem; /* Aumenta el tamaño de la letra */
+            padding: 0.8rem 1.2rem; /* Aumenta el espacio interno (alto y ancho) */
+        }
