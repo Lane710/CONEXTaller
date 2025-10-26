@@ -4,6 +4,7 @@ export interface proveedores {
   idProveedor?: number;
   nombreEmpresa?: string;
   nombreContacto?: string;
+  nombre?:string;
   emailContacto?: string;
   telefonoContacto?: string;
   ciudad?: string;

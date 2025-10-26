@@ -3,12 +3,7 @@
   <div class="card shadow p-4 mx-auto" style="max-width: 800px;">
     <h1 class="text-center mb-4 text-primary">Nuevo Usuario</h1>
 
-    <div *ngIf="errorMessage" class="alert alert-danger mb-3" role="alert">
-      {{ errorMessage }}
-    </div>
-    <div *ngIf="successMessage" class="alert alert-success mb-3" role="alert">
-      {{ successMessage }}
-    </div>
+   
 
     <form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()">
       <div class="row mb-3">
@@ -49,7 +44,9 @@
         </div>
       </div>
 
-   <div class="row mb-3">
+   
+<div class="row mb-3">
+  <!-- Campo Contraseña -->
   <div class="col-md-6">
     <label for="password" class="form-label">Contraseña <span class="text-danger">*</span></label>
     <div class="password-input-container">
@@ -61,26 +58,28 @@
         formControlName="password"
         [class.is-invalid]="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched"
       />
-      <button 
-        type="button" 
+      <button
+        type="button"
         class="password-toggle-btn"
         (click)="togglePasswordVisibility()"
         [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
       >
-        <img 
-          [src]="showPassword ? '/icon_login/mdi--eye-off-outline.svg' : '/icon_login/hugeicons--eye.svg'" 
+        <img
+          [src]="showPassword ? '/icon_login/mdi--eye-off-outline.svg' : '/icon_login/hugeicons--eye.svg'"
           [alt]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
           class="password-icon"
         />
       </button>
     </div>
-    <div *ngIf="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched" class="invalid-feedback">
+    <!-- Mensajes de error JUSTO DEBAJO del input de contraseña -->
+    <div *ngIf="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched" class="invalid-feedback d-block">
       <div *ngIf="usuarioForm.get('password')?.errors?.['required']">La contraseña es obligatoria.</div>
       <div *ngIf="usuarioForm.get('password')?.errors?.['minlength']">Mínimo 8 caracteres.</div>
-      <div *ngIf="usuarioForm.get('password')?.errors?.['pattern']">Debe contener al menos una mayúscula, una minúscula y un número.</div>
+      <div *ngIf="usuarioForm.get('password')?.errors?.['pattern']">Debe contener mayúscula, minúscula, número y símbolo.</div>
     </div>
   </div>
-  
+
+  <!-- Campo Repetir Contraseña -->
   <div class="col-md-6">
     <label for="confirmPassword" class="form-label">Repetir Contraseña <span class="text-danger">*</span></label>
     <div class="password-input-container">
@@ -90,27 +89,29 @@
         class="form-control password-input"
         placeholder="Repita su contraseña"
         formControlName="confirmPassword"
-        [class.is-invalid]="(usuarioForm.get('confirmPassword')?.invalid && usuarioForm.get('confirmPassword')?.touched) || usuarioForm.errors?.['passwordMismatch']"
+        [class.is-invalid]="(usuarioForm.get('confirmPassword')?.invalid || usuarioForm.errors?.['passwordMismatch']) && usuarioForm.get('confirmPassword')?.touched"
       />
-      <button 
-        type="button" 
+      <button
+        type="button"
         class="password-toggle-btn"
         (click)="toggleConfirmPasswordVisibility()"
         [attr.aria-label]="showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
       >
-        <img 
-          [src]="showConfirmPassword ? '/icon_login/mdi--eye-off-outline.svg' : '/icon_login/hugeicons--eye.svg'" 
+        <img
+          [src]="showConfirmPassword ? '/icon_login/mdi--eye-off-outline.svg' : '/icon_login/hugeicons--eye.svg'"
           [alt]="showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
           class="password-icon"
         />
       </button>
     </div>
-    <div *ngIf="(usuarioForm.get('confirmPassword')?.invalid && usuarioForm.get('confirmPassword')?.touched) || usuarioForm.errors?.['passwordMismatch']" class="invalid-feedback">
+    <!-- Mensajes de error JUSTO DEBAJO del input de confirmar contraseña -->
+    <div *ngIf="usuarioForm.get('confirmPassword')?.touched" class="invalid-feedback d-block">
       <div *ngIf="usuarioForm.get('confirmPassword')?.errors?.['required']">Debe confirmar la contraseña.</div>
-      <div *ngIf="usuarioForm.errors?.['passwordMismatch']">Las contraseñas no coinciden.</div>
+      <div *ngIf="usuarioForm.errors?.['passwordMismatch'] && !usuarioForm.get('confirmPassword')?.errors?.['required']">Las contraseñas no coinciden.</div>
     </div>
   </div>
 </div>
+
 
       <hr>
       <div formGroupName="persona">
@@ -286,7 +287,12 @@
         </div>
       </div>
       <hr>
-
+ <div *ngIf="errorMessage" class="alert alert-danger mb-3" role="alert">
+      {{ errorMessage }}
+    </div>
+    <div *ngIf="successMessage" class="alert alert-success mb-3" role="alert">
+      {{ successMessage }}
+    </div>
       <div class="d-flex justify-content-center gap-3 mt-4">
         <button type="submit" class="btn btn-primary btn-lg px-5" >Registrar</button>
         <button type="button" class="btn btn-secondary btn-lg px-5" (click)="goToLogin()">Cancelar</button>

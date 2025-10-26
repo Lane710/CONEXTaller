@@ -338,4 +338,15 @@ export class ListSalesComponent implements OnInit, AfterViewInit {
     this.selecVetaEstado = null;
     console.log('Modal cerrado completamente');
   }
+
+
+  //Registrar un envio nuevo
+  // Asumo que tu tipo 'ventas' tiene una propiedad 'id_venta'
+registrarEnvio(venta: ventas) {
+  console.log('Entraste a registro envio para la venta:', venta.idVenta);
+  
+  // CAMBIO AQUÍ: Usamos navigate para pasar el ID
+  // Esto creará la URL: /home/envios/registrarEnvio/123
+  this.router.navigate(['/home/envios/registrarEnvio', venta.idVenta]);
+}
 }

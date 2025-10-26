@@ -16,8 +16,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class CambioPasswordComponent implements OnInit {
 
-  passwordResetForm!: FormGroup; // Formulario para token y nueva contraseña
-  emailForReset: string | null = null; // Almacena el email recibido del componente anterior
+  passwordResetForm!: FormGroup;
+  emailForReset: string | null = null;
+  codeInputs: string[] = ['', '', '', '', '', '']; // Array para los 6 dígitos
 
   isLoading: boolean = false;
   successMessage: string | null = null;
@@ -30,43 +31,36 @@ export class CambioPasswordComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // Recupera el email del localStorage
     this.emailForReset = localStorage.getItem('resetPasswordEmail');
 
     if (!this.emailForReset) {
       this.errorMessage = 'No se encontró el correo electrónico para restablecer la contraseña. Por favor, inicia el proceso desde la página de restablecimiento.';
-      // Opcional: Redirigir al usuario a la página de solicitud de código
-      // this.router.navigate(['/verificable']);
     }
 
     this.initForm();
   }
 
-  // Inicializa el formulario con validadores para token y contraseñas
   initForm(): void {
     this.passwordResetForm = this.fb.group({
-      token: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]], // Código de 6 dígitos
+      token: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
       newPassword: ['', [
         Validators.required,
         Validators.minLength(8),
-        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]).{8,}$/) // Al menos una mayúscula, una minúscula, un número y un carácter especial
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]).{8,}$/)
       ]],
       confirmNewPassword: ['', Validators.required]
-    }, { validators: this.passwordMatchValidator() }); // Validador personalizado para coincidencia de contraseñas
+    }, { validators: this.passwordMatchValidator() });
   }
 
-  // Validador personalizado para asegurar que las contraseñas coincidan
   passwordMatchValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: boolean } | null => {
       const password = control.get('newPassword');
       const confirmPassword = control.get('confirmNewPassword');
 
-      // Solo valida si ambos campos existen y si la confirmación ha sido tocada
       if (!password || !confirmPassword || !confirmPassword.touched) {
         return null;
       }
 
-      // Si las contraseñas no coinciden, devuelve un error
       if (password.value !== confirmPassword.value) {
         return { passwordMismatch: true };
       }
@@ -74,12 +68,95 @@ export class CambioPasswordComponent implements OnInit {
     };
   }
 
+  // Métodos para manejar el código de 6 dígitos
+  onCodeInput(event: any, index: number): void {
+    const input = event.target;
+    const value = input.value;
+    
+    // Solo permitir números
+    if (!/^\d*$/.test(value)) {
+      input.value = '';
+      this.codeInputs[index] = '';
+      return;
+    }
+    
+    this.codeInputs[index] = value;
+    
+    // Mover al siguiente input si se ingresó un dígito
+    if (value && index < 5) {
+      const nextInput = document.querySelectorAll('.code-input')[index + 1] as HTMLInputElement;
+      if (nextInput) {
+        nextInput.focus();
+      }
+    }
+    
+    this.updateTokenValue();
+  }
+
+  onCodeKeyDown(event: any, index: number): void {
+    // Manejar tecla backspace
+    if (event.key === 'Backspace') {
+      if (!this.codeInputs[index] && index > 0) {
+        // Si el campo actual está vacío, borrar el anterior
+        const prevInput = document.querySelectorAll('.code-input')[index - 1] as HTMLInputElement;
+        if (prevInput) {
+          this.codeInputs[index - 1] = '';
+          prevInput.value = '';
+          prevInput.focus();
+        }
+      } else {
+        // Si hay valor, limpiar el campo actual
+        this.codeInputs[index] = '';
+      }
+      this.updateTokenValue();
+    }
+  }
+
+  onCodeFocus(event: any): void {
+    // Seleccionar todo el texto al hacer focus
+    event.target.select();
+  }
+
+  onCodePaste(event: ClipboardEvent): void {
+    event.preventDefault();
+    const pasteData = event.clipboardData?.getData('text');
+    
+    if (pasteData && /^\d{6}$/.test(pasteData)) {
+      // Pegar el código completo en los 6 campos
+      for (let i = 0; i < 6; i++) {
+        this.codeInputs[i] = pasteData[i];
+        const input = document.querySelectorAll('.code-input')[i] as HTMLInputElement;
+        if (input) {
+          input.value = pasteData[i];
+        }
+      }
+      this.updateTokenValue();
+      
+      // Mover focus al último campo
+      const lastInput = document.querySelectorAll('.code-input')[5] as HTMLInputElement;
+      if (lastInput) {
+        lastInput.focus();
+      }
+    }
+  }
+
+  updateTokenValue(): void {
+    const token = this.codeInputs.join('');
+    this.passwordResetForm.patchValue({ token });
+    
+    // Validar automáticamente
+    const tokenControl = this.passwordResetForm.get('token');
+    if (tokenControl) {
+      tokenControl.updateValueAndValidity();
+    }
+  }
+
   // Getters para acceder fácilmente a los controles del formulario en la plantilla
   get f() { return this.passwordResetForm.controls; }
-  get p() { return this.passwordResetForm.get('newPassword'); } // Para acceder a newPassword
-  get cp() { return this.passwordResetForm.get('confirmNewPassword'); } // Para acceder a confirmNewPassword
+  get p() { return this.passwordResetForm.get('newPassword'); }
+  get cp() { return this.passwordResetForm.get('confirmNewPassword'); }
 
-  // Métodos para verificar la complejidad de la contraseña (para el HTML)
+  // Métodos para verificar la complejidad de la contraseña
   get hasMinLength(): boolean { return this.p?.value?.length >= 8; }
   get hasUpperCase(): boolean { return /[A-Z]/.test(this.p?.value); }
   get hasLowerCase(): boolean { return /[a-z]/.test(this.p?.value); }
@@ -87,12 +164,11 @@ export class CambioPasswordComponent implements OnInit {
   get hasSymbol(): boolean { return /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(this.p?.value); }
   get passwordsMatch(): boolean { return this.p?.value === this.cp?.value && (this.p?.value?.length > 0 || this.cp?.value?.length > 0); }
 
-
   // Método para restablecer la contraseña
   resetPassword(): void {
     this.errorMessage = null;
     this.successMessage = null;
-    this.passwordResetForm.markAllAsTouched(); // Marca todos los campos como tocados
+    this.passwordResetForm.markAllAsTouched();
 
     // Validar el formulario antes de enviar
     if (this.passwordResetForm.invalid) {
@@ -114,12 +190,10 @@ export class CambioPasswordComponent implements OnInit {
         this.isLoading = false;
         if (response.success) {
           this.successMessage = response.message;
-          // Limpia el email del localStorage después de un restablecimiento exitoso
           localStorage.removeItem('resetPasswordEmail');
-          // Redirige al usuario a la página de login después de un éxito
           setTimeout(() => {
             this.router.navigate(['/login']);
-          }, 3000); // Redirige después de 3 segundos
+          }, 3000);
         } else {
           this.errorMessage = response.message || 'Error desconocido al restablecer la contraseña.';
         }

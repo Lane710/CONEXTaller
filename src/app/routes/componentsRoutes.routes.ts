@@ -8,6 +8,7 @@ import { ventasStore } from './ventasStore.routes';
 import { clients } from './Client/client.routes';
 import { StoreComponent } from '../interfaces/Store/store/store.component';
 import { ReporteRouter } from './Reportes.routes';
+import { EnviosRouter } from './envios.routes';
 
 
 // Importa las rutas de los otros módulos
@@ -26,5 +27,6 @@ export const componentsRoutes: Routes = [
   ...ventasOnline,
   ...ventasStore,
   ...clients,
-  ...ReporteRouter
+  ...ReporteRouter,
+  ...EnviosRouter
 ];

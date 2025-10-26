@@ -1,41 +1,41 @@
 /* src/app/components/verificable/verificable.component.css */
 
-/* Centrar el contenedor del formulario */
+/* Contenedor principal con fondo sutil */
 .contact-form-container {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    background: linear-gradient(135deg, #e0f7fa 0%, #bbdefb 100%);
+    background: linear-gradient(135deg, #f8fdff 0%, #e8f4f8 100%);
     font-family: 'Inter', sans-serif;
     padding: 20px;
     box-sizing: border-box;
 }
 
-/* Estilos de la tarjeta (card) */
+/* Tarjeta del formulario */
 .contact-form-container .card {
     width: 100%;
     max-width: 500px;
     padding: 40px 35px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(30, 128, 153, 0.15);
+    border-radius: 16px;
     background-color: #fff;
     border: none;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .contact-form-container .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(30, 128, 153, 0.2);
 }
 
 /* Título principal */
 .card-title {
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 700;
     color: #1E8099;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     text-align: center;
     position: relative;
     padding-bottom: 15px;
@@ -47,18 +47,18 @@
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 60px;
+    width: 50px;
     height: 3px;
-    background: linear-gradient(90deg, #1E8099, #007bff);
+    background: linear-gradient(90deg, #1E8099, #29aaca);
     border-radius: 2px;
 }
 
 /* Texto descriptivo */
 .text-muted {
     color: #6c757d !important;
-    font-size: 1rem;
+    font-size: 0.95rem;
     line-height: 1.5;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     text-align: center;
 }
 
@@ -67,30 +67,29 @@
     font-weight: 600;
     color: #495057;
     margin-bottom: 8px;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
 .form-control {
-    padding: 14px 16px;
+    padding: 12px 16px;
     border: 2px solid #e9ecef;
     border-radius: 10px;
     font-size: 1rem;
     color: #495057;
     background-color: #f8f9fa;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     font-family: 'Inter', sans-serif;
 }
 
 .form-control:focus {
-    border-color: #1E8099;
-    box-shadow: 0 0 0 3px rgba(30, 128, 153, 0.1);
+    border-color: #29aaca;
+    box-shadow: 0 0 0 3px rgba(41, 170, 202, 0.1);
     background-color: #ffffff;
     outline: none;
-    transform: translateY(-2px);
 }
 
 .form-control::placeholder {
-    color: #6c757d;
+    color: #adb5bd;
     font-weight: 400;
 }
 
@@ -102,104 +101,93 @@
 
 .invalid-feedback {
     color: #dc3545;
-    font-size: 0.875em;
-    margin-top: 8px;
+    font-size: 0.8rem;
+    margin-top: 6px;
     font-weight: 500;
     padding-left: 5px;
 }
 
-/* Botones */
+/* Contenedor de botones */
 .d-grid {
-    gap: 15px !important;
-    margin-top: 25px;
+    gap: 12px !important;
+    margin-top: 20px;
 }
 
+/* Botones base */
 .btn {
-    padding: 14px 20px;
+    padding: 12px 20px;
     border-radius: 10px;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: none;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
     font-family: 'Inter', sans-serif;
     position: relative;
     overflow: hidden;
 }
 
-.btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.5s;
-}
-
-.btn:hover::before {
-    left: 100%;
-}
-
-/* Botón primario */
+/* Botón primario - Solicitar Código */
 .btn-primary {
-    background: linear-gradient(135deg, #1E8099 0%, #007bff 100%);
+    background: linear-gradient(135deg, #1E8099 0%, #29aaca 100%);
     color: white;
-    box-shadow: 0 4px 15px rgba(30, 128, 153, 0.3);
+    box-shadow: 0 4px 12px rgba(41, 170, 202, 0.25);
 }
 
 .btn-primary:hover:not(:disabled) {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(30, 128, 153, 0.4);
-    background: linear-gradient(135deg, #1E8099 0%, #007bff 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(41, 170, 202, 0.35);
+    background: linear-gradient(135deg, #29aaca 0%, #1E8099 100%);
 }
 
 .btn-primary:active:not(:disabled) {
-    transform: translateY(-1px);
+    transform: translateY(0);
 }
 
 .btn-primary:disabled {
-    background: #6c757d;
+    background: #adb5bd;
     cursor: not-allowed;
     opacity: 0.7;
     box-shadow: none;
     transform: none;
 }
 
-/* Botón secundario */
+/* Botón secundario - Cancelar */
 .btn-secondary {
-    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-    color: white;
-    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+    background: transparent;
+    color: #6c757d;
+    border: 2px solid #dee2e6;
+    box-shadow: 0 2px 8px rgba(108, 117, 125, 0.1);
 }
 
 .btn-secondary:hover:not(:disabled) {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
-    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    background: #f8f9fa;
+    color: #495057;
+    border-color: #adb5bd;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.15);
 }
 
 .btn-secondary:active:not(:disabled) {
-    transform: translateY(-1px);
+    transform: translateY(0);
 }
 
 /* Alertas mejoradas */
 .alert {
-    padding: 14px 18px;
+    padding: 12px 16px;
     border-radius: 10px;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     text-align: center;
     border: 1px solid transparent;
     font-weight: 500;
     margin-bottom: 20px;
-    animation: slideIn 0.3s ease-out;
+    animation: fadeIn 0.3s ease-out;
 }
 
-@keyframes slideIn {
+@keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(-5px);
     }
     to {
         opacity: 1;
@@ -208,21 +196,21 @@
 }
 
 .alert-success {
-    background-color: #d4edda;
-    color: #155724;
-    border-color: #c3e6cb;
+    background-color: #f0f9f4;
+    color: #0f5132;
+    border-color: #badbcc;
 }
 
 .alert-danger {
-    background-color: #f8d7da;
-    color: #721c24;
-    border-color: #f5c6cb;
+    background-color: #fdf2f2;
+    color: #842029;
+    border-color: #f5c2c7;
 }
 
 .alert-info {
-    background-color: #d1ecf1;
-    color: #0c5460;
-    border-color: #bee5eb;
+    background-color: #f0f9ff;
+    color: #055160;
+    border-color: #b6d7fe;
 }
 
 /* Responsividad */
@@ -237,17 +225,21 @@
     }
     
     .card-title {
-        font-size: 1.7rem;
-        margin-bottom: 25px;
+        font-size: 1.6rem;
+        margin-bottom: 20px;
     }
     
     .btn {
-        padding: 12px 18px;
-        font-size: 1rem;
+        padding: 12px 16px;
+        font-size: 0.95rem;
     }
     
     .form-control {
-        padding: 12px 16px;
+        padding: 12px 14px;
+    }
+    
+    .text-muted {
+        font-size: 0.9rem;
     }
 }
 
@@ -257,10 +249,15 @@
     }
     
     .card-title {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
     }
     
     .text-muted {
+        font-size: 0.85rem;
+    }
+    
+    .btn {
+        padding: 10px 14px;
         font-size: 0.9rem;
     }
 }

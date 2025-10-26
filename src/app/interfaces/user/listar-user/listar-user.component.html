@@ -2,7 +2,7 @@
   <!-- Breadcrumb -->
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="#">Home</a></li>
+      <li class="breadcrumb-item"><a href="/home/Gestion">Home</a></li>
       <li class="breadcrumb-item active" aria-current="page">
         Lista de Usuarios
       </li>
@@ -120,7 +120,7 @@
           </ul>
         </div>
       </div>
-    </div>
+    </div>  
   </div>
 
   <!-- Tabla de Usuarios -->
@@ -176,31 +176,39 @@
                   {{ user.estado === 1 ? 'Activo' : 'Inactivo' }}
                 </span>
               </td>
-              <td data-label="Acciones" class="actions-column">
-                <button class="btn btn-sm me-1" (click)="verDetallesUsuario(user)">
-                  <img
-                    src="/icon_Productos/Listar/ver_observar.svg"
-                    style="width: 30px; height: 30px; vertical-align: middle"
-                  />
-                </button>
-                <button class="btn btn-sm me-1" (click)="goToModifyUser(user.username)">
-                  <img
-                    src="/icon_Productos/Listar/Modificar.svg"
-                    alt=""
-                    style="width: 30px; height: 30px; vertical-align: middle"
-                  />
-                </button>
-                <button
-                  [class]="user.estado === 1 ? 'btn btn-sm' : 'btn btn-sm'"
-                  (click)="abrirModalConfirmacionUsuario(user)"
-                >
-                  <img
-                    [src]="user.estado === 1 ? '/icon_Productos/Listar/deshabilitar.svg' : '/icon_Productos/Listar/habilitar.svg'"
-                    alt="Estado del usuario"
-                    style="width: 30px; height: 30px; vertical-align: middle"
-                  />
-                </button>
-              </td>
+             <td data-label="Acciones" class="actions-column">
+  <button class="btn btn-sm me-1" (click)="verDetallesUsuario(user)">
+    <img
+      src="/icon_Productos/Listar/ver_observar.svg"
+      style="width: 30px; height: 30px; vertical-align: middle"
+    />
+  </button>
+  <button class="btn btn-sm me-1" (click)="goToModifyUser(user.username)">
+    <img
+      src="/icon_Productos/Listar/Modificar.svg"
+      alt=""
+      style="width: 30px; height: 30px; vertical-align: middle"
+    />
+  </button>
+  <!-- Nuevo botón para cambiar rol -->
+  <button class="btn btn-sm me-1" (click)="abrirModalCambiarRol(user)">
+    <img
+      src="/userCrud/carbon--group-access.svg" 
+      alt="Cambiar rol"
+      style="width: 30px; height: 30px; vertical-align: middle"
+    />
+  </button>
+  <button
+    [class]="user.estado === 1 ? 'btn btn-sm' : 'btn btn-sm'"
+    (click)="abrirModalConfirmacionUsuario(user)"
+  >
+    <img
+      [src]="user.estado === 1 ? '/icon_Productos/Listar/deshabilitar.svg' : '/icon_Productos/Listar/habilitar.svg'"
+      alt="Estado del usuario"
+      style="width: 30px; height: 30px; vertical-align: middle"
+    />
+  </button>
+</td>
             </tr>
             }
           </tbody>
@@ -245,6 +253,141 @@
   </div>
 </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Modal para Cambiar Rol de Usuario -->
+<div
+  class="modal fade"
+  id="cambiarRolUsuarioModal"
+  tabindex="-1"
+  aria-labelledby="cambiarRolUsuarioModalLabel"
+  aria-hidden="true"
+  #cambiarRolUsuarioModal
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cambiarRolUsuarioModalLabel">Cambiar Rol de Usuario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        @if (usuarioSeleccionado) {
+          @let personaSeleccionada = getPersonaForUser(usuarioSeleccionado.persona.ci);
+          <div class="mb-3">
+            <p><strong>Usuario:</strong> {{ usuarioSeleccionado.username }}</p>
+            <p><strong>Nombre:</strong> {{ personaSeleccionada?.nombre }} {{ personaSeleccionada?.apellidop }}</p>
+            <p><strong>Rol actual:</strong> {{ usuarioSeleccionado.rol.nombreRol }}</p>
+          </div>
+          
+          <div class="form-group">
+            <label for="nuevoRol" class="form-label"><strong>Seleccionar nuevo rol:</strong></label>
+            <select class="form-select" id="nuevoRol" [(ngModel)]="nuevoRolSeleccionado">
+  <option value="">Seleccione un rol</option>
+  <option value="cliente">Cliente</option>
+  <option value="duena">Dueña</option>
+  <option value="administrador">Administrador</option>
+  <option value="trabajador">Trabajador</option>
+</select>
+
+          </div>
+
+          @if (nuevoRolSeleccionado && nuevoRolSeleccionado === usuarioSeleccionado.rol.nombreRol) {
+            <div class="alert alert-warning mt-3 mb-0">
+              <small>
+                <i class="bi bi-exclamation-triangle me-1"></i>
+                El usuario ya tiene asignado este rol.
+              </small>
+            </div>
+          }
+        } @else {
+          <p>No se ha seleccionado ningún usuario.</p>
+        }
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          (click)="confirmarCambioRol()"
+          [disabled]="!nuevoRolSeleccionado || nuevoRolSeleccionado === usuarioSeleccionado?.rol?.nombreRol"
+        >
+          Confirmar Cambio
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!-- Modal de Confirmación de Acción de Usuario -->
 <div
   class="modal fade"
@@ -279,6 +422,71 @@
     </div>
   </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Modal de Éxito para Cambio de Estado -->
+<div class="modal fade" id="modalExitoEstado" tabindex="-1" aria-labelledby="modalExitoEstadoLabel" aria-hidden="true" #modalExitoEstado>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalExitoEstadoLabel">
+          <i class="bi bi-check-circle me-2"></i>Operación Exitosa
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <i class="bi bi-check-circle-fill mb-3 d-block" style="font-size: 3rem; color: #28a745;"></i>
+        <h4 class="mb-3" style="color: #28a745;">¡Éxito!</h4>
+        <p class="mb-0" id="mensajeExitoEstado">El estado del usuario ha sido actualizado correctamente.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+          <i class="bi bi-check-lg me-2"></i>Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
 
 <!-- Modal de Mensaje General -->
 <div
@@ -333,6 +541,39 @@
     </div>
   </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <!-- Modal de Detalles del Usuario (Nuevo, basado en el de producto) -->
 <div

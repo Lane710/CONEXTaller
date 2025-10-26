@@ -178,8 +178,7 @@
                       class="badge ms-2 text-dark"
                       [ngClass]="{
                         'bg-info':
-                          envioSeleccionado.estado === 'PENDIENTE' ||
-                          envioSeleccionado.estado === 'EN_TRANSITO',
+                          envioSeleccionado.estado === 'PENDIENTE',
                         'bg-success': envioSeleccionado.estado === 'ENTREGADO',
                         'bg-danger': envioSeleccionado.estado === 'ENTREGADO'
                       }"

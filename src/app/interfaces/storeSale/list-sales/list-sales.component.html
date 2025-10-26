@@ -142,6 +142,17 @@
                     style="width: 30px; height: 30px; vertical-align: middle"
                   />
                 </button>
+
+                <button
+                  class="btn btn-sm"
+                  (click)="registrarEnvio(sale)"
+                  type="button"
+                >
+                  <img
+                    src="/icon_SaleOnline/carbon--delivery-truck.svg"
+                    style="width: 30px; height: 30px; vertical-align: middle"
+                  />
+                </button>
               </td>
             </tr>
             <tr *ngIf="paginatedVentas.length === 0">

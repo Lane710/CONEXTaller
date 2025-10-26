@@ -193,7 +193,7 @@ export class ReportePedidosComponent implements OnInit {
     this.estadosPedido = [
       { value: 'PROCESANDO', viewValue: 'Procesando' },
       { value: 'ENVIADO', viewValue: 'Enviado' },
-      { value: 'ENTREGADO', viewValue: 'Entregado' },
+      { value: 'COMPLETADA', viewValue: 'completada' },
       { value: 'CANCELADO', viewValue: 'Cancelado' }
     ];
   }

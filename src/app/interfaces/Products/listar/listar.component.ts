@@ -29,24 +29,31 @@ declare var bootstrap: any;
   styleUrls: ['./listar.component.css'],
 })
 export class ListarComponent implements OnInit, AfterViewInit {
-  stocks: stock[] = [];
-  stockSeleccionado: stock | null = null;
+  // --- Listas de Datos ---
+  stocks: stock[] = []; // Lista maestra, ordenada
+  filteredStocks: stock[] = []; // Lista filtrada
+  paginatedStocks: stock[] = []; // Lista para mostrar en la página actual
   categorias: categorias[] = [];
-
+  
+  stockSeleccionado: stock | null = null;
+  
+  // --- Estados de Carga y Error ---
   isLoading: boolean = true;
   errorMessage: string | null = null;
 
+  // --- Estados de Modales ---
   showModal: boolean = false;
   modalTitle: string = '';
   modalMessage: string = '';
   modalDetails: string[] = [];
   isSuccessModal: boolean = false;
 
-  //variable modificar stock
+  // --- Modal de Modificar Stock ---
   modStockValue: stock | null = null;
   cantidadStock: number = 1;
   private isStockModalClosing: boolean = false;
 
+  // --- Referencias a Modales de Bootstrap ---
   @ViewChild('confirmarAccionModalRef') confirmarAccionModalRef!: ElementRef;
   private confirmarAccionModal: any;
 
@@ -58,9 +65,10 @@ export class ListarComponent implements OnInit, AfterViewInit {
 
   // --- PROPIEDADES DE PAGINACIÓN ---
   currentPage: number = 1;
-  itemsPerPage: number = 7;
-  pagesToShow = 5; // Número de botones de página a mostrar
-  
+  itemsPerPage: number = 10;
+  totalPages: number = 0; // Ahora es una propiedad
+  pagesToShow = 5;
+
   // --- PROPIEDADES DE FILTRO ---
   searchText: string = '';
   filterBy: string = 'nombre';
@@ -91,14 +99,16 @@ export class ListarComponent implements OnInit, AfterViewInit {
       );
     }
 
-    // Inicializar el modal de stock
     if (this.stockModalRef) {
-      this.stockModalInstance = new bootstrap.Modal(this.stockModalRef.nativeElement);
-      
-      // Escuchar evento cuando el modal se cierra completamente
-      this.stockModalRef.nativeElement.addEventListener('hidden.bs.modal', () => {
-        this.limpiarModalStock();
-      });
+      this.stockModalInstance = new bootstrap.Modal(
+        this.stockModalRef.nativeElement
+      );
+      this.stockModalRef.nativeElement.addEventListener(
+        'hidden.bs.modal',
+        () => {
+          this.limpiarModalStock();
+        }
+      );
     }
   }
 
@@ -107,14 +117,32 @@ export class ListarComponent implements OnInit, AfterViewInit {
     this.errorMessage = null;
     this.stockService.findAll().subscribe({
       next: (response: ApiResponse) => {
-        console.log('Respuesta del servicio de stock:', response);
         if (response && response.data) {
-          this.stocks = response.data as stock[];
+          const stockData = response.data as stock[];
+
+          // 1. Ordenar la lista (del más nuevo al más viejo)
+          stockData.sort((a, b) => {
+            const dateA = a.producto?.fechaRegistro
+              ? new Date(a.producto.fechaRegistro).getTime()
+              : 0;
+            const dateB = b.producto?.fechaRegistro
+              ? new Date(b.producto.fechaRegistro).getTime()
+              : 0;
+            return dateB - dateA; // Descendente
+          });
+
+          this.stocks = stockData;
+          
+          // 2. Aplicar filtros y paginación inicial
+          this.applyFilters();
+          
           this.isLoading = false;
         } else {
           this.errorMessage =
             response.message || 'No se encontraron registros de stock.';
           this.stocks = [];
+          this.filteredStocks = [];
+          this.paginatedStocks = [];
           this.isLoading = false;
           this.showModalMessage('Información', this.errorMessage, false);
         }
@@ -123,14 +151,20 @@ export class ListarComponent implements OnInit, AfterViewInit {
         this.errorMessage =
           'Error al cargar el stock: ' + (err.message || 'Error desconocido');
         this.isLoading = false;
-        console.error('Error al obtener el stock:', err);
         this.showModalMessage('Error', this.errorMessage, false);
       },
     });
   }
 
-  get filteredAndPaginatedStocks(): stock[] {
-    let filteredList = this.stocks.filter((item) => {
+  // --- LÓGICA DE FILTRADO Y PAGINACIÓN REFACTORIZADA ---
+
+  /**
+   * Se ejecuta CADA VEZ que cambia un filtro o la búsqueda.
+   * Filtra la lista maestra, resetea la página a 1 y actualiza la vista.
+   */
+  applyFilters(): void {
+    // 1. Filtrar la lista maestra (this.stocks)
+    this.filteredStocks = this.stocks.filter((item) => {
       let matchesSearch = true;
       if (this.searchText) {
         const term = this.searchText.toLowerCase();
@@ -147,52 +181,66 @@ export class ListarComponent implements OnInit, AfterViewInit {
         }
       }
 
-      const matchesStatus = this.filterStatus === 'todos' ||
-                            (this.filterStatus === 'activo' && item.producto?.estado === 1) ||
-                            (this.filterStatus === 'inactivo' && item.producto?.estado === 0);
-      
-      const matchesCategory = this.filterCategory === 'todos' ||
-                              (item.producto?.categoria?.nombre === this.filterCategory);
+      const matchesStatus =
+        this.filterStatus === 'todos' ||
+        (this.filterStatus === 'activo' && item.producto?.estado === 1) ||
+        (this.filterStatus === 'inactivo' && item.producto?.estado === 0);
+
+      const matchesCategory =
+        this.filterCategory === 'todos' ||
+        (item.producto?.categoria?.nombre === this.filterCategory);
 
       return matchesSearch && matchesStatus && matchesCategory;
     });
 
+    // 2. Calcular el total de páginas
+    this.totalPages = Math.ceil(this.filteredStocks.length / this.itemsPerPage);
+
+    // 3. Resetear a la página 1
+    this.currentPage = 1;
+
+    // 4. Actualizar la lista paginada
+    this.updatePaginatedList();
+  }
+
+  /**
+   * "Corta" la lista filtrada (filteredStocks) para obtener
+   * solo los items de la página actual.
+   */
+  updatePaginatedList(): void {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    return filteredList.slice(startIndex, startIndex + this.itemsPerPage);
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedStocks = this.filteredStocks.slice(startIndex, endIndex);
   }
 
-  get totalPages(): number {
-    let filteredCount = this.stocks.filter((item) => {
-      let matchesSearch = true;
-      if (this.searchText) {
-        const term = this.searchText.toLowerCase();
-        switch (this.filterBy) {
-          case 'nombre':
-            matchesSearch = item.producto?.nombre?.toLowerCase().includes(term) || false;
-            break;
-          case 'marca':
-            matchesSearch = item.producto?.marca?.toLowerCase().includes(term) ?? false;
-            break;
-          case 'sku':
-            matchesSearch = item.producto?.sku?.toLowerCase().includes(term) ?? false;
-            break;
-        }
-      }
-
-      const matchesStatus = this.filterStatus === 'todos' ||
-                            (this.filterStatus === 'activo' && item.producto?.estado === 1) ||
-                            (this.filterStatus === 'inactivo' && item.producto?.estado === 0);
-      
-      const matchesCategory = this.filterCategory === 'todos' ||
-                              (item.producto?.categoria?.nombre === this.filterCategory);
-
-      return matchesSearch && matchesStatus && matchesCategory;
-    }).length;
-
-    return Math.ceil(filteredCount / this.itemsPerPage);
+  /**
+   * Se ejecuta al cambiar el texto de búsqueda o el tipo de filtro.
+   */
+  onFilterChange(): void {
+    this.applyFilters();
   }
 
-  // Lógica para generar los botones de paginación dinámicamente
+  /**
+   * Se ejecuta al escribir en la barra de búsqueda.
+   */
+  onSearchChange(): void {
+    this.applyFilters();
+  }
+
+  /**
+   * Se ejecuta al hacer clic en un número de página.
+   */
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      // Solo actualiza la paginación, NO vuelve a filtrar
+      this.updatePaginatedList();
+    }
+  }
+
+  /**
+   * Genera los números de página para mostrar en la paginación.
+   */
   getPagesArray(): number[] {
     const pages = [];
     let startPage;
@@ -221,19 +269,8 @@ export class ListarComponent implements OnInit, AfterViewInit {
     return pages;
   }
   
-  onFilterChange(): void {
-    this.currentPage = 1;
-  }
+  // --- FIN DE LA LÓGICA DE FILTRADO ---
 
-  onSearchChange(): void {
-    this.currentPage = 1;
-  }
-
-  goToPage(page: number): void {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-    }
-  }
 
   isModalDetallesProductoShown(): boolean {
     return this.modalDetallesProducto && this.modalDetallesProducto._isShown;
@@ -275,6 +312,7 @@ export class ListarComponent implements OnInit, AfterViewInit {
 
   verDetallesStock(stockItem: stock): void {
     this.stockSeleccionado = stockItem;
+    console.log('eikfujhsiepufhnsiuef', stockItem);
     this.modalDetallesProducto?.show();
   }
 
@@ -300,6 +338,7 @@ export class ListarComponent implements OnInit, AfterViewInit {
               true
             );
             this.confirmarAccionModal?.hide();
+            // Recargamos los datos para reflejar el cambio
             this.getStocks();
           } else {
             this.showModalMessage(
@@ -344,18 +383,13 @@ export class ListarComponent implements OnInit, AfterViewInit {
     this.stockSeleccionado = null;
   }
 
-  trackById(index: number, stockItem: stock): number | undefined {
-    return stockItem.idStock;
-  }
-
   // Método para abrir el modal de stock
   abrirModalStock(stock: stock): void {
     this.modStockValue = stock;
     this.cantidadStock = stock.cantidad;
     console.log('Cargar stock cantidad:', this.cantidadStock);
     console.log('Modificar stock para:', stock);
-    
-    // Usar setTimeout para asegurar que el DOM esté listo
+
     setTimeout(() => {
       if (this.stockModalInstance) {
         this.stockModalInstance.show();
@@ -366,14 +400,12 @@ export class ListarComponent implements OnInit, AfterViewInit {
   // Método para cerrar el modal de stock
   cerrarModalStock(): void {
     if (this.isStockModalClosing) return;
-    
     this.isStockModalClosing = true;
-    
+
     if (this.stockModalInstance) {
       this.stockModalInstance.hide();
     }
     
-    // Limpiar después de un tiempo
     setTimeout(() => {
       this.isStockModalClosing = false;
     }, 300);
@@ -388,38 +420,41 @@ export class ListarComponent implements OnInit, AfterViewInit {
   // Método principal para modificar stock
   ModificarStock(): void {
     if (!this.modStockValue || this.modStockValue.idStock === undefined) {
-      this.showModalMessage('Error', 'No se ha seleccionado un stock válido.', false);
+      this.showModalMessage(
+        'Error',
+        'No se ha seleccionado un stock válido.',
+        false
+      );
       return;
     }
 
-    // Validar que la cantidad esté en el rango permitido
     if (this.cantidadStock < 0 || this.cantidadStock > 150) {
-      this.showModalMessage('Error', 'La cantidad debe estar entre 0 y 150.', false);
+      this.showModalMessage(
+        'Error',
+        'La cantidad debe estar entre 0 y 150.',
+        false
+      );
       return;
     }
 
-    // Calcular la diferencia
-    const nuevoStock = this.cantidadStock - this.modStockValue.cantidad;
+    const updatedStock: stock = {
+      ...this.modStockValue,
+      cantidad: this.cantidadStock,
+    };
 
-    console.log(`Modificando stock: ID=${this.modStockValue.idStock}, Diferencia=${nuevoStock}`);
-
-    this.stockService.addorRestarStockProductos(this.modStockValue.idStock, nuevoStock)
+    this.stockService
+      .updateStock(updatedStock, this.modStockValue.idStock)
       .subscribe({
         next: (response: ApiResponse) => {
           if (response.success) {
-            // Cerrar el modal primero
             this.cerrarModalStock();
-            
-            // Mostrar mensaje de éxito
             this.showModalMessage(
               'Éxito',
               response.message || 'Stock modificado con éxito.',
               true
             );
-
-            // Actualizar la lista de stocks
+            // Recargamos los datos para reflejar el cambio
             this.getStocks();
-
           } else {
             this.showModalMessage(
               'Error',
@@ -431,11 +466,11 @@ export class ListarComponent implements OnInit, AfterViewInit {
         error: (err) => {
           console.error('Error al modificar stock:', err);
           this.showModalMessage(
-            'Error', 
-            'No se pudo modificar el stock. Por favor, intente nuevamente.', 
+            'Error',
+            'No se pudo modificar el stock. Por favor, intente nuevamente.',
             false
           );
-        }
+        },
       });
   }
 

@@ -1,10 +1,19 @@
-import { categorias } from "../../models/ProductoStockModel/categorias";
+// No necesitas importar 'categorias' en este caso
 
 export interface ProveedorDTO {
   idProveedor: number;
-  nombre: string;
-  telefono: string;
-  email: string;
-  ciudad: string;
-  categoria?: categorias;
+  nombreEmpresa: string;
+  nombreContacto?: string;
+  emailContacto?: string;
+  telefonoContacto?: string;
+  ciudad?: string;
+  pais?: string;
+  estado?: boolean;
+  fechaRegistro?: string | Date;
+  notas?: string;
+  
+  // --- Campos Aplanados (Flattened) ---
+  // En lugar del objeto 'categoria' completo
+  idCategoria?: number;
+  nombreCategoria?: string;
 }

@@ -1,21 +1,27 @@
-import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ElementRef,
+  ViewChild,
+  AfterViewInit,
+} from '@angular/core';
 import { CommonModule, NgClass, NgIf } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms'; // <-- Importa FormsModule para [(ngModel)]
+import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 
 import { usuarios } from '../../../models/PersonModel/usuarios';
 import { UsuariosService } from '../../../services/PersonServis/usuarios.service';
 import { personas } from '../../../models/PersonModel/personas';
 import { PersonasService } from '../../../services/PersonServis/personas.service';
-
+import { ApiResponse } from '../../../models/api-response';
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-listar-usuarios',
   standalone: true,
-  imports: [CommonModule, NgIf, NgClass, FormsModule], // <-- Agrega FormsModule aquí
+  imports: [CommonModule, NgIf, NgClass, FormsModule],
   templateUrl: './listar-user.component.html',
   styleUrl: './listar-user.component.css',
 })
@@ -36,13 +42,25 @@ export class ListarUserComponent implements OnInit, AfterViewInit {
   filterRole: string = 'todos';
   sortDirection: 'reciente' | 'antiguo' = 'reciente';
 
+  // Nueva propiedad para el rol seleccionado
+  nuevoRolSeleccionado: string = '';
+
   // Modal de confirmación (deshabilitar/habilitar)
-  @ViewChild('confirmarAccionUsuarioModal') confirmarAccionUsuarioModalRef!: ElementRef;
+  @ViewChild('confirmarAccionUsuarioModal')
+  confirmarAccionUsuarioModalRef!: ElementRef;
   private confirmarAccionUsuarioModal: any;
+
+  // Modal de cambiar rol
+  @ViewChild('cambiarRolUsuarioModal') cambiarRolUsuarioModalRef!: ElementRef;
+  private cambiarRolUsuarioModal: any;
 
   // Modal de detalles
   @ViewChild('modalDetallesUsuarioRef') modalDetallesUsuarioRef!: ElementRef;
   private modalDetallesUsuario: any;
+
+  // Modal de éxito para cambio de estado
+  @ViewChild('modalExitoEstado') modalExitoEstadoRef!: ElementRef;
+  private modalExitoEstado: any;
 
   // Modal de mensaje general
   showModal: boolean = false;
@@ -72,9 +90,19 @@ export class ListarUserComponent implements OnInit, AfterViewInit {
         this.confirmarAccionUsuarioModalRef.nativeElement
       );
     }
+    if (this.cambiarRolUsuarioModalRef) {
+      this.cambiarRolUsuarioModal = new bootstrap.Modal(
+        this.cambiarRolUsuarioModalRef.nativeElement
+      );
+    }
     if (this.modalDetallesUsuarioRef) {
       this.modalDetallesUsuario = new bootstrap.Modal(
         this.modalDetallesUsuarioRef.nativeElement
+      );
+    }
+    if (this.modalExitoEstadoRef) {
+      this.modalExitoEstado = new bootstrap.Modal(
+        this.modalExitoEstadoRef.nativeElement
       );
     }
   }
@@ -126,7 +154,7 @@ export class ListarUserComponent implements OnInit, AfterViewInit {
    * Aplica los filtros y el ordenamiento a la lista de usuarios.
    */
   applyFiltersAndSort(): void {
-    let tempUsers = [...this.allUsers];
+    let tempUsers = [...this.allUsers]; // Siempre empezar con TODOS los usuarios
 
     // 1. Filtrado por término de búsqueda (nombre o usuario)
     if (this.searchTerm) {
@@ -136,7 +164,9 @@ export class ListarUserComponent implements OnInit, AfterViewInit {
         const fullName = `${persona?.nombre || ''} ${
           persona?.apellidop || ''
         } ${persona?.apellidom || ''}`.toLowerCase();
-        return user.username.toLowerCase().includes(term) || fullName.includes(term);
+        return (
+          user.username.toLowerCase().includes(term) || fullName.includes(term)
+        );
       });
     }
 
@@ -148,19 +178,20 @@ export class ListarUserComponent implements OnInit, AfterViewInit {
 
     // 3. Filtrado por rol
     if (this.filterRole !== 'todos') {
-      tempUsers = tempUsers.filter((user) => user.rol.nombreRol === this.filterRole);
+      tempUsers = tempUsers.filter(
+        (user) => user.rol.nombreRol === this.filterRole
+      );
     }
 
     // 4. Ordenamiento por fecha de creación (asc o desc)
     tempUsers.sort((a, b) => {
-      // Nota: asumiendo que `fechaCreacion` existe en la interfaz `usuarios`
       const dateA = new Date(a.fechaCreacion || 0).getTime();
       const dateB = new Date(b.fechaCreacion || 0).getTime();
       return this.sortDirection === 'reciente' ? dateB - dateA : dateA - dateB;
     });
 
-    this.filteredUsers = tempUsers;
-    this.currentPage = 1; // Reiniciar paginación al cambiar los filtros
+    this.filteredUsers = tempUsers; // Actualizar la lista filtrada completa
+    this.currentPage = 1; // Reiniciar paginación
     this.calculatePagination();
   }
 
@@ -215,7 +246,11 @@ export class ListarUserComponent implements OnInit, AfterViewInit {
       localStorage.setItem('usuario_actual', username);
       this.router.navigate(['/home/rolesUsuario', username]);
     } else {
-      this.showModalMessage('Error de Navegación', 'No se proporcionó un nombre de usuario para gestionar roles.', false);
+      this.showModalMessage(
+        'Error de Navegación',
+        'No se proporcionó un nombre de usuario para gestionar roles.',
+        false
+      );
     }
   }
 
@@ -228,7 +263,11 @@ export class ListarUserComponent implements OnInit, AfterViewInit {
       localStorage.setItem('ModUser', username);
       this.router.navigate(['/home/modificarUser']);
     } else {
-      this.showModalMessage('Error de Navegación', 'No se proporcionó un nombre de usuario para modificar.', false);
+      this.showModalMessage(
+        'Error de Navegación',
+        'No se proporcionó un nombre de usuario para modificar.',
+        false
+      );
     }
   }
 
@@ -250,22 +289,176 @@ export class ListarUserComponent implements OnInit, AfterViewInit {
       const estadoActual = this.usuarioSeleccionado.estado;
 
       this.usuariosService.toggleUserStatus(usernameToToggle).subscribe({
-        next: (response) => {
+        next: (response: ApiResponse) => {
           if (response.success) {
+            // Cerrar modal de confirmación
             this.confirmarAccionUsuarioModal?.hide();
-            this.loadAllData();
-            this.showModalMessage('Éxito', response.message || 'Estado del usuario cambiado con éxito.', true);
+
+            // Mostrar modal de éxito
+            this.mostrarModalExito(estadoActual || 0, 'estado');
+
+            // Actualizar el estado local del usuario
+            this.usuarioSeleccionado!.estado = estadoActual === 1 ? 0 : 1;
+
+            // Actualizar la lista filtrada
+            this.actualizarListaUsuarios();
           } else {
-            this.showModalMessage('Error', response.message || 'Error al cambiar el estado del usuario.', false);
+            this.showModalMessage(
+              'Error',
+              response.message || 'Error al cambiar el estado del usuario.',
+              false
+            );
           }
         },
         error: (err) => {
-          this.showModalMessage('Error de Conexión', 'Error de comunicación al cambiar el estado del usuario.', false, [err.message || 'Error desconocido']);
+          this.showModalMessage(
+            'Error de Conexión',
+            'Error de comunicación al cambiar el estado del usuario.',
+            false,
+            [err.message || 'Error desconocido']
+          );
         },
       });
     } else {
-      this.showModalMessage('Advertencia', 'No se ha seleccionado ningún usuario para la acción de confirmación.', false);
+      this.showModalMessage(
+        'Advertencia',
+        'No se ha seleccionado ningún usuario para la acción de confirmación.',
+        false
+      );
     }
+  }
+
+  // ===== NUEVOS MÉTODOS PARA CAMBIAR ROL =====
+
+  /**
+   * Abre el modal para cambiar el rol del usuario
+   * @param user El usuario seleccionado
+   */
+  abrirModalCambiarRol(user: usuarios): void {
+    this.usuarioSeleccionado = user;
+    this.nuevoRolSeleccionado = '';
+    this.cambiarRolUsuarioModal?.show();
+  }
+
+  /**
+   * Confirma el cambio de rol del usuario
+   */ // En tu listar-user.component.ts
+  confirmarCambioRol(): void {
+    if (!this.usuarioSeleccionado || !this.nuevoRolSeleccionado) {
+      this.showModalMessage(
+        'Advertencia',
+        'Debe seleccionar un nuevo rol para continuar.',
+        false
+      );
+      return;
+    }
+
+    const username = this.usuarioSeleccionado.username;
+    let newRoleId: number;
+
+    // 🔄 Convertir el nombre del rol seleccionado a su ID
+    switch (this.nuevoRolSeleccionado.toLowerCase()) {
+      case 'cliente':
+        newRoleId = 1;
+        break;
+      case 'duena':
+      case 'dueña':
+        newRoleId = 2;
+        break;
+      case 'administrador':
+        newRoleId = 3;
+        break;
+      case 'trabajador':
+        newRoleId = 4;
+        break;
+      default:
+        this.showModalMessage('Error', 'Rol seleccionado no válido.', false);
+        return;
+    }
+
+    // 🚀 Llamar al servicio de actualización
+    this.usuariosService.updateUserRole(username, newRoleId).subscribe({
+      next: (response: ApiResponse) => {
+        if (response.success) {
+          // Cerrar el modal
+          this.cambiarRolUsuarioModal?.hide();
+
+          // Mostrar mensaje de éxito
+          this.mostrarModalExito(0, 'rol');
+
+          // 🧭 Actualizar los datos del usuario localmente
+          this.usuarioSeleccionado!.rol.idRol = newRoleId;
+          this.usuarioSeleccionado!.rol.nombreRol = this.nuevoRolSeleccionado;
+
+          // Limpiar selección
+          this.nuevoRolSeleccionado = '';
+          this.usuarioSeleccionado = null;
+
+          // Refrescar la lista
+          this.actualizarListaUsuarios();
+        } else {
+          this.showModalMessage(
+            'Error',
+            response.message || 'Error al cambiar el rol del usuario.',
+            false
+          );
+        }
+      },
+      error: (err) => {
+        console.error('Error al cambiar el rol:', err);
+        this.showModalMessage(
+          'Error de Conexión',
+          'No se pudo comunicar con el servidor para cambiar el rol del usuario.',
+          false,
+          [err.message || 'Error desconocido']
+        );
+      },
+    });
+  }
+
+  /**
+   * Muestra el modal de éxito con mensaje personalizado.
+   * @param estadoAnterior El estado anterior del usuario (1 para activo, 0 para inactivo) - solo para cambios de estado
+   * @param tipo El tipo de operación: 'estado' o 'rol'
+   */ /**
+   * Muestra el modal de éxito con mensaje personalizado.
+   * @param estadoAnterior El estado anterior del usuario (1 para activo, 0 para inactivo) - solo para cambios de estado
+   * @param tipo El tipo de operación: 'estado' o 'rol'
+   */
+  mostrarModalExito(estadoAnterior: number, tipo: 'estado' | 'rol'): void {
+    if (this.usuarioSeleccionado) {
+      let mensaje = '';
+      const persona = this.getPersonaForUser(
+        this.usuarioSeleccionado.persona.ci
+      );
+      const nombreCompleto = persona
+        ? `${persona.nombre} ${persona.apellidop}`
+        : this.usuarioSeleccionado.username;
+
+      if (tipo === 'estado') {
+        const accion = estadoAnterior === 1 ? 'deshabilitado' : 'habilitado';
+        mensaje = `El usuario <strong>${nombreCompleto}</strong> ha sido ${accion} correctamente.`;
+      } else if (tipo === 'rol') {
+        mensaje = `El rol del usuario <strong>${nombreCompleto}</strong> ha sido cambiado a <strong>${this.nuevoRolSeleccionado}</strong> correctamente.`;
+      }
+
+      // Actualizar el mensaje en el modal
+      const mensajeElement = document.getElementById('mensajeExitoEstado');
+      if (mensajeElement) {
+        mensajeElement.innerHTML = mensaje;
+      }
+    }
+
+    // Mostrar el modal de éxito
+    this.modalExitoEstado?.show();
+  }
+
+  /**
+   * Actualiza la lista de usuarios después de un cambio.
+   */
+  actualizarListaUsuarios(): void {
+    // Forzar la actualización de la vista
+    this.applyFiltersAndSort();
   }
 
   /**
@@ -287,7 +480,12 @@ export class ListarUserComponent implements OnInit, AfterViewInit {
   /**
    * Muestra un modal de mensaje general.
    */
-  showModalMessage(title: string, message: string, isSuccess: boolean, details: string[] = []): void {
+  showModalMessage(
+    title: string,
+    message: string,
+    isSuccess: boolean,
+    details: string[] = []
+  ): void {
     this.modalTitle = title;
     this.modalMessage = message;
     this.isSuccessModal = isSuccess;
@@ -302,6 +500,4 @@ export class ListarUserComponent implements OnInit, AfterViewInit {
     this.showModal = false;
     this.modalDetails = [];
   }
-
-  
 }

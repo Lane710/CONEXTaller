@@ -86,6 +86,25 @@ export class UsuariosService {
     );
   }
 
+  // NUEVO MÉTODO PARA CAMBIAR ROL POR NOMBRE
+  cambiarRolUsuario(username: string, nuevoRol: string): Observable<ApiResponse> {
+    const requestBody = { rol: nuevoRol };
+    return this.http.put<ApiResponse>(
+      `${this.apiUrl}${username}/rol`,
+      requestBody
+    ).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al cambiar el rol del usuario:', error);
+        return of({
+          success: false,
+          message: error.error?.message || 'Error al cambiar el rol del usuario',
+          data: null,
+          httpStatusCode: error.status || 500,
+        } as ApiResponse);
+      })
+    );
+  }
+
   verifyEmailAndPhone(
     email: string,
     telefono: string

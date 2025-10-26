@@ -9,7 +9,7 @@ import { authGuard } from '../guards/auth.guard';
 export const ventasOnline: Routes = [
   { path: 'datosCliente', component: DatosClienteComponent, canActivate:[authGuard] },
   //direcciones para modulo envios
-  { path: 'envios/listado', component: ListEnviosComponent, canActivate:[authGuard]},
+  
   //redireccion a la pagina de pago QR
   { path: 'pedidoOnline/pagoQR', component: PagoQRComponent, canActivate:[authGuard]},
   //listado de pedidos de la tienda online

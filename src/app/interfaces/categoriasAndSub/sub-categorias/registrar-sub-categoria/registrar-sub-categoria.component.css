@@ -596,3 +596,222 @@
     width: 100%;
   }
 }
+
+
+
+/* Estilos simplificados para modales de éxito y error */
+
+/* Modal de Éxito - Versión Simple */
+#modalExito .modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+#modalExito .modal-header {
+  background: #28a745;
+  border-bottom: none;
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px 12px 0 0;
+}
+
+#modalExito .modal-title {
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+#modalExito .btn-close {
+  filter: invert(1);
+  opacity: 0.8;
+}
+
+#modalExito .modal-body {
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+#modalExito .bi-check-circle-fill {
+  font-size: 3rem;
+  color: #28a745;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+#modalExito h4 {
+  color: #28a745;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+}
+
+#modalExito p {
+  color: #6c757d;
+  margin-bottom: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+#modalExito .modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+  justify-content: center;
+}
+
+#modalExito .btn-success {
+  background: #28a745;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 2rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+#modalExito .btn-success:hover {
+  background: #218838;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+/* Modal de Error - Versión Simple */
+#modalError .modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+#modalError .modal-header {
+  background: #dc3545;
+  border-bottom: none;
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px 12px 0 0;
+}
+
+#modalError .modal-title {
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+#modalError .btn-close {
+  filter: invert(1);
+  opacity: 0.8;
+}
+
+#modalError .modal-body {
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+#modalError .bi-exclamation-triangle-fill {
+  font-size: 3rem;
+  color: #dc3545;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+#modalError h4 {
+  color: #dc3545;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+}
+
+#modalError p {
+  color: #6c757d;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+#modalError .error-details {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  border-left: 4px solid #dc3545;
+}
+
+#modalError .error-details ul {
+  margin-bottom: 0;
+  padding-left: 1rem;
+}
+
+#modalError .error-details li {
+  color: #495057;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+#modalError .modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+#modalError .btn-error {
+  background: #dc3545;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+#modalError .btn-error:hover {
+  background: #c82333;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+#modalError .btn-outline-error {
+  border: 2px solid #dc3545;
+  background: transparent;
+  color: #dc3545;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+#modalError .btn-outline-error:hover {
+  background: #dc3545;
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Animaciones suaves para ambos modales */
+.modal.fade .modal-dialog {
+  transform: translateY(-25px);
+  transition: transform 0.3s ease-out;
+}
+
+.modal.show .modal-dialog {
+  transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  #modalExito .modal-body,
+  #modalError .modal-body {
+    padding: 1.5rem 1rem;
+  }
+  
+  #modalExito .modal-footer,
+  #modalError .modal-footer {
+    padding: 1rem;
+  }
+  
+  #modalExito .btn-success,
+  #modalError .btn-error,
+  #modalError .btn-outline-error {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  
+  #modalError .modal-footer {
+    flex-direction: column;
+  }
+}

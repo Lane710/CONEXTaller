@@ -96,19 +96,11 @@
           <li>
             <a
               class="dropdown-item"
-              routerLink="/home/envios/listado"
+              routerLink="/home/envios/list-envios"
               routerLinkActive="active"
               >Listar Envío</a
             >
-          </li>
-          <li>
-            <a
-              class="dropdown-item"
-              routerLink="/envios/rastrear"
-              routerLinkActive="active"
-              >Registar envío</a
-            >
-          </li>
+          </li> 
         </ul>
       </li>
 
@@ -142,41 +134,6 @@
               routerLink="/pedidos/crear"
               routerLinkActive="active"
               >Crear Pedido</a
-            >
-          </li>
-        </ul>
-      </li>
-
-      <li
-        class="nav-item-sidebar dropdown"
-        *ngIf="authService.hasRole('administrador') || authService.hasRole('duena') || authService.hasRole('proveedor')"
-      >
-        <a
-          class="nav-link-sidebar dropdown-toggle"
-          href="#"
-          id="comprasDropdown"
-          role="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          <span class="icon">🛒</span>
-          <span class="text">Gestionar Compras</span>
-        </a>
-        <ul class="dropdown-menu" aria-labelledby="comprasDropdown">
-          <li>
-            <a
-              class="dropdown-item"
-              routerLink="/compras/realizar"
-              routerLinkActive="active"
-              >Realizar Compra</a
-            >
-          </li>
-          <li>
-            <a
-              class="dropdown-item"
-              routerLink="/compras/historial"
-              routerLinkActive="active"
-              >Historial de Compras</a
             >
           </li>
         </ul>

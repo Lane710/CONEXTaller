@@ -192,24 +192,56 @@
 
 
 <!-- Modal de éxito -->
-<!-- Modal de éxito mejorado -->
+<!-- Modal de Éxito Simplificado -->
 <div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-center">
+    <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title text-white" id="modalExitoLabel">
+        <h5 class="modal-title" id="modalExitoLabel">
           <i class="bi bi-check-circle me-2"></i>Registro Exitoso
         </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <i class="bi bi-check-circle-fill mb-3 d-block"></i>
-        <h4 class="mb-3" style="color: #28a745;">¡Perfecto!</h4>
+        <h4 class="mb-3">¡Perfecto!</h4>
         <p class="mb-0">La subcategoría fue registrada correctamente en el sistema.</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-success" data-bs-dismiss="modal" (click)="redireccionar()">
           <i class="bi bi-check-lg me-2"></i>Continuar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Error Simplificado -->
+<div class="modal fade" id="modalError" tabindex="-1" aria-labelledby="modalErrorLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalErrorLabel">
+          <i class="bi bi-exclamation-triangle me-2"></i>Error en el Sistema
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <i class="bi bi-exclamation-triangle-fill mb-3 d-block"></i>
+        <h4 class="mb-3">¡Algo salió mal!</h4>
+        <p class="mb-4">No pudimos procesar tu solicitud en este momento. Por favor, inténtalo de nuevo más tarde.</p>
+        
+        <div class="error-details">
+          <p class="small mb-1"><strong>Posibles causas:</strong></p>
+          <ul class="small mb-0">
+            <li>Problemas temporales del servidor</li>
+            <li>Error de conexión a la base de datos</li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-error" data-bs-dismiss="modal">
+          <i class="bi bi-clock me-2"></i>Intentar más tarde
         </button>
       </div>
     </div>

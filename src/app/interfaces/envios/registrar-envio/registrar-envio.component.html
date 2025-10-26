@@ -1,0 +1,231 @@
+<div class="container my-5">
+  <div class="card shadow p-4 mx-auto" style="max-width: 900px">
+    <h1 class="text-center mb-4 text-primary">
+      <i class="bi bi-truck me-2"></i>
+      Registrar Envío para {{ origenEnvio || '...' }}
+      <span *ngIf="idOrigen">#{{ idOrigen }}</span>
+    </h1>
+
+    <div *ngIf="isLoading" class="alert alert-info text-center" role="alert">
+      <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+      Registrando envío...
+    </div>
+
+    <div *ngIf="!idOrigen && !isLoading" class="alert alert-danger text-center" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i> No se pudo identificar el origen del envío. No se puede continuar.
+    </div>
+
+    <form (ngSubmit)="onSubmit(envioForm)" #envioForm="ngForm" *ngIf="idOrigen">
+      
+      <!-- Información del Receptor -->
+      <fieldset class="border p-3 mb-4 rounded shadow-sm">
+        <legend class="float-none w-auto px-2 text-secondary h5">
+          <i class="bi bi-person-fill me-2"></i>Información del Receptor
+        </legend>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="nombreReceptor" class="form-label">Nombre(s) <span class="text-danger">*</span></label>
+            <input type="text" id="nombreReceptor" class="form-control" placeholder="Ej: Juan"
+                   [(ngModel)]="envio.nombreReceptor" name="nombreReceptor" required minlength="2" maxlength="100"
+                   #nombreReceptorField="ngModel"
+                   [class.is-invalid]="nombreReceptorField.invalid && (nombreReceptorField.dirty || nombreReceptorField.touched)">
+            <div *ngIf="nombreReceptorField.invalid && (nombreReceptorField.dirty || nombreReceptorField.touched)" class="invalid-feedback">
+              <div *ngIf="nombreReceptorField.errors?.['required']">El nombre es obligatorio.</div>
+              <div *ngIf="nombreReceptorField.errors?.['minlength']">Mínimo 2 caracteres.</div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label for="apellidosReceptor" class="form-label">Apellidos <span class="text-danger">*</span></label>
+            <input type="text" id="apellidosReceptor" class="form-control" placeholder="Ej: Pérez García"
+                   [(ngModel)]="envio.apellidosReceptor" name="apellidosReceptor" required minlength="2" maxlength="100"
+                   #apellidosReceptorField="ngModel"
+                   [class.is-invalid]="apellidosReceptorField.invalid && (apellidosReceptorField.dirty || apellidosReceptorField.touched)">
+            <div *ngIf="apellidosReceptorField.invalid && (apellidosReceptorField.dirty || apellidosReceptorField.touched)" class="invalid-feedback">
+              <div *ngIf="apellidosReceptorField.errors?.['required']">Los apellidos son obligatorios.</div>
+              <div *ngIf="apellidosReceptorField.errors?.['minlength']">Mínimo 2 caracteres.</div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label for="telefonoReceptor" class="form-label">Teléfono / Celular <span class="text-danger">*</span></label>
+            <input type="tel" id="telefonoReceptor" class="form-control" placeholder="Ej: 71234567"
+                   [(ngModel)]="envio.telefonoReceptor" name="telefonoReceptor" required
+                   pattern="[67][0-9]{7}"
+                   #telefonoReceptorField="ngModel"
+                   [class.is-invalid]="telefonoReceptorField.invalid && (telefonoReceptorField.dirty || telefonoReceptorField.touched)">
+            <div *ngIf="telefonoReceptorField.invalid && (telefonoReceptorField.dirty || telefonoReceptorField.touched)" class="invalid-feedback">
+                <div *ngIf="telefonoReceptorField.errors?.['required']">El teléfono es obligatorio.</div>
+                <div *ngIf="telefonoReceptorField.errors?.['pattern']">Debe ser un número de 8 dígitos que empiece con 6 o 7.</div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label for="emailReceptor" class="form-label">Email <span class="text-muted">(Opcional)</span></label>
+            <input type="email" id="emailReceptor" class="form-control" placeholder="usuario@gmail.com"
+                   [(ngModel)]="envio.emailReceptor" name="emailReceptor" maxlength="255"
+                   pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$"
+                   #emailReceptorField="ngModel"
+                   [class.is-invalid]="emailReceptorField.invalid && (emailReceptorField.dirty || emailReceptorField.touched)">
+            <div *ngIf="emailReceptorField.invalid && (emailReceptorField.dirty || emailReceptorField.touched)" class="invalid-feedback">
+                <div *ngIf="emailReceptorField.errors?.['pattern']">El email debe ser una dirección de &#64;gmail.com.</div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Dirección de Envío -->
+      <fieldset class="border p-3 mb-4 rounded shadow-sm">
+        <legend class="float-none w-auto px-2 text-secondary h5">
+          <i class="bi bi-geo-alt-fill me-2"></i>Dirección de Envío
+        </legend>
+        <div class="row g-3">
+          <div class="col-12">
+            <label for="direccion" class="form-label">Dirección <span class="text-danger">*</span></label>
+            <input type="text" id="direccion" class="form-control" placeholder="Ej: Calle Ingavi #555, entre Sucre y Bolívar"
+                   [(ngModel)]="envio.direccionEnvio!.direccion" name="direccion" required maxlength="255"
+                   #direccionField="ngModel"
+                   [class.is-invalid]="direccionField.invalid && (direccionField.dirty || direccionField.touched)">
+            <div *ngIf="direccionField.invalid && (direccionField.dirty || direccionField.touched)" class="invalid-feedback">
+              <div *ngIf="direccionField.errors?.['required']">La dirección es obligatoria.</div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label for="barrio" class="form-label">Barrio/Zona <span class="text-danger">*</span></label>
+            <input type="text" id="barrio" class="form-control" placeholder="Ej: Barrio San Roque"
+                   [(ngModel)]="envio.direccionEnvio!.barrio" name="barrio" required maxlength="100"
+                   #barrioField="ngModel"
+                   [class.is-invalid]="barrioField.invalid && (barrioField.dirty || barrioField.touched)">
+            <div *ngIf="barrioField.invalid && (barrioField.dirty || barrioField.touched)" class="invalid-feedback">
+              <div *ngIf="barrioField.errors?.['required']">El barrio/zona es obligatorio.</div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label for="ciudad" class="form-label">Ciudad / Provincia <span class="text-danger">*</span></label>
+            <select id="ciudad" class="form-select"
+                    [(ngModel)]="envio.direccionEnvio!.ciudad" name="ciudad" required
+                    #ciudadField="ngModel"
+                    [class.is-invalid]="ciudadField.invalid && (ciudadField.dirty || ciudadField.touched)">
+              <option value="" disabled selected>Seleccione una opción...</option>
+              <option *ngFor="let ciudad of ciudadesTarija" [value]="ciudad">{{ ciudad }}</option>
+            </select>
+            <div *ngIf="ciudadField.invalid && (ciudadField.dirty || ciudadField.touched)" class="invalid-feedback">
+              <div *ngIf="ciudadField.errors?.['required']">Debe seleccionar una ciudad/provincia.</div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label for="provinciaEstado" class="form-label">Departamento</label>
+            <input type="text" id="provinciaEstado" class="form-control"
+                   [(ngModel)]="envio.direccionEnvio!.provinciaEstado" name="provinciaEstado"
+                   [readonly]="true">
+          </div>
+
+          <div class="col-md-6">
+            <label for="codigoPostal" class="form-label">Código Postal</label>
+            <input type="text" id="codigoPostal" class="form-control"
+                   [(ngModel)]="envio.direccionEnvio!.codigoPostal" name="codigoPostal" [readonly]="true">
+          </div>
+
+          <div class="col-md-6">
+            <label for="pais" class="form-label">País</label>
+            <input type="text" id="pais" class="form-control"
+                   [(ngModel)]="envio.direccionEnvio!.pais" name="pais" [readonly]="true">
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Detalles del Envío -->
+     <fieldset class="border p-3 mb-4 rounded shadow-sm">
+        <legend class="float-none w-auto px-2 text-secondary h5">
+          <i class="bi bi-box-seam me-2"></i>Detalles del Envío
+        </legend>
+        <div class="row g-3">
+          
+          <div class="col-md-6">
+            <label for="metodoEnvio" class="form-label">Método de Envío <span class="text-danger">*</span></label>
+            <select id="metodoEnvio" class="form-select"
+                    [(ngModel)]="envio.metodoEnvio" name="metodoEnvio" required
+                    (change)="onMetodoEnvioChange()" #metodoEnvioField="ngModel"
+                    [class.is-invalid]="metodoEnvioField.invalid && (metodoEnvioField.dirty || metodoEnvioField.touched)">
+              <option [ngValue]="undefined" disabled selected>Seleccione un método...</option>
+              <option *ngFor="let metodo of metodosEnvio" [ngValue]="metodo">
+                {{ metodo.nombre }} (Bs. {{ metodo.costo | number:'1.2-2' }})
+              </option>
+            </select>
+            <div *ngIf="metodoEnvioField.invalid && (metodoEnvioField.dirty || metodoEnvioField.touched)" class="invalid-feedback">
+              Debe seleccionar un método de envío.
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label for="costoEnvio" class="form-label">Costo de Envío <span class="text-muted">(Bs.)</span></label>
+            <div class="input-group">
+              <span class="input-group-text">Bs.</span>
+              <input type="number" id="costoEnvio" class="form-control" placeholder="0.00"
+                     [(ngModel)]="envio.costoEnvio" name="costoEnvio" min="0" step="0.01"
+                     [readonly]="true" #costoEnvioField="ngModel"
+                     [class.is-invalid]="costoEnvioField.invalid && (costoEnvioField.dirty || costoEnvioField.touched)">
+            </div>
+            <div *ngIf="costoEnvioField.invalid && (costoEnvioField.dirty || costoEnvioField.touched)" class="invalid-feedback d-block">
+              <div *ngIf="costoEnvioField.errors?.['min']">El costo no puede ser negativo.</div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label for="empresaEnvio" class="form-label">Empresa de Envío <span class="text-muted">(Opcional)</span></label>
+            <input type="text" id="empresaEnvio" class="form-control" placeholder="Ej: DHL, Correo Local"
+                   [(ngModel)]="envio.empresaEnvio" name="empresaEnvio" maxlength="100">
+          </div>
+
+          <div class="col-md-6">
+            <label for="fechaEntregaEstimada" class="form-label">Fecha Estimada Entrega <span class="text-muted">(Opcional)</span></label>
+            <input type="date" id="fechaEntregaEstimada" class="form-control"
+                   [(ngModel)]="envio.fechaEntregaEstimada" name="fechaEntregaEstimada"
+                   [min]="todayDate">
+          </div>
+
+          <div class="col-12">
+            <label for="notas" class="form-label">Notas Adicionales <span class="text-muted">(Opcional)</span></label>
+            <textarea id="notas" class="form-control" rows="3" placeholder="Ej: Entregar solo por la mañana, paquete frágil..."
+                      [(ngModel)]="envio.notas" name="notas" maxlength="500"></textarea>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="d-flex justify-content-center gap-3 mt-4">
+        <button type="submit" class="btn btn-primary btn-lg px-5"
+                [disabled]="envioForm.invalid || isLoading || !idOrigen">
+          <span *ngIf="!isLoading"><i class="bi bi-check-circle me-2"></i>Registrar Envío</span>
+          <span *ngIf="isLoading"><i class="bi bi-arrow-repeat spinner-border spinner-border-sm me-2"></i>Registrando...</span>
+        </button>
+        <button type="button" class="btn btn-secondary btn-lg px-5" (click)="onCancel()">
+          <i class="bi bi-x-circle me-2"></i>Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal de respuesta -->
+  <div class="modal fade" id="responseModal" tabindex="-1" role="dialog" aria-labelledby="responseModalLabel" aria-hidden="true" #responseModal>
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header" [ngClass]="{'bg-success text-white': isModalSuccess, 'bg-danger text-white': !isModalSuccess}">
+          <h5 class="modal-title" id="responseModalLabel">{{ modalTitle }}</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="closeResponseModalAndRedirect()" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <i class="bi" [ngClass]="{'bi-check-circle-fill text-success': isModalSuccess, 'bi-x-circle-fill text-danger': !isModalSuccess}" style="font-size: 3rem"></i>
+          <p class="mt-3 fs-5">{{ modalMessage }}</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn" [ngClass]="{'btn-success': isModalSuccess, 'btn-danger': !isModalSuccess}" (click)="closeResponseModalAndRedirect()">
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

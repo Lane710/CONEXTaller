@@ -6,7 +6,6 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  
   font-family: 'Inter', sans-serif;
   padding: 20px;
   box-sizing: border-box;
@@ -131,7 +130,10 @@
   box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
 }
 
+/* src/app/components/login/login.component.css */
+
 .invalid-feedback {
+  display: block; /* <-- AÑADE ESTA LÍNEA */
   color: #dc3545;
   font-size: 0.875em;
   margin-top: 8px;
@@ -171,19 +173,31 @@
   left: 100%;
 }
 
+/* BOTÓN LOGIN MEJORADO - Usando #29aaca como base */
 .login-btn {
-  background: linear-gradient(135deg, #1E8099 0%, #007bff 100%);
+  background: linear-gradient(135deg, #1E8099 0%, #29aaca 100%);
   color: white;
   box-shadow: 0 4px 15px rgba(30, 128, 153, 0.3);
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
 }
 
 .login-btn:hover:not(:disabled) {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(30, 128, 153, 0.4);
+  box-shadow: 0 8px 25px rgba(41, 170, 202, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, #29aaca 0%, #1E8099 100%);
 }
 
 .login-btn:active:not(:disabled) {
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(41, 170, 202, 0.5);
+}
+
+.login-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(41, 170, 202, 0.3);
 }
 
 .login-btn:disabled {
@@ -192,22 +206,48 @@
   opacity: 0.7;
   box-shadow: none;
   transform: none;
+  border: none;
 }
 
+/* BOTÓN REGISTRAR MEJORADO - Usando #29aaca como base */
 .register-btn {
-  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  background: linear-gradient(135deg, #29aaca 0%, #1E8099 100%);
   color: white;
-  box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+  box-shadow: 0 4px 15px rgba(41, 170, 202, 0.3);
   margin-top: 20px;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid transparent;
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease infinite;
 }
 
 .register-btn:hover:not(:disabled) {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+  box-shadow: 0 8px 25px rgba(41, 170, 202, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .register-btn:active:not(:disabled) {
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(41, 170, 202, 0.5);
+}
+
+.register-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(41, 170, 202, 0.3);
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* Enlace de "Olvidé mi contraseña" mejorado */
@@ -277,71 +317,6 @@
   border-color: #ffeeba;
 }
 
-/* Responsividad */
-@media (max-width: 768px) {
-  .login-card {
-    flex-direction: column;
-    max-width: 450px;
-    min-height: auto;
-  }
-
-  .login-branding,
-  .login-form-area {
-    width: 100%;
-    padding: 30px;
-  }
-
-  .branding-title {
-    font-size: 1.8rem;
-  }
-
-  .branding-logo {
-    width: 180px;
-    height: 180px;
-  }
-
-  .welcome-title {
-    font-size: 1.6rem;
-  }
-
-  .login-form,
-  .alert {
-    max-width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .login-branding,
-  .login-form-area {
-    padding: 25px;
-  }
-
-  .branding-logo {
-    width: 150px;
-    height: 150px;
-  }
-
-  .branding-title {
-    font-size: 1.5rem;
-  }
-
-  .welcome-title {
-    font-size: 1.4rem;
-  }
-  
-  .btn {
-    padding: 12px 18px;
-    font-size: 1rem;
-  }
-  
-  .form-control {
-    padding: 12px 18px;
-  }
-}
-
-
-
-/* ver la contrasena estilos */
 /* Estilos para el grupo de contraseña */
 .password-group {
   position: relative;
@@ -393,17 +368,38 @@
   transform: scale(1.1);
 }
 
-/* Asegurar que el input mantenga sus estilos focus */
-.password-input:focus {
-  border-color: #1E8099;
-  box-shadow: 0 0 0 3px rgba(30, 128, 153, 0.1);
-  background-color: #ffffff;
-  outline: none;
-  transform: translateY(-2px);
-}
-
-/* Responsive */
+/* Responsividad */
 @media (max-width: 768px) {
+  .login-card {
+    flex-direction: column;
+    max-width: 450px;
+    min-height: auto;
+  }
+
+  .login-branding,
+  .login-form-area {
+    width: 100%;
+    padding: 30px;
+  }
+
+  .branding-title {
+    font-size: 1.8rem;
+  }
+
+  .branding-logo {
+    width: 180px;
+    height: 180px;
+  }
+
+  .welcome-title {
+    font-size: 1.6rem;
+  }
+
+  .login-form,
+  .alert {
+    max-width: 100%;
+  }
+  
   .password-toggle-btn {
     right: 10px;
     padding: 6px;
@@ -417,5 +413,34 @@
   
   .password-input {
     padding-right: 45px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-branding,
+  .login-form-area {
+    padding: 25px;
+  }
+
+  .branding-logo {
+    width: 150px;
+    height: 150px;
+  }
+
+  .branding-title {
+    font-size: 1.5rem;
+  }
+
+  .welcome-title {
+    font-size: 1.4rem;
+  }
+  
+  .btn {
+    padding: 12px 18px;
+    font-size: 1rem;
+  }
+  
+  .form-control {
+    padding: 12px 18px;
   }
 }
