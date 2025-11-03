@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PedidosService } from '../../../services/PedidosEnviosDetalles/pedidos.service';
-import { DatePipe, LowerCasePipe, NgClass, NgFor, NgIf, TitleCasePipe } from '@angular/common';
+import { DatePipe, LowerCasePipe, NgClass, NgFor, NgIf, SlicePipe, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { pedidos } from '../../../models/PedidosEnviosDetalles/pedidos';
 import { detallePedido } from '../../../models/PedidosEnviosDetalles/detallePedido';
@@ -11,7 +11,7 @@ import { PedidosDTO } from '../../../DTOs/dtosBD/PedidosDTO';
 declare var bootstrap: any;
 
 interface PedidoConDetalles {
-  pedido: pedidos; // ⚡ Cambiado de PedidosDTO a pedidos
+  pedido: pedidos;
   detallePedidos: detallePedido[];
   isExpanded: boolean;
 }
@@ -19,7 +19,7 @@ interface PedidoConDetalles {
 @Component({
   selector: 'app-list-pedido',
   standalone: true,
-  imports: [NgFor, FormsModule, NgClass, NgIf, DatePipe, TitleCasePipe, LowerCasePipe],
+  imports: [NgFor, FormsModule, NgClass, NgIf, DatePipe, TitleCasePipe, LowerCasePipe,SlicePipe],
   templateUrl: './list-sale.component.html',
   styleUrls: ['./list-sale.component.css'],
 })
@@ -27,6 +27,8 @@ export class ListPedidoComponent implements OnInit {
   pedidos: pedidos[] = [];
   pedidosOriginal: pedidos[] = [];
   allPedidosConDetalles: PedidoConDetalles[] = [];
+  
+  // ✅ CORREGIDO: Ahora filteredPedidosConDetalles contiene TODOS los pedidos filtrados
   filteredPedidosConDetalles: PedidoConDetalles[] = [];
 
   currentPage = 1;
@@ -36,8 +38,8 @@ export class ListPedidoComponent implements OnInit {
   private readonly pagesToShow = 5;
 
   searchText = '';
-  filterStatus: 'PENDIENTE' | 'CONFIRMADO' | 'EN_PROCESO' | 'ENVIADO' | 'ENTREGADO' | 'CANCELADO' | 'todos' = 'todos';
-  sortDirection: 'reciente' | 'antiguo' = 'reciente';
+  filterStatus: 'PENDIENTE' | 'ENTREGADO' | 'CANCELADO' | 'todos' = 'todos';
+  sortDirection: 'reciente' | 'antiguo' = 'reciente'; // ✅ Por defecto del más reciente al más antiguo
 
   pedidoSeleccionado: PedidoConDetalles | null = null;
   pedidoParaCancelar: pedidos | null = null;
@@ -52,6 +54,7 @@ export class ListPedidoComponent implements OnInit {
     this.listadoPedidos();
   }
 
+  // ✅ CORREGIDO: Ahora filteredAndPaginatedPedidos solo maneja la paginación
   get filteredAndPaginatedPedidos(): PedidoConDetalles[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
@@ -59,50 +62,63 @@ export class ListPedidoComponent implements OnInit {
   }
 
   onFilterChange(): void {
-    this.currentPage = 1;
+    this.currentPage = 1; // Resetear a primera página al cambiar filtros
     this.applyFiltersAndSort();
   }
 
+  // ✅ CORREGIDO: Los filtros ahora se aplican a TODA la lista
   applyFiltersAndSort(): void {
     let tempPedidos = [...this.allPedidosConDetalles];
 
-    // 🔍 Filtrado por texto
-    if (this.searchText) {
-      const term = this.searchText.toLowerCase();
+    // 🔍 Filtrado por texto - aplica a TODA la lista
+    if (this.searchText.trim()) {
+      const term = this.searchText.toLowerCase().trim();
       tempPedidos = tempPedidos.filter((item) => {
+        // Buscar por ID de pedido
         const pedidoIdStr = `ped${item.pedido.idPedido}`.toLowerCase();
         if (pedidoIdStr.includes(term)) return true;
 
-        const userName = item.pedido.usuario.username.toLowerCase();
-        if (userName && userName.includes(term)) return true;
+        // Buscar por nombre de usuario
+        const userName = item.pedido.usuario?.username?.toLowerCase() || '';
+        if (userName.includes(term)) return true;
 
+        // Buscar por nombre de producto en los detalles
         return item.detallePedidos.some((detalle) =>
           detalle.producto?.nombre?.toLowerCase().includes(term)
         );
       });
     }
 
-    // 📦 Filtrado por estado
+    // 📦 Filtrado por estado - aplica a TODA la lista
     if (this.filterStatus !== 'todos') {
       tempPedidos = tempPedidos.filter(
         (item) => item.pedido.estado === this.filterStatus
       );
     }
 
-    // 🕒 Ordenar por fecha
+    // 🕒 Ordenar por fecha - aplica a TODA la lista
     tempPedidos.sort((a, b) => {
       const dateA = new Date(a.pedido.fechaPedido || '').getTime();
       const dateB = new Date(b.pedido.fechaPedido || '').getTime();
+      
+      // ✅ Por defecto: del más reciente al más antiguo
       return this.sortDirection === 'reciente' ? dateB - dateA : dateA - dateB;
     });
 
+    // ✅ CORREGIDO: Ahora filteredPedidosConDetalles contiene TODOS los resultados filtrados
     this.filteredPedidosConDetalles = tempPedidos;
     this.updatePagination();
+  }
+
+  onSearch(): void {
+    this.currentPage = 1; // Resetear a primera página al buscar
+    this.applyFiltersAndSort();
   }
 
   listadoPedidos(): void {
     this.pedidosS.finAll().subscribe({
       next: (response) => {
+        console.log(response)
         this.pedidosOriginal = response.data;
         this.getAllDetallesPedidos(this.pedidosOriginal);
       },
@@ -110,39 +126,49 @@ export class ListPedidoComponent implements OnInit {
     });
   }
 
-getAllDetallesPedidos(pedidos: pedidos[]): void {
-  const promises = pedidos.map((pedido) =>
-    lastValueFrom(this.detallePedidoS.getById(pedido.idPedido || 0))
-      .then((response) => ({
-        pedido,
-        detallePedidos: (response.data || []).filter((detalle: null) => detalle !== null), // Filtrar nulos
-        isExpanded: false,
-      }))
-      .catch((error) => {
-        console.error(
-          `Error al obtener detalles del pedido ${pedido.idPedido}:`,
-          error
-        );
-        return null;
-      })
-  );
-
-  Promise.all(promises)
-    .then((allDetails) => {
-      // Filtrar items nulos y detalles nulos
-      this.allPedidosConDetalles = (allDetails.filter(
-        (item) => item !== null && item.detallePedidos !== undefined
-      ) as unknown) as PedidoConDetalles[];
-      this.applyFiltersAndSort();
-    })
-    .catch((error) =>
-      console.error('Error al obtener todos los detalles:', error)
+  getAllDetallesPedidos(pedidos: pedidos[]): void {
+    const promises = pedidos.map((pedido) =>
+      lastValueFrom(this.detallePedidoS.getById(pedido.idPedido || 0))
+        .then((response) => ({
+          pedido,
+          detallePedidos: (response.data || []).filter((detalle: null) => detalle !== null),
+          isExpanded: false,
+        }))
+        .catch((error) => {
+          console.error(
+            `Error al obtener detalles del pedido ${pedido.idPedido}:`,
+            error
+          );
+          return null;
+        })
     );
-}
 
+    Promise.all(promises)
+      .then((allDetails) => {
+        // Filtrar items nulos y detalles nulos
+        this.allPedidosConDetalles = (allDetails.filter(
+          (item) => item !== null && item.detallePedidos !== undefined
+        ) as unknown) as PedidoConDetalles[];
+        
+        // ✅ CORREGIDO: Aplicar filtros y ordenación inicial
+        this.applyFiltersAndSort();
+      })
+      .catch((error) =>
+        console.error('Error al obtener todos los detalles:', error)
+      );
+  }
+
+  // ✅ CORREGIDO: La paginación ahora se calcula sobre TODOS los resultados filtrados
   updatePagination(): void {
     this.totalPages = Math.ceil(this.filteredPedidosConDetalles.length / this.itemsPerPage);
-    if (this.currentPage > this.totalPages) this.currentPage = 1;
+    
+    // Asegurarse de que currentPage no exceda el total de páginas
+    if (this.currentPage > this.totalPages && this.totalPages > 0) {
+      this.currentPage = this.totalPages;
+    } else if (this.totalPages === 0) {
+      this.currentPage = 1;
+    }
+    
     this.generatePaginationPages();
   }
 
@@ -178,19 +204,18 @@ getAllDetallesPedidos(pedidos: pedidos[]): void {
 
   ordenarPorFechaReciente(): void {
     this.sortDirection = 'reciente';
+    this.currentPage = 1; // Resetear a primera página al ordenar
     this.applyFiltersAndSort();
   }
 
   ordenarPorFechaAntigua(): void {
     this.sortDirection = 'antiguo';
-    this.applyFiltersAndSort();
-  }
-
-  onSearch(): void {
+    this.currentPage = 1; // Resetear a primera página al ordenar
     this.applyFiltersAndSort();
   }
 
   selectPedidoModalDetalle(item: PedidoConDetalles): void {
+    console.log('eiprugheipurghepiourg',item)
     this.pedidoSeleccionado = item;
   }
 
@@ -215,7 +240,7 @@ getAllDetallesPedidos(pedidos: pedidos[]): void {
         .subscribe({
           next: () => {
             this.cerrarModal('modalCambiarEstado');
-            this.listadoPedidos();
+            this.listadoPedidos(); // Recargar datos
           },
           error: (error) => console.error('Error al actualizar el estado:', error),
         });
@@ -236,7 +261,7 @@ getAllDetallesPedidos(pedidos: pedidos[]): void {
       this.pedidosS.actualizarEstado(this.pedidoParaCancelar.idPedido, 'CANCELADO').subscribe({
         next: () => {
           this.cerrarModal('modalConfirmarCancelacion');
-          this.listadoPedidos();
+          this.listadoPedidos(); // Recargar datos
           this.pedidoParaCancelar = null;
         },
         error: (error) => {
@@ -262,6 +287,11 @@ getAllDetallesPedidos(pedidos: pedidos[]): void {
   };
 
   trackByDetalleId(index: number, detalle: detallePedido): number {
-  return detalle?.idDetallePedido || index;
+    return detalle?.idDetallePedido || index;
+  }
+
+  // Agrega este método a tu componente TypeScript
+DetalleEnvio(): void {
+ // window.print();
 }
 }

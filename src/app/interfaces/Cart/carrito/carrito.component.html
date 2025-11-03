@@ -1,81 +1,94 @@
 <div class="container my-5">
+  <!-- Overlay de carga para eliminación -->
+  <div *ngIf="eliminandoAlgunProducto" class="loading-overlay">
+    <div class="loading-content">
+      <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+        <span class="visually-hidden">Eliminando producto...</span>
+      </div>
+      <p class="mt-3 fw-semibold">Eliminando producto del carrito...</p>
+    </div>
+  </div>
+
   <div class="row">
     <!-- Carrito de compras -->
     <div class="col-lg-8 mb-4">
-      <div class="card shadow-sm">
-        <div class="card-header text-white">
-          <h5 class="mb-0"><i class="bi bi-cart"></i> Tu Carrito de Compras</h5>
+      <div class="card shadow-sm border-0">
+        <div class="card-header text-white bg-primary rounded-top">
+          <h5 class="mb-0"><i class="bi bi-cart3 me-2"></i> Tu Carrito de Compras</h5>
         </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-hover align-middle">
-              <thead>
+        <div class="card-body p-0">
+          <div class="table-responsive cart-table-container">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
                 <tr>
-                  <th scope="col" class="text-center">Producto</th>
-                  <th scope="col">Nombre</th>
-                  <th scope="col" class="text-end">Precio Unitario</th>
-                  <th scope="col" class="text-center">Cantidad</th>
-                  <th scope="col" class="text-end">Subtotal</th>
-                  <th scope="col" class="text-center">Acciones</th>
+                  <th scope="col" class="text-center" style="width: 80px;">Producto</th>
+                  <th scope="col" style="width: 25%;">Nombre</th>
+                  <th scope="col" class="text-end" style="width: 120px;">Precio Unit.</th>
+                  <th scope="col" class="text-center" style="width: 180px;">Cantidad</th>
+                  <th scope="col" class="text-end" style="width: 120px;">Subtotal</th>
+                  <th scope="col" class="text-center" style="width: 80px;">Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of detallesCarritoOrdenados; trackBy: trackByDetalleId">
+                <tr *ngFor="let item of detallesCarritoOrdenados; trackBy: trackByDetalleId" class="cart-item">
                   <td class="text-center">
                     <img
-                      [src]="item.stock.producto.imagen || 'https://via.placeholder.com/50'"
+                      [src]="item.stock.producto.imagen || 'https://via.placeholder.com/60'"
                       class="img-fluid rounded cart-product-img"
                       [alt]="item.stock.producto.nombre"
-                      style="width: 50px; height: 50px; object-fit: cover;"
                     />
                   </td>
-                  <td>{{ item.stock.producto.nombre }}</td>
+                  <td>
+                    <span class="product-name fw-semibold text-truncate d-block" style="max-width: 200px;" title="{{ item.stock.producto.nombre }}">
+                      {{ item.stock.producto.nombre }}
+                    </span>
+                  </td>
                   <td class="text-end">
-                    {{ item.precioUnitario | currency: "Bs. ": "symbol":"1.2-2" }}
+                    <span class="price-value fw-medium">{{ item.precioUnitario | currency: "Bs. ": "symbol":"1.2-2" }}</span>
                   </td>
                   <td class="text-center">
                     <div class="d-flex align-items-center justify-content-center gap-2">
                       <button
-                        class="btn btn-sm btn-outline-secondary"
+                        class="btn btn-sm btn-outline-secondary quantity-btn"
                         (click)="cambiarCantidad(item.idDetalleCarrito || 0, 0, item.stock.cantidad || 0)"
-                        [disabled]="item.cantidad <= 1"
+                        [disabled]="item.cantidad <= 1 || eliminandoAlgunProducto"
                         title="Disminuir cantidad"
                       >
-                        -
+                        <i class="bi bi-dash">-</i>
                       </button>
-                      <span class="fw-bold cantidad-display">{{ item.cantidad }}</span>
+                      <span class="fw-bold cantidad-display px-3 py-1 bg-light rounded">{{ item.cantidad }}</span>
                       <button
-                        class="btn btn-sm btn-outline-secondary"
+                        class="btn btn-sm btn-outline-secondary quantity-btn"
                         (click)="cambiarCantidad(item.idDetalleCarrito || 0, 1, item.stock.cantidad || 0)"
-                        [disabled]="item.cantidad >= (item.stock.cantidad || 0)"
+                        [disabled]="item.cantidad >= (item.stock.cantidad || 0) || eliminandoAlgunProducto"
                         title="Aumentar cantidad"
                       >
-                        +
+                        <i class="bi bi-plus">+</i>
                       </button>
                     </div>
-                    <small class="text-muted d-block mt-1">
-                      Stock disponible: {{ item.stock.cantidad || 0 }}
-                    </small>
                   </td>
-                  <td class="text-end fw-semibold">
-                    {{ item.subtotal | currency: "Bs. ": "symbol":"1.2-2" }}
+                  <td class="text-end">
+                    <span class="fw-bold text-primary subtotal-value">
+                      {{ item.subtotal | currency: "Bs. ": "symbol":"1.2-2" }}
+                    </span>
                   </td>
                   <td class="text-center">
-  <button
-    class="btn btn-outline-danger btn-sm"
-    (click)="abrirModalConfirmarEliminar(item)"
-    title="Eliminar producto"
-  >
-  <img src="/icon_Productos/Modificar/eliminar.svg" alt="">
-  </button>
-</td>
+                    <button
+                      class="btn btn-sm  btn-remove"
+                      (click)="eliminarProducto(item.idDetalleCarrito || 0)"
+                      [disabled]="eliminandoAlgunProducto"
+                      title="Eliminar producto"
+                    >
+                      <img src="/icon_SaleOnline/ic--outline-cancel.svg" alt="" style="width: 30px;">
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
           <div
             *ngIf="!detallesCarrito || detallesCarrito.length === 0"
-            class="alert alert-info text-center mt-3 mb-0"
+            class="alert alert-info text-center m-3 mb-0"
           >
             <i class="bi bi-cart-x me-2"></i>
             Tu carrito de compras está vacío. ¡Añade algunos productos!
@@ -86,145 +99,105 @@
 
     <!-- Resumen del pedido -->
     <div class="col-lg-4">
-      <div class="card shadow-sm">
-        <div class="card-header text-white">
-          <h5 class="mb-0"><i class="bi bi-receipt"></i> Resumen del Pedido</h5>
+      <div class="card shadow-sm border-0 sticky-top" style="top: 20px;">
+        <div class="card-header text-white bg-success rounded-top">
+          <h5 class="mb-0"><i class="bi bi-receipt me-2"></i> Resumen del Pedido</h5>
         </div>
         <div class="card-body">
-          <div class="d-flex flex-column gap-3">
-            <div class="d-flex justify-content-between align-items-center">
-              <span>Subtotal:</span>
-              <span class="fw-bold">{{ subtotalCarrito | currency: "Bs. ":"symbol":"1.2-2" }}</span>
+          <div class="d-flex flex-column gap-3 mb-4">
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+              <span class="text-muted">Subtotal:</span>
+              <span class="fw-semibold">{{ subtotalCarrito | currency: "Bs. ":"symbol":"1.2-2" }}</span>
             </div>
-            <div class="d-flex justify-content-between align-items-center fs-5 fw-bold border-top pt-2">
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+              <span class="text-muted">Envío:</span>
+              <span class="fw-semibold text-success">Pagar en entrega</span>
+            </div>
+          
+            <div class="d-flex justify-content-between align-items-center fs-5 fw-bold  ">
               <span>Total:</span>
               <span class="text-primary">{{ totalCarrito | currency: "Bs. ":"symbol":"1.2-2" }}</span>
             </div>
           </div>
-          <div class="d-grid mt-4">
+          
+          <div class="d-grid gap-2">
             <button 
-              class="btn btn-primary btn-lg" 
+              class="btn btn-success btn-lg fw-bold py-3 checkout-btn" 
               (click)="RealizarPedido()" 
-              [disabled]="detallesCarrito.length === 0"
-              [class.btn-secondary]="detallesCarrito.length === 0"
+              [disabled]="detallesCarrito.length === 0 || eliminandoAlgunProducto"
+              [class.btn-secondary]="detallesCarrito.length === 0 || eliminandoAlgunProducto"
             >
               <i class="bi bi-credit-card me-2"></i>
-              Continuar Pago
+              Proceder al Pago
+            </button>
+            
+            <button class="btn btn-outline-primary" routerLink="/home" [disabled]="eliminandoAlgunProducto">
+              <i class="bi bi-arrow-left me-2"></i>
+              Seguir Comprando
             </button>
           </div>
-          <div *ngIf="detallesCarrito.length === 0" class="alert alert-warning mt-3 text-center py-2">
-            <small>Agrega productos al carrito para continuar</small>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Carrusel de productos que pueden interesar -->
-    <div class="col-12 mt-5" *ngIf="productosCuadricula.length > 0">
-      <h3 class="text-center my-4 category-title">Productos que te pueden interesar</h3>
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center">
-        <div class="col" *ngFor="let producto of productosCuadricula">
-          <div class="card h-100">
-            <img
-              [src]="producto.producto.imagen || 'https://placehold.co/150x120?text=Sin+imagen'"
-              [alt]="producto.producto.nombre"
-              class="card-img-top"
-              style="height: 200px; object-fit: cover;"
-              onerror="this.onerror=null;this.src='https://placehold.co/150x120?text=Sin+imagen'"
-            />
-            <div class="card-body d-flex flex-column">
-              <h6 class="card-title">{{ producto.producto.nombre }}</h6>
-              <p class="card-text text-muted small flex-grow-1">
-                {{ (producto.producto.descripcion || 'Sin descripción disponible').substring(0, 60) }}...
-              </p>
-              <div class="mt-auto">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span class="fw-bold text-primary">
-                    {{ producto.producto.precio| currency: "Bs. ": "symbol":"1.2-2" }}
-                  </span>
-                  <span 
-                    [class]="producto.cantidad >= 1 ? 'badge bg-success' : 'badge bg-danger'"
-                  >
-                    {{ producto.cantidad >= 1 ? 'En stock' : 'Agotado' }}
-                  </span>
-                </div>
-                <button 
-                  class="btn btn-outline-primary w-100" 
-                  (click)="redirectToDetails(producto)"
-                  [disabled]="producto.cantidad < 1"
-                >
-                  Ver más
-                </button>
-              </div>
-            </div>
+          
+          <div *ngIf="detallesCarrito.length === 0" class="alert alert-warning mt-3 text-center py-2 small">
+            <i class="bi bi-exclamation-triangle me-1"></i>
+            Agrega productos al carrito para continuar
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-
-
-
-
-
-
-
-
-<!--Modal de eliminacion de producto del carrito-->
-<!-- Modal de Confirmación para Eliminar Producto -->
-<div
-  class="modal fade"
-  id="confirmarEliminarModal"
-  tabindex="-1"
-  aria-labelledby="confirmarEliminarModalLabel"
-  aria-hidden="true"
-  #confirmarEliminarModal
->
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="confirmarEliminarModalLabel">
-          Confirmar Eliminación
-        </h5>
-        <button
-          type="button"
-          class="btn-close"
-          (click)="cerrarModalConfirmarEliminar()"
-          aria-label="Cerrar"
-        ></button>
-      </div>
-      <div class="modal-body text-center">
-        <div class="mb-3">
-          <i class="bi bi-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+  <!-- Carrusel de productos que pueden interesar -->
+  <div class="col-12 mt-5" *ngIf="productosCuadricula.length > 0">
+    <section aria-label="Productos que te pueden interesar" class="mb-6">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="category-title mb-0">Productos que te pueden interesar</h2>
+        <div class="carousel-nav-buttons">
+          <button class="btn btn-outline-primary btn-sm carousel-prev" (click)="scrollCarousel('interes', -1)" [disabled]="eliminandoAlgunProducto">
+            ‹
+          </button>
+          <button class="btn btn-outline-primary btn-sm carousel-next" (click)="scrollCarousel('interes', 1)" [disabled]="eliminandoAlgunProducto">
+            ›
+          </button>
         </div>
-        <p>
-          ¿Estás seguro de que quieres eliminar 
-          <strong>"{{ productoAEliminar?.nombre }}"</strong> 
-          de tu carrito de compras?
-        </p>
-        <p class="text-muted small">
-          Esta acción no se puede deshacer.
-        </p>
       </div>
-      <div class="modal-footer justify-content-center">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          (click)="cerrarModalConfirmarEliminar()"
-        >
-          Cancelar
-        </button>
-        <button
-          type="button"
-          class="btn btn-danger"
-          (click)="confirmarEliminacion()"
-        >
-          <i class="bi bi-trash me-1"></i>
-          Eliminar
-        </button>
+      
+      <div class="products-carousel-wrapper">
+        <div class="products-carousel" id="carousel-interes">
+          <div class="carousel-track">
+            <div class="carousel-slide" *ngFor="let producto of productosCuadricula">
+              <div class="card product-card h-100">
+                <img
+                  (click)="redirectToDetails(producto)"
+                  [src]="producto.producto.imagen || 'https://placehold.co/150x120?text=Sin+imagen'"
+                  [alt]="producto.producto.nombre"
+                  class="card-img-top"
+                  onerror="this.onerror=null;this.src='https://placehold.co/150x120?text=Sin+imagen'"
+                />
+                <div class="card-body p-2">
+                  <h6 class="card-title text-truncate" title="{{ producto.producto.nombre }}">{{ producto.producto.nombre }}</h6>
+                  <div class="stock-msg">
+                    {{ producto.cantidad >= 1 ? "🟢 En stock" : "🔴 Agotado" }}
+                  </div>
+                  <div class="price">{{ producto.producto.precio | currency: "Bs. ": "symbol":"1.2-2" }}</div>
+                  <div class="brand text-truncate" title="Marca {{ producto.producto.marca }}">
+                    Marca {{ producto.producto.marca }}
+                  </div>
+                  <button
+                    class="btn-cart"
+                    type="button"
+                    (click)="AddProductCarrito(producto)"
+                    [class.added]="producto.anadidoAlCarrito"
+                    [disabled]="producto.cantidad === 0 || eliminandoAlgunProducto"
+                  >
+                    <span *ngIf="!producto.anadidoAlCarrito">Añadir al carrito</span>
+                    <span *ngIf="producto.anadidoAlCarrito">Añadido</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
   </div>
 </div>

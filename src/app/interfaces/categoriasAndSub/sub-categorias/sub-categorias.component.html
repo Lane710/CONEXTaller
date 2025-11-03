@@ -1,17 +1,17 @@
 <div class="container">
   <!-- Encabezado con navegación -->
   <nav aria-label="breadcrumb" class="header-nav">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item">
-      <a href="/home/Gestion" class="breadcrumb-link">
-        <i class="bi bi-house-fill me-1"></i>Home
-      </a>
-    </li>
-    <li class="breadcrumb-item active" aria-current="page">
-      <a href="/home/Categorias" class="breadcrumb-link">Categorías</a>
-    </li>
-  </ol>
-</nav>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="/home/Gestion" class="breadcrumb-link">
+          <i class="bi bi-house-fill me-1"></i>Home
+        </a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        <a href="/home/Categorias" class="breadcrumb-link">Categorías</a>
+      </li>
+    </ol>
+  </nav>
   
   <!-- Barra de título y controles -->
   <div class="page-header">
@@ -23,20 +23,13 @@
       </button>
       <div class="search-container">
         <span class="search-icon">🔍</span>
-        <input type="text" placeholder="Buscar subcategoría..." [(ngModel)]="terminoBusqueda" (input)="aplicarFiltros()">
+        <input type="text" placeholder="Buscar subcategoría..." #searchInput (input)="aplicarFiltros(searchInput.value)">
       </div>
       <div class="filter-container">
-        <!-- Filtro de estado -->
-        <select class="filter-select" [(ngModel)]="filtroEstado" (change)="aplicarFiltros()">
+        <select class="filter-select" #estadoSelect (change)="aplicarFiltros(searchInput.value, estadoSelect.value)">
           <option value="todos">Todos</option>
           <option value="activo">Activos</option>
           <option value="inactivo">Inactivos</option>
-        </select>
-        <!-- Filtro de categoría principal (Simulado) -->
-        <select class="filter-select" disabled>
-          <option>Todas las categorías</option>
-          <option>Electrónica</option>
-          <option>Hogar</option>
         </select>
       </div>
     </div>
@@ -55,15 +48,17 @@
         
         <div class="category-info">
           <span class="category-name" [title]="item.nombre">{{item.nombre}}</span>
-          <span class="product-count">{{item.estado ? 'Activo' : 'Inactivo'}}</span>
+          <span class="product-count" [ngClass]="{'status-active': item.estado, 'status-inactive': !item.estado}">
+            {{item.estado ? 'Activo' : 'Inactivo'}}
+          </span>
           
           <!-- Botón de Activar/Inactivar con tamaño fijo -->
           <button class="btn-modify" 
-        [ngClass]="{'btn-success': !item.estado, 'btn-danger': item.estado}"
-        (click)="$event.stopPropagation(); abrirModalCambioEstado(item)">
-  <i class="fas" [ngClass]="{'fa-toggle-off': !item.estado, 'fa-toggle-on': item.estado}"></i>
-  {{ item.estado ? 'Inactivar' : 'Activar' }}
-</button>
+                  [ngClass]="{'btn-success': !item.estado, 'btn-danger': item.estado}"
+                  (click)="$event.stopPropagation(); abrirModalCambioEstado(item)">
+            <i class="fas" [ngClass]="{'fa-toggle-off': !item.estado, 'fa-toggle-on': item.estado}"></i>
+            {{ item.estado ? 'Inactivar' : 'Activar' }}
+          </button>
         </div>
       </div>
       }
@@ -74,82 +69,73 @@
   </section>
 </div>
 
+<!-- Modal de detalles de subcategoría - Versión Simplificada -->
+<div class="modal-overlay" *ngIf="mostrarModal" (click)="cerrarModal()">
+  <div class="modal-content-simple" (click)="prevenirCierre($event)">
+    
+    <!-- Header Simple -->
+    <div class="modal-header-simple">
+      <div class="header-main">
+        <h2>Detalles de Subcategoría</h2>
+      </div>
+      <button class="modal-close-simple" (click)="cerrarModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
 
-    <!-- Modal de detalles de subcategoría - Versión Simplificada -->
-    <div class="modal-overlay" *ngIf="mostrarModal" (click)="cerrarModal()">
-      <div class="modal-content-simple" (click)="prevenirCierre($event)">
+    <!-- Body Simple -->
+    <div class="modal-body-simple" *ngIf="subcategoriaSeleccionada">
+      
+      <!-- Información Principal -->
+      <div class="info-group">
+        <div class="info-row">
+          <span class="info-label">Nombre:</span>
+          <span class="info-value">{{subcategoriaSeleccionada.nombre}}</span>
+        </div>
         
-        <!-- Header Simple -->
-        <div class="modal-header-simple">
-          <div class="header-main">
-            <h2>Detalles de Subcategoría</h2>
-
-          </div>
-          <button class="modal-close-simple" (click)="cerrarModal()">
-            <i class="fas fa-times"></i>
-          </button>
+        <div class="info-row">
+          <span class="info-label">Categoría Principal:</span>
+          <span class="info-value">{{subcategoriaSeleccionada.categoria?.nombre || 'No asignada'}}</span>
         </div>
 
-        <!-- Body Simple -->
-        <div class="modal-body-simple" *ngIf="subcategoriaSeleccionada">
-          
-          <!-- Información Principal -->
-          <div class="info-group">
-            <div class="info-row">
-              <span class="info-label">Nombre:</span>
-              <span class="info-value">{{subcategoriaSeleccionada.nombre}}</span>
-            </div>
-            
-            <div class="info-row">
-              <span class="info-label">Categoría Principal:</span>
-              <span class="info-value">{{subcategoriaSeleccionada.categoria?.nombre || 'No asignada'}}</span>
-            </div>
-
-            <div class="info-row">
-              <span class="info-label">Descripción:</span>
-              <span class="info-value description">{{subcategoriaSeleccionada.descripcion || 'Sin descripción'}}</span>
-            </div>
-            
-            <div class="info-row">
-              <span class="info-label">Estado:</span>
-              <span [class]="subcategoriaSeleccionada.estado ? 'status active' : 'status inactive'">
-                {{subcategoriaSeleccionada.estado ? 'Activo' : 'Inactivo'}}
-              </span>
-            </div>
-            
-            <div class="info-row">
-              <span class="info-label">URL Imagen:</span>
-              <span class="info-value url">{{subcategoriaSeleccionada.urlImagen || 'No especificada'}}</span>
-            </div>
-            
-            <div class="info-row" *ngIf="subcategoriaSeleccionada.fechaCreacion">
-              <span class="info-label">Fecha Creación:</span>
-              <span class="info-value">{{subcategoriaSeleccionada.fechaCreacion | date:'dd/MM/yyyy'}}</span>
-            </div>
-          </div>
-
+        <div class="info-row">
+          <span class="info-label">Descripción:</span>
+          <span class="info-value description">{{subcategoriaSeleccionada.descripcion || 'Sin descripción'}}</span>
         </div>
-
-        <!-- Footer Simple -->
-        <div class="modal-footer-simple">
-          <button class="btn btn-cancel" (click)="cerrarModal()">
-            Cerrar
-          </button>
-          <button class="btn btn-danger" 
-        (click)="$event.stopPropagation(); subcategoriaSeleccionada && abrirModalEliminar(subcategoriaSeleccionada)">
-  Eliminar Permanentemente
-</button>
-
+        
+        <div class="info-row">
+          <span class="info-label">Estado:</span>
+          <span [class]="subcategoriaSeleccionada.estado ? 'status active' : 'status inactive'">
+            {{subcategoriaSeleccionada.estado ? 'Activo' : 'Inactivo'}}
+          </span>
         </div>
-
+        
+        <div class="info-row">
+          <span class="info-label">URL Imagen:</span>
+          <span class="info-value url">{{subcategoriaSeleccionada.urlImagen || 'No especificada'}}</span>
+        </div>
+        
+        <div class="info-row" *ngIf="subcategoriaSeleccionada.fechaCreacion">
+          <span class="info-label">Fecha Creación:</span>
+          <span class="info-value">{{subcategoriaSeleccionada.fechaCreacion | date:'dd/MM/yyyy'}}</span>
+        </div>
       </div>
     </div>
 
+    <!-- Footer Simple -->
+    <div class="modal-footer-simple">
+      <button class="btn btn-cancel" (click)="cerrarModal()">
+        Cerrar
+      </button>
+      <button class="btn btn-danger" 
+              (click)="$event.stopPropagation(); subcategoriaSeleccionada && abrirModalEliminar(subcategoriaSeleccionada)">
+        Eliminar Permanentemente
+      </button>
+    </div>
+  </div>
+</div>
 
-
-
-    <!--  Modal de cambio de estado: -->
-    <!-- Modal Confirmación Activar / Desactivar -->
+<!-- Modal Confirmación Activar / Desactivar -->
 <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacionLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -165,19 +151,11 @@
       <!-- Pie -->
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="cerrarBootstrapModal('modalConfirmacion')">Cancelar</button>
-        
         <button type="button" class="btn btn-warning" id="btnConfirmar">Continuar</button>
       </div>
     </div>
   </div>
 </div>
-
-
-
-
-
-
-<!--Modal de eliminacion-->
 
 <!-- Modal Confirmación Eliminación -->
 <div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminarLabel" aria-hidden="true">
@@ -199,6 +177,40 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="cerrarBootstrapModal('modalEliminar')" data-bs-dismiss="modal">Cancelar</button>
         <button type="button" class="btn btn-danger" id="btnEliminarConfirmar">Eliminar</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Dependencias para Subcategorías -->
+<div class="modal fade" id="modalDependenciasSubcategoria" tabindex="-1" aria-labelledby="modalDependenciasSubcategoriaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title" id="modalDependenciasSubcategoriaLabel">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          No se puede eliminar subcategoría
+        </h5>
+        <button type="button" class="btn-close" (click)="cerrarBootstrapModal('modalDependenciasSubcategoria')" aria-label="Cerrar"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div id="textoDependenciasSubcategoria">
+          <!-- La información se insertará dinámicamente -->
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarBootstrapModal('modalDependenciasSubcategoria')">
+          <i class="fas fa-times me-1"></i>
+          Entendido
+        </button>
+        <button type="button" class="btn btn-primary" (click)="gestionarProductosSubcategoria()">
+          <i class="fas fa-cubes me-1"></i>
+          Gestionar Productos
+        </button>
       </div>
       
     </div>

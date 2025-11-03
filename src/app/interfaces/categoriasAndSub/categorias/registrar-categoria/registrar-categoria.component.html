@@ -2,7 +2,7 @@
   <!-- Encabezado con navegación -->
   <nav aria-label="breadcrumb" class="mb-4">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="/h"><i class="fas fa-home"></i> Home</a></li>
+      <li class="breadcrumb-item"><a href="/home/Gestion"><i class="fas fa-home"></i> Home</a></li>
       <li class="breadcrumb-item"><a href="/home/Categorias">Categorías</a></li>
       <li class="breadcrumb-item active" aria-current="page">Registrar Nueva Categoría</li>
     </ol>
@@ -75,7 +75,7 @@
           </div>
         </div>
 
-        <!-- Campo Imagen -->
+        <!-- Campo Imagen (OBLIGATORIO) -->
         <div class="mb-4">
           <label for="imagen" class="form-label fw-semibold">
             Imagen de la Categoría <span class="text-danger">*</span>
@@ -83,7 +83,7 @@
           
           <!-- Vista previa de imagen -->
           <div class="mb-3 text-center" *ngIf="imagenPrevia">
-            <img [src]="imagenPrevia" class="img-thumbnail preview-image" alt="Vista previa">
+            <img [src]="imagenPrevia" class="img-thumbnail preview-image" alt="Vista previa" style="max-height: 200px;">
           </div>
 
           <div class="input-group">
@@ -95,6 +95,7 @@
               (change)="onFileSelected($event)"
               [class.is-invalid]="imagenInvalid"
               accept="image/*"
+              #fileInput
             >
             <button 
               class="btn btn-outline-secondary" 
@@ -107,12 +108,18 @@
           </div>
           
           <div class="invalid-feedback" *ngIf="imagenInvalid">
-            <span *ngIf="categoriaForm.get('imagen')?.errors?.['required']">
+            <span *ngIf="!selectedFile">
               La imagen es obligatoria
+            </span>
+            <span *ngIf="selectedFile && !isValidImageType(selectedFile)">
+              Formato de imagen no válido. Use JPG, PNG o GIF.
+            </span>
+            <span *ngIf="selectedFile && !isValidImageSize(selectedFile)">
+              La imagen no puede ser mayor a 2MB.
             </span>
           </div>
           <div class="form-text">
-            Formatos aceptados: JPG, PNG. Tamaño máximo: 1MB
+            Formatos aceptados: JPG, PNG, GIF. Tamaño máximo: 2MB
           </div>
         </div>
 
@@ -125,14 +132,14 @@
           <button 
             type="submit" 
             class="btn btn-primary px-4"
-            [disabled]="categoriaForm.invalid || submitting"
+            [disabled]="categoriaForm.invalid || submitting || !selectedFile"
           >
             <i class="fas fa-save me-2"></i>
             <span *ngIf="submitting">
               <span class="spinner-border spinner-border-sm me-2" role="status"></span>
               Guardando...
             </span>
-            <span *ngIf="!submitting" >Guardar Categoría</span>
+            <span *ngIf="!submitting">Guardar Categoría</span>
           </button>
         </div>
 
@@ -147,15 +154,6 @@
   </div>
 </div>
 
-
-
-
-
-
-
-<!--Modal de confirmacion-->
-
-
 <!-- Modal de éxito para categoría -->
 <div class="modal fade" id="modalExitoCategoria" tabindex="-1" aria-labelledby="modalExitoCategoriaLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -167,13 +165,37 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-        <i class="bi bi-check-circle-fill mb-3 d-block"></i>
+        <i class="bi bi-check-circle-fill text-success mb-3" style="font-size: 3rem;"></i>
         <h4 class="mb-3">¡Perfecto!</h4>
         <p>La categoría fue registrada correctamente en el sistema.</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-success" data-bs-dismiss="modal" (click)="redireccionar()">
           <i class="bi bi-check-lg me-2"></i>Continuar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de error -->
+<div class="modal fade" id="modalError" tabindex="-1" aria-labelledby="modalErrorLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalErrorLabel">
+          <i class="bi bi-exclamation-triangle me-2"></i>Error
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <i class="bi bi-x-circle-fill text-danger mb-3" style="font-size: 3rem;"></i>
+        <h4 class="mb-3">¡Error!</h4>
+        <p>{{ errorMessage }}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+          <i class="bi bi-x-lg me-2"></i>Cerrar
         </button>
       </div>
     </div>

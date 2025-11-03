@@ -71,4 +71,9 @@ export class TipoPropiedadService {
   findByNombre(nombre: string): Observable<ApiResponse> {
     return this.http.get<ApiResponse>(`${this.baseUrl}findByNombre/${nombre}`);
   }
+
+  // Agrega este método al servicio
+findByTipoAndNombreExacto(tipo: string, nombre: string): Observable<ApiResponse> {
+  return this.http.get<ApiResponse>(`${this.baseUrl}findByTipoAndNombreExacto/${tipo}/${nombre}`);
+}
 }

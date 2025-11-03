@@ -1,44 +1,40 @@
-// src/app/services/producto-valor-propiedad.service.ts (Nombre sugerido)
+// src/app/services/producto-valor-propiedad.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ProductoValorPropiedad } from '../../../models/ProductoStockModel/ProductoValorPropiedad';
-// Se asume que ApiResponse o 'any' es el tipo de respuesta (dejaremos 'any' como estaba)
+import { ApiResponse } from '../../../models/api-response';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root'
 })
-export class ProductoValorPropiedadService { // <-- Nombre de clase cambiado
+export class ProductoValorPropiedadService {
+  private baseUrl = 'http://localhost:8080/producto-valores-propiedad/';
 
-  // URL base ajustada para coincidir con el @RequestMapping del backend
-  private baseUrl = 'http://localhost:8080/producto-valores-propiedad/'; 
+  constructor(private http: HttpClient) { }
 
-  constructor(private http: HttpClient) { }
+  findAll(): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.baseUrl}findAll`);
+  }
 
-  findAll(): Observable<any> {
-    // GET: /producto-valores-propiedad/findAll
-    return this.http.get<any>(`${this.baseUrl}findAll`); 
-  }
+  findById(id: number): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.baseUrl}findById/${id}`);
+  }
 
-  findById(id: number): Observable<any> {
-    // GET: /producto-valores-propiedad/findById/{id}
-    return this.http.get<any>(`${this.baseUrl}findById/${id}`);
-  }
+  save(productoValorPropiedad: ProductoValorPropiedad): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.baseUrl}save`, productoValorPropiedad);
+  }
 
-save(productoValorPropiedad: ProductoValorPropiedad): Observable<any> {
-  // POST: /producto-valores-propiedad/save
-  return this.http.post<any>(`${this.baseUrl}save`, productoValorPropiedad);
-}
+  update(id: number, productoValorPropiedad: ProductoValorPropiedad): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(`${this.baseUrl}updateById/${id}`, productoValorPropiedad);
+  }
 
-  update(id: number, productoValorPropiedad: ProductoValorPropiedad): Observable<any> {
-    // PUT: /producto-valores-propiedad/updateById/{id}
-    return this.http.put<any>(`${this.baseUrl}updateById/${id}`, productoValorPropiedad);
-  }
+  deleteById(id: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.baseUrl}deleteById/${id}`);
+  }
 
-  deleteById(id: number): Observable<any> {
-    // DELETE: /producto-valores-propiedad/deleteById/{id}
-    return this.http.delete<any>(`${this.baseUrl}deleteById/${id}`);
-  }
-  
-  // *** El método listarAtributoProducto ha sido eliminado (Ver sección 2) ***
+
+   findByProductoId(idProducto: number): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.baseUrl}findByProductoId/${idProducto}`);
+  }
 }

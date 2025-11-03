@@ -2,7 +2,7 @@
   <!-- Encabezado con navegación -->
   <nav aria-label="breadcrumb" class="mb-4">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i> Home</a></li>
+      <li class="breadcrumb-item"><a href="/home/Gestion"><i class="fas fa-home"></i> Home</a></li>
       <li class="breadcrumb-item"><a href="/home/Categorias">Categorias</a></li>
       <li class="breadcrumb-item"><a href="/home/Categorias/SubCategorias/{{this.categoriaId}}">Subcategorías</a></li>
       <li class="breadcrumb-item active" aria-current="page">Registrar Nueva Subcategoría</li>
@@ -76,16 +76,11 @@
           </div>
         </div>
 
-        <!-- Campo Imagen -->
+        <!-- Campo Imagen (NO OBLIGATORIO) -->
         <div class="mb-4">
           <label for="imagen" class="form-label fw-semibold">
-            Imagen de la Subcategoría <span class="text-danger">*</span>
+            Imagen de la Subcategoría
           </label>
-          
-          <!-- Vista previa de imagen -->
-          <div class="mb-3 text-center" *ngIf="imagenPrevia">
-            <img [src]="imagenPrevia" class="img-thumbnail preview-image" alt="Vista previa">
-          </div>
 
           <div class="input-group">
             <input 
@@ -94,24 +89,30 @@
               id="imagen"
               formControlName="imagen"
               (change)="onFileSelected($event)"
-             
+              [class.is-invalid]="imagenInvalid"
               accept="image/*"
             >
             <button 
               class="btn btn-outline-secondary" 
               type="button"
               (click)="clearImage()"
-              *ngIf="imagenPrevia"
+              *ngIf="selectedFile"
             >
-              <i class="fas fa-times"></i> Eliminar
+              <i class="fas fa-times"></i> Limpiar
             </button>
           </div>
           
-          <div class="invalid-feedback" >
-            La imagen es obligatoria
+          <div class="invalid-feedback" *ngIf="imagenInvalid">
+            <span *ngIf="selectedFile && !isValidImageType(selectedFile)">
+              Formato de imagen no válido. Use JPG, PNG o GIF.
+            </span>
+            <span *ngIf="selectedFile && !isValidImageSize(selectedFile)">
+              La imagen no puede ser mayor a 2MB.
+            </span>
           </div>
           <div class="form-text">
-            Formatos aceptados: JPG, PNG. Tamaño máximo: 1MB
+            Formatos aceptados: JPG, PNG, GIF. Tamaño máximo: 2MB. 
+            <span class="text-muted">Si no selecciona una imagen, se usará una imagen por defecto.</span>
           </div>
         </div>
 
@@ -146,64 +147,18 @@
   </div>
 </div>
 
-
-
-<!-- Modal de Error -->
-<div class="modal fade" id="modalError" tabindex="-1" aria-labelledby="modalErrorLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-center">
-      
-      <!-- Encabezado -->
-      <div class="modal-header bg-error text-white">
-        <h5 class="modal-title" id="modalErrorLabel">
-          <i class="bi bi-exclamation-triangle me-2"></i>Error en el Sistema
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      
-      <!-- Cuerpo -->
-      <div class="modal-body">
-        <i class="bi bi-exclamation-triangle-fill mb-3 d-block"></i>
-        <h4 class="mb-3">¡Algo salió mal!</h4>
-        <p class="mb-4">No pudimos procesar tu solicitud en este momento. Por favor, inténtalo de nuevo más tarde.</p>
-        
-        <div class="error-details text-start">
-          <p class="small mb-1"><strong>Posibles causas:</strong></p>
-          <ul class="small mb-0 ps-3">
-            <li>Problemas temporales del servidor</li>
-            <li>Error de conexión a la base de datos</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Pie -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-error" data-bs-dismiss="modal">
-          <i class="bi bi-clock me-2"></i>Intentar más tarde
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-
-
-
-<!-- Modal de éxito -->
-<!-- Modal de Éxito Simplificado -->
+<!-- Modal de Éxito -->
 <div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-header bg-success text-white">
         <h5 class="modal-title" id="modalExitoLabel">
           <i class="bi bi-check-circle me-2"></i>Registro Exitoso
         </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        <i class="bi bi-check-circle-fill mb-3 d-block"></i>
+      <div class="modal-body text-center">
+        <i class="bi bi-check-circle-fill text-success mb-3" style="font-size: 3rem;"></i>
         <h4 class="mb-3">¡Perfecto!</h4>
         <p class="mb-0">La subcategoría fue registrada correctamente en el sistema.</p>
       </div>
@@ -216,32 +171,33 @@
   </div>
 </div>
 
-<!-- Modal de Error Simplificado -->
+<!-- Modal de Error -->
 <div class="modal fade" id="modalError" tabindex="-1" aria-labelledby="modalErrorLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-header bg-danger text-white">
         <h5 class="modal-title" id="modalErrorLabel">
           <i class="bi bi-exclamation-triangle me-2"></i>Error en el Sistema
         </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
-      <div class="modal-body">
-        <i class="bi bi-exclamation-triangle-fill mb-3 d-block"></i>
+      <div class="modal-body text-center">
+        <i class="bi bi-exclamation-triangle-fill text-danger mb-3" style="font-size: 3rem;"></i>
         <h4 class="mb-3">¡Algo salió mal!</h4>
-        <p class="mb-4">No pudimos procesar tu solicitud en este momento. Por favor, inténtalo de nuevo más tarde.</p>
+        <p class="mb-4">{{ errorMessage || 'No pudimos procesar tu solicitud en este momento. Por favor, inténtalo de nuevo más tarde.' }}</p>
         
-        <div class="error-details">
+        <div class="error-details text-start">
           <p class="small mb-1"><strong>Posibles causas:</strong></p>
-          <ul class="small mb-0">
+          <ul class="small mb-0 ps-3">
             <li>Problemas temporales del servidor</li>
             <li>Error de conexión a la base de datos</li>
+            <li>Datos inválidos en el formulario</li>
           </ul>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-error" data-bs-dismiss="modal">
-          <i class="bi bi-clock me-2"></i>Intentar más tarde
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+          <i class="bi bi-x-lg me-2"></i>Cerrar
         </button>
       </div>
     </div>

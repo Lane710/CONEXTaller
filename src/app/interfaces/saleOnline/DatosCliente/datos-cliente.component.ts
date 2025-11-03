@@ -11,7 +11,6 @@ import { detallePedido } from '../../../models/PedidosEnviosDetalles/detallePedi
 import { DetallePedidosService } from '../../../services/PedidosEnviosDetalles/detalle-pedidos.service';
 import { EnviosService } from '../../../services/PedidosEnviosDetalles/envios.service';
 import { envios } from '../../../models/PedidosEnviosDetalles/envios';
-// ASUMO que 'direccionesEnvio' ahora es la interfaz DTO con el campo 'username' simple.
 import { direccionesEnvio } from '../../../models/PedidosEnviosDetalles/direccionesEnvio';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -21,11 +20,10 @@ import { StockService } from '../../../services/ProductosServis/stock.service';
 import { DireccionEnvioService } from '../../../services/PedidosEnviosDetalles/direccion-envio-service.service';
 import { StockDTO } from '../../../DTOs/Produc/StockDTO';
 import { usuarios } from '../../../models/PersonModel/usuarios';
+import { forma_pago } from '../../../models/PedidosEnviosDetalles/forma_pago';
+import { UsuariosService } from '../../../services/PersonServis/usuarios.service';
 
 declare var bootstrap: any;
-
-// ❌ ELIMINADAS: UsuarioMinimo, ProductoParaDetallePedido, y PedidoConDetallesYUsuario.
-// Usaremos directamente 'pedidos' y 'usuarios'.
 
 @Component({
   selector: 'app-datos-cliente',
@@ -44,18 +42,18 @@ export class DatosClienteComponent implements OnInit {
   isLoading: boolean = false;
   errorMessage: string = '';
 
-  // Inicialización del objeto 'pedido' (requiere usuario anidado en esta entidad)
+  // Información del usuario
+  usuarioInfo: usuarios | null = null;
+
   pedido: pedidos = {
-    // Mínima estructura del objeto 'usuarios' para enviar el username
     usuario: { username: '' } as usuarios,
-    formaPago: { idFormaPago: 0 } as any, // Mínima estructura de forma_pago
+    formaPago: { idFormaPago: 0 } as any,
     totalPedido: 0,
     estado: 'PENDIENTE',
     notas: '',
-    detalles: [], // Propiedad 'detalles' incluida en la interfaz 'pedidos'
+    detalles: [],
   };
 
-  // ✅ CORRECCIÓN: Inicialización de 'direccionEnvio' - Usa la estructura DTO simple con `username`
   direccionEnvio: direccionesEnvio = {
     usuario: {
       username: '',
@@ -65,12 +63,13 @@ export class DatosClienteComponent implements OnInit {
         ci: '',
         nombre: '',
         apellidop: '',
-        apellidom: ''
+        apellidom: '',
+        telefono: ''
       },
       rol: {
         nombreRol: ''
       }
-    }, // Este es el campo clave para el DTO
+    },
     nombreDestinatario: '',
     apellidosDestinatario: '',
     direccion: '',
@@ -82,10 +81,8 @@ export class DatosClienteComponent implements OnInit {
     numeroTelefono: '',
     emailDestinatario: '',
   };
- 
-  // Inicialización de 'envio'
+
   envio: envios = {
-    // Usa el objeto 'direccionEnvio' inicializado arriba
     direccionEnvio: this.direccionEnvio,
     pedido: this.pedido,
     metodoEnvio: { idMetodoEnvio: 1 } as any,
@@ -107,11 +104,116 @@ export class DatosClienteComponent implements OnInit {
     private enviosS: EnviosService,
     private direccionEnvioS: DireccionEnvioService,
     private router: Router,
-    private stockService: StockService
+    private stockService: StockService,
+    private usuariosService: UsuariosService
   ) {}
 
   ngOnInit(): void {
+    this.cargarInformacionUsuario();
     this.cargarProductoCarrito();
+  }
+
+  // Método para cargar información del usuario usando findById
+  cargarInformacionUsuario(): void {
+    if (!this.username) {
+      console.warn('No hay username en localStorage');
+      return;
+    }
+
+    console.log('Cargando información del usuario:', this.username);
+    
+    this.usuariosService.findById(this.username).subscribe({
+      next: (response: ApiResponse) => {
+        console.log('Respuesta del servicio de usuario:', response);
+        
+        if (response.success && response.data) {
+          this.usuarioInfo = response.data as usuarios;
+          console.log('Información del usuario cargada:', this.usuarioInfo);
+          this.autoCompletarFormulario();
+        } else {
+          console.error('Error en la respuesta del servicio:', response.message);
+          this.autoCompletarFormulario();
+        }
+      },
+      error: (error) => {
+        console.error('Error al cargar información del usuario:', error);
+        this.autoCompletarFormulario();
+      }
+    });
+  }
+
+  // Método para autocompletar el formulario con información del usuario
+  autoCompletarFormulario(): void {
+    setTimeout(() => {
+      console.log('Autocompletando formulario con información del usuario...');
+      
+      // Obtener referencias a los inputs
+      const nombreInput = document.getElementById('nombre') as HTMLInputElement;
+      const apellidosInput = document.getElementById('apellidos') as HTMLInputElement;
+      const direccionInput = document.getElementById('direccionCalle') as HTMLInputElement;
+      const barrioInput = document.getElementById('barrio') as HTMLInputElement;
+      const departamentoSelect = document.getElementById('departamento') as HTMLSelectElement;
+      const telefonoInput = document.getElementById('whatsapp') as HTMLInputElement;
+      const emailInput = document.getElementById('email') as HTMLInputElement;
+
+      // Autocompletar con información del usuario si está disponible
+      if (this.usuarioInfo) {
+        console.log('Usando información del usuario para autocompletar');
+        
+        // Nombre
+        if (nombreInput && this.usuarioInfo.persona?.nombre) {
+          nombreInput.value = this.usuarioInfo.persona.nombre;
+        }
+
+        // Apellidos
+        if (apellidosInput) {
+          apellidosInput.value = this.getApellidosCompletos();
+        }
+
+        // Email
+        if (emailInput && this.usuarioInfo.email) {
+          emailInput.value = this.usuarioInfo.email;
+        }
+
+        // Teléfono
+        if (telefonoInput && this.usuarioInfo.persona?.telefono) {
+          telefonoInput.value = this.usuarioInfo.persona.telefono;
+        }
+
+        // Dirección
+        if (direccionInput && this.usuarioInfo.persona?.direccion) {
+          direccionInput.value = this.usuarioInfo.persona.direccion;
+        }
+
+        // Departamento/Ciudad
+        if (departamentoSelect && this.usuarioInfo.persona?.ciudad) {
+          departamentoSelect.value = this.usuarioInfo.persona.ciudad;
+        }
+
+        // Barrio (si no hay campo específico en persona, se deja vacío)
+        if (barrioInput) {
+          // El barrio no está en la estructura del usuario, se deja vacío para que el usuario lo complete
+          barrioInput.value = '';
+        }
+      }
+
+      console.log('Formulario autocompletado exitosamente');
+    }, 100);
+  }
+
+  // Método para obtener apellidos completos
+  getApellidosCompletos(): string {
+    if (!this.usuarioInfo?.persona) return '';
+    
+    const apellidos = [];
+    if (this.usuarioInfo.persona.apellidop) {
+      apellidos.push(this.usuarioInfo.persona.apellidop);
+    }
+    if (this.usuarioInfo.persona.apellidom) {
+      apellidos.push(this.usuarioInfo.persona.apellidom);
+    }
+    
+    return apellidos.join(' ');
   }
 
   cargarProductoCarrito(): void {
@@ -123,10 +225,8 @@ export class DatosClienteComponent implements OnInit {
           const rawDetalles: RawDetalleCarritoProducto[] =
             response.data as RawDetalleCarritoProducto[];
 
-          // Mapeo correcto incluyendo la propiedad stock
           this.detallesCarrito = rawDetalles.map(
             (item: RawDetalleCarritoProducto) => {
-              // Crear el objeto StockDTO
               const stockDTO: StockDTO = {
                 idStock: item.stock.idStock,
                 cantidad: item.stock.cantidad,
@@ -198,16 +298,13 @@ export class DatosClienteComponent implements OnInit {
   DatosDelCLiente(): void {
     if (this.isLoading) return;
 
-    // Ocultar mensajes previos
     this.ocultarMensajes();
 
-    // Validar que hay productos en el carrito
     if (!this.detallesCarrito || this.detallesCarrito.length === 0) {
       this.mostrarError('No hay productos en el carrito');
       return;
     }
 
-    // Obtener y validar datos del formulario
     const formData = this.obtenerDatosFormulario();
     if (!formData.esValido) {
       this.mostrarError(
@@ -217,10 +314,7 @@ export class DatosClienteComponent implements OnInit {
       return;
     }
 
-    // Configurar objetos
     this.configurarObjetosPedido(formData);
-
-    // Ejecutar secuencia de guardado
     this.ejecutarSecuenciaGuardado();
   }
 
@@ -242,7 +336,7 @@ export class DatosClienteComponent implements OnInit {
     const barrioInput = document.getElementById('barrio') as HTMLInputElement;
     const departamentoInput = document.getElementById(
       'departamento'
-    ) as HTMLInputElement;
+    ) as HTMLSelectElement;
     const numeroTelefonoInput = document.getElementById(
       'whatsapp'
     ) as HTMLInputElement;
@@ -251,7 +345,6 @@ export class DatosClienteComponent implements OnInit {
       'notasPedido'
     ) as HTMLTextAreaElement;
 
-    // Validar campos obligatorios
     if (!inputNombre?.value?.trim()) {
       return { esValido: false, mensajeError: 'El nombre es obligatorio' };
     }
@@ -283,7 +376,7 @@ export class DatosClienteComponent implements OnInit {
       return {
         esValido: false,
         mensajeError:
-          'El email es obligatorio y debe tener formato válido (@gmail.com)',
+          'El email es obligatorio y debe tener formato válido',
       };
     }
 
@@ -303,16 +396,10 @@ export class DatosClienteComponent implements OnInit {
     };
   }
 
-  /**
-   * MODIFICADO: Configura el objeto Pedido (con Detalles anidados)
-   * Y configura la Dirección de Envío como DTO simple (con username en la raíz).
-   */
   private configurarObjetosPedido(formData: any): void {
     const idFormaPagoSeleccionada = this.seleecionadoMetodoPago();
 
-    // 1. Construir la lista de detalles para el objeto 'pedido'
     const detalles: detallePedido[] = this.detallesCarrito.map((item) => {
-      // Solo necesitamos enviar el idProducto dentro del objeto producto
       const productoMinimo = { idProducto: item.stock.producto.idProducto };
 
       return {
@@ -323,21 +410,21 @@ export class DatosClienteComponent implements OnInit {
       } as detallePedido;
     });
 
-    // 2. Configurar el objeto PEDIDO COMPLETO (Estructura de entidad JPA)
     this.pedido = {
-      // Correcto: El pedido necesita el objeto usuario ANIDADO.
       usuario: { username: this.username } as usuarios,
-      formaPago: { idFormaPago: idFormaPagoSeleccionada } as any,
+      formaPago: { 
+        idFormaPago: idFormaPagoSeleccionada,
+        nombre: this.seleccionMetodoPago === 'transferenciaBancaria' ? 'Pago por QR' : 'Pago en Entrega',
+        descripcion: this.seleccionMetodoPago === 'transferenciaBancaria' ? 'Pago mediante código QR' : 'Pago al momento de la entrega'
+      } as forma_pago,
       notas: formData.datos.notas,
       estado: 'PENDIENTE',
       totalPedido: this.totalCarrito,
-      detalles: detalles, // Incluir los detalles aquí
+      detalles: detalles,
     };
 
-    // 3. Configurar Dirección de Envío (CORRECCIÓN CLAVE: Estructura DTO simple)
     this.direccionEnvio = {
-      // ✅ CORREGIDO: Usamos la propiedad simple 'username'
-      usuario:{ username:this.username}as usuarios,
+      usuario: { username: this.username } as usuarios,
       nombreDestinatario: formData.datos.nombre,
       apellidosDestinatario: formData.datos.apellidos,
       direccion: formData.datos.direccion,
@@ -350,10 +437,9 @@ export class DatosClienteComponent implements OnInit {
       emailDestinatario: formData.datos.email,
     };
 
-    // 4. Configurar el Envío (Necesita las referencias actualizadas)
     this.envio = {
       pedido: this.pedido,
-      direccionEnvio: this.direccionEnvio, // Usa el DTO simple
+      direccionEnvio: this.direccionEnvio,
       metodoEnvio: { idMetodoEnvio: 1 } as any,
       nombreReceptor: formData.datos.nombre,
       apellidosReceptor: formData.datos.apellidos,
@@ -365,32 +451,25 @@ export class DatosClienteComponent implements OnInit {
     };
   }
 
-  /**
-   * Secuencia de guardado con la corrección de la anidación del usuario.
-   */
   private ejecutarSecuenciaGuardado(): void {
     this.isLoading = true;
-
-    // 1. Guardar el Pedido (incluye los detalles y formaPago por cascada en el backend)
+    
     this.PedidosS.save(this.pedido)
       .pipe(
         switchMap((pedidoGuardado: ApiResponse) => {
           if (!pedidoGuardado.success || !pedidoGuardado.data) {
-            // Error de llave foránea o similar al guardar el pedido/detalles
             throw new Error(
               'Error al guardar el pedido (incl. detalles): ' +
                 pedidoGuardado.message
             );
           }
 
-          // Obtener el ID del Pedido guardado
           const pedidoId = (pedidoGuardado.data as pedidos).idPedido;
 
           if (!pedidoId) {
             throw new Error('El ID del pedido guardado no fue retornado.');
           }
 
-          // Actualizar las referencias
           this.pedido.idPedido = pedidoId;
           this.envio.pedido = { ...this.pedido, idPedido: pedidoId };
 
@@ -398,7 +477,6 @@ export class DatosClienteComponent implements OnInit {
             `Pedido (y detalles) guardado con ID: ${pedidoId}. Procediendo con Stock y Envío.`
           );
 
-          // 2. Preparar la actualización de Stock (N llamadas paralelas)
           const stockUpdates = this.detallesCarrito.map((item) => {
             const idStock = item.stock.idStock;
             const cantidadVendida = item.cantidad;
@@ -411,7 +489,6 @@ export class DatosClienteComponent implements OnInit {
                     `Error al actualizar stock para Producto ${item.stock.producto.idProducto}:`,
                     error
                   );
-                  // Devolvemos un Observable que no falla la operación completa, solo registra el error
                   return of({
                     success: false,
                     message: `Fallo de stock para ${item.stock.producto.idProducto}`,
@@ -420,9 +497,8 @@ export class DatosClienteComponent implements OnInit {
               );
           });
 
-          // 3. Preparar el Guardado de Dirección de Envío y luego el Envío (secuencial)
           const guardarEnvio$ = this.direccionEnvioS
-            .save(this.direccionEnvio) // Aquí se envía el DTO simple
+            .save(this.direccionEnvio)
             .pipe(
               switchMap((direccionGuardada: ApiResponse) => {
                 if (!direccionGuardada.success || !direccionGuardada.data) {
@@ -432,7 +508,6 @@ export class DatosClienteComponent implements OnInit {
                   );
                 }
 
-                // Obtener el ID de la Dirección guardada
                 const direccionGuardadaObj =
                   direccionGuardada.data as direccionesEnvio;
                 const direccionId = direccionGuardadaObj.idDireccionEnvio;
@@ -443,7 +518,6 @@ export class DatosClienteComponent implements OnInit {
                   );
                 }
 
-                // Actualizar la referencia del Envío con el ID de la Dirección
                 this.envio.direccionEnvio = {
                   ...this.direccionEnvio,
                   idDireccionEnvio: direccionId,
@@ -452,11 +526,10 @@ export class DatosClienteComponent implements OnInit {
                 console.log(
                   `Dirección de envío guardada con ID: ${direccionId}`
                 );
-                return this.enviosS.save(this.envio); // Guardar Envío
+                return this.enviosS.save(this.envio);
               })
             );
 
-          // 4. Ejecutar actualizaciones de stock Y el guardado de la dirección/envío en paralelo
           return forkJoin([...stockUpdates, guardarEnvio$]);
         })
       )
@@ -472,21 +545,21 @@ export class DatosClienteComponent implements OnInit {
         },
         error: (err: HttpErrorResponse) => {
           this.isLoading = false;
-          console.error(
-            'Error durante la secuencia de registro del pedido:',
-            err
-          );
-          // Esto capturará errores de red, o el error explícito lanzado por throw new Error()
-          const errorMsg =
-            err.error?.message ||
-            err.message ||
-            'Ocurrió un error al procesar el pedido. Por favor, inténtelo de nuevo.';
+          console.error('Error durante la secuencia de registro del pedido:', err);
+          
+          console.error('Error completo:', {
+            status: err.status,
+            statusText: err.statusText,
+            error: err.error,
+            url: err.url
+          });
+          
+          const errorMsg = err.error?.message || err.message || 'Ocurrió un error al procesar el pedido.';
           this.mostrarErrorModal(errorMsg);
         },
       });
   }
 
-  // Métodos de utilidad
   private ocultarMensajes(): void {
     this.errorMessage = '';
     const errorContainer = document.getElementById('errorContainer');
@@ -504,25 +577,22 @@ export class DatosClienteComponent implements OnInit {
     }
   }
 
-  private mostrarErrorModal(mensaje: string): void {
-    this.errorMessage = mensaje;
-    const modalElement = document.getElementById('modalError');
-    if (modalElement) {
-      const modalBody = modalElement.querySelector('.modal-body');
-      if (modalBody) {
-        modalBody.innerHTML = `
-<p>${mensaje}</p>
-<p>Si el problema persiste, contacta con soporte técnico.</p>
-`;
-      }
-      const modal = new bootstrap.Modal(modalElement);
-      modal.show();
+// Método para mostrar error
+mostrarErrorModal(mensaje: string): void {
+  this.errorMessage = mensaje;
+  const modalElement = document.getElementById('modalError');
+  if (modalElement) {
+    const errorMessageElement = modalElement.querySelector('#errorMessageText');
+    if (errorMessageElement) {
+      errorMessageElement.textContent = mensaje;
     }
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
   }
+}
 
-  // Métodos públicos
   validarEmail(email: string): boolean {
-    const emailRegex = /^[a-zA-Z0-9._-]+@gmail\.com$/;
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     return emailRegex.test(email);
   }
 
@@ -531,8 +601,19 @@ export class DatosClienteComponent implements OnInit {
   }
 
   seleecionadoMetodoPago(): number {
-    // Asegúrate de que estos IDs (1111/2222) son válidos en tu tabla 'FormaPago'
-    return this.seleccionMetodoPago === 'transferenciaBancaria' ? 1111 : 2222;
+    const metodosPago: { [key: string]: number } = {
+      'transferenciaBancaria': 3333,
+      'pagoEntrega': 1111
+    };
+    
+    const idSeleccionado = metodosPago[this.seleccionMetodoPago];
+    
+    if (!idSeleccionado) {
+      console.error('ID de forma de pago no encontrado para:', this.seleccionMetodoPago);
+      return 1111;
+    }
+    
+    return idSeleccionado;
   }
 
   limpiarCarrito(): void {
@@ -571,23 +652,22 @@ export class DatosClienteComponent implements OnInit {
       this.mostrarModalExito();
     }
   }
-
-  mostrarModalExito(): void {
-    const modalElement = document.getElementById('modalExito');
-    if (modalElement) {
-      const modal = new bootstrap.Modal(modalElement);
-      modal.show();
-      modalElement.addEventListener(
-        'hidden.bs.modal',
-        () => {
-          this.router.navigate(['/home']);
-        },
-        { once: true }
-      );
-    }
+  // Método para mostrar modal de éxito
+mostrarModalExito(): void {
+  const modalElement = document.getElementById('modalExito');
+  if (modalElement) {
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+    
+    // Redirigir al home cuando se cierre el modal
+    modalElement.addEventListener('hidden.bs.modal', () => {
+      this.router.navigate(['/home']);
+    }, { once: true });
   }
+}
 
-  // Métodos para la vista
+
+
   hayProductosEnCarrito(): boolean {
     return this.detallesCarrito && this.detallesCarrito.length > 0;
   }
@@ -603,8 +683,9 @@ export class DatosClienteComponent implements OnInit {
     return item.stock.cantidad >= item.cantidad;
   }
 
-  // Método para mostrar el nombre del producto en el template
   getNombreProducto(item: DetalleCarritoProducto): string {
     return item.stock.producto.nombre;
   }
+
+
 }

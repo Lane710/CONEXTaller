@@ -4,13 +4,19 @@ import { Observable } from 'rxjs';
 import { ApiResponse } from '../../models/api-response';
 import { subcategoria } from '../../models/ProductoStockModel/subcategorias';
 
+export interface ValidationResult {
+  canDelete: boolean;
+  message: string;
+  relatedProducts?: number;
+  relatedProductsList?: any[];
+  data?: any;
+}
 
 @Injectable({
   providedIn: 'root'
 })
-export class SubcategoriaService { // Nombre del servicio basado en el recurso
+export class SubcategoriaService {
 
-  // La URL base coincide con el @RequestMapping("/subcategorias/") del backend
   private baseUrl = 'http://localhost:8080/subcategorias/'; 
 
   constructor(private http: HttpClient) { }
@@ -31,7 +37,11 @@ export class SubcategoriaService { // Nombre del servicio basado en el recurso
     return this.http.get<ApiResponse>(`${this.baseUrl}findById/${id}`);
   }
 
-  ListadoSubCategoriasPorCategoria(idCategoria:number): Observable<ApiResponse> {
+  /**
+   * GET: /subcategorias/ListForCategoria/{idCategoria}
+   * Obtiene subcategorías por categoría
+   */
+  ListadoSubCategoriasPorCategoria(idCategoria: number): Observable<ApiResponse> {
     return this.http.get<ApiResponse>(`${this.baseUrl}ListForCategoria/${idCategoria}`);
   }
 
@@ -96,11 +106,19 @@ export class SubcategoriaService { // Nombre del servicio basado en el recurso
    * PUT: /subcategorias/updateEstado/{id}
    * Realiza la eliminación lógica (inactivación) de una subcategoría.
    */
-
-  cambiarEstado(id: number, estadoNumerico:number): Observable<ApiResponse> {
+  cambiarEstado(id: number, estadoNumerico: number): Observable<ApiResponse> {
     console.log("Servicio cambiarEstado:", id, estadoNumerico);
-    // Usamos PUT sin cuerpo para enviar la solicitud de cambio de estado.
     return this.http.put<ApiResponse>(`${this.baseUrl}updateEstado/${id}/${estadoNumerico}`, null);
   }
 
+  // =================================================================
+  // ✅ NUEVO MÉTODO: Validar si se puede eliminar subcategoría
+  // =================================================================
+  /**
+   * GET: /subcategorias/{id}/can-delete
+   * Valida si una subcategoría puede ser eliminada (sin productos asociados)
+   */
+  canDeleteSubcategoria(id: number): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.baseUrl}${id}/can-delete`);
+  }
 }

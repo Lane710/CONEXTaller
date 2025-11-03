@@ -4,6 +4,13 @@ import { Observable } from 'rxjs';
 import { ApiResponse } from '../../models/api-response';
 import { categorias } from '../../models/ProductoStockModel/categorias';
 
+export interface ValidationResult {
+  canDelete: boolean;
+  message: string;
+  relatedProducts?: number;
+  relatedSubcategories?: number;
+  data?: any;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -91,11 +98,19 @@ export class CategoriasService {
    * PUT: /categorias/updateEstado/{id}
    * Realiza la eliminación lógica (inactivación) de una categoría.
    */
-
-   cambiarByIdEstado(id: number,estado:number): Observable<ApiResponse> {
-    // Usamos PUT sin cuerpo para enviar la solicitud de cambio de estado (inactivación).
+  cambiarByIdEstado(id: number, estado: number): Observable<ApiResponse> {
     console.log(`Servicio: Cambiando estado de ID ${id} a ${estado}`);
     return this.http.put<ApiResponse>(`${this.baseUrl}updateEstado/${id}/${estado}`, null);
   }
+
+  // =================================================================
+  // ✅ NUEVO MÉTODO: Validar si se puede eliminar categoría
+  // =================================================================
+  /**
+   * GET: /categorias/{id}/can-delete
+   * Valida si una categoría puede ser eliminada (sin productos ni subcategorías asociadas)
+   */
+  canDeleteCategoria(id: number): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.baseUrl}${id}/can-delete`);
+  }
 }
-  

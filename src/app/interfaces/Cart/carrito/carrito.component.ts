@@ -1,9 +1,7 @@
 import { 
   Component, 
   OnInit, 
-  AfterViewInit, 
-  ViewChild, 
-  ElementRef 
+  AfterViewInit
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CarritoService } from '../../../services/CartServis/carrito.service';
@@ -11,16 +9,18 @@ import { ApiResponse } from '../../../models/api-response';
 import Decimal from 'decimal.js';
 import { DetalleCarrito } from '../../../models/CartModel/DetalleCarrito';
 import { StockService } from '../../../services/ProductosServis/stock.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { StockDTO } from '../../../DTOs/dtosBD/StockDTO';
 
-// Import Bootstrap JS types for TypeScript recognition
-declare var bootstrap: any;
+// Interface extendida localmente para manejar el estado del carrito
+interface StockConEstado extends StockDTO {
+  anadidoAlCarrito?: boolean;
+}
 
 @Component({
   selector: 'app-carrito',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './carrito.component.html',
   styleUrl: './carrito.component.css',
 })
@@ -30,19 +30,13 @@ export class CarritoComponent implements OnInit, AfterViewInit {
   detallesCarritoOrdenados: DetalleCarrito[] = [];
   subtotalCarrito: string = '0.00';
   totalCarrito: string = '0.00';
-  productosCuadricula: StockDTO[] = [];
-
-  // --- Referencias de Modal para Eliminar (NUEVO) ---
-  @ViewChild('confirmarEliminarModal') confirmarEliminarModalRef!: ElementRef;
-  private confirmarEliminarModalInstance: any;
-
-  // Propiedad para almacenar el producto a eliminar
-  productoAEliminar: { idDetalleCarrito: number; nombre: string } | null = null;
+  productosCuadricula: StockConEstado[] = [];
+  eliminandoAlgunProducto: boolean = false;
 
   constructor(
     private carritoService: CarritoService,
     private stockService: StockService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -54,74 +48,115 @@ export class CarritoComponent implements OnInit, AfterViewInit {
     this.cargarProductosParaCuadricula();
   }
 
-  // Inicializar las instancias de Bootstrap Modal
   ngAfterViewInit(): void {
-    if (this.confirmarEliminarModalRef) {
-      this.confirmarEliminarModalInstance = new bootstrap.Modal(
-        this.confirmarEliminarModalRef.nativeElement
-      );
+    this.enableDragScroll();
+  }
+
+  // --- Métodos para el Carrusel ---
+
+  scrollCarousel(carouselId: string, direction: number): void {
+    const carousel = document.getElementById(`carousel-${carouselId}`);
+    if (carousel) {
+      const scrollAmount = 300;
+      carousel.scrollBy({
+        left: direction * scrollAmount,
+        behavior: 'smooth'
+      });
     }
   }
 
-  // --- Métodos para el Modal de Eliminación (NUEVO) ---
-
-  /**
-   * @description Abre el modal de confirmación para eliminar producto
-   */
-  abrirModalConfirmarEliminar(item: DetalleCarrito): void {
-    this.productoAEliminar = {
-      idDetalleCarrito: item.idDetalleCarrito || 0,
-      nombre: item.stock.producto.nombre
-    };
+  enableDragScroll(): void {
+    const carousels = document.querySelectorAll('.products-carousel');
     
-    if (this.confirmarEliminarModalInstance) {
-      this.confirmarEliminarModalInstance.show();
-    }
+    carousels.forEach((carousel) => {
+      if (!(carousel instanceof HTMLElement)) {
+        console.warn('Elemento del carrusel no es un HTMLElement');
+        return;
+      }
+
+      const htmlCarousel = carousel as HTMLElement;
+      let isDown = false;
+      let startX: number;
+      let scrollLeft: number;
+
+      const handleMouseDown = (e: MouseEvent) => {
+        isDown = true;
+        htmlCarousel.classList.add('active');
+        startX = e.pageX - htmlCarousel.offsetLeft;
+        scrollLeft = htmlCarousel.scrollLeft;
+      };
+
+      const handleMouseLeave = () => {
+        isDown = false;
+        htmlCarousel.classList.remove('active');
+      };
+
+      const handleMouseUp = () => {
+        isDown = false;
+        htmlCarousel.classList.remove('active');
+      };
+
+      const handleMouseMove = (e: MouseEvent) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - htmlCarousel.offsetLeft;
+        const walk = (x - startX) * 2;
+        htmlCarousel.scrollLeft = scrollLeft - walk;
+      };
+
+      // Agregar event listeners
+      htmlCarousel.addEventListener('mousedown', handleMouseDown);
+      htmlCarousel.addEventListener('mouseleave', handleMouseLeave);
+      htmlCarousel.addEventListener('mouseup', handleMouseUp);
+      htmlCarousel.addEventListener('mousemove', handleMouseMove);
+    });
   }
 
-  /**
-   * @description Cierra el modal de confirmación
-   */
-  cerrarModalConfirmarEliminar(): void {
-    if (this.confirmarEliminarModalInstance) {
-      this.confirmarEliminarModalInstance.hide();
-    }
-    this.productoAEliminar = null;
-  }
-
-  /**
-   * @description Confirma la eliminación del producto
-   */
-  confirmarEliminacion(): void {
-    if (!this.productoAEliminar) {
-      console.error('No hay producto seleccionado para eliminar');
+  AddProductCarrito(stockItem: StockConEstado): void {
+    const usuarioId = localStorage.getItem('current_username');
+    
+    if (!usuarioId) {
+      this.mostrarModalSesionRequerida();
       return;
     }
 
-    this.carritoService.eliminarProductoDeCarrito(
-      this.username, 
-      this.productoAEliminar.idDetalleCarrito
-    ).subscribe({
-      next: (res: ApiResponse) => {
-        if (res.success) {
-          console.log('Producto eliminado correctamente del carrito');
-          this.cerrarModalConfirmarEliminar();
-          this.cargarCarrito(); // Recargar el carrito
-        }
+    const detalle: DetalleCarrito = {
+      stock: stockItem,
+      cantidad: 1,
+      precioUnitario: (stockItem.producto.precio ?? 0).toString(),
+      idDetalleCarrito: 0,
+      subtotal: '',
+    };
+
+    this.carritoService.agregarProductoACarrito(usuarioId, detalle).subscribe({
+      next: () => {
+        console.log('Producto agregado al carrito con éxito');
+        stockItem.anadidoAlCarrito = true;
+        setTimeout(() => {
+          stockItem.anadidoAlCarrito = false;
+        }, 2000);
+        
+        this.cargarCarrito();
       },
       error: (err) => {
-        console.error('Error al eliminar producto:', err);
-        alert('Error al eliminar el producto del carrito');
-        this.cerrarModalConfirmarEliminar();
+        console.error('Error al agregar producto al carrito:', err);
+        alert('Hubo un problema al añadir el producto al carrito. Inténtalo de nuevo.');
       },
     });
   }
 
-  // --- Mantén tus métodos existentes ---
+  private mostrarModalSesionRequerida(): void {
+    alert('Para agregar productos al carrito, necesitas iniciar sesión.');
+    this.router.navigate(['/login']);
+  }
+
+  // --- Métodos para cargar y gestionar el carrito ---
 
   cargarCarrito(): void {
+    console.log('Cargando carrito para usuario:', this.username);
     this.carritoService.listarProductosDeUsuario(this.username).subscribe({
       next: (response: ApiResponse) => {
+        console.log('Respuesta del carrito:', response);
         if (!response.success || !response.data) {
           this.detallesCarrito = [];
           this.detallesCarritoOrdenados = [];
@@ -180,18 +215,70 @@ export class CarritoComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // --- Método para eliminar producto con cargador de pantalla completa ---
+  eliminarProducto(idDetalleCarrito: number): void {
+    const usuario = localStorage.getItem('current_username') || '';
+    
+    if (!usuario) {
+      console.error('No se encontró usuario en localStorage');
+      alert('Error: No se pudo identificar al usuario');
+      return;
+    }
+
+    // Activar el overlay de carga
+    this.eliminandoAlgunProducto = true;
+
+    console.log('Eliminando producto:', { usuario, idDetalleCarrito });
+    
+    // Simular un delay de 2 segundos antes de hacer la petición real
+    setTimeout(() => {
+      this.carritoService.eliminarProductoDeCarrito(usuario, idDetalleCarrito).subscribe({
+        next: (response) => {
+          console.log('Respuesta del servidor:', response);
+          
+          // Desactivar el overlay de carga
+          this.eliminandoAlgunProducto = false;
+          
+          if (response.success) {
+            // Eliminar el producto de la lista localmente
+            this.detallesCarrito = this.detallesCarrito.filter(
+              detalle => detalle.idDetalleCarrito !== idDetalleCarrito
+            );
+            this.detallesCarritoOrdenados = [...this.detallesCarrito];
+            
+            // Recalcular totales
+            this.calcularTotales();
+            
+            console.log('Producto eliminado del carrito exitosamente');
+          } else {
+            console.error('Error al eliminar producto:', response.message);
+            alert('Error al eliminar el producto: ' + response.message);
+          }
+        },
+        error: (error) => {
+          console.error('Error en la petición de eliminación:', error);
+          alert('Error de conexión al eliminar el producto');
+          this.eliminandoAlgunProducto = false;
+        }
+      });
+    }, 500); // 2 segundos de delay
+  }
+
   cargarProductosParaCuadricula(): void {
     this.stockService.ProductoporCategoria(2, 6, 5).subscribe({
       next: (res) => {
         if (res.success && res.data) {
-          this.productosCuadricula = res.data.slice(0, 8);
+          this.productosCuadricula = res.data.slice(0, 15).map((item: StockDTO) => ({
+            ...item,
+            anadidoAlCarrito: false
+          } as StockConEstado));
         }
       },
       error: (err) => console.error('Error al cargar productos para cuadrícula:', err),
     });
   }
 
-  redirectToDetails(stock: StockDTO): void {
+  redirectToDetails(stock: StockConEstado): void {
     this.router.navigate(['/home/DetailProduct', stock.idStock]);
   }
 

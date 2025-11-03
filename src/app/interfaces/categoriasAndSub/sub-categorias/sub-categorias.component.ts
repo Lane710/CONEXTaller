@@ -5,7 +5,7 @@ import { SubcategoriaService } from '../../../services/ProductosServis/subcatego
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiResponse } from '../../../models/api-response';
 import { FormsModule } from '@angular/forms';
-import * as bootstrap from 'bootstrap';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-sub-categorias',
@@ -19,11 +19,10 @@ export class SubcategoriasComponent implements OnInit {
   subcategoriaSeleccionada: subcategoria | null = null;
   mostrarModal: boolean = false;
   categoriaId: number | null = null;
-  categoriaInfo: any = null;
 
-  // Filtros
+  // Filtros simplificados
   terminoBusqueda: string = '';
-  filtroEstado: 'todos' | 'activo' | 'inactivo' = 'todos';
+  filtroEstado: string = 'todos';
   subcategoriasFiltradas: subcategoria[] = [];
 
   cargando: boolean = true;
@@ -61,7 +60,7 @@ export class SubcategoriasComponent implements OnInit {
     this.subcategoriaService.ListadoSubCategoriasPorCategoria(this.categoriaId).subscribe({
       next: (respuesta: ApiResponse) => {
         this.subcategoriasExistentes = respuesta.data as subcategoria[] || [];
-        this.aplicarFiltros();
+        this.aplicarFiltros(this.terminoBusqueda, this.filtroEstado);
         this.cargando = false;
       },
       error: () => {
@@ -71,24 +70,26 @@ export class SubcategoriasComponent implements OnInit {
     });
   }
 
-  aplicarFiltros(): void {
-    let filtradas = this.subcategoriasExistentes;
-
-    if (this.filtroEstado === 'activo') {
-      filtradas = filtradas.filter(s => s.estado === true);
-    } else if (this.filtroEstado === 'inactivo') {
-      filtradas = filtradas.filter(s => s.estado === false);
-    }
-
-    if (this.terminoBusqueda.trim()) {
-      const busqueda = this.terminoBusqueda.toLowerCase().trim();
-      filtradas = filtradas.filter(s =>
-        s.nombre.toLowerCase().includes(busqueda) ||
-        (s.descripcion && s.descripcion.toLowerCase().includes(busqueda))
-      );
-    }
-
-    this.subcategoriasFiltradas = filtradas;
+  // =================================================================
+  // FILTROS SIMPLIFICADOS - Solo estado y búsqueda
+  // =================================================================
+  aplicarFiltros(termino: string = '', estado: string = 'todos'): void {
+    this.terminoBusqueda = termino;
+    this.filtroEstado = estado;
+    
+    this.subcategoriasFiltradas = this.subcategoriasExistentes.filter(subcategoria => {
+      // Filtro por búsqueda en nombre y descripción
+      const coincideBusqueda = !termino || 
+        subcategoria.nombre.toLowerCase().includes(termino.toLowerCase()) ||
+        (subcategoria.descripcion && subcategoria.descripcion.toLowerCase().includes(termino.toLowerCase()));
+      
+      // Filtro por estado
+      const coincideEstado = estado === 'todos' || 
+        (estado === 'activo' && subcategoria.estado) ||
+        (estado === 'inactivo' && !subcategoria.estado);
+      
+      return coincideBusqueda && coincideEstado;
+    });
   }
 
   redireccionarRegistro(): void {
@@ -103,53 +104,176 @@ export class SubcategoriasComponent implements OnInit {
     this.router.navigate(['home/Categorias']);
   }
 
+  // =================================================================
+  // ELIMINACIÓN CON VALIDACIÓN
+  // =================================================================
   eliminarSubcategoria(id: number | undefined): void {
-    if (!id || !confirm(`¿Está seguro que desea eliminar permanentemente la subcategoría con ID ${id}?`)) {
-      return;
-    }
-
-    this.subcategoriaService.deleteById(id).subscribe({
-      next: () => {
-        console.log('Subcategoría eliminada:', id);
-        this.cerrarModal();
-        this.cargarSubcategorias();
-      },
-      error: () => {
-        alert('Error al eliminar la subcategoría. Intente nuevamente.');
-      }
-    });
-  }
-
-  EliminarOCambiarEstado(id: number | undefined, estadoActual: boolean): void {
     if (!id) return;
-    const accion = estadoActual ? 'INACTIVAR' : 'ACTIVAR';
-    if (!confirm(`¿Está seguro que desea ${accion} la subcategoría con ID ${id}?`)) return;
 
-    const nuevoEstado = estadoActual ? 0 : 1;
-    this.subcategoriaService.cambiarEstado(id, nuevoEstado).subscribe({
-      next: () => {
-        this.cargarSubcategorias();
+    this.subcategoriaService.canDeleteSubcategoria(id).subscribe({
+      next: (response: any) => {
+        console.log('Validación exitosa:', response);
+        
+        if (response.data && response.data.canDelete) {
+          this.mostrarModalConfirmacionEliminacion(id);
+        } else {
+          const validationResult = response.data || response;
+          this.mostrarModalConDependencias(validationResult, id);
+        }
       },
-      error: () => {
-        alert(`Error al ${accion} la subcategoría.`);
+      error: (error: HttpErrorResponse) => {
+        console.error('Error al validar dependencias:', error);
+        
+        if (error.status === 409 && error.error && error.error.data) {
+          const validationResult = error.error.data;
+          this.mostrarModalConDependencias(validationResult, id);
+        } else {
+          const fallbackResult = {
+            canDelete: false,
+            message: 'Error al verificar dependencias. No se puede eliminar la subcategoría en este momento.',
+            relatedProducts: 0
+          };
+          this.mostrarModalConDependencias(fallbackResult, id);
+        }
       }
     });
   }
 
-  abrirModalDetalles(subcategoria: subcategoria): void {
-    this.subcategoriaSeleccionada = subcategoria;
-    this.mostrarModal = true;
+  private mostrarModalConfirmacionEliminacion(id: number): void {
+    this.abrirBootstrapModal('modalEliminar');
+    
+    const btnConfirmar = document.getElementById('btnEliminarConfirmar');
+    if (btnConfirmar) {
+      const newBtn = btnConfirmar.cloneNode(true) as HTMLElement;
+      btnConfirmar.parentNode?.replaceChild(newBtn, btnConfirmar);
+      
+      const handler = () => {
+        this.subcategoriaService.deleteById(id).subscribe({
+          next: () => {
+            console.log(`Eliminación física exitosa: ID ${id}`);
+            this.cargarSubcategorias();
+            this.cerrarBootstrapModal('modalEliminar');
+          },
+          error: (error) => {
+            console.error('Error al eliminar permanentemente:', error);
+            alert('Error inesperado al eliminar la subcategoría.');
+            this.cerrarBootstrapModal('modalEliminar');
+          }
+        });
+      };
+      
+      newBtn.addEventListener('click', handler);
+    }
   }
 
-  cerrarModal(): void {
-    this.mostrarModal = false;
-    this.subcategoriaSeleccionada = null;
+  private mostrarModalConDependencias(validation: any, id: number): void {
+    console.log('Mostrando dependencias de subcategoría:', validation);
+    
+    const textoDependencias = document.getElementById('textoDependenciasSubcategoria');
+    if (textoDependencias) {
+      textoDependencias.innerHTML = this.buildDependenciesMessageSubcategoria(validation);
+    }
+    
+    const modal = document.getElementById('modalDependenciasSubcategoria');
+    if (modal) {
+      modal.setAttribute('data-subcategoria-id', id.toString());
+    }
+    
+    this.abrirBootstrapModal('modalDependenciasSubcategoria');
   }
 
-  prevenirCierre(event: Event): void {
-    event.stopPropagation();
+  private buildDependenciesMessageSubcategoria(validation: any): string {
+    const products = validation.relatedProducts || 0;
+    const productsList = validation.relatedProductsList || [];
+    
+    let detailsHtml = '';
+    let productsListHtml = '';
+    
+    if (products > 0) {
+      detailsHtml += `
+        <div class="dependency-item">
+          <i class="fas fa-box me-2 text-danger"></i>
+          <strong>Productos asociados:</strong> ${products} producto(s)
+        </div>
+      `;
+      
+      if (productsList.length > 0) {
+        productsListHtml = `
+          <div class="products-list mt-2">
+            <h6 class="text-dark mb-2">Productos específicos:</h6>
+            <div class="list-group" style="max-height: 200px; overflow-y: auto;">
+              ${productsList.map((product: any) => `
+                <div class="list-group-item list-group-item-action">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">${product.nombre}</h6>
+                    <small>ID: ${product.idProducto}</small>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+    }
+    
+    return `
+      <div class="dependencies-alert">
+        <div class="alert alert-warning mb-3">
+          <h6 class="alert-heading">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            No se puede eliminar la subcategoría
+          </h6>
+          <p class="mb-2">${validation.message || 'Existen productos asociados que impiden la eliminación.'}</p>
+        </div>
+        
+        <div class="dependencies-details mb-3">
+          <h6 class="text-dark mb-2">Dependencias encontradas:</h6>
+          ${detailsHtml}
+          ${productsListHtml}
+        </div>
+        
+        <div class="suggestions">
+          <h6 class="text-primary mb-2">💡 Acciones recomendadas:</h6>
+          <ul class="list-unstyled small">
+            ${products > 0 ? `
+              <li class="mb-1">
+                <i class="fas fa-arrow-right me-2 text-success"></i>
+                <strong>Reasignar productos:</strong> Mover los ${products} producto(s) a otra subcategoría
+              </li>
+              <li class="mb-1">
+                <i class="fas fa-trash-alt me-2 text-danger"></i>
+                <strong>Eliminar productos:</strong> Eliminar permanentemente los productos asociados
+              </li>
+              <li class="mb-1">
+                <i class="fas fa-edit me-2 text-info"></i>
+                <strong>Editar productos:</strong> Cambiar la subcategoría de cada producto individualmente
+              </li>
+            ` : ''}
+            <li class="mb-1">
+              <i class="fas fa-toggle-off me-2 text-secondary"></i>
+              <strong>Deshabilitar subcategoría:</strong> Cambiar el estado a inactivo en lugar de eliminar
+            </li>
+          </ul>
+        </div>
+      </div>
+    `;
   }
 
+  gestionarProductosSubcategoria(): void {
+    const modal = document.getElementById('modalDependenciasSubcategoria');
+    const subcategoriaId = modal?.getAttribute('data-subcategoria-id');
+    
+    if (subcategoriaId) {
+      this.cerrarBootstrapModal('modalDependenciasSubcategoria');
+      this.router.navigate(['/home/Productos'], { 
+        queryParams: { subcategoria: subcategoriaId } 
+      });
+    }
+  }
+
+  // =================================================================
+  // CAMBIO DE ESTADO
+  // =================================================================
   abrirModalCambioEstado(subcategoria: subcategoria): void {
     if (!subcategoria) return;
     this.subcategoriaSeleccionada = subcategoria;
@@ -175,12 +299,29 @@ export class SubcategoriasComponent implements OnInit {
     this.abrirBootstrapModal('modalConfirmacion');
   }
 
-   cambiarEstadoSubcategoria(subcategoria: subcategoria): void {
+  cambiarEstadoSubcategoria(subcategoria: subcategoria): void {
     const nuevoEstado = subcategoria.estado ? 0 : 1;
     this.subcategoriaService.cambiarEstado(subcategoria.idSubcategoria!, nuevoEstado).subscribe({
       next: () => this.cargarSubcategorias(),
       error: () => alert('Error al cambiar el estado.')
     });
+  }
+
+  // =================================================================
+  // MODAL DETALLES Y ELIMINACIÓN
+  // =================================================================
+  abrirModalDetalles(subcategoria: subcategoria): void {
+    this.subcategoriaSeleccionada = subcategoria;
+    this.mostrarModal = true;
+  }
+
+  cerrarModal(): void {
+    this.mostrarModal = false;
+    this.subcategoriaSeleccionada = null;
+  }
+
+  prevenirCierre(event: Event): void {
+    event.stopPropagation();
   }
 
   abrirModalEliminar(subcategoria: subcategoria): void {
@@ -200,7 +341,7 @@ export class SubcategoriasComponent implements OnInit {
       btnConfirmar.parentNode?.replaceChild(nuevoBtn, btnConfirmar);
 
       nuevoBtn.addEventListener('click', () => {
-        this.eliminarSubcategoriaConfirmada(subcategoria);
+        this.eliminarSubcategoria(subcategoria.idSubcategoria);
         this.cerrarBootstrapModal('modalEliminar');
       });
     }
@@ -208,22 +349,10 @@ export class SubcategoriasComponent implements OnInit {
     this.abrirBootstrapModal('modalEliminar');
   }
 
-   eliminarSubcategoriaConfirmada(subcategoria: subcategoria): void {
-    if (!subcategoria.idSubcategoria) return;
-    this.subcategoriaService.deleteById(subcategoria.idSubcategoria).subscribe({
-      next: () => {
-        this.cargarSubcategorias();
-        this.subcategoriaSeleccionada = null;
-      },
-      error: () => alert('No se pudo eliminar la subcategoría.')
-    });
-  }
-
-  // ===============================================
-  // NUEVAS FUNCIONES PARA ABRIR / CERRAR MODALES SIN BUGS
-  // ===============================================
-
-   abrirBootstrapModal(idModal: string): void {
+  // =================================================================
+  // UTILIDADES MODAL BOOTSTRAP
+  // =================================================================
+  abrirBootstrapModal(idModal: string): void {
     const modalEl = document.getElementById(idModal);
     if (!modalEl) return;
     modalEl.classList.add('show');
@@ -235,7 +364,7 @@ export class SubcategoriasComponent implements OnInit {
     document.body.appendChild(backdrop);
   }
 
-   cerrarBootstrapModal(idModal: string): void {
+  cerrarBootstrapModal(idModal: string): void {
     const modalEl = document.getElementById(idModal);
     if (!modalEl) return;
     modalEl.classList.remove('show');

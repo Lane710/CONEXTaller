@@ -1,14 +1,14 @@
 <div class="container">
   <!-- Encabezado con navegación -->
   <nav aria-label="breadcrumb" class="header-nav">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item">
-      <a href="/home/Gestion" class="breadcrumb-link">
-        <i class="bi bi-house-fill me-1"></i>Home
-      </a>
-    </li>
-  </ol>
-</nav>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="/home/Gestion" class="breadcrumb-link">
+          <i class="bi bi-house-fill me-1"></i>Home
+        </a>
+      </li>
+    </ol>
+  </nav>
   
   <!-- Barra de título y controles -->
   <div class="page-header">
@@ -35,12 +35,14 @@
   <!-- Sección de categorías -->
   <section class="categories-section">
     <div class="categories-grid">
-      @for (item of categoriasExistentes; track item.idCategoria) {
+      @for (item of categoriasFiltradas; track item.idCategoria) {
       <div class="category-item">
         <!-- Contenedor de imagen con tamaño fijo -->
         <div class="image-container" (click)="redireccionarSubCategorias(item.idCategoria || 0)">
+          <div>
           <img [src]="item.urlImagen" [alt]="item.nombre" class="category-image" 
                (error)="item.urlImagen = 'assets/images/placeholder.jpg'"/>
+          </div>
         </div>
         
         <div class="category-info">
@@ -63,17 +65,6 @@
     </div>
   </section>
 </div>
-
-
-
-
-
-
-
-
-
-
-
 
 <!-- Modal de detalles -->
 <div class="modal-overlay" *ngIf="mostrarModal" (click)="cerrarModal()">
@@ -152,19 +143,7 @@
   </div>
 </div>
 
-
-
-
-
-
-
-
-
-
-
-
-    <!--  Modal de cambio de estado: -->
-    <!-- Modal Confirmación Activar / Desactivar -->
+<!-- Modal Confirmación Activar / Desactivar -->
 <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacionLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -180,23 +159,11 @@
       <!-- Pie -->
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="cerrarBootstrapModal('modalConfirmacion')">Cancelar</button>
-        
         <button type="button" class="btn btn-warning" id="btnConfirmar">Continuar</button>
       </div>
     </div>
   </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-<!--Modal de eliminacion-->
 
 <!-- Modal Confirmación Eliminación -->
 <div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminarLabel" aria-hidden="true">
@@ -211,7 +178,7 @@
       
       <!-- Cuerpo -->
       <div class="modal-body">
-        <p id="textoEliminar">¿Está seguro que desea eliminar esta subcategoría permanentemente?</p>
+        <p id="textoEliminar">¿Está seguro que desea eliminar esta categoría permanentemente?</p>
       </div>
       
       <!-- Pie -->
@@ -224,4 +191,40 @@
   </div>
 </div>
 
-
+<!-- Modal de Dependencias -->
+<div class="modal fade" id="modalDependencias" tabindex="-1" aria-labelledby="modalDependenciasLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title" id="modalDependenciasLabel">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          No se puede eliminar categoría
+        </h5>
+        <button type="button" class="btn-close" (click)="cerrarBootstrapModal('modalDependencias')" aria-label="Cerrar"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div id="textoDependencias">
+          <!-- La información se insertará dinámicamente -->
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarBootstrapModal('modalDependencias')">
+          <i class="fas fa-times me-1"></i>
+          Entendido
+        </button>
+        <button type="button" class="btn btn-primary" (click)="gestionarProductosCategoria()">
+          <i class="fas fa-cubes me-1"></i>
+          Gestionar Productos
+        </button>
+        <button type="button" class="btn btn-info" (click)="gestionarSubcategoriasCategoria()">
+          <i class="fas fa-folder me-1"></i>
+          Gestionar Subcategorías
+        </button>
+      </div>
+      
+    </div>
+  </div>
+</div>

@@ -348,3 +348,177 @@
 .row.g-2 > .col-6:first-child {
   border-right: 1px solid #e9ecef;
 }
+
+/* Estilos para modal de altura fija */
+.modal-fixed-height {
+  max-height: 90vh;
+}
+
+.modal-body-fixed {
+  height: calc(90vh - 140px); /* Altura total menos header y footer */
+  overflow: hidden;
+}
+
+/* Contenedor de información superior */
+.info-sections-container {
+  height: 40%; /* 40% para la sección superior */
+  min-height: 250px;
+}
+
+/* Contenedor de productos con scroll fijo */
+.products-section-container {
+  height: 60%; /* 60% para la sección de productos */
+  min-height: 300px;
+}
+
+/* Tabla con scroll interno */
+.table-container-fixed {
+  height: 100%;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Header fijo de la tabla */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #f8f9fa;
+}
+
+/* Ajustes específicos para la tabla */
+.table-container-fixed table {
+  margin-bottom: 0;
+}
+
+.table-container-fixed thead th {
+  border-bottom: 2px solid #dee2e6;
+  position: sticky;
+  top: 0;
+  background: #f8f9fa;
+  z-index: 11;
+}
+
+/* Scroll personalizado para la tabla */
+.table-container-fixed::-webkit-scrollbar {
+  width: 8px;
+}
+
+.table-container-fixed::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.table-container-fixed::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.table-container-fixed::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Cards de información */
+.info-item {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+/* Ajustes responsive */
+@media (max-width: 768px) {
+  .modal-fixed-height {
+    max-height: 95vh;
+  }
+  
+  .modal-body-fixed {
+    height: calc(95vh - 140px);
+  }
+  
+  .info-sections-container {
+    height: auto;
+    min-height: auto;
+  }
+  
+  .products-section-container {
+    height: 60%;
+    min-height: 250px;
+  }
+  
+  .table-container-fixed {
+    font-size: 0.875rem;
+  }
+}
+
+/* Mejoras visuales */
+.card {
+  border-radius: 12px;
+  transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Badges mejorados */
+.badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Iconos de productos */
+.product-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-radius: 8px;
+}
+
+/* Estados de productos en tabla */
+.table-warning {
+  background-color: rgba(255, 193, 7, 0.05) !important;
+}
+
+/* Efectos hover en filas */
+.table tbody tr:hover {
+  background-color: rgba(0, 123, 255, 0.02);
+}
+
+/* Header compacto mejorado */
+.modal-header .vr {
+  height: 30px;
+  opacity: 0.3;
+}
+
+/* Asegurar que el modal no se desborde en pantallas pequeñas */
+@media (max-width: 576px) {
+  .modal-dialog {
+    margin: 0.5rem;
+  }
+  
+  .modal-content {
+    border-radius: 8px;
+  }
+}
+
+/* Animación de entrada suave */
+.modal-content {
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

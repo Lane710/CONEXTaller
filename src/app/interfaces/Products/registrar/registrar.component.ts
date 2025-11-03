@@ -22,7 +22,6 @@ import { productos } from '../../../models/ProductoStockModel/productos';
 import { StockService } from '../../../services/ProductosServis/stock.service';
 import { UsuariosService } from '../../../services/PersonServis/usuarios.service';
 import { ApiResponse } from '../../../models/api-response';
-
 import { HttpErrorResponse } from '@angular/common/http';
 import { ProductoImagenService } from '../../../services/ProductosServis/Secundarios/producto-imagen.service';
 import { ProductosService } from '../../../services/ProductosServis/productos.service';
@@ -39,12 +38,6 @@ import { VariantesService } from '../../../services/ProductosServis/variantes.se
 import { tipo } from '../../../models/ProductoStockModel/tipo';
 import { variante } from '../../../models/ProductoStockModel/variante';
 import { proveedores } from '../../../models/ProductoStockModel/proveedores';
-
-// CAMBIO: Eliminar importaciones de tipo y variante si ya no se usan
-// import { tipo } from '../../../models/ProductoStockModel/tipo';
-// import { variante } from '../../../models/ProductoStockModel/variante';
-// import { TipoService } from '../../../services/ProductosServis/tipo.service';
-// import { VariantesService } from '../../../services/ProductosServis/variantes.service';
 
 declare var bootstrap: any;
 
@@ -64,21 +57,21 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
   modalDetails: string[] = [];
 
   username: string = localStorage.getItem('current_username') || '';
-
   ProductoRegsitrado: productos | null = null;
+
   // ========== DATOS DEL FORMULARIO ==========
   producto: productos = {
     idProducto: undefined,
     nombre: '',
     descripcion: '',
     precio: 0,
+    precioCompra: undefined,
     marca: '',
     color: '',
     sku: '',
     codigoBarras: '',
     estado: 1,
     disponibleOnline: true,
-    // CAMBIO: Tipo y variante ahora son strings
     tipo: '',
     variante: '',
     usuarioRegistro: {
@@ -138,6 +131,7 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
       tipoDato: 'texto',
     },
   ];
+
   cantidadStock: number = 1;
   imageUrl: string | null = null;
   selectedFile: File | null = null;
@@ -146,12 +140,9 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
 
   // ========== PROPIEDADES DINÁMICAS ==========
   newProperty: any = {
-    tipoPropiedadId: null, // Cambiar a solo el ID
-    idProductoValor: null,
-    valor: '',
-    tipo: '',
-    nombre: '',
-    tipoDato: '',
+    tipoPropiedad: null,
+    nombrePropiedad: '',
+    valorPropiedad: '',
   };
 
   productProperties: ProductoValorPropiedad[] = [];
@@ -165,16 +156,11 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
   // ========== LISTAS FILTRADAS ==========
   subcategoriasFiltradas: subcategoria[] = [];
 
-  // CAMBIO: Eliminar arrays de tipos y variantes
-  // tipos: tipo[] = [];
-  // variantes: variante[] = [];
-  // tiposFiltrados: tipo[] = [];
-  // variantesFiltradas: variante[] = [];
-
   // ========== REFERENCIAS A ELEMENTOS ==========
   @ViewChild('productForm') productForm!: NgForm;
   @ViewChild('responseModal') responseModal!: ElementRef;
   @ViewChild('errorModal') errorModal!: ElementRef;
+  @ViewChild('imageInput') imageInput!: ElementRef;
 
   // ========== MODALES ==========
   private responseModalInstance: any;
@@ -183,7 +169,6 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
   constructor(
     private router: Router,
     private stockService: StockService,
-    private usuariosService: UsuariosService,
     private productoImagenService: ProductoImagenService,
     private productosService: ProductosService,
     private productoValorPropiedadService: ProductoValorPropiedadService,
@@ -238,32 +223,27 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
   }
 
   // ========== MANEJO DE CAMBIOS EN JERARQUÍA ==========
- onCategoriaChange(): void {
-  // CAMBIO: Resetear subcategoría a null
-  this.producto.subcategoria = {
-    idSubcategoria: -1,
-    nombre: '',
-    descripcion: '',
-    estado: true,
-    urlImagen: '',
-    categoria: { idCategoria: -1, nombre: '' },
-  };
+  onCategoriaChange(): void {
+    this.producto.subcategoria = {
+      idSubcategoria: -1,
+      nombre: '',
+      descripcion: '',
+      estado: true,
+      urlImagen: '',
+      categoria: { idCategoria: -1, nombre: '' },
+    };
 
-  if (this.producto.categoria?.idCategoria) {
-    this.subcategoriaService
-      .ListadoSubCategoriasPorCategoria(this.producto.categoria.idCategoria)
-      .subscribe({
-        next: (res) => (this.subcategoriasFiltradas = res.data || []),
-        error: () => this.mostrarError('Error al cargar subcategorías.'),
-      });
-  } else {
-    this.subcategoriasFiltradas = [];
+    if (this.producto.categoria?.idCategoria) {
+      this.subcategoriaService
+        .ListadoSubCategoriasPorCategoria(this.producto.categoria.idCategoria)
+        .subscribe({
+          next: (res) => (this.subcategoriasFiltradas = res.data || []),
+          error: () => this.mostrarError('Error al cargar subcategorías.'),
+        });
+    } else {
+      this.subcategoriasFiltradas = [];
+    }
   }
-}
-
-  // CAMBIO: Eliminar métodos de cambio para tipo y variante
-  // onSubcategoriaChange(): void { ... }
-  // onTipoChange(): void { ... }
 
   // ========== MANEJO DE ARCHIVOS ==========
   onFileSelected(event: any): void {
@@ -348,71 +328,102 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
     this.producto.disponibleOnline = event.target.checked;
   }
 
+  // ========== VALIDACIÓN DEL FORMULARIO ==========
+  private validarFormulario(): boolean {
+    const errores: string[] = [];
 
-private validarFormulario(): boolean {
-  const errores: string[] = [];
-
-  if (!this.producto.nombre || this.producto.nombre.length < 3) {
-    errores.push(
-      'El nombre del producto es obligatorio y debe tener al menos 3 caracteres.'
-    );
-  }
-
-  if (!this.producto.precio || this.producto.precio <= 0) {
-    errores.push('El precio de venta debe ser mayor a 0.');
-  }
-
-  // NUEVO: Validación de precio de compra
-  if (this.producto.precioCompra !== undefined && this.producto.precioCompra !== null) {
-    if (this.producto.precioCompra < 0) {
-      errores.push('El precio de compra no puede ser negativo.');
+    if (!this.producto.nombre || this.producto.nombre.length < 3) {
+      errores.push(
+        'El nombre del producto es obligatorio y debe tener al menos 3 caracteres.'
+      );
     }
-    
-    if (this.producto.precio && this.producto.precioCompra > this.producto.precio) {
-      errores.push('El precio de compra no puede ser mayor que el precio de venta.');
+
+    if (!this.producto.precio || this.producto.precio <= 0) {
+      errores.push('El precio de venta debe ser mayor a 0.');
     }
+
+    if (this.producto.precioCompra !== undefined && this.producto.precioCompra !== null) {
+      if (this.producto.precioCompra < 0) {
+        errores.push('El precio de compra no puede ser negativo.');
+      }
+      
+      if (this.producto.precio && this.producto.precioCompra > this.producto.precio) {
+        errores.push('El precio de compra no puede ser mayor que el precio de venta.');
+      }
+    }
+
+    if (!this.producto.marca) {
+      errores.push('La marca es obligatoria.');
+    }
+
+    if (!this.producto.categoria?.idCategoria || this.producto.categoria.idCategoria === -1) {
+      errores.push('Debe seleccionar una categoría.');
+    }
+
+    if (!this.producto.subcategoria.idSubcategoria || this.producto.subcategoria.idSubcategoria === -1) {
+      errores.push('Debe seleccionar una subcategoría.');
+    }
+
+    if (!this.producto.proveedor.idProveedor || this.producto.proveedor.idProveedor === -1) {
+      errores.push('Debe seleccionar un proveedor.');
+    }
+
+    if (!this.cantidadStock || this.cantidadStock < 1) {
+      errores.push('La cantidad en stock debe ser al menos 1.');
+    }
+
+    // Nueva validación: Imagen principal obligatoria
+    if (!this.imageUrl) {
+      errores.push('La imagen principal del producto es obligatoria.');
+    }
+
+    if (errores.length > 0) {
+      this.mostrarErroresValidacion(errores);
+      return false;
+    }
+
+    return true;
   }
 
-  if (!this.producto.marca) {
-    errores.push('La marca es obligatoria.');
-  }
+  // ========== VALIDACIÓN DE FORMULARIO COMPLETO ==========
+  formularioCompleto(): boolean {
+    // Campos obligatorios con verificación de undefined/null
+    const nombreValido = !!this.producto.nombre && this.producto.nombre.trim().length >= 3;
+    const precioValido = !!this.producto.precio && this.producto.precio > 0;
+    const marcaValida = !!this.producto.marca && this.producto.marca.trim().length > 0;
+    const categoriaValida = !!this.producto.categoria?.idCategoria && this.producto.categoria.idCategoria !== -1;
+    const subcategoriaValida = !!this.producto.subcategoria?.idSubcategoria && this.producto.subcategoria.idSubcategoria !== -1;
+    const proveedorValido = !!this.producto.proveedor?.idProveedor && this.producto.proveedor.idProveedor !== -1;
+    const stockValido = this.cantidadStock !== null && this.cantidadStock !== undefined && this.cantidadStock >= 1;
+    const imagenValida = !!this.imageUrl; // Imagen principal es obligatoria
 
-  if (!this.producto.categoria?.idCategoria) {
-    errores.push('Debe seleccionar una categoría.');
-  }
+    // Precio de compra no es obligatorio, pero si se ingresa debe ser válido
+    const precioCompraValido = this.producto.precioCompra === null || 
+                              this.producto.precioCompra === undefined || 
+                              (!!this.producto.precioCompra && 
+                               this.producto.precioCompra >= 0 && 
+                               (!this.producto.precio || this.producto.precioCompra <= this.producto.precio));
 
-  if (!this.producto.subcategoria.idSubcategoria) {
-    errores.push('Debe seleccionar una subcategoría.');
+    return nombreValido && 
+           precioValido && 
+           marcaValida && 
+           categoriaValida && 
+           subcategoriaValida && 
+           proveedorValido && 
+           stockValido && 
+           imagenValida && 
+           precioCompraValido;
   }
-
-  if (!this.producto.proveedor.idProveedor) {
-    errores.push('Debe seleccionar un proveedor.');
-  }
-
-  if (!this.cantidadStock || this.cantidadStock < 1) {
-    errores.push('La cantidad en stock debe ser al menos 1.');
-  }
-
-  if (errores.length > 0) {
-    this.mostrarErroresValidacion(errores);
-    return false;
-  }
-
-  return true;
-}
 
   // ========== ENVÍO DEL FORMULARIO ==========
   onSubmit(): void {
-    // Validaciones
     Object.keys(this.productForm.controls).forEach((key) => {
       const control = this.productForm.controls[key];
       control.markAsTouched();
     });
 
-    // CAMBIO: Simplificar payload - tipo y variante ya son strings
     const productoPayload = {
       ...this.producto,
-      // Asegurar que tipo y variante sean null si están vacíos
       tipo: this.producto.tipo?.trim() || null,
       variante: this.producto.variante?.trim() || null,
     };
@@ -424,33 +435,22 @@ private validarFormulario(): boolean {
       return;
     }
 
-    // Convertir strings vacíos a null para SKU y código de barras
-    if (
-      this.producto.sku !== null &&
-      this.producto.sku !== undefined &&
-      this.producto.sku.trim() === ''
-    ) {
+    if (this.producto.sku !== null && this.producto.sku !== undefined && this.producto.sku.trim() === '') {
       this.producto.sku = null;
     }
 
-    if (
-      this.producto.codigoBarras !== null &&
-      this.producto.codigoBarras !== undefined &&
-      this.producto.codigoBarras.trim() === ''
-    ) {
+    if (this.producto.codigoBarras !== null && this.producto.codigoBarras !== undefined && this.producto.codigoBarras.trim() === '') {
       this.producto.codigoBarras = null;
     }
 
     this.isLoading = true;
 
-    // Interfaz para tipar el resultado del proceso
     interface ProcesoResult {
       productoResponse: ApiResponse;
       stockResponse: ApiResponse;
       idProducto: number;
     }
 
-    // Proceso completo de guardado
     const procesoGuardado: Observable<any> = of(null).pipe(
       // 1. Guardar producto
       concatMap(() => {
@@ -463,46 +463,62 @@ private validarFormulario(): boolean {
       concatMap((productoResponse: ApiResponse) => {
         if (productoResponse.success && productoResponse.data) {
           const productoGuardado = productoResponse.data;
+          const idProducto = productoGuardado.idProducto;
 
-          // Guardar stock
           const stockData = {
             idStock: 0,
             cantidad: this.cantidadStock,
             producto: productoGuardado,
           };
+
           return this.stockService.saveStock(stockData).pipe(
-            map(
-              (stockResponse: ApiResponse): ProcesoResult => ({
-                productoResponse,
-                stockResponse,
-                idProducto: productoGuardado.idProducto,
-              })
-            )
+            map((stockResponse: ApiResponse): ProcesoResult => ({
+              productoResponse,
+              stockResponse,
+              idProducto,
+            }))
           );
         }
         throw new Error('Error al guardar el producto');
       }),
-      // 3. Guardar propiedades si existen
+      // 3. Guardar imágenes secundarias
       concatMap((result: ProcesoResult) => {
         const idProducto = result.idProducto;
-        this.GuardarTipo();
-        // Guardar propiedades si existen
-        if (this.productProperties.length > 0) {
-          return this.GuardadoPropiedades(idProducto).pipe(
-            map(() => result), // Pasar el resultado completo
+        
+        if (this.secondaryFiles.length > 0) {
+          return this.productoImagenService.uploadAndSaveProductImages(idProducto, this.secondaryFiles).pipe(
+            map(() => result),
             catchError((error) => {
-              console.error('Error guardando propiedades:', error);
-              // Continuar aunque falle el guardado de propiedades
+              console.error('Error guardando imágenes secundarias:', error);
               return of(result);
             })
           );
         }
         return of(result);
       }),
+      // 4. Guardar propiedades
+      concatMap((result: ProcesoResult) => {
+        const idProducto = result.idProducto;
+        
+        if (this.productProperties.length > 0) {
+          return this.GuardadoPropiedades(idProducto).pipe(
+            map(() => result),
+            catchError((error) => {
+              console.error('Error guardando propiedades:', error);
+              return of(result);
+            })
+          );
+        }
+        return of(result);
+      }),
+      // 5. Guardar tipo y variante
+      concatMap((result: ProcesoResult) => {
+        this.GuardarTipo();
+        return of(result);
+      }),
       finalize(() => (this.isLoading = false))
     );
 
-    // Ejecutar el proceso completo
     procesoGuardado.subscribe({
       next: (result: ProcesoResult) => {
         this.mostrarExito(
@@ -527,6 +543,275 @@ private validarFormulario(): boolean {
     });
   }
 
+  // ========== GUARDADO DE PROPIEDADES ==========
+  private GuardadoPropiedades(idProducto: number): Observable<any> {
+  console.log('ID Producto en GuardadoPropiedades:', idProducto);
+  console.log('Propiedades a guardar:', this.productProperties);
+
+  const propiedadesValidas = this.productProperties.filter(
+    (prop) => prop.tipoPropiedad && prop.tipoPropiedad.nombre && prop.valor
+  );
+
+  if (propiedadesValidas.length === 0) {
+    console.log('No hay propiedades válidas para guardar');
+    return of(null);
+  }
+
+  console.log('Propiedades válidas a guardar:', propiedadesValidas);
+
+  const operaciones: Observable<any>[] = [];
+
+  propiedadesValidas.forEach((propiedad) => {
+    const operacion = this.buscarTipoPropiedadExacto(
+      propiedad.tipoPropiedad.tipo, 
+      propiedad.tipoPropiedad.nombre
+    ).pipe(
+      // CASO 1: TipoPropiedad EXISTENTE encontrado
+      concatMap((tipoPropiedadExistente: tipoPropiedad) => {
+        console.log('✅ TipoPropiedad existente encontrado:', tipoPropiedadExistente);
+        
+        // Crear ProductoValorPropiedad con el tipoPropiedad existente
+        const propiedadCompleta: ProductoValorPropiedad = {
+          idProductoValor: 0,
+          tipoPropiedad: tipoPropiedadExistente,
+          valor: propiedad.valor,
+          producto: { 
+            idProducto: idProducto 
+          } as any
+        };
+
+        console.log('Guardando ProductoValorPropiedad con tipo existente:', propiedadCompleta);
+        
+        return this.productoValorPropiedadService.save(propiedadCompleta).pipe(
+          map((response: any) => {
+            console.log('✅ ProductoValorPropiedad guardado con tipo existente:', response);
+            return response;
+          }),
+          catchError((error) => {
+            console.error('❌ Error guardando ProductoValorPropiedad con tipo existente:', error);
+            return of(null);
+          })
+        );
+      }),
+      // CASO 2: TipoPropiedad NO existe - CREAR NUEVO
+      catchError((buscarError) => {
+        console.log('🆕 TipoPropiedad no encontrado, creando nuevo:', {
+          tipo: propiedad.tipoPropiedad.tipo,
+          nombre: propiedad.tipoPropiedad.nombre
+        });
+        
+        // Crear NUEVO tipoPropiedad
+        const nuevoTipoPropiedad: tipoPropiedad = {
+          idTipoPropiedad: 0, // 0 para indicar que es nuevo
+          tipo: propiedad.tipoPropiedad.tipo,
+          nombre: propiedad.tipoPropiedad.nombre,
+          tipoDato: propiedad.tipoPropiedad.tipoDato || 'texto'
+        };
+
+        return this.tipoPropiedadService.save(nuevoTipoPropiedad).pipe(
+          concatMap((response: ApiResponse) => {
+            if (response.success && response.data) {
+              const nuevoTipoPropiedadGuardado = response.data as tipoPropiedad;
+              console.log('✅ Nuevo TipoPropiedad guardado:', nuevoTipoPropiedadGuardado);
+              
+              // Crear ProductoValorPropiedad con el NUEVO tipoPropiedad
+              const propiedadCompleta: ProductoValorPropiedad = {
+                idProductoValor: 0,
+                tipoPropiedad: nuevoTipoPropiedadGuardado,
+                valor: propiedad.valor,
+                producto: { 
+                  idProducto: idProducto 
+                } as any
+              };
+
+              console.log('Guardando ProductoValorPropiedad con NUEVO tipo:', propiedadCompleta);
+              
+              return this.productoValorPropiedadService.save(propiedadCompleta).pipe(
+                map((saveResponse: any) => {
+                  console.log('✅ ProductoValorPropiedad guardado con nuevo tipo:', saveResponse);
+                  return saveResponse;
+                }),
+                catchError((saveError) => {
+                  console.error('❌ Error guardando ProductoValorPropiedad con nuevo tipo:', saveError);
+                  return of(null);
+                })
+              );
+            } else {
+              console.error('❌ Error creando nuevo TipoPropiedad:', response.message);
+              return of(null);
+            }
+          }),
+          catchError((saveTipoError) => {
+            console.error('❌ Error en el proceso de guardar TipoPropiedad:', saveTipoError);
+            return of(null);
+          })
+        );
+      })
+    );
+
+    operaciones.push(operacion);
+  });
+
+  return forkJoin(operaciones).pipe(
+    map((results) => {
+      console.log('📊 Resultados del guardado de propiedades:', results);
+      const exitosas = results.filter(r => r !== null && r.success);
+      const fallidas = results.filter(r => r === null || !r.success);
+      
+      if (fallidas.length > 0) {
+        console.warn(`⚠️ ${fallidas.length} propiedades no se pudieron guardar`);
+      }
+      
+      console.log(`✅ Propiedades guardadas exitosamente: ${exitosas.length} de ${propiedadesValidas.length}`);
+      return results;
+    }),
+    catchError((error) => {
+      console.error('❌ Error general en guardado de propiedades:', error);
+      return of(null);
+    })
+  );
+}
+
+
+// Método para buscar EXACTAMENTE por tipo Y nombre (combinación exacta)
+private buscarTipoPropiedadExacto(tipo: string, nombre: string): Observable<tipoPropiedad> {
+  console.log('Buscando TipoPropiedad EXACTO por tipo y nombre:', { tipo, nombre });
+
+  return this.tipoPropiedadService.findByTipoAndNombreExacto(tipo, nombre).pipe(
+    map((response: ApiResponse) => {
+      if (response.success && response.data) {
+        const tipoPropiedadEncontrado = response.data as tipoPropiedad;
+        console.log('✅ TipoPropiedad encontrado (combinación EXACTA):', tipoPropiedadEncontrado);
+        return tipoPropiedadEncontrado;
+      } else {
+        throw new Error('TipoPropiedad no encontrado con combinación exacta tipo y nombre');
+      }
+    }),
+    catchError((error) => {
+      if (error.status === 404) {
+        console.log('❌ TipoPropiedad no encontrado (404):', { tipo, nombre });
+        throw new Error('TipoPropiedad no encontrado');
+      }
+      console.error('Error en búsqueda de TipoPropiedad exacto:', error);
+      throw new Error('Error al buscar TipoPropiedad exacto: ' + error.message);
+    })
+  );
+}
+
+
+  // ========== GUARDADO DE TIPO Y VARIANTE ==========
+  GuardarTipo() {
+    if (!this.producto.tipo && !this.producto.variante) {
+      return;
+    }
+
+    let tipoObj: tipo = {
+      nombre: this.producto.tipo || '',
+      subcategoria: { 
+        idSubcategoria: this.producto.subcategoria.idSubcategoria || -1, 
+        nombre: this.producto.subcategoria.nombre || '' 
+      },
+    };
+
+    let varianteObj: variante = {
+      nombre: this.producto.variante || '',
+    };
+
+    console.log("Datos del producto:", this.producto);
+
+    // Si hay tipo, lo guardamos
+    if (this.producto.tipo) {
+      this.tipoService.findByNombre(tipoObj.nombre).subscribe({
+        next: (res) => {
+          console.log('Tipo existente encontrado:', res.data);
+          // Si hay variante, la guardamos con el tipo existente
+          if (this.producto.variante) {
+            varianteObj.tipo = { 
+              idTipo: res.data.idTipo, 
+              nombre: res.data.nombre 
+            };
+            this.guardarVariante(varianteObj);
+          }
+        },
+        error: (err) => {
+          if (err.status === 404) {
+            console.log('Tipo no encontrado, se creará uno nuevo.');
+            this.tipoService.save(tipoObj).subscribe({
+              next: (res) => {
+                console.log('Tipo nuevo guardado:', res);
+                // Si hay variante, la guardamos con el tipo nuevo
+                if (this.producto.variante) {
+                  varianteObj.tipo = { 
+                    idTipo: res.data.idTipo, 
+                    nombre: res.data.nombre 
+                  };
+                  this.guardarVariante(varianteObj);
+                }
+              },
+              error: (err) => {
+                console.error('Error guardando tipo nuevo:', err);
+              },
+            });
+          } else {
+            console.error('Error buscando tipo:', err);
+          }
+        },
+      });
+    } else if (this.producto.variante) {
+      // Si solo hay variante sin tipo
+      this.guardarVariante(varianteObj);
+    }
+  }
+
+  private guardarVariante(varianteObj: variante) {
+    this.varianteService.save(varianteObj).subscribe({
+      next: (res) => {
+        console.log('Variante guardada:', res);
+      },
+      error: (err) => {
+        console.error('Error guardando variante:', err);
+      },
+    });
+  }
+
+  // ========== MANEJO DE PROPIEDADES ==========
+ // ========== MANEJO DE PROPIEDADES ==========
+addProperty(): void {
+  if (this.newProperty.tipoPropiedad && 
+      this.newProperty.nombrePropiedad && 
+      this.newProperty.valorPropiedad) {
+    
+    // Crear NUEVO tipoPropiedad (sin ID para forzar creación)
+    const tipoPropiedadCompleto: tipoPropiedad = {
+      idTipoPropiedad: 0, // 0 para forzar creación nueva
+      tipo: this.newProperty.tipoPropiedad.tipo,
+      nombre: this.newProperty.nombrePropiedad.trim(),
+      tipoDato: 'texto'
+    };
+
+    const nuevaPropiedad: ProductoValorPropiedad = {
+      idProductoValor: 0,
+      tipoPropiedad: tipoPropiedadCompleto,
+      valor: this.newProperty.valorPropiedad.trim(),
+      producto: undefined,
+    };
+
+    this.productProperties.push(nuevaPropiedad);
+
+    // Resetear el formulario
+    this.newProperty = {
+      tipoPropiedad: null,
+      nombrePropiedad: '',
+      valorPropiedad: '',
+    };
+
+    console.log('✅ Propiedad añadida exitosamente:', nuevaPropiedad);
+  } else {
+    this.mostrarError('Por favor, complete todos los campos de la propiedad.');
+  }
+}
+
+  // ========== UTILIDADES ==========
   private obtenerMensajeError(error: HttpErrorResponse): string[] {
     const detalles: string[] = [];
 
@@ -535,15 +820,11 @@ private validarFormulario(): boolean {
     }
 
     if (error.status === 0) {
-      detalles.push(
-        'No se pudo conectar con el servidor. Verifique su conexión.'
-      );
+      detalles.push('No se pudo conectar con el servidor. Verifique su conexión.');
     } else if (error.status === 400) {
       detalles.push('Datos inválidos enviados al servidor.');
     } else if (error.status === 500) {
-      detalles.push(
-        'Error interno del servidor. Por favor, intente más tarde.'
-      );
+      detalles.push('Error interno del servidor. Por favor, intente más tarde.');
     }
 
     if (detalles.length === 0) {
@@ -553,12 +834,7 @@ private validarFormulario(): boolean {
     return detalles;
   }
 
-  // ========== MODALES Y MENSAJES ==========
-  private mostrarExito(
-    titulo: string,
-    mensaje: string,
-    detalles: string[] = []
-  ): void {
+  private mostrarExito(titulo: string, mensaje: string, detalles: string[] = []): void {
     this.isModalSuccess = true;
     this.modalTitle = titulo;
     this.modalMessage = mensaje;
@@ -600,21 +876,19 @@ private validarFormulario(): boolean {
     }
   }
 
-  // ========== UTILIDADES ==========
   private limpiarFormulario(): void {
-    // Resetear producto
     this.producto = {
       idProducto: undefined,
       nombre: '',
       descripcion: '',
       precio: 0,
+      precioCompra: undefined,
       marca: '',
       color: '',
       sku: '',
       codigoBarras: '',
       estado: 1,
       disponibleOnline: true,
-      // CAMBIO: Resetear como strings vacíos
       tipo: '',
       variante: '',
       categoria: {
@@ -644,39 +918,28 @@ private validarFormulario(): boolean {
       },
     };
 
-    // Resetear otros campos
     this.cantidadStock = 1;
     this.imageUrl = null;
     this.selectedFile = null;
     this.secondaryImageUrls = [];
     this.secondaryFiles = [];
     this.productProperties = [];
+
     this.newProperty = {
-      tipoPropiedadId: null, // Cambiar a solo el ID
-      idProductoValor: null,
-      valor: '',
-      tipo: '',
-      nombre: '',
-      tipoDato: '',
+      tipoPropiedad: null,
+      nombrePropiedad: '',
+      valorPropiedad: '',
     };
 
-    // Resetear listas filtradas
     this.subcategoriasFiltradas = [];
 
-    // Resetear formulario
     if (this.productForm) {
       this.productForm.resetForm();
     }
   }
 
   onCancel(): void {
-    if (
-      confirm(
-        '¿Está seguro de que desea cancelar? Se perderán todos los datos no guardados.'
-      )
-    ) {
-      this.router.navigate(['/productos']);
-    }
+    this.router.navigate(['/home/listarProductos']);
   }
 
   // ========== VALIDACIONES EN TIEMPO REAL ==========
@@ -695,14 +958,10 @@ private validarFormulario(): boolean {
         errors.push('Este campo es obligatorio.');
       }
       if (field.errors['minlength']) {
-        errors.push(
-          `Mínimo ${field.errors['minlength'].requiredLength} caracteres.`
-        );
+        errors.push(`Mínimo ${field.errors['minlength'].requiredLength} caracteres.`);
       }
       if (field.errors['maxlength']) {
-        errors.push(
-          `Máximo ${field.errors['maxlength'].requiredLength} caracteres.`
-        );
+        errors.push(`Máximo ${field.errors['maxlength'].requiredLength} caracteres.`);
       }
       if (field.errors['min']) {
         errors.push(`El valor mínimo permitido es ${field.errors['min'].min}.`);
@@ -712,11 +971,6 @@ private validarFormulario(): boolean {
     return errors;
   }
 
-  // CAMBIO: Eliminar métodos de obtención de tipos y variantes
-  // private obtenerTipos(): Observable<tipo[]> { ... }
-  // private obtenerVariantes(): Observable<variante[]> { ... }
-
-  // CAMBIO: Simplificar manejo de inputs para tipo y variante
   onTipoInput(event: any): void {
     this.producto.tipo = (event.target.value || '').trim() || null;
   }
@@ -725,214 +979,5 @@ private validarFormulario(): boolean {
     this.producto.variante = (event.target.value || '').trim() || null;
   }
 
-  // ========== MANEJO DE PROPIEDADES ==========
-  addProperty(): void {
-    if (
-      this.newProperty.tipoPropiedad &&
-      this.newProperty.idProductoValor &&
-      this.newProperty.valor
-    ) {
-      // Crear el objeto tipoPropiedad completo - asegurar que nunca sea undefined
-      const tipoPropiedadCompleto: tipoPropiedad = {
-        tipo: this.newProperty.tipoPropiedad.tipo || 'atributo',
-        nombre: this.newProperty.idProductoValor,
-        tipoDato: this.newProperty.tipoPropiedad.tipoDato || 'texto',
-      };
-
-      // Si el tipoPropiedad seleccionado ya tiene ID, lo mantenemos
-      if (this.newProperty.tipoPropiedad.idTipoPropiedad) {
-        tipoPropiedadCompleto.idTipoPropiedad =
-          this.newProperty.tipoPropiedad.idTipoPropiedad;
-      }
-
-      const nuevaPropiedad: ProductoValorPropiedad = {
-        idProductoValor: 0,
-        tipoPropiedad: tipoPropiedadCompleto, // Siempre definido
-        valor: this.newProperty.valor,
-        producto: undefined,
-      };
-
-      this.productProperties.push(nuevaPropiedad);
-
-      // Resetear el formulario de nueva propiedad
-      this.newProperty = {
-        tipoPropiedadId: null,
-        idProductoValor: null,
-        valor: '',
-        tipo: '',
-        nombre: '',
-        tipoDato: '',
-      };
-    } else {
-      console.warn(
-        'No se puede agregar propiedad: Campos incompletos',
-        this.newProperty
-      );
-    }
-  }
-
-  private GuardadoPropiedades(idProducto: number): Observable<any> {
-    console.log('ID Producto en GuardadoPropiedades:', idProducto);
-    console.log('Propiedades a guardar:', this.productProperties);
-
-    // Filtrar propiedades que no tienen tipoPropiedad
-    const propiedadesValidas = this.productProperties.filter(
-      (prop) => prop.tipoPropiedad && prop.valor
-    );
-
-    if (propiedadesValidas.length === 0) {
-      console.log('No hay propiedades válidas para guardar');
-      return of(null);
-    }
-
-    console.log('Propiedades válidas a guardar:', propiedadesValidas);
-
-    const propiedadesObservables = propiedadesValidas.map((propiedad) => {
-      // Ahora propiedad.tipoPropiedad nunca es undefined gracias al filter
-      return this.guardarTipoPropiedad(propiedad.tipoPropiedad!)
-        .pipe
-        // ... resto del código igual
-        ();
-    });
-
-    return forkJoin(propiedadesObservables);
-  }
-
-  private guardarTipoPropiedad(
-    tipoPropiedad: tipoPropiedad
-  ): Observable<tipoPropiedad> {
-    // Si ya tiene ID, asumimos que ya existe en la base de datos
-    if (tipoPropiedad.idTipoPropiedad && tipoPropiedad.idTipoPropiedad > 0) {
-      console.log(
-        'TipoPropiedad ya existe con ID:',
-        tipoPropiedad.idTipoPropiedad
-      );
-      return of(tipoPropiedad);
-    }
-
-    // Si no tiene ID, lo guardamos como nuevo
-    console.log('Guardando nuevo TipoPropiedad:', tipoPropiedad);
-
-    return this.tipoPropiedadService.save(tipoPropiedad).pipe(
-      map((response: ApiResponse) => {
-        if (response.success && response.data) {
-          console.log('TipoPropiedad guardado exitosamente:', response.data);
-          return response.data as tipoPropiedad;
-        } else {
-          throw new Error(
-            'Error al guardar TipoPropiedad: ' +
-              (response.message || 'Respuesta inválida del servidor')
-          );
-        }
-      }),
-      catchError((error) => {
-        console.error('Error guardando TipoPropiedad:', error);
-        // Si falla, intentamos buscar si ya existe uno con el mismo nombre
-        return this.buscarTipoPropiedadExistente(tipoPropiedad.nombre).pipe(
-          catchError((buscarError) => {
-            console.error(
-              'Error buscando TipoPropiedad existente:',
-              buscarError
-            );
-            // Si no existe, lanzamos el error original
-            throw new Error(
-              `No se pudo guardar ni encontrar el TipoPropiedad: ${error.message}`
-            );
-          })
-        );
-      })
-    );
-  }
-
-  private buscarTipoPropiedadExistente(
-    nombre: string
-  ): Observable<tipoPropiedad> {
-    console.log('Buscando TipoPropiedad existente con nombre:', nombre);
-
-    return this.tipoPropiedadService.findByNombre(nombre).pipe(
-      map((response: ApiResponse) => {
-        if (response.success && response.data) {
-          console.log('TipoPropiedad encontrado existente:', response.data);
-          return response.data as tipoPropiedad;
-        } else {
-          throw new Error('TipoPropiedad no encontrado con nombre: ' + nombre);
-        }
-      }),
-      catchError((error) => {
-        console.error('Error en búsqueda de TipoPropiedad:', error);
-        throw new Error(
-          'Error al buscar TipoPropiedad existente: ' + error.message
-        );
-      })
-    );
-  }
-
- GuardarTipo() {
-  let tipo: tipo = {
-    nombre: this.producto.tipo || '',
-    subcategoria: { 
-      idSubcategoria: this.producto.subcategoria.idSubcategoria || -1, 
-      nombre: this.producto.subcategoria.nombre || '' 
-    },
-  };
-
-  let variante: variante = {
-    nombre: this.producto.variante || '',
-  };
-
-  console.log("Datos del producto:", this.producto);
-
-  // 🔍 Primero verificamos si el tipo ya existe
-  this.tipoService.findByNombre(tipo.nombre).subscribe({
-    next: (res) => {
-      // ✅ Si existe, usamos el tipo existente
-      console.log('Tipo existente encontrado:', res.data);
-      variante.tipo = { 
-        idTipo: res.data.idTipo, 
-        nombre: res.data.nombre 
-      };
-
-      // Guardamos la variante asociada al tipo existente
-      this.varianteService.save(variante).subscribe({
-        next: (res) => {
-          console.log('Variante guardada (tipo existente):', res);
-        },
-        error: (err) => {
-          console.error('Error guardando variante:', err);
-        },
-      });
-    },
-    error: (err) => {
-      // ⚠️ Si no existe el tipo, el backend devuelve 404 → lo creamos
-      if (err.status === 404) {
-        console.log('Tipo no encontrado, se creará uno nuevo.');
-        this.tipoService.save(tipo).subscribe({
-          next: (res) => {
-            console.log('Tipo nuevo guardado:', res);
-            variante.tipo = { 
-              idTipo: res.data.idTipo, 
-              nombre: res.data.nombre 
-            };
-
-            // Guardamos la variante con el tipo recién creado
-            this.varianteService.save(variante).subscribe({
-              next: (res) => {
-                console.log('Variante guardada (tipo nuevo):', res);
-              },
-              error: (err) => {
-                console.error('Error guardando variante:', err);
-              },
-            });
-          },
-          error: (err) => {
-            console.error('Error guardando tipo nuevo:', err);
-          },
-        });
-      } else {
-        console.error('Error buscando tipo:', err);
-      }
-    },
-  });
-}
-
+  
 }

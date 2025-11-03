@@ -1,6 +1,3 @@
-<!-- La estructura del formulario es la misma que proporcionaste, lo cual es correcto. -->
-<!-- La validación se gestiona en el componente .ts a través de los IDs de cada input. -->
-
 <div class="container">
   <div class="alert-warning-top">
     NOTA: No hacer pedidos de "prueba", la administración puede banear tu IP y
@@ -16,13 +13,23 @@
             <label for="nombre" class="form-label"
               >Nombre <span class="text-danger">*</span></label
             >
-            <input type="text" class="form-control" id="nombre" />
+            <input 
+              type="text" 
+              class="form-control" 
+              id="nombre" 
+              [value]="usuarioInfo?.persona?.nombre || ''"
+            />
           </div>
           <div class="col-md-6">
             <label for="apellidos" class="form-label"
               >Apellidos <span class="text-danger">*</span></label
             >
-            <input type="text" class="form-control" id="apellidos" />
+            <input 
+              type="text" 
+              class="form-control" 
+              id="apellidos" 
+              [value]="getApellidosCompletos()"
+            />
           </div>
           <div class="col-12">
             <label for="paisRegion" class="form-label">País</label>
@@ -43,6 +50,7 @@
               class="form-control"
               id="direccionCalle"
               placeholder="House number and street name"
+              [value]="usuarioInfo?.persona?.direccion || ''"
             />
             <div class="form-text">
               Velgrano, Espana, Av. la paz y circumbalacion, etc.
@@ -66,6 +74,9 @@
             >
             <select class="form-select" id="departamento">
               <option value="Tarija" selected>Tarija</option>
+              <option value="La Paz">La Paz</option>
+              <option value="Cochabamba">Cochabamba</option>
+              <option value="Santa Cruz">Santa Cruz</option>
             </select>
           </div>
           <div class="col-12">
@@ -79,6 +90,7 @@
               required
               pattern="[0-9]*"
               inputmode="numeric"
+              [value]="usuarioInfo?.persona?.telefono || ''"
             />
           </div>
           <div class="col-12">
@@ -86,7 +98,12 @@
               >Dirección de correo electrónico
               <span class="text-danger">*</span></label
             >
-            <input type="email" class="form-control" id="email" />
+            <input 
+              type="email" 
+              class="form-control" 
+              id="email" 
+              [value]="usuarioInfo?.email || ''"
+            />
           </div>
         </div>
       </div>
@@ -110,36 +127,37 @@
     <div class="my-5">
       <h5 class="section-title">Tu pedido</h5>
       <div class="order-summary">
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th scope="col">Productos</th>
-              <th scope="col">Subtotal</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Aquí se mantienen las directivas de Angular para que el template funcione -->
-            <tr *ngFor="let item of detallesCarrito">
-              <td>
-                {{ item.stock.producto.nombre }} &times; {{ item.cantidad }}
-                <br />
-                <small class="text-success" *ngIf="item.cantidad"
-                  >Hay existencias</small
-                >
-                <small class="text-danger" *ngIf="item.cantidad"
-                  >Sin existencias</small
-                >
-              </td>
-              <td>{{ item.subtotal }} Bs.</td>
-            </tr>
-          </tbody>
-          <tfoot>
-            <tr>
-              <td class="total">Total</td>
-              <td class="total">{{ totalCarrito }} Bs.</td>
-            </tr>
-          </tfoot>
-        </table>
+        <div class="productos-lista" [class.con-scroll]="detallesCarrito.length > 5">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th scope="col">Productos</th>
+                <th scope="col">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of detallesCarrito">
+                <td>
+                  {{ item.stock.producto.nombre }} &times; {{ item.cantidad }}
+                  <br />
+                  <small 
+                    [class.text-success]="hayStockSuficiente(item)"
+                    [class.text-danger]="!hayStockSuficiente(item)"
+                  >
+                    {{ hayStockSuficiente(item) ? 'Hay existencias' : 'Sin existencias' }}
+                  </small>
+                </td>
+                <td>{{ item.subtotal }} Bs.</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td class="total">Total</td>
+                <td class="total">{{ totalCarrito }} Bs.</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -155,36 +173,22 @@
             [checked]="seleccionMetodoPago === 'transferenciaBancaria'"
           />
           <label class="form-check-label" for="transferenciaBancaria">
-            Transferencia Bancaria Directa
+            <i class="fas fa-qrcode me-2"></i>Pago por QR
           </label>
         </div>
         <div
           *ngIf="seleccionMetodoPago === 'transferenciaBancaria'"
           class="payment-instructions mt-3"
         >
-          Realiza tu pago directamente a una de nuestras cuentas bancarias. Por
-          favor usa la referencia del pedido como referencia de pago.
-          <ul>
-            <li>
-              Si estas en la Ciudad de Tarija puedes hacer la transferencia
-              bancaria al momento de recibir tu paquete
-            </li>
-            <!--<li>
-              Si estas en otro departamento el pedido no será enviado hasta que
-              el pago completo haya sido recibido (costo de envió por pagar)
-            </li>-->
-          </ul>
-          <strong>PARA TOMAR EN CUENTA</strong>
-          <ul>
-            <li>
-              Se recibe pedidos únicamente hasta las 6:00PM para hacer envíos
-              locales en Tarija (pedidos después de las 6:00 PM se enviaran al día
-              siguiente)
-            </li>
-            <li>
-              Todos los pedidos se comienzan a repartir después de las 8:00 AM
-            </li>
-          </ul>
+          <div class="alert alert-info">
+            <strong>Pago Rápido y Seguro</strong>
+            <p class="mb-2">Escanea el código QR con tu app bancaria para realizar el pago de forma instantánea.</p>
+            <ul class="mb-0">
+              <li>Pago inmediato y confirmación automática</li>
+              <li>Disponible 24/7</li>
+              <li>Soporte para todos los bancos nacionales</li>
+            </ul>
+          </div>
         </div>
       </div>
 
@@ -199,22 +203,26 @@
             [checked]="seleccionMetodoPago === 'pagoEntrega'"
           />
           <label class="form-check-label" for="pagoEntrega">
-            Pago en entrega
+            <i class="fas fa-truck me-2"></i>Pago en entrega
           </label>
         </div>
         <div
           *ngIf="seleccionMetodoPago === 'pagoEntrega'"
           class="payment-instructions mt-3"
         >
-          <p>
-            Paga en efectivo al momento de recibir tu pedido. Esta opción solo
-            está disponible para entregas en la Ciudad de Tarija.
-          </p>
+          <div class="alert alert-warning">
+            <strong>Pago al Recibir tu Pedido</strong>
+            <p class="mb-2">Paga en efectivo cuando recibas tu pedido en la puerta de tu casa.</p>
+            <ul class="mb-0">
+              <li>Solo disponible en Ciudad de Tarija</li>
+              <li>Efectivo al momento de la entrega</li>
+              <li>Horario de entregas: 9:00 AM - 6:00 PM</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Este es el div donde se mostrarán los mensajes de error. -->
     <div
       id="errorContainer"
       class="mt-3 alert alert-danger"
@@ -222,49 +230,72 @@
       style="display: none"
     ></div>
 
-    <!-- El botón ahora se deshabilitará si no hay productos en el carrito. -->
     <button
-      class="btn btn-primary"
+      class="btn btn-primary btn-lg w-100"
       type="button"
       (click)="DatosDelCLiente()"
-      [disabled]="!detallesCarrito || detallesCarrito.length === 0"
+      [disabled]="!detallesCarrito || detallesCarrito.length === 0 || isLoading"
     >
-      Realizar Pedido
+      <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+      {{ isLoading ? 'Procesando...' : 'Realizar Pedido' }}
     </button>
   </form>
 </div>
 
+
+
+
+
+
+
+
+
+<!-- Modal de Éxito - Versión Simplificada -->
 <div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header bg-success text-white">
-        <h5 class="modal-title" id="modalExitoLabel">Pedido Exitoso ✅</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p>¡Gracias por tu compra! Tu pedido se ha realizado con éxito.</p>
-        <p>Revisa tu correo electrónico para más detalles.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cerrar</button>
+      <div class="modal-body text-center p-5">
+        <!-- Icono de éxito -->
+        <div class="success-icon mb-4">
+          <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+        </div>
+        
+        <!-- Mensaje principal -->
+        <h4 class="text-success fw-bold mb-3">¡Pedido Realizado!</h4>
+        <p class="text-muted mb-4">
+          Tu pedido se ha completado exitosamente. Para ver más detalles y seguir el estado de tu pedido, 
+          visita tu lista de pedidos en tu perfil.
+        </p>
+
+        <!-- Botón de acción -->
+        <button type="button" class="btn btn-success px-4" data-bs-dismiss="modal">
+          <i class="fas fa-times me-2"></i>Cerrar
+        </button>
       </div>
     </div>
   </div>
 </div>
 
+<!-- Modal de Error - Versión Simplificada -->
 <div class="modal fade" id="modalError" tabindex="-1" aria-labelledby="modalErrorLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="modalErrorLabel">Error al Realizar el Pedido ❌</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p>Ha ocurrido un problema al procesar tu pedido. Por favor, inténtalo de nuevo.</p>
-        <p>Si el problema persiste, contacta con soporte técnico.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      <div class="modal-body text-center p-5">
+        <!-- Icono de error -->
+        <div class="error-icon mb-4">
+          <i class="fas fa-exclamation-circle text-danger" style="font-size: 4rem;"></i>
+        </div>
+        
+        <!-- Mensaje principal -->
+        <h4 class="text-danger fw-bold mb-3">Error en el Pedido</h4>
+        <p class="text-muted mb-4" id="errorMessageText">
+          Ha ocurrido un problema al procesar tu pedido. Por favor, inténtalo de nuevo.
+        </p>
+
+        <!-- Botón de acción -->
+        <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal">
+          <i class="fas fa-times me-2"></i>Cerrar
+        </button>
       </div>
     </div>
   </div>
