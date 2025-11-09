@@ -84,10 +84,6 @@
               (click)="item.isExpanded = !item.isExpanded"
             >
               <div class="d-flex align-items-center gap-3">
-                <h6 class="mb-0">
-                  Pedido ID:
-                  <span class="fw-bold">PED{{ item.pedido.idPedido }}</span>
-                </h6>
                 <small class="text-muted">
                   {{ item.pedido.fechaPedido | date : "dd/MM/yyyy" }}
                 </small>
@@ -182,6 +178,17 @@
                 <img src="/icon_SaleOnline/ic--outline-cancel.svg" alt="" />
                 <span class="btn-label">Cancelar</span>
               </button>
+
+              <button
+                class="btn rounded-pill btn-icon-expand"
+                style="border: 2px solid #29aaca; color: #29aaca"
+                (click)="verEnvio(item)"
+              >
+               <img
+                    src="/icon_SaleOnline/carbon--delivery-truck.svg"
+                  
+                  /><span class="btn-label">Ver envio</span>
+              </button>
             </div>
           </div>
         </div>
@@ -196,6 +203,17 @@
       </div>
     }
   </div>
+
+
+
+
+
+
+
+
+
+
+
 
   <!-- Paginación -->
   <div class="d-flex justify-content-center align-items-center flex-wrap mb-3 mt-4" *ngIf="totalPages > 1">
@@ -247,6 +265,33 @@
       </ul>
     </nav>
   </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   <!-- Modal para Cambiar Estado -->
   <div
@@ -379,8 +424,10 @@
 
 
 
-<!-- Modal para Detalles del Pedido -->
-<!-- Modal para Detalles del Pedido -->
+
+
+  <!-- Modal para Detalles del Pedido - MEJORADO -->
+  <!-- Modal para Detalles del Pedido - CORREGIDO -->
 <div
   class="modal fade"
   id="modalDetallesPedido"
@@ -391,28 +438,19 @@
   <div class="modal-dialog modal-xl modal-dialog-centered modal-fixed-height">
     <div class="modal-content rounded-3 shadow-lg modal-detalle-pedido" *ngIf="pedidoSeleccionado">
       
-      <!-- Header Compacto -->
+      <!-- Header Compacto Mejorado -->
       <div class="modal-header bg-white border-bottom rounded-top-3 py-3 px-4">
         <div class="d-flex justify-content-between align-items-center w-100">
           <div class="d-flex align-items-center gap-3">
-            <div class="order-badge">
-              <span class="badge bg-primary fs-6 px-3 py-2 rounded-2">
-                <i class="bi bi-receipt me-2"></i>
-                PED{{ pedidoSeleccionado.pedido.idPedido }}
-              </span>
-            </div>
-            <div class="vr"></div>
             <div>
               <h5 class="modal-title fw-bold text-dark mb-0" id="modalDetallesPedidoLabel">
                 Detalles del Pedido
               </h5>
               <small class="text-muted">
-  {{ pedidoSeleccionado.pedido.fechaPedido | date: 'dd/MM/yyyy' }} 
-  
-  a las 
-  
-  {{ (pedidoSeleccionado.pedido.horaRegistro || '00:00') | slice:0:5 }}
-</small>
+                {{ pedidoSeleccionado.pedido.fechaPedido | date: 'dd/MM/yyyy' }} 
+                a las 
+                {{ (pedidoSeleccionado.pedido.horaRegistro || '00:00') | slice:0:5 }}
+              </small>
             </div>
             <div class="vr"></div>
             <div>
@@ -437,9 +475,11 @@
         </div>
       </div>
 
-      <div class="modal-body p-0 d-flex flex-column modal-body-fixed">
+      <!-- CONTENEDOR PRINCIPAL CORREGIDO -->
+      <div class="modal-body p-0 d-flex flex-column h-100">
+        
         <!-- Sección Superior: Información del Pedido y Cliente -->
-        <div class="info-sections-container p-4 border-bottom">
+        <div class="info-sections-container p-4 border-bottom bg-white position-relative z-2">
           <div class="row g-4 h-100">
             <!-- Columna Izquierda: Información del Pedido -->
             <div class="col-md-6">
@@ -459,11 +499,11 @@
                     <div class="info-item">
                       <small class="text-muted d-block mb-1">Fecha del Pedido</small>
                       <div class="fw-semibold text-dark">
-  {{ 
-    (pedidoSeleccionado.pedido.fechaPedido + 'T' + (pedidoSeleccionado.pedido.horaRegistro || '00:00:00')) 
-    | date : "dd/MM/yyyy HH:mm" 
-  }}
-</div>
+                        {{ 
+                          (pedidoSeleccionado.pedido.fechaPedido + 'T' + (pedidoSeleccionado.pedido.horaRegistro || '00:00:00')) 
+                          | date : "dd/MM/yyyy HH:mm" 
+                        }}
+                      </div>
                     </div>
                     <div class="info-item">
                       <small class="text-muted d-block mb-1">Forma de Pago</small>
@@ -514,9 +554,9 @@
                       </div>
                     </div>
                     <div class="info-item">
-                      <small class="text-muted d-block mb-1">Cédula de Identidad</small>
+                      <small class="text-muted d-block mb-1">Numero de celular</small>
                       <div class="fw-semibold text-dark">
-                        {{ pedidoSeleccionado.pedido.usuario.persona.ci || 'No disponible' }}
+                        {{ pedidoSeleccionado.pedido.usuario.persona.telefono || 'No disponible' }}
                       </div>
                     </div>
                     <div class="info-item">
@@ -533,8 +573,8 @@
           </div>
         </div>
 
-        <!-- Sección Inferior: Productos con Scroll Fijo -->
-        <div class="products-section-container flex-grow-1 p-4">
+        <!-- Sección Inferior: Productos - CORREGIDO -->
+        <div class="products-section-container flex-grow-1 p-4 bg-light position-relative z-1">
           <div class="card border-0 shadow-sm h-100">
             <div class="card-header bg-transparent border-0 py-3 d-flex justify-content-between align-items-center">
               <h6 class="mb-0 fw-bold text-dark">
@@ -542,15 +582,13 @@
                 Productos del Pedido
                 <span class="badge bg-primary ms-2">{{ pedidoSeleccionado.detallePedidos.length || 0 }}</span>
               </h6>
-              <div class="text-muted small">
-                Total Productos: <span class="fw-bold text-dark">{{ pedidoSeleccionado.detallePedidos.length || 0 }}</span>
-              </div>
+              
             </div>
             
             <div class="card-body p-0 h-100">
-              <div class="table-container-fixed">
+              <div class="table-container-fixed h-100">
                 <table class="table table-hover align-middle mb-0">
-                  <thead class="table-light sticky-header">
+                  <thead class="table-light sticky-top">
                     <tr>
                       <th class="ps-4">Producto</th>
                       <th class="text-center">Cantidad</th>
@@ -624,17 +662,15 @@
         </div>
       </div>
 
-
-
-
-      
-
       <!-- Footer Compacto -->
-      <div class="modal-footer bg-light border-top py-3 px-4">
+      <div class="modal-footer bg-light border-top py-3 px-4 position-relative z-3">
         <div class="d-flex justify-content-between align-items-center w-100">
           <div class="text-muted small">
-            Mostrando {{ pedidoSeleccionado.detallePedidos.length || 0 }} productos
+            <!-- Espacio para información adicional si es necesario -->
           </div>
+          <div class="text-muted small">
+                Total: <span class="fw-bold text-dark">{{ pedidoSeleccionado.pedido.totalPedido }} Bs</span>
+              </div>
           <div class="d-flex gap-2">
             <button
               type="button"
@@ -646,7 +682,7 @@
             <button
               type="button"
               class="btn btn-primary px-4 rounded-2"
-              (click)="DetalleEnvio()"
+              (click)="verEnvio(pedidoSeleccionado)"
             >
               <i class="bi bi-truck me-2"></i>Ver Detalle Envío
             </button>

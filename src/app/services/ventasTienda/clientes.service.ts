@@ -15,51 +15,46 @@ export class ClientesService {
 
   constructor(private http: HttpClient) { }
 
-  /**
-   * Obtiene todos los clientes.
-   */
+  // 🔥 TEMPORAL: Comenta los headers para pruebas
+  /*
+  private getHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+  }
+  */
+
   findAll(): Observable<ApiResponse> {
-    return this.http.get<ApiResponse>(`${this.apiUrl}findAll`);
+    // return this.http.get<ApiResponse>(`${this.apiUrl}findAll`, { headers: this.getHeaders() });
+    return this.http.get<ApiResponse>(`${this.apiUrl}findAll`); // Sin headers
   }
 
-  /**
-   * Busca un cliente por su ID.
-   * @param ci El ID del cliente a buscar.
-   */
-  findById(ci: number): Observable<ApiResponse> {
+  findById(ci: string): Observable<ApiResponse> {
+    // return this.http.get<ApiResponse>(`${this.apiUrl}findById/${ci}`, { headers: this.getHeaders() });
     return this.http.get<ApiResponse>(`${this.apiUrl}findById/${ci}`);
   }
 
-  /**
-   * Busca un cliente por su correo electrónico.
-   * @param email El correo electrónico del cliente a buscar.
-   */
-  findByEmail(email: string): Observable<ApiResponse> {
-    return this.http.get<ApiResponse>(`${this.apiUrl}findByEmail/${email}`);
-  }
-
-  /**
-   * Registra un nuevo cliente.
-   * @param cliente El objeto cliente a guardar.
-   */
   save(cliente: clientes): Observable<ApiResponse> {
+    // return this.http.post<ApiResponse>(`${this.apiUrl}save`, cliente, { headers: this.getHeaders() });
     return this.http.post<ApiResponse>(`${this.apiUrl}save`, cliente);
   }
 
-  /**
-   * Actualiza un cliente existente.
-   * @param cliente El objeto cliente con los datos actualizados.
-   */
   update(cliente: clientes): Observable<ApiResponse> {
     console.log('Actualizando cliente:', cliente.ci);
+    // return this.http.put<ApiResponse>(`${this.apiUrl}updateById/${cliente.ci}`, cliente, { headers: this.getHeaders() });
     return this.http.put<ApiResponse>(`${this.apiUrl}updateById/${cliente.ci}`, cliente);
   }
 
-  /**
-   * Elimina un cliente por su ID.
-   * @param ci El ID del cliente a eliminar.
-   */
-  deleteById(ci: number): Observable<ApiResponse> {
+  deleteById(ci: string): Observable<ApiResponse> {
+    // return this.http.delete<ApiResponse>(`${this.apiUrl}deleteById/${ci}`, { headers: this.getHeaders() });
     return this.http.delete<ApiResponse>(`${this.apiUrl}deleteById/${ci}`);
   }
+
+
+// En tu clientes.service.ts
+findOrCreate(cliente: clientes): Observable<ApiResponse> {
+  console.log('Ejecutando findOrCreate para cliente:', cliente);
+  return this.http.post<ApiResponse>(`${this.apiUrl}findOrCreate`, cliente);
+}
+  
 }

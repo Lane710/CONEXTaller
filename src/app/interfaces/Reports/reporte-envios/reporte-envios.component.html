@@ -1,120 +1,237 @@
-<!-- ===================== CONTENIDO ESPECÍFICO DE ENVÍOS ==================== -->
-<div class="p-4">
+<div class="reporte-envios-container">
+  <!-- Header del Reporte -->
+  <div class="report-header">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="mb-0">Reporte de Envíos</h4>
-        <div>
-            <button class="btn btn-primary btn-sm" (click)="aplicarFiltrosEnvios()"><i class="bi bi-arrow-clockwise"></i> Actualizar</button>
-            <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-box-arrow-up-right"></i> Exportar</button>
-        </div>
+      <div>
+        <h2 class="report-title">🚚 Reporte de Envíos</h2>
+        <p class="text-muted mb-0">Seguimiento y análisis de envíos de pedidos y ventas</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline-primary btn-sm" (click)="aplicarFiltrosEnvios()" [disabled]="cargandoReporte">
+          <i class="bi bi-arrow-clockwise"></i> {{ cargandoReporte ? 'Actualizando...' : 'Actualizar' }}
+        </button>
+        <button class="btn btn-success btn-sm" (click)="exportarPDF()" [disabled]="!reporteEnvios.length">
+          <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+        </button>
+      </div>
     </div>
+  </div>
 
-    <!-- ================ FILTROS DE BÚSQUEDA PARA ENVÍOS ================ -->
-    <div class="row g-3 mb-4 p-3 border bg-light rounded align-items-end">
-        
+  <!-- Filtros -->
+  <div class="filtros-section card">
+    <div class="card-body">
+      <h5 class="card-title">Filtros del Reporte</h5>
+      
+      <div class="row g-3 align-items-end">
         <!-- Fecha Inicio -->
         <div class="col-md">
-            <label for="fecha-inicio-env" class="form-label">Fecha Inicio</label>
-            <input type="date" class="form-control form-control-sm" id="fecha-inicio-env" 
-                   [(ngModel)]="filtrosEnvios.fechaInicio" [max]="filtrosEnvios.fechaFin" (change)="validarFechas()">
+          <label class="form-label">Fecha Inicio</label>
+          <input type="date" class="form-control" 
+                 [(ngModel)]="filtrosEnvios.fechaInicio" 
+                 (change)="validarFechas()"
+                 [max]="filtrosEnvios.fechaFin">
         </div>
 
         <!-- Fecha Fin -->
         <div class="col-md">
-            <label for="fecha-fin-env" class="form-label">Fecha Fin</label>
-            <input type="date" class="form-control form-control-sm" id="fecha-fin-env" 
-                   [(ngModel)]="filtrosEnvios.fechaFin" [max]="maxDate" (change)="validarFechas()">
+          <label class="form-label">Fecha Fin</label>
+          <input type="date" class="form-control" 
+                 [(ngModel)]="filtrosEnvios.fechaFin"
+                 (change)="validarFechas()"
+                 [max]="maxDate">
         </div>
 
         <!-- Tipo de Origen -->
         <div class="col-md">
-            <label for="tipo-origen" class="form-label">Origen</label>
-            <select id="tipo-origen" class="form-select form-select-sm" 
-                    [(ngModel)]="filtrosEnvios.tipoOrigen">
-                <option selected value="">Todos...</option>
-                <option *ngFor="let origen of tiposOrigen" [value]="origen.value">{{ origen.viewValue }}</option>
-            </select>
+          <label class="form-label">Origen</label>
+          <select class="form-select" [(ngModel)]="filtrosEnvios.tipoOrigen">
+            <option selected value="">Todos los orígenes...</option>
+            <option *ngFor="let origen of tiposOrigen" [value]="origen.value">
+              {{ origen.viewValue }}
+            </option>
+          </select>
         </div>
 
         <!-- Estado de Envío -->
         <div class="col-md">
-            <label for="estado-env" class="form-label">Estado de Envío</label>
-            <select id="estado-env" class="form-select form-select-sm" 
-                    [(ngModel)]="filtrosEnvios.estadoEnvio">
-                <option selected value="">Todos...</option>
-                <option *ngFor="let estado of estadosEnvio" [value]="estado.value">{{ estado.viewValue }}</option>
-            </select>
+          <label class="form-label">Estado de Envío</label>
+          <select class="form-select" [(ngModel)]="filtrosEnvios.estadoEnvio">
+            <option selected value="">Todos los estados...</option>
+            <option *ngFor="let estado of estadosEnvio" [value]="estado.value">
+              {{ estado.viewValue }}
+            </option>
+          </select>
         </div>
 
         <!-- Método de Envío -->
         <div class="col-md">
-            <label for="metodo-env" class="form-label">Método de Envío</label>
-            <select id="metodo-env" class="form-select form-select-sm" 
-                    [(ngModel)]="filtrosEnvios.idMetodoEnvio">
-                <option selected value="">Todos...</option>
-                <option *ngFor="let metodo of metodosEnvio" [value]="metodo.id">{{ metodo.nombre }}</option>
-            </select>
+          <label class="form-label">Método de Envío</label>
+          <select class="form-select" [(ngModel)]="filtrosEnvios.idMetodoEnvio">
+            <option selected value="">Todos los métodos...</option>
+            <option *ngFor="let metodo of metodosEnvio" [value]="metodo.id">
+              {{ metodo.nombre }}
+            </option>
+          </select>
         </div>
 
         <!-- Botón Filtrar -->
         <div class="col-md-auto">
-            <button class="btn btn-secondary btn-sm w-100" (click)="aplicarFiltrosEnvios()">Filtrar</button>
+          <button class="btn btn-primary w-100" (click)="aplicarFiltrosEnvios()" [disabled]="cargandoReporte">
+            <i class="bi bi-funnel"></i> Filtrar
+          </button>
         </div>
+      </div>
     </div>
-    <!-- ============ FIN DE FILTROS DE BÚSQUEDA ============ -->
+  </div>
 
-    <!-- =================== SECCIÓN DE RESULTADOS =================== -->
+  <!-- Estadísticas Resumen -->
+  <div *ngIf="busquedaRealizada && reporteEnvios.length > 0" class="estadisticas-section">
+    <div class="row g-3">
+      <div class="col-md-3">
+        <div class="stat-card bg-primary text-white">
+          <div class="stat-icon">📦</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ reporteEnvios.length }}</div>
+            <div class="stat-label">Total Envíos</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card bg-success text-white">
+          <div class="stat-icon">💰</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ totalCostoEnvios | currency:'Bs. ' }}</div>
+            <div class="stat-label">Costo Total</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card bg-info text-white">
+          <div class="stat-icon">✅</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ getEnviosEntregados() }}</div>
+            <div class="stat-label">Entregados</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card bg-warning text-white">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ getEnviosPendientes() }}</div>
+            <div class="stat-label">En Proceso</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="cargandoReporte" class="loading-container text-center">
+    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-3 text-muted">Generando reporte de envíos, por favor espere...</p>
+  </div>
+
+  <!-- Resultados -->
+  <div *ngIf="!cargandoReporte && busquedaRealizada">
     
-    <div *ngIf="cargandoReporte" class="text-center my-5">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Cargando...</span>
+    <!-- Con Resultados -->
+    <div *ngIf="reporteEnvios.length > 0" class="reporte-section">
+      <div class="table-responsive">
+        <table class="table table-hover table-envios-mobile">
+          <thead class="table-dark">
+            <tr>
+              <th data-label="ID">ID Envío</th>
+              <th data-label="Cliente">Cliente</th>
+              <th data-label="Origen">Origen</th>
+              <th data-label="Estado">Estado</th>
+              <th data-label="Empresa">Empresa / Método</th>
+              <th data-label="Costo" class="text-end">Costo</th>
+              <th data-label="Fecha" class="text-center">Fecha Envío</th>
+              <th data-label="Seguimiento">Cód. Seguimiento</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let envio of reporteEnvios" class="envio-row">
+              <td data-label="ID Envío">
+                <strong>#{{ envio.idEnvio }}</strong>
+              </td>
+              <td data-label="Cliente">
+                <div class="cliente-info">{{ envio.cliente }}</div>
+              </td>
+              <td data-label="Origen">
+                <span class="badge-envio" [ngClass]="{
+                  'bg-origen-pedido': envio.tipoOrigen === 'PEDIDO',
+                  'bg-origen-venta': envio.tipoOrigen === 'VENTA'
+                }">
+                  {{ envio.tipoOrigen }} #{{ envio.idOrigen }}
+                </span>
+              </td>
+              <td data-label="Estado">
+                <span class="badge-envio" [ngClass]="{
+                  'bg-envio-pendiente': envio.estado === 'PENDIENTE',
+                  'bg-envio-proceso': envio.estado === 'EN_PROCESO',
+                  'bg-envio-enviado': envio.estado === 'ENVIADO',
+                  'bg-envio-entregado': envio.estado === 'ENTREGADO',
+                  'bg-envio-cancelado': envio.estado === 'CANCELADO'
+                }">
+                  {{ getTextoEstado(envio.estado) }}
+                </span>
+              </td>
+              <td data-label="Empresa / Método">
+                <div>
+                  <span class="empresa-envio">{{ envio.empresaEnvio }}</span>
+                  <div class="metodo-envio">{{ envio.metodoEnvio }}</div>
+                </div>
+              </td>
+              <td data-label="Costo" class="text-end costo-envio">
+                {{ envio.costoEnvio | currency:'Bs. ' }}
+              </td>
+              <td data-label="Fecha Envío" class="text-center">
+                {{ envio.fechaEnvio | date:'dd/MM/yyyy' }}
+              </td>
+              <td data-label="Cód. Seguimiento">
+                <code class="codigo-seguimiento">{{ envio.codigoSeguimiento || 'N/A' }}</code>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Total General -->
+      <div class="total-general mt-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h4 class="mb-1">Resumen de Costos</h4>
+            <p class="mb-0 opacity-75">{{ reporteEnvios.length }} envíos procesados</p>
+          </div>
+          <div class="text-end">
+            <h3 class="mb-0">{{ totalCostoEnvios | currency:'Bs. ' }}</h3>
+            <small class="opacity-75">Costo Total de Envíos</small>
+          </div>
         </div>
-        <p class="mt-2">Generando reporte de envíos...</p>
+      </div>
     </div>
 
-    <!-- Resultados (Tabla) -->
-    <div *ngIf="!cargandoReporte && reporteEnvios.length > 0">
-        <h5>{{ reporteEnvios.length }} Envíos Encontrados</h5>
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover table-sm">
-                <thead class="table-light">
-                    <tr>
-                        <th style="width: 10%;">ID Envío</th>
-                        <th style="width: 15%;">Cliente</th>
-                        <th style="width: 10%;">Origen</th>
-                        <th style="width: 15%;">Estado</th>
-                        <th style="width: 15%;">Empresa / Método</th>
-                        <th style="width: 10%;">Costo</th>
-                        <th style="width: 10%;">Fecha Envío</th>
-                        <th style="width: 15%;">Cód. Seguimiento</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let envio of reporteEnvios">
-                        <td>{{ envio.idEnvio }}</td>
-                        <td>{{ envio.cliente }}</td>
-                        <td>{{ envio.tipoOrigen }} #{{ envio.idOrigen }}</td>
-                        <td>{{ envio.estado }}</td>
-                        <td>{{ envio.empresaEnvio }} / {{ envio.metodoEnvio }}</td>
-                        <td class="text-end">{{ envio.costoEnvio | currency:'Bs.' }}</td>
-                        <td>{{ envio.fechaEnvio | date:'shortDate' }}</td>
-                        <td>{{ envio.codigoSeguimiento }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="d-flex justify-content-end mt-3 alert alert-success">
-            <h4 class="fw-bold mb-0">Total de Costos de Envío: {{ totalCostoEnvios | currency:'Bs.' }}</h4>
-        </div>
+    <!-- Sin Resultados -->
+    <div *ngIf="reporteEnvios.length === 0" class="no-results">
+      <i class="bi bi-truck" style="font-size: 4rem; color: #6c757d;"></i>
+      <h4 class="mt-3 text-muted">No se encontraron envíos</h4>
+      <p class="text-muted">Intenta ajustar los filtros o seleccionar un rango de fechas diferente.</p>
+      <button class="btn btn-outline-primary mt-2" (click)="aplicarFiltrosEnvios()">
+        <i class="bi bi-arrow-clockwise"></i> Reintentar
+      </button>
     </div>
+  </div>
 
-    <!-- Mensajes sin resultados -->
-    <div *ngIf="!cargandoReporte && reporteEnvios.length === 0" class="mt-3">
-        <div *ngIf="!busquedaRealizada" class="alert alert-info" role="alert">
-            Defina el rango de fechas y presione "Filtrar" para generar el reporte.
-        </div>
-        <div *ngIf="busquedaRealizada" class="alert alert-warning" role="alert">
-            No se encontraron envíos para los filtros seleccionados.
-        </div>
+  <!-- Mensaje Inicial -->
+  <div *ngIf="!busquedaRealizada && !cargandoReporte" class="text-center py-5">
+    <div class="alert alert-info">
+      <i class="bi bi-info-circle" style="font-size: 2rem;"></i>
+      <h4 class="mt-3">Seleccione los filtros</h4>
+      <p class="mb-0">Configure los filtros y presione "Filtrar" para generar el reporte de envíos.</p>
     </div>
+  </div>
 </div>

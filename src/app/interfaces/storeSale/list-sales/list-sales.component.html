@@ -1,4 +1,5 @@
 <div class="container mt-4">
+  <!-- Breadcrumb mejorado -->
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="#">Home</a></li>
@@ -8,23 +9,28 @@
     </ol>
   </nav>
 
-  <h1 class="mb-4 text-center text-md-start">Lista de Ventas</h1>
+  <!-- Título principal mejorado -->
+  <h1 class="mb-4">Lista de Ventas</h1>
 
+  <!-- Barra de herramientas superior: Botones y Filtros -->
   <div
     class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3"
   >
+    <!-- Grupo de botones y búsqueda -->
     <div class="d-flex flex-wrap gap-2 flex-grow-1">
+      <!-- Botón Registrar Venta -->
       <div class="col-12 col-md-auto">
         <button
           class="btn btn-primary rounded-pill w-100"
-          routerLink="/home/ventasTienda"
+          routerLink="/home/preVentasTienda"
         >
           <i class="bi bi-plus-lg me-2"></i>Registrar Venta
         </button>
       </div>
 
+      <!-- Búsqueda mejorada -->
       <div class="col-12 col-md flex-grow-1">
-        <div class="input-group w-100">
+        <div class="input-group search-input-group w-100">
           <input
             type="text"
             class="form-control rounded-pill-start"
@@ -32,79 +38,113 @@
             [(ngModel)]="searchTerm"
             (input)="onSearchChange()"
           />
-          <span class="input-group-text rounded-pill-end"
-            ><i class="bi bi-search"></i
-          ></span>
+          <span class="input-group-text rounded-pill-end">
+            <i class="bi bi-search"></i>
+          </span>
         </div>
       </div>
 
-      <div class="col-12 col-md-auto">
-        <select
-          class="form-select rounded-pill w-100"
-          [(ngModel)]="filterStatus"
-          (ngModelChange)="onStatusChange()"
-        >
-          <option value="todos">Todos los estados</option>
-          <option value="completada">Completada</option>
-          <option value="cancelada">Cancelada</option>
-        </select>
+      <!-- Dropdown para Estado mejorado -->
+      <div class="col-12 col-sm-auto">
+        <div class="dropdown w-100">
+          <button
+            class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
+            type="button"
+            id="estadoDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Estado: {{ filterStatus === 'todos' ? 'Todos' : (filterStatus === 'completada' ? 'Completada' : (filterStatus === 'cancelada' ? 'Cancelada' : 'Pendiente')) }}
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="estadoDropdown">
+            <li>
+              <a class="dropdown-item" [ngClass]="{ active: filterStatus === 'todos' }" (click)="filterStatus = 'todos'; onStatusChange()">Todos los Estados</a>
+            </li>
+            <li>
+              <a class="dropdown-item" [ngClass]="{ active: filterStatus === 'completada' }" (click)="filterStatus = 'completada'; onStatusChange()">Completada</a>
+            </li>
+            <li>
+              <a class="dropdown-item" [ngClass]="{ active: filterStatus === 'pendiente' }" (click)="filterStatus = 'pendiente'; onStatusChange()">Pendiente</a>
+            </li>
+            <li>
+              <a class="dropdown-item" [ngClass]="{ active: filterStatus === 'cancelada' }" (click)="filterStatus = 'cancelada'; onStatusChange()">Cancelada</a>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
 
+    <!-- Grupo de Dropdowns (Filtros) -->
     <div class="d-flex flex-wrap gap-2 justify-content-end">
       <div class="col-12 col-sm-auto">
         <div class="dropdown w-100">
           <button
             class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
             type="button"
+            id="fechaDropdown"
             data-bs-toggle="dropdown"
+            aria-expanded="false"
           >
-            {{ sortDirection === "reciente" ? "Más Reciente" : "Más Antiguo" }}
+            Fecha: {{ sortDirection === 'reciente' ? 'Más Reciente' : 'Más Antiguo' }}
           </button>
-          <ul class="dropdown-menu">
+          <ul class="dropdown-menu" aria-labelledby="fechaDropdown">
             <li>
               <a
                 class="dropdown-item"
+                [ngClass]="{ active: sortDirection === 'reciente' }"
                 (click)="sortDirection = 'reciente'; onSortChange()"
-                >Más Reciente</a
-              >
+              >Más Reciente</a>
             </li>
             <li>
               <a
                 class="dropdown-item"
+                [ngClass]="{ active: sortDirection === 'antiguo' }"
                 (click)="sortDirection = 'antiguo'; onSortChange()"
-                >Más Antiguo</a
-              >
+              >Más Antiguo</a>
             </li>
           </ul>
         </div>
       </div>
-    </div>
+    </div>  
   </div>
 
+  <!-- Tabla de Ventas -->
   <div class="card shadow-sm mb-4">
     <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover">
-          <thead class="table-light">
+      <!-- Mensajes de carga, error o sin ventas -->
+      <div *ngIf="isLoading" class="alert alert-info text-center py-4" role="alert">
+        Cargando ventas...
+      </div>
+      <div *ngIf="errorMessage" class="alert alert-danger text-center py-4" role="alert">
+        {{ errorMessage }}
+      </div>
+      <div *ngIf="!isLoading && paginatedVentas.length === 0 && !errorMessage" class="alert alert-warning text-center py-4" role="alert">
+        No hay ventas que coincidan con los filtros.
+      </div>
+
+      <div class="table-responsive" *ngIf="!isLoading && paginatedVentas.length > 0">
+        <table class="table table-hover mb-0">
+          <thead>
             <tr>
-              <th>Cliente</th>
-              <th>Total</th>
-              <th>Fecha</th>
-              <th>Estado</th>
-              <th>Acciones</th>
+              <th scope="col">Cliente</th>
+              <th scope="col">Total</th>
+              <th scope="col">Fecha</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Acciones</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let sale of paginatedVentas">
-              <td data-label="Cliente">{{ sale.cliente.nombre }}</td>
+              <td data-label="Cliente">
+                {{ sale.cliente.nombre }} {{ sale.cliente.appaterno || '' }} {{ sale.cliente.apmaterno || '' }}
+              </td>
               <td data-label="Total">
                 {{ sale.total | currency : "Bs " : "symbol" : "1.2-2" }}
               </td>
               <td data-label="Fecha">
                 {{ sale.fechaVenta | date : "dd/MM/yyyy" }}
               </td>
-              <td>
+              <td data-label="Estado">
                 <span
                   class="badge"
                   [ngClass]="{
@@ -116,49 +156,40 @@
                   {{ sale.estado | titlecase }}
                 </span>
               </td>
-              <td class="actions-column">
-                <button
-                  class="btn btn-sm me-1"
-                  (click)="selectVentaModalDetalle(sale)"
-                  type="button"
-                >
-                  <img
-                    src="/icon_Productos/Listar/ver_observar.svg"
-                    style="width: 30px; height: 30px; vertical-align: middle"
-                  />
-                </button>
-                <button
-                  class="btn btn-sm"
-                  (click)="selectVenta(sale)"
-                  type="button"
-                >
-                  <img
-                    [src]="
-                      sale?.estado === 'CANCELADA'
-                        ? '/icon_Productos/Listar/habilitar.svg'
-                        : '/icon_Productos/Listar/deshabilitar.svg'
-                    "
-                    alt="Estado del producto"
-                    style="width: 30px; height: 30px; vertical-align: middle"
-                  />
-                </button>
-
-                <button
-                  class="btn btn-sm"
-                  (click)="registrarEnvio(sale)"
-                  type="button"
-                >
-                  <img
-                    src="/icon_SaleOnline/carbon--delivery-truck.svg"
-                    style="width: 30px; height: 30px; vertical-align: middle"
-                  />
-                </button>
-              </td>
-            </tr>
-            <tr *ngIf="paginatedVentas.length === 0">
-              <td colspan="6" class="text-center py-3">
-                No hay ventas para mostrar.
-              </td>
+              <td data-label="Acciones" class="actions-column">
+  <button class="btn btn-sm" (click)="selectVentaModalDetalle(sale)">
+    <img src="/icon_Productos/Listar/ver_observar.svg" />
+  </button>
+  <button class="btn btn-sm" (click)="selectVenta(sale)">
+    <img
+      [src]="
+        sale?.estado === 'CANCELADA'
+          ? '/icon_Productos/Listar/habilitar.svg'
+          : '/icon_Productos/Listar/deshabilitar.svg'
+      "
+      alt="Estado del producto"
+    />
+  </button>
+  <button 
+    class="btn btn-sm" 
+    (click)="registrarEnvio(sale)"
+    [disabled]="isCheckingEnvio && ventaEnProceso === sale.idVenta"
+    title="Registrar envío"
+  >
+    <img
+      src="/icon_SaleOnline/carbon--delivery-truck.svg"
+      alt="Registrar envío"
+      *ngIf="!(isCheckingEnvio && ventaEnProceso === sale.idVenta)"
+    />
+    <span 
+      *ngIf="isCheckingEnvio && ventaEnProceso === sale.idVenta" 
+      class="spinner-border spinner-border-sm" 
+      role="status"
+    >
+      <span class="visually-hidden">Verificando...</span>
+    </span>
+  </button>
+</td>
             </tr>
           </tbody>
         </table>
@@ -166,18 +197,20 @@
     </div>
   </div>
 
-  <div
-    class="d-flex justify-content-center align-items-center flex-wrap mt-3"
-    *ngIf="totalPages > 1"
-  >
-    <nav>
+  <!-- Paginación mejorada -->
+  <div class="d-flex justify-content-center align-items-center flex-wrap mb-3" *ngIf="totalPages > 1">
+    <nav aria-label="Page navigation">
       <ul class="pagination pagination-sm mb-0">
         <li class="page-item" [class.disabled]="currentPage === 1">
-          <button class="page-link" (click)="goToPage(currentPage - 1)">
-            &laquo;
+          <button
+            class="page-link"
+            (click)="goToPage(currentPage - 1)"
+            aria-label="Previous"
+            [disabled]="currentPage === 1"
+          >
+            <span aria-hidden="true">&laquo;</span>
           </button>
         </li>
-
         @if (pages[0] > 1) {
           <li class="page-item">
             <button class="page-link" (click)="goToPage(1)">1</button>
@@ -211,10 +244,14 @@
             </button>
           </li>
         }
-
         <li class="page-item" [class.disabled]="currentPage === totalPages">
-          <button class="page-link" (click)="goToPage(currentPage + 1)">
-            &raquo;
+          <button
+            class="page-link"
+            (click)="goToPage(currentPage + 1)"
+            aria-label="Next"
+            [disabled]="currentPage === totalPages"
+          >
+            <span aria-hidden="true">&raquo;</span>
           </button>
         </li>
       </ul>
@@ -222,6 +259,49 @@
   </div>
 </div>
 
+<!-- Los modales se mantienen igual -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Modal de Confirmación de Acción de Venta -->
 <div
   class="modal fade"
   id="confirmarVentaCompletadaOCanceladaModal"
@@ -272,6 +352,7 @@
   </div>
 </div>
 
+<!-- Modal de Mensaje General -->
 <div
   class="modal fade"
   id="modalMensajeGeneral"
@@ -310,6 +391,7 @@
   </div>
 </div>
 
+<!-- Modal de Detalles de Venta -->
 <div
   class="modal fade"
   id="modalDetallesVenta"

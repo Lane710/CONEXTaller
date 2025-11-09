@@ -6,7 +6,7 @@ import { pedidos } from '../../../models/PedidosEnviosDetalles/pedidos';
 import { detallePedido } from '../../../models/PedidosEnviosDetalles/detallePedido';
 import { DetallePedidosService } from '../../../services/PedidosEnviosDetalles/detalle-pedidos.service';
 import { lastValueFrom } from 'rxjs';
-import { PedidosDTO } from '../../../DTOs/dtosBD/PedidosDTO';
+import {Router } from '@angular/router';
 
 declare var bootstrap: any;
 
@@ -47,7 +47,8 @@ export class ListPedidoComponent implements OnInit {
 
   constructor(
     private pedidosS: PedidosService,
-    private detallePedidoS: DetallePedidosService
+    private detallePedidoS: DetallePedidosService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -291,7 +292,10 @@ export class ListPedidoComponent implements OnInit {
   }
 
   // Agrega este método a tu componente TypeScript
-DetalleEnvio(): void {
+verEnvio(detalle:PedidoConDetalles): void {
  // window.print();
+ console.log('AAAAAAAAAAAAAAAAAhhhhh', detalle)
+ this.router.navigate(['/home/envios/list-envios',detalle.pedido.idPedido]);
+
 }
 }

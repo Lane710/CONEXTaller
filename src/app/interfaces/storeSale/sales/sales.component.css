@@ -1,21 +1,65 @@
 /* Contenedor principal de la página */
 .main-container {
-  max-width: 1500px; /* Nuevo valor para un ancho más grande */
+  max-width: 1500px;
   margin: auto;
-  /* Se elimina el max-height para permitir el scroll natural del documento */
 }
+
 /* El div que contiene las dos columnas (productos y ticket) */
 .row {
   margin: auto;
-  max-width: 1350px; /* Valor duplicado */
-  /* Se elimina height: 850px; para permitir el crecimiento del contenido */
+  max-width: 1350px;
 }
 
-/* Se reajusta la altura del contenedor de la lista de productos
-   para ser más flexible y responsivo, sin un máximo fijo. */
-.product-list-container {
+/* Contenedor de productos con altura fija para 7 productos */
+.table-responsive.productos-container {
+  overflow-x: auto;
+  /* Altura mínima para 7 productos (aproximadamente 7 * 60px = 420px) */
+  
+  max-height: 420px;
+  transition: all 0.3s ease;
+}
+
+/* Cuando hay más de 7 productos, activar scroll */
+.table-responsive.productos-container.scroll-active {
   overflow-y: auto;
-  max-height: none; /* Se elimina el max-height fijo */
+  max-height: 500px;
+}
+
+/* Cuando hay 7 productos o menos, altura automática */
+.table-responsive.productos-container:not(.scroll-active) {
+  overflow-y: visible;
+  max-height: none;
+
+}
+
+/* Header de la tabla fijo */
+.table thead th {
+  background-color: #e7f1ff;
+  border-bottom: 2px solid #dee2e6;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Estilos generales de la tabla */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table td {
+  vertical-align: middle;
+  padding: 0.75rem;
+}
+
+/* Altura aproximada de cada fila */
+.table tbody tr {
+  height: 60px;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.075);
 }
 
 .product-image {
@@ -25,39 +69,33 @@
   border-radius: 8px;
 }
 
-/* Estilos de la sección del ticket, se ajustan para diferentes tamaños de pantalla */
+/* Scrollbar personalizado */
+.table-responsive.productos-container.scroll-active::-webkit-scrollbar {
+  width: 8px;
+}
+
+.table-responsive.productos-container.scroll-active::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.table-responsive.productos-container.scroll-active::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.table-responsive.productos-container.scroll-active::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Estilos de la sección del ticket */
 .ticket-section-sticky {
   background-color: #e9ecef;
   border-left: 1px solid #dee2e6;
-  /* Se elimina height: 1000px; para permitir el crecimiento del contenido */
   border-radius: 12px;
-  position: static;
-}
-
-/* Estilos para la barra de búsqueda */
-.search-bar-container {
-  position: relative;
-}
-
-.search-bar-container .form-control {
-  padding-left: 2.5rem;
-  border-radius: 20px;
-  border: 1px solid #ced4da;
-  transition: all 0.3s ease;
-}
-
-.search-bar-container .form-control:focus {
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-  border-color: #86b7fe;
-}
-
-.search-bar-container .search-icon {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #adb5bd;
-  pointer-events: none;
+  position: sticky;
+  top: 1rem;
+  height: fit-content;
 }
 
 /* Controles de cantidad */
@@ -68,174 +106,240 @@
   gap: 8px;
 }
 
-.quantity-value {
+.quantity-control .btn {
   width: 30px;
-  text-align: center;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid #dee2e6;
 }
 
-.quantity-value::-webkit-outer-spin-button,
-.quantity-value::-webkit-inner-spin-button {
+.quantity-control .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quantity-value {
+  width: 60px;
+  text-align: center;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Estilos para inputs numéricos */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-/* Estilos de las celdas de la tabla para alinear el contenido verticalmente */
-td {
-  vertical-align: middle;
+
+.quantity-value:focus,
+.form-control:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  outline: none;
 }
 
-/* Reemplaza la regla de .VentaPendiente con esta nueva. */
-.VentaPendiente {
-  border-radius: 12px;
-  margin-top: 10px;
-  height: auto; /* Se cambia a auto para que crezca con el contenido */
-  padding: 8px;
-  background-color: #00ccff1a;
-  overflow-y: auto; /* Se mantiene para el scroll si el contenido es largo */
-  max-height: 400px; /* Se añade un max-height para evitar que se desborde en pantallas grandes */
+/* Estilos específicos para la sección de descuento */
+.descuento-section {
+  border-left: 4px solid #0d6efd;
+  padding-left: 12px;
 }
 
-/* --- Media Queries para responsividad --- */
-
-/* Estilos aplicados solo para pantallas medianas (md) y superiores */
-@media (min-width: 992px) {
-  .ticket-section-sticky {
-    height: auto; /* Se cambia a auto para evitar el desbordamiento en pantallas grandes */
-    top: 1rem;
-    border-top: none;
-  }
+.aplicar-descuento-btn {
+  white-space: nowrap;
+  min-width: 80px;
+  transition: all 0.2s ease-in-out;
 }
 
-/* Estilos para tablas en pantallas pequeñas (hasta 768px) */
-@media (max-width: 768px) {
-  /* La tabla se adapta a un formato de lista en móvil */
-  table,
-  thead,
-  tbody,
-  th,
-  td,
-  tr {
-    display: block;
-  }
-
-  thead tr {
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
-  }
-
-  tr {
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  td {
-    border: none;
-    border-bottom: 1px solid #eee;
-    position: relative;
-    padding-left: 50%;
-    text-align: right;
-    vertical-align: middle;
-  }
-
-  td:last-child {
-    border-bottom: 0;
-  }
-
-  td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 10px;
-    width: calc(50% - 20px);
-    padding-right: 10px;
-    white-space: nowrap;
-    text-align: left;
-    font-weight: bold;
-    color: #555;
-  }
-
-  td[data-label="Imagen"] {
-    text-align: center;
-    padding-left: 10px;
-  }
-
-  td[data-label="Imagen"]::before {
-    display: none;
-  }
-
-  .product-image {
-    margin: 5px auto;
-    display: block;
-  }
+.aplicar-descuento-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Estilo para los ítems del ticket, con colores alternos */
-.ticket-item:nth-child(even) {
-  background-color: #f8f9fa; /* Color gris claro para los ítems pares */
+.aplicar-descuento-btn:active {
+  transform: translateY(0);
 }
 
-.ticket-item:nth-child(odd) {
-  background-color: #ffffff; /* Color blanco para los ítems impares */
+/* Estilos para mensajes de descuento */
+.alert {
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0;
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
 }
 
-/* Efecto hover sutil para los ítems de la lista */
-.ticket-item:hover {
-  transform: translateY(-2px); /* Efecto de elevación */
-  transition: transform 0.2s ease-in-out;
+.alert-success {
+  color: #0f5132;
+  background-color: #d1e7dd;
+  border-color: #badbcc;
 }
 
-/* Estilo para el botón de eliminar, asegurando que el icono tenga buen tamaño */
+.alert-danger {
+  color: #842029;
+  background-color: #f8d7da;
+  border-color: #f5c2c7;
+}
+
+.alert-info {
+  color: #055160;
+  background-color: #cff4fc;
+  border-color: #b6effb;
+}
+
+/* Estilo para el botón de eliminar */
 .btn-outline-danger {
   color: #dc3545;
   border-color: #dc3545;
+  transition: all 0.3s ease;
 }
 
 .btn-outline-danger:hover {
   color: #fff;
   background-color: #dc3545;
+  transform: scale(1.05);
 }
 
-
-/* Estilos para el modal de éxito */
-.success-icon {
-  font-size: 4rem; /* Tamaño del icono */
-  color: #28a745; /* Color verde de éxito */
-  animation: scale-up 0.5s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+/* Estilos para inputs de descuento */
+.input-group-sm .form-control {
+  font-size: 0.875rem;
+  border: 1px solid #ced4da;
 }
 
-/* Animación para el icono */
-@keyframes scale-up {
-  0% {
-    transform: scale(0.5);
-    opacity: 0;
+.input-group-sm .input-group-text {
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+}
+
+.input-group-sm .form-control:focus {
+  z-index: 3;
+}
+
+/* Clases para el stock */
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.text-warning {
+  color: #ffc107 !important;
+}
+
+.text-success {
+  color: #198754 !important;
+}
+
+.fw-bold {
+  font-weight: bold !important;
+}
+
+/* Estilos para el estado de deshabilitado */
+.form-control:disabled {
+  background-color: #e9ecef;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Mejoras visuales para el ticket */
+.totales-section {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.totales-section .border-top {
+  border-top-color: #ced4da !important;
+}
+
+/* Efectos de transición suaves */
+.quantity-control .btn,
+.btn,
+.form-control {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Mejora de accesibilidad - focus states */
+.btn:focus,
+.form-control:focus,
+.quantity-value:focus {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .table-responsive.productos-container {
+    font-size: 0.9rem;
+    min-height: 350px;
+    max-height: 350px;
   }
-  100% {
-    transform: scale(1);
-    opacity: 1;
+  
+  .table-responsive.productos-container.scroll-active {
+    max-height: 350px;
+  }
+  
+  .quantity-control {
+    flex-direction: row;
+    gap: 4px;
+  }
+  
+  .quantity-value {
+    width: 50px;
+  }
+
+  .ticket-section-sticky {
+    position: static;
+    margin-top: 2rem;
+  }
+  
+  .input-group-sm {
+    max-width: 120px;
+  }
+
+  .descuento-section .d-flex {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .aplicar-descuento-btn {
+    width: 100%;
   }
 }
 
-.modal-content {
-  border-radius: 1rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+@media (max-width: 576px) {
+  .table-responsive.productos-container {
+    min-height: 300px;
+    max-height: 300px;
+    font-size: 0.8rem;
+  }
+  
+  .table-responsive.productos-container.scroll-active {
+    max-height: 300px;
+  }
+  
+  .quantity-control {
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .quantity-value {
+    width: 40px;
+  }
 }
 
-.modal-title {
-  font-weight: 600;
-  color: #333;
+/* Scroll general de la página */
+html {
+  scroll-behavior: smooth;
 }
-
-.btn-primary {
-  background-color: #28a745;
-  border-color: #28a745;
-  transition: all 0.3s ease;
-}
-
-.btn-primary:hover {
-  background-color: #218838;
-  border-color: #1e7e34;
-  transform: translateY(-2px);
-}
-

@@ -213,4 +213,21 @@ export class ReportePedidosComponent implements OnInit {
     const day = ('0' + today.getDate()).slice(-2);
     return `${year}-${month}-${day}`;
   }
+
+  // Métodos para las estadísticas
+getPromedioPedido(): number {
+  if (this.reportePedidosAgrupado.length === 0) return 0;
+  return this.totalGeneralPedidos / this.reportePedidosAgrupado.length;
+}
+
+getPedidosCompletados(): number {
+  return this.reportePedidosAgrupado.filter(pedido => 
+    pedido.estado === 'ENTREGADO' || pedido.estado === 'COMPLETADO'
+  ).length;
+}
+
+exportarPDF(): void {
+  // Implementar lógica de exportación PDF
+  alert('Funcionalidad de exportación PDF en desarrollo');
+}
 }

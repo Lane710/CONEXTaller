@@ -231,4 +231,33 @@ export class ReporteVentasComponent implements OnInit {
     const day = ('0' + today.getDate()).slice(-2);
     return `${year}-${month}-${day}`;
   }
+
+  // Métodos para las estadísticas
+getVentasCompletadas(): number {
+  return this.reporteVentasAgrupado.filter(venta => 
+    venta.estado === 'COMPLETADA'
+  ).length;
+}
+
+getTotalProductosVendidos(): number {
+  return this.reporteVentasAgrupado.reduce((total, venta) => {
+    return total + venta.detalles.reduce((sum, detalle) => sum + detalle.cantidad, 0);
+  }, 0);
+}
+
+exportarPDF(): void {
+  // Implementar lógica de exportación PDF
+  alert('Funcionalidad de exportación PDF en desarrollo');
+}
+
+// Método para obtener el texto del estado
+getTextoEstado(estado: string): string {
+  const estados: { [key: string]: string } = {
+    'COMPLETADA': 'Completada',
+    'PENDIENTE': 'Pendiente', 
+    'CANCELADA': 'Cancelada',
+    'DEVUELTA': 'Devuelta'
+  };
+  return estados[estado] || estado;
+}
 }

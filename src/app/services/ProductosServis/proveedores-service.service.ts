@@ -89,12 +89,7 @@ export class ProveedoresService {
   // 🆕 MÉTODO PRIVADO PARA PREPARAR LOS DATOS
   private prepareProveedorForBackend(proveedor: proveedores): any {
     // Si se usa idCategoria directamente, crear objeto categoria
-    if (proveedor.idCategoria && !proveedor.categoria) {
-      return {
-        ...proveedor,
-        categoria: { idCategoria: proveedor.idCategoria }
-      };
-    }
+  
     
     // Si ya viene con objeto categoria, usarlo directamente
     return proveedor;

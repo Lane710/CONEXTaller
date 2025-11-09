@@ -1,19 +1,24 @@
 <div class="container mt-4">
+  <!-- Breadcrumb -->
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="#">Home</a></li>
+      <li class="breadcrumb-item"><a href="/home/Gestion">Home</a></li>
       <li class="breadcrumb-item active" aria-current="page">
         Lista de Proveedores
       </li>
     </ol>
   </nav>
 
-  <h1 class="mb-4 text-center text-md-start">Lista de Proveedores</h1>
+  <!-- Título principal -->
+  <h1 class="mb-4">Lista de Proveedores</h1>
 
+  <!-- Barra de herramientas superior: Botones y Filtros -->
   <div
     class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3"
   >
+    <!-- Grupo de botones y búsqueda -->
     <div class="d-flex flex-wrap gap-2 flex-grow-1">
+      <!-- Botón Registrar Proveedor -->
       <div class="col-12 col-md-auto">
         <button
           class="btn btn-primary rounded-pill w-100"
@@ -23,8 +28,9 @@
         </button>
       </div>
 
+      <!-- Búsqueda -->
       <div class="col-12 col-md flex-grow-1">
-        <div class="input-group w-100">
+        <div class="input-group search-input-group w-100">
           <input
             type="text"
             class="form-control rounded-pill-start"
@@ -32,117 +38,130 @@
             [(ngModel)]="searchTerm"
             (input)="onSearchChange()"
           />
-          <span class="input-group-text rounded-pill-end"
-            ><i class="bi bi-search"></i
-          ></span>
+          <span class="input-group-text rounded-pill-end">
+            <i class="bi bi-search"></i>
+          </span>
         </div>
       </div>
 
-      <div class="col-12 col-md-auto">
-        <select
-          class="form-select rounded-pill w-100"
-          [(ngModel)]="filterStatus"
-          (ngModelChange)="onStatusChange()"
-        >
-          <option value="todos">Todos los estados</option>
-          <option value="activo">Activo</option>
-          <option value="inactivo">Inactivo</option>
-        </select>
+      <!-- Dropdown para Ordenar por Fecha -->
+      <div class="col-12 col-sm-auto">
+        <div class="dropdown w-100">
+          <button
+            class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
+            type="button"
+            id="fechaDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Fecha: {{ sortDirection === 'reciente' ? 'Más Reciente' : 'Más Antiguo' }}
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="fechaDropdown">
+            <li>
+              <a
+                class="dropdown-item"
+                [ngClass]="{ active: sortDirection === 'reciente' }"
+                (click)="sortDirection = 'reciente'; onSortChange()"
+              >Más Reciente</a>
+            </li>
+            <li>
+              <a
+                class="dropdown-item"
+                [ngClass]="{ active: sortDirection === 'antiguo' }"
+                (click)="sortDirection = 'antiguo'; onSortChange()"
+              >Más Antiguo</a>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
 
+    <!-- Grupo de Dropdowns (Filtros) -->
     <div class="d-flex flex-wrap gap-2 justify-content-end">
       <div class="col-12 col-sm-auto">
         <div class="dropdown w-100">
           <button
             class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
             type="button"
+            id="estadoDropdown"
             data-bs-toggle="dropdown"
+            aria-expanded="false"
           >
-            {{ sortDirection === "reciente" ? "Más Reciente" : "Más Antiguo" }}
+            Estado: {{ filterStatus === 'todos' ? 'Todos' : (filterStatus === 'activo' ? 'Activo' : 'Inactivo') }}
           </button>
-          <ul class="dropdown-menu">
+          <ul class="dropdown-menu" aria-labelledby="estadoDropdown">
             <li>
-              <a
-                class="dropdown-item"
-                (click)="sortDirection = 'reciente'; onSortChange()"
-                >Más Reciente</a
-              >
+              <a class="dropdown-item" [ngClass]="{ active: filterStatus === 'todos' }" (click)="filterStatus = 'todos'; onStatusChange()">Todos los Estados</a>
             </li>
             <li>
-              <a
-                class="dropdown-item"
-                (click)="sortDirection = 'antiguo'; onSortChange()"
-                >Más Antiguo</a
-              >
+              <a class="dropdown-item" [ngClass]="{ active: filterStatus === 'activo' }" (click)="filterStatus = 'activo'; onStatusChange()">Activo</a>
+            </li>
+            <li>
+              <a class="dropdown-item" [ngClass]="{ active: filterStatus === 'inactivo' }" (click)="filterStatus = 'inactivo'; onStatusChange()">Inactivo</a>
             </li>
           </ul>
         </div>
       </div>
-    </div>
+    </div>  
   </div>
 
+  <!-- Tabla de Proveedores -->
   <div class="card shadow-sm mb-4">
     <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover">
-          <thead class="table-light">
+      <!-- Mensajes de carga, error o sin proveedores -->
+      <div *ngIf="isLoading" class="alert alert-info text-center py-4" role="alert">
+        Cargando proveedores...
+      </div>
+      <div *ngIf="errorMessage" class="alert alert-danger text-center py-4" role="alert">
+        {{ errorMessage }}
+      </div>
+      <div *ngIf="!isLoading && filteredProveedores.length === 0 && !errorMessage" class="alert alert-warning text-center py-4" role="alert">
+        No hay proveedores que coincidan con los filtros.
+      </div>
+
+      <div class="table-responsive" *ngIf="!isLoading && filteredProveedores.length > 0">
+        <table class="table table-hover mb-0">
+          <thead>
             <tr>
-              <th>Empresa</th>
-              <th>Contacto</th>
-              <th>Teléfono</th>
-              <th>Email</th>
-              <th>Ciudad</th>
-              <th>Estado</th>
-              <th>Acciones</th>
+              <th scope="col">Empresa</th>
+              <th scope="col">Contacto</th>
+              <th scope="col">Teléfono</th>
+              <th scope="col">Email</th>
+              <th scope="col">Ciudad</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let proveedor of paginatedProveedores">
+            @for (proveedor of paginatedProveedores; track proveedor.idProveedor) {
+            <tr>
               <td data-label="Empresa">{{ proveedor.nombreEmpresa }}</td>
               <td data-label="Contacto">{{ proveedor.nombreContacto }}</td>
               <td data-label="Teléfono">{{ proveedor.telefonoContacto }}</td>
               <td data-label="Email">{{ proveedor.emailContacto }}</td>
               <td data-label="Ciudad">{{ proveedor.ciudad }}</td>
-              <td>
-                <span
-                  class="badge"
-                  [ngClass]="{
-                    'bg-success': proveedor.estado,
-                    'bg-secondary': !proveedor.estado
-                  }"
-                >
+              <td data-label="Estado">
+                <span [class]="proveedor.estado ? 'badge bg-success' : 'badge bg-danger'">
                   {{ proveedor.estado ? 'Activo' : 'Inactivo' }}
                 </span>
               </td>
-              <td class="actions-column">
-                <button
-                  class="btn btn-sm me-1"
-                  (click)="verDetalles(proveedor)"
-                  type="button"
-                  title="Ver detalles"
-                >
+              <td data-label="Acciones" class="actions-column">
+                <button class="btn btn-sm me-1" (click)="verDetalles(proveedor)">
                   <img
                     src="/icon_Productos/Listar/ver_observar.svg"
                     style="width: 30px; height: 30px; vertical-align: middle"
                   />
                 </button>
-                <button
-                  class="btn btn-sm me-1"
-                  (click)="editarProveedor(proveedor)"
-                  type="button"
-                  title="Editar"
-                >
+                <button class="btn btn-sm me-1" (click)="editarProveedor(proveedor)">
                   <img
                     src="/icon_Productos/Listar/Modificar.svg"
+                    alt=""
                     style="width: 30px; height: 30px; vertical-align: middle"
                   />
                 </button>
                 <button
-                  class="btn btn-sm"
+                  [class]="proveedor.estado ? 'btn btn-sm' : 'btn btn-sm'"
                   (click)="cambiarEstado(proveedor)"
-                  type="button"
-                  [title]="proveedor.estado ? 'Desactivar' : 'Activar'"
                 >
                   <img
                     [src]="proveedor.estado ? '/icon_Productos/Listar/deshabilitar.svg' : '/icon_Productos/Listar/habilitar.svg'"
@@ -152,66 +171,42 @@
                 </button>
               </td>
             </tr>
-            <tr *ngIf="paginatedProveedores.length === 0">
-              <td colspan="7" class="text-center py-3">
-                No hay proveedores para mostrar.
-              </td>
-            </tr>
+            }
           </tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <div
-    class="d-flex justify-content-center align-items-center flex-wrap mt-3"
-    *ngIf="totalPages > 1"
-  >
-    <nav>
+  <!-- Paginación -->
+  <div class="d-flex justify-content-center align-items-center flex-wrap mb-3" *ngIf="totalPages > 1">
+    <nav aria-label="Page navigation">
       <ul class="pagination pagination-sm mb-0">
         <li class="page-item" [class.disabled]="currentPage === 1">
-          <button class="page-link" (click)="goToPage(currentPage - 1)">
-            &laquo;
+          <button
+            class="page-link"
+            (click)="goToPage(currentPage - 1)"
+            aria-label="Previous"
+            [disabled]="currentPage === 1"
+          >
+            <span aria-hidden="true">&laquo;</span>
           </button>
         </li>
-
-        @if (pages[0] > 1) {
-          <li class="page-item">
-            <button class="page-link" (click)="goToPage(1)">1</button>
-          </li>
-          @if (pages[0] > 2) {
-            <li class="page-item disabled">
-              <span class="page-link">...</span>
-            </li>
-          }
+        @for (page of [].constructor(totalPages); let i = $index; track i) {
+        <li class="page-item" [class.active]="currentPage === i + 1">
+          <button class="page-link" (click)="goToPage(i + 1)">
+            {{ i + 1 }}
+          </button>
+        </li>
         }
-        @for (page of pages; track page) {
-          <li
-            class="page-item"
-            [class.active]="page === currentPage"
-            [attr.aria-current]="page === currentPage ? 'page' : null"
-          >
-            <button class="page-link" (click)="goToPage(page)">
-              {{ page }}
-            </button>
-          </li>
-        }
-        @if (pages[pages.length - 1] < totalPages) {
-          @if (pages[pages.length - 1] < totalPages - 1) {
-            <li class="page-item disabled">
-              <span class="page-link">...</span>
-            </li>
-          }
-          <li class="page-item">
-            <button class="page-link" (click)="goToPage(totalPages)">
-              {{ totalPages }}
-            </button>
-          </li>
-        }
-
         <li class="page-item" [class.disabled]="currentPage === totalPages">
-          <button class="page-link" (click)="goToPage(currentPage + 1)">
-            &raquo;
+          <button
+            class="page-link"
+            (click)="goToPage(currentPage + 1)"
+            aria-label="Next"
+            [disabled]="currentPage === totalPages"
+          >
+            <span aria-hidden="true">&raquo;</span>
           </button>
         </li>
       </ul>

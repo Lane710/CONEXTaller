@@ -7,17 +7,24 @@
 
     <form [formGroup]="proveedorForm" (ngSubmit)="onSubmit()">
 
-      <!-- Información de la Empresa -->
       <h3 class="mb-3 text-secondary">Información de la Empresa</h3>
       <div class="row mb-3">
         <div class="col-md-6">
-          <label for="nombreEmpresa" class="form-label">Nombre de la Empresa</label>
-          <input id="nombreEmpresa" type="text" class="form-control" formControlName="nombreEmpresa" />
+          <label for="nombreEmpresa" class="form-label">Nombre de la Empresa <span class="text-danger">*</span></label>
+          <input id="nombreEmpresa" type="text" class="form-control" formControlName="nombreEmpresa"
+            [class.is-invalid]="nombreEmpresa?.invalid && nombreEmpresa?.touched" />
+          <div *ngIf="nombreEmpresa?.invalid && nombreEmpresa?.touched" class="invalid-feedback">
+            <div *ngIf="nombreEmpresa?.errors?.['required']">El nombre de la empresa es obligatorio.</div>
+            <div *ngIf="nombreEmpresa?.errors?.['exists']">Esta empresa ya está registrada.</div>
+            <div *ngIf="nombreEmpresa?.errors?.['minlength']">Mínimo 3 caracteres.</div>
+            <div *ngIf="nombreEmpresa?.errors?.['maxlength']">Máximo 100 caracteres.</div>
+          </div>
         </div>
 
         <div class="col-md-6">
-          <label for="pais" class="form-label">País</label>
-          <select id="pais" class="form-select" formControlName="pais">
+          <label for="pais" class="form-label">País <span class="text-danger">*</span></label>
+          <select id="pais" class="form-select" formControlName="pais"
+            [class.is-invalid]="pais?.invalid && pais?.touched">
             <option value="" disabled>Seleccione el país</option>
             <option value="Bolivia">Bolivia</option>
             <option value="Argentina">Argentina</option>
@@ -26,42 +33,63 @@
             <option value="Perú">Perú</option>
             <option value="Otro">Otro</option>
           </select>
+          <div *ngIf="pais?.invalid && pais?.touched" class="invalid-feedback">
+            <div *ngIf="pais?.errors?.['required']">El país es obligatorio.</div>
+          </div>
         </div>
       </div>
 
       <div class="row mb-3">
-        <div class="col-md-6">
-          <label for="ciudad" class="form-label">Ciudad</label>
-          <input id="ciudad" type="text" class="form-control" formControlName="ciudad" />
+        <div class="col-md-12">
+          <label for="ciudad" class="form-label">Ciudad <span class="text-danger">*</span></label>
+          <input id="ciudad" type="text" class="form-control" formControlName="ciudad"
+            [class.is-invalid]="ciudad?.invalid && ciudad?.touched" />
+          <div *ngIf="ciudad?.invalid && ciudad?.touched" class="invalid-feedback">
+            <div *ngIf="ciudad?.errors?.['required']">La ciudad es obligatoria.</div>
+            <div *ngIf="ciudad?.errors?.['minlength']">Mínimo 3 caracteres.</div>
+            <div *ngIf="ciudad?.errors?.['maxlength']">Máximo 50 caracteres.</div>
+          </div>
         </div>
-        <div class="col-md-6">
-          <label for="idCategoria" class="form-label">Categoría</label>
-          <select id="idCategoria" class="form-select" formControlName="idCategoria">
-            <option value="" disabled>Seleccione una categoría</option>
-            <option *ngFor="let cat of categorias" [value]="cat.idCategoria">{{ cat.nombre }}</option>
-          </select>
+        
         </div>
-      </div>
 
       <hr>
 
-      <!-- Información de Contacto -->
       <h3 class="mb-3 text-secondary">Información de Contacto</h3>
       <div class="row mb-3">
         <div class="col-md-6">
-          <label for="nombreContacto" class="form-label">Nombre del Contacto</label>
-          <input id="nombreContacto" type="text" class="form-control" formControlName="nombreContacto" />
+          <label for="nombreContacto" class="form-label">Nombre del Contacto <span class="text-danger">*</span></label>
+          <input id="nombreContacto" type="text" class="form-control" formControlName="nombreContacto"
+            [class.is-invalid]="nombreContacto?.invalid && nombreContacto?.touched" />
+          <div *ngIf="nombreContacto?.invalid && nombreContacto?.touched" class="invalid-feedback">
+            <div *ngIf="nombreContacto?.errors?.['required']">El nombre del contacto es obligatorio.</div>
+            <div *ngIf="nombreContacto?.errors?.['pattern']">Solo letras y espacios.</div>
+          </div>
         </div>
+        
         <div class="col-md-6">
-          <label for="emailContacto" class="form-label">Correo Electrónico</label>
-          <input id="emailContacto" type="email" class="form-control" formControlName="emailContacto" />
+          <label for="emailContacto" class="form-label">Correo Electrónico <span class="text-danger">*</span></label>
+          <input id="emailContacto" type="email" class="form-control" formControlName="emailContacto"
+            [class.is-invalid]="emailContacto?.invalid && emailContacto?.touched" />
+          <div *ngIf="emailContacto?.invalid && emailContacto?.touched" class="invalid-feedback">
+            <div *ngIf="emailContacto?.errors?.['required']">El email es obligatorio.</div>
+            <div *ngIf="emailContacto?.errors?.['email']">Formato de correo inválido.</div>
+            <div *ngIf="emailContacto?.errors?.['pattern']">El correo debe ser &#64;gmail.com.</div>
+            <div *ngIf="emailContacto?.errors?.['exists']">Este correo ya está registrado.</div>
+          </div>
         </div>
       </div>
 
       <div class="row mb-3">
         <div class="col-md-6">
-          <label for="telefonoContacto" class="form-label">Teléfono</label>
-          <input id="telefonoContacto" type="tel" class="form-control" formControlName="telefonoContacto" />
+          <label for="telefonoContacto" class="form-label">Teléfono <span class="text-danger">*</span></label>
+          <input id="telefonoContacto" type="tel" class="form-control" formControlName="telefonoContacto"
+            [class.is-invalid]="telefonoContacto?.invalid && telefonoContacto?.touched" />
+          <div *ngIf="telefonoContacto?.invalid && telefonoContacto?.touched" class="invalid-feedback">
+            <div *ngIf="telefonoContacto?.errors?.['required']">El teléfono es obligatorio.</div>
+            <div *ngIf="telefonoContacto?.errors?.['exists']">Este teléfono ya está registrado.</div>
+            <div *ngIf="telefonoContacto?.errors?.['pattern']">Debe ser solo números, entre 6 y 15 dígitos.</div>
+          </div>
         </div>
       </div>
 
@@ -81,7 +109,6 @@
   </div>
 </div>
 
-<!-- Modal Éxito -->
 <div class="modal fade" id="modalExito" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content text-center">

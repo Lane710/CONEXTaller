@@ -696,7 +696,7 @@
                     </div>
                     <div class="col-md-6">
                       <strong>Contacto:</strong>
-                      <div>{{ producto.proveedor.nombreContacto }}</div>
+                      <div>{{ producto.proveedor.nombre }}</div>
                     </div>
                     <div class="col-md-6">
                       <strong>Email:</strong>
@@ -728,17 +728,7 @@
                       <strong>País:</strong>
                       <div>{{ producto.proveedor.pais || "N/A" }}</div>
                     </div>
-                    <div
-                      class="col-12"
-                      *ngIf="producto.proveedor.categoria?.nombre"
-                    >
-                      <strong>Categoría Proveedor:</strong>
-                      <div>
-                        <span class="badge bg-secondary">
-                          {{ producto.proveedor.categoria?.nombre }}
-                        </span>
-                      </div>
-                    </div>
+                   
                   </div>
                 </div>
               </div>

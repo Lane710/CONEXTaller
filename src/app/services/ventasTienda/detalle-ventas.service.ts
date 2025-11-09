@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ApiResponse } from '../../models/api-response';
 import { Observable } from 'rxjs';
@@ -12,10 +12,17 @@ export class DetalleVentasService {
 
   constructor(private http: HttpClient) {}
 
-  findAll(): Observable<ApiResponse> {
-    return this.http.get<ApiResponse>(`${this.apiUrl}findAll`);
+  private getHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
   }
-  save(detalleventa: detalleVenta): Observable<ApiResponse> {
+
+  findAll(): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.apiUrl}findAll`, { headers: this.getHeaders() });
+  }
+
+   save(detalleventa: any): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${this.apiUrl}save`, detalleventa);
   }
   listarPorIdVenta(idVenta: number): Observable<ApiResponse> {

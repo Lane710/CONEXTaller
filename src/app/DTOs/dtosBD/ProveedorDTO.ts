@@ -12,8 +12,5 @@ export interface ProveedorDTO {
   fechaRegistro?: string | Date;
   notas?: string;
   
-  // --- Campos Aplanados (Flattened) ---
-  // En lugar del objeto 'categoria' completo
-  idCategoria?: number;
-  nombreCategoria?: string;
+
 }

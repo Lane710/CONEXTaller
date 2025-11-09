@@ -191,4 +191,33 @@ export class ReporteEnviosComponent implements OnInit {
     const day = ('0' + date.getDate()).slice(-2);
     return `${year}-${month}-${day}`;
   }
+
+  // Métodos para las estadísticas
+getEnviosEntregados(): number {
+  return this.reporteEnvios.filter(envio => 
+    envio.estado === 'ENTREGADO' || envio.estado === 'ENVIADO'
+  ).length;
+}
+
+getEnviosPendientes(): number {
+  return this.reporteEnvios.filter(envio => 
+    envio.estado === 'PENDIENTE' || envio.estado === 'EN_PROCESO'
+  ).length;
+}
+
+getTextoEstado(estado: string): string {
+  const estados: { [key: string]: string } = {
+    'PENDIENTE': 'Pendiente',
+    'EN_PROCESO': 'En Proceso',
+    'ENVIADO': 'Enviado',
+    'ENTREGADO': 'Entregado',
+    'CANCELADO': 'Cancelado'
+  };
+  return estados[estado] || estado;
+}
+
+exportarPDF(): void {
+  // Implementar lógica de exportación PDF
+  alert('Funcionalidad de exportación PDF en desarrollo');
+}
 }

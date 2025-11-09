@@ -1,0 +1,213 @@
+.reporte-ganancias-container {
+  padding: 0;
+}
+
+/* Header Styles */
+.report-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.report-title {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+/* Filtros Section */
+.filtros-section {
+  border: none;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border-radius: 10px;
+}
+
+.filtros-section .card-body {
+  padding: 1.5rem;
+}
+
+/* Estadísticas Cards */
+.estadisticas-section {
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  border-radius: 10px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-icon {
+  font-size: 2.5rem;
+  opacity: 0.9;
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Table Styles */
+.reporte-section {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table th {
+  border-top: none;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  padding: 1rem 0.75rem;
+}
+
+.table td {
+  padding: 1rem 0.75rem;
+  vertical-align: middle;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0,0,0,0.02);
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0,123,255,0.05);
+}
+
+/* Badge Styles */
+.badge {
+  font-size: 0.75rem;
+  padding: 0.35em 0.65em;
+}
+
+/* Cliente Info */
+.cliente-info {
+  line-height: 1.2;
+}
+
+/* Ganancia Cell */
+.ganancia-cell {
+  font-weight: 600;
+  color: #28a745;
+}
+
+/* No Results */
+.no-results {
+  padding: 3rem 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .report-header {
+    padding: 1.5rem;
+  }
+  
+  .report-title {
+    font-size: 1.5rem;
+  }
+  
+  .stat-card {
+    padding: 1rem;
+  }
+  
+  .stat-icon {
+    font-size: 2rem;
+  }
+  
+  .stat-value {
+    font-size: 1.25rem;
+  }
+  
+  .table-responsive {
+    font-size: 0.875rem;
+  }
+}
+
+/* Loading Animation */
+.spinner-border {
+  animation: spinner-border 0.75s linear infinite;
+}
+
+/* Custom Scrollbar */
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Button Styles */
+.btn {
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Form Controls */
+.form-control, .form-select {
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  transition: border-color 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Alert Styles */
+.alert {
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Color variations for different report types */
+.bg-primary { background: linear-gradient(135deg, #667eea, #764ba2) !important; }
+.bg-success { background: linear-gradient(135deg, #4ecdc4, #44a08d) !important; }
+.bg-info { background: linear-gradient(135deg, #00b4db, #0083b0) !important; }
+.bg-warning { background: linear-gradient(135deg, #f46b45, #eea849) !important; }

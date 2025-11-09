@@ -272,4 +272,48 @@ export class ReporteProductosComponent implements OnInit {
     const day = ('0' + date.getDate()).slice(-2);
     return `${year}-${month}-${day}`;
   }
+
+  // Métodos utilitarios
+tieneDatos(): boolean {
+  switch (this.currentProductReport) {
+    case 'bajo_stock': return this.reporteBajoStock.length > 0;
+    case 'mas_vendidos': return this.reporteMasVendidos.length > 0;
+    case 'maestro': return this.reporteMaestro.length > 0;
+    default: return false;
+  }
+}
+
+exportarPDF(): void {
+  // Implementar lógica de exportación PDF
+  alert('Funcionalidad de exportación PDF en desarrollo');
+}
+
+// Métodos para estadísticas de Bajo Stock
+getStockCriticoCount(): number {
+  return this.reporteBajoStock.filter(prod => prod.stockActual <= 5).length;
+}
+
+getProveedoresUnicos(): number {
+  const proveedores = new Set(this.reporteBajoStock.map(prod => prod.proveedor));
+  return proveedores.size;
+}
+
+// Métodos para estadísticas de Más Vendidos
+getTotalUnidadesVendidas(): number {
+  return this.reporteMasVendidos.reduce((sum, prod) => sum + prod.unidadesVendidas, 0);
+}
+
+getTotalIngresos(): number {
+  return this.reporteMasVendidos.reduce((sum, prod) => sum + prod.ingresosTotales, 0);
+}
+
+// Métodos para estadísticas de Maestro
+getProductosActivos(): number {
+  return this.reporteMaestro.filter(prod => prod.estado === 1).length;
+}
+
+getUsuariosUnicos(): number {
+  const usuarios = new Set(this.reporteMaestro.map(prod => prod.registradoPor));
+  return usuarios.size;
+}
 }

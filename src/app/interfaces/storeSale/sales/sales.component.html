@@ -1,124 +1,93 @@
 <div class="row g-4 d-flex flex-column flex-lg-row">
+  <!-- Columna Izquierda: Lista de Productos Seleccionados -->
   <div class="col-lg-7">
-    <h2 class="mt-5 mb-4">Productos Disponibles</h2>
-
-    <div
-      class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3"
-    >
-      <div class="col-12 col-sm-auto flex-grow-1">
-        <div class="dropdown w-100">
-          <button
-            class="btn btn-outline-secondary dropdown-toggle rounded-pill w-100"
-            type="button"
-            id="categoryDropdown"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            Categoría: Todos
-          </button>
-          <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
-            <li>
-              <a class="dropdown-item" href="#" data-category="all">Todos</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#" data-category="electronics"
-                >Electrónicos</a
-              >
-            </li>
-            <li>
-              <a class="dropdown-item" href="#" data-category="apparel">Ropa</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#" data-category="food"
-                >Alimentos</a
-              >
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="col-12 col-sm-6 col-md-5">
-        <div class="search-bar-container">
-          <i class="fas fa-search search-icon"></i>
-          <input
-            type="text"
-            class="form-control rounded-pill"
-            placeholder="Buscar productos..."
-            id="product-search-input"
-            [(ngModel)]="filtroTermino"
-            (ngModelChange)="aplicarFiltro()"
-          />
-        </div>
-      </div>
-    </div>
+    <h2 class="mt-5 mb-4">Productos Seleccionados</h2>
 
     <div class="card shadow-sm mb-4">
       <div class="card-body p-0">
-        <div class="table-responsive">
+        <div class="table-responsive productos-container" 
+             [class.scroll-active]="productosPorVender.length > 5">
           <table class="table table-hover mb-0">
-            <thead>
+            <thead class="table-primary">
               <tr>
-                <th scope="col">Imagen</th>
-                <th scope="col">Producto</th>
-                <th scope="col">Precio</th>
-                <th scope="col" class="text-center">Cantidad</th>
-                <th scope="col" class="text-center">Acción</th>
+                <th scope="col" style="width: 80px;">Imagen</th>
+                <th scope="col" style="width: 200px;">Producto</th>
+                <th scope="col" style="width: 120px;">Precio Unitario</th>
+                <th scope="col" style="width: 100px;" class="text-center">Stock</th>
+                <th scope="col" style="width: 150px;" class="text-center">Cantidad</th>
+                <th scope="col" style="width: 120px;" class="text-center">Subtotal</th>
+                <th scope="col" style="width: 80px;" class="text-center">Acción</th>
               </tr>
             </thead>
-            <tbody id="product-list-body">
-              <tr *ngFor="let product of paginatedProducts; let i = index">
-                <td data-label="Imagen">
+            <tbody>
+              <tr *ngFor="let item of productosPorVender; let i = index">
+                <td class="align-middle">
                   <img
-                    [src]="product.producto.imagen"
+                    [src]="item.producto.imagen || 'https://via.placeholder.com/400x300'"
                     alt="Producto"
                     class="img-thumbnail product-image"
+                    style="width: 50px; height: 50px; object-fit: cover;"
                   />
                 </td>
-                <td data-label="Producto">{{ product.producto.nombre }}</td>
-                <td data-label="Precio">{{ product.producto.precio }} Bs.</td>
-                <td data-label="Cantidad" class="text-center">
+                <td class="align-middle">
+                  <strong>{{ item.producto.nombre }}</strong>
+                  <br>
+                  <small class="text-muted">{{ item.producto.marca }}</small>
+                </td>
+                <td class="align-middle">{{ item.precioUnitario | currency:'Bs ':'symbol':'1.2-2' }}</td>
+                <td class="align-middle text-center">
+                  <span [class]="getStockClass(item.producto.idProducto || 0)">
+                    {{ obtenerStockDisponible(item.producto.idProducto || 0) }}
+                  </span>
+                </td>
+                <td class="align-middle text-center">
                   <div class="quantity-control">
                     <button
                       class="btn btn-outline-secondary btn-sm minus-btn"
-                      [disabled]="
-                        cantidadesEnVenta[(currentPage - 1) * pageSize + i] <= 1
-                      "
-                      (click)="sumarRestar(i, -1)"
+                      [disabled]="item.cantidad <= 1"
+                      (click)="restarCantidad(i)"
                     >
                       <i class="fas fa-minus">-</i>
                     </button>
                     <input
+                      #cantidadInput
                       class="quantity-value"
-                      [(ngModel)]="
-                        cantidadesEnVenta[(currentPage - 1) * pageSize + i]
-                      "
-                      (change)="actualizarCantidadManual(i, $event)"
+                      [value]="item.cantidad"
+                      (blur)="actualizarCantidadManual(i, $event)"
+                      (keydown)="soloNumeros($event)"
                       type="number"
+                      min="1"
+                      [max]="obtenerStockDisponible(item.producto.idProducto||0)"
                     />
                     <button
                       class="btn btn-outline-secondary btn-sm plus-btn"
-                      [disabled]="
-                        cantidadesEnVenta[(currentPage - 1) * pageSize + i] >=
-                        product.cantidad
-                      "
-                      (click)="sumarRestar(i, 1)"
+                      [disabled]="item.cantidad >= obtenerStockDisponible(item.producto.idProducto||0)"
+                      (click)="sumarCantidad(i)"
                     >
                       <i class="fas fa-plus">+</i>
                     </button>
                   </div>
                 </td>
-                <td data-label="Acción" class="text-center">
+                <td class="align-middle text-center fw-bold text-success">
+                  {{ (item.cantidad * item.precioUnitario) | currency:'Bs ':'symbol':'1.2-2' }}
+                </td>
+                <td class="align-middle text-center">
                   <button
-                    class="btn btn-sm add-to-ticket-btn"
-                    style="border: none"
-                    (click)="
-                      anadirVentaTemporal(
-                        product.producto,
-                        cantidadesEnVenta[(currentPage - 1) * pageSize + i]
-                      )
-                    "
+                    (click)="eliminarProducto(i)"
+                    class="btn btn-sm btn-outline-danger p-1 border-0"
+                    title="Eliminar producto"
                   >
-                    <img src="/icon_Ventas/plusVentas.svg" alt="" />
+                    <img src="/icon_SaleOnline/ic--outline-cancel.svg" alt="Eliminar">
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="productosPorVender.length === 0">
+                <td colspan="7" class="text-center text-muted py-4">
+                  <i class="fas fa-box-open fa-2x mb-2 d-block"></i>
+                  No hay productos seleccionados para la venta.
+                  <br>
+                  <button class="btn btn-primary mt-2" (click)="volverAPreventa()">
+                    <i class="fas fa-arrow-left me-2"></i>Ir a Seleccionar Productos
                   </button>
                 </td>
               </tr>
@@ -129,119 +98,99 @@
     </div>
   </div>
 
-  <div class="ticket col-lg-5 ticket-section-sticky">
-    <div class="p-4">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="mb-0 text-primary">
-          <i class="fas fa-receipt me-2"></i>Ticket de Venta
-        </h3>
-        <span class="badge bg-primary rounded-pill p-2">
-          {{ productosPorVender.length }}
-          {{ productosPorVender.length === 1 ? "producto" : "productos" }}
-        </span>
-      </div>
-
-      <div class="totales-section bg-light p-4 rounded-4 shadow-sm mb-4">
-        <h5 class="border-bottom pb-2 mb-3 fw-semibold">Resumen de compra</h5>
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <span class="text-secondary">Subtotal:</span>
-          <span class="fw-semibold">{{
-            calcularSubtotal() | currency : "Bs " : "symbol" : "1.2-2"
-          }}</span>
+  <!-- Columna Derecha: Resumen de Venta -->
+  <div class="col-lg-5">
+    <div class="ticket ticket-section-sticky">
+      <div class="p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3 class="mb-0 text-primary">
+            <i class="fas fa-receipt me-2"></i>Resumen de Venta
+          </h3>
+          <span class="badge bg-primary rounded-pill p-2">
+            {{ productosPorVender.length }}
+            {{ productosPorVender.length === 1 ? "producto" : "productos" }}
+          </span>
         </div>
-        <div
-          class="descuento d-flex justify-content-between align-items-center mb-3 py-2"
-        >
-          <span class="text-secondary">Descuento:</span>
-          <div class="input-group input-group-sm" style="width: 120px">
-            <span class="input-group-text bg-white">Bs</span>
-            <input
-              type="number"
-              class="form-control form-control-sm"
-              step="0.01"
-              min="0"
-              placeholder="0.00"
-              [disabled]="productosPorVender.length === 0"
-              [(ngModel)]="descuento"
-              (input)="validarDescuento()"
-            />
+
+        <!-- Resumen de Compra -->
+        <div class="totales-section bg-light p-4 rounded-4 shadow-sm mb-4">
+          <h5 class="border-bottom pb-2 mb-3 fw-semibold">Detalles de la Venta</h5>
+          
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-secondary">Subtotal:</span>
+            <span class="fw-semibold">{{ calcularSubtotal() | currency:'Bs ':'symbol':'1.2-2' }}</span>
           </div>
-        </div>
-        <div
-          class="d-flex justify-content-between align-items-center pt-2 border-top fw-bold fs-5 text-primary"
-        >
-          <span>Total:</span>
-          <span>{{
-            calcularTotal() | currency : "Bs " : "symbol" : "1.2-2"
-          }}</span>
-        </div>
-      </div>
-      <div class="d-grid gap-3">
-        <button
-          class="btn btn-outline-danger btn-lg py-2 rounded-3"
-          routerLink="/home/listadoVentasStore"
-        >
-          <i class="fas fa-times-circle me-2"></i> Cancelar Venta
-        </button>
-        <button
-          class="btn btn-success btn-lg py-2 rounded-3"
-          [disabled]="productosPorVender.length === 0"
-          (click)="abrirModalConfirmacion()"
-        >
-          <i class="fas fa-check-circle me-2"></i> Registrar Venta
-        </button>
-      </div>
-
-      <div
-        class="VentaPendiente list-group list-group-flush mb-4"
-        id="ticket-items"
-      >
-        <div
-          *ngFor="let item of productosPorVender; let i = index"
-          class="list-group-item d-flex justify-content-between align-items-center mb-2 p-3 rounded-3 shadow-sm ticket-item"
-        >
-          <div class="d-flex flex-column flex-grow-1 me-3">
-            <div class="d-flex align-items-center mb-1">
-              <span class="badge bg-primary cantidad-badge me-2">
-                {{ item.cantidad }}
-              </span>
-              <span class="fw-bold text-dark producto-nombre">{{
-                item.producto.nombre
-              }}</span>
+          
+          <!-- Sección de Descuento con Botón Aplicar -->
+          <div class="descuento-section mb-3 py-2">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="text-secondary">Descuento General:</span>
+              <span class="fw-semibold text-danger">- {{ descuentoGeneral | currency:'Bs ':'symbol':'1.2-2' }}</span>
             </div>
-            <small class="text-muted ms-4">
-              Precio unitario:
-              {{ item.precioUnitario | currency : "Bs" : "symbol" : "1.2-2" }}
+            <div class="d-flex gap-2 align-items-center">
+              <div class="input-group input-group-sm flex-grow-1">
+                <span class="input-group-text bg-white">Bs</span>
+                <input
+                  #descuentoInput
+                  type="number"
+                  class="form-control form-control-sm"
+                  step="0.01"
+                  min="0"
+                  [max]="calcularSubtotal() * 0.5"
+                  placeholder="0.00"
+                  [disabled]="productosPorVender.length === 0"
+                  [(ngModel)]="descuentoInputValue"
+                  (keydown)="soloNumerosDecimales($event)"
+                  (keyup.enter)="aplicarDescuento()"
+                />
+              </div>
+              <button
+                class="btn btn-primary btn-sm aplicar-descuento-btn"
+                [disabled]="productosPorVender.length === 0"
+                (click)="aplicarDescuento()"
+                title="Aplicar descuento"
+              >
+                <i class="fas fa-check me-1"></i>Aplicar
+              </button>
+            </div>
+            <small class="text-muted mt-1 d-block">
+              Máximo permitido: {{ calcularSubtotal() * 0.5 | currency:'Bs ':'symbol':'1.2-2' }} (50% del subtotal)
             </small>
+            <div *ngIf="mensajeDescuento" 
+                 [class]="mensajeDescuentoClase" 
+                 class="mt-2 small p-2 rounded">
+              {{ mensajeDescuento }}
+            </div>
           </div>
-
-          <div class="d-flex align-items-center gap-2">
-            <span class="fw-bold text-success precio-total">
-              {{
-                item.cantidad * item.precioUnitario
-                  | currency : "Bs" : "symbol" : "1.2-2"
-              }}
-            </span>
-            <button
-              (click)="eliminarVentaTemporal(i)"
-              class="btn btn-sm btn-outline-danger p-1 border-0 d-flex align-items-center justify-content-center"
-              title="Eliminar producto"
-            >
-              <img
-                src="/icon_Ventas/IconoX.svg"
-                alt="Eliminar"
-                style="width: 18px; height: 18px"
-              />
-            </button>
+          
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-secondary">Total de Productos:</span>
+            <span class="fw-semibold">{{ obtenerTotalProductos() }}</span>
+          </div>
+          
+          <div
+            class="d-flex justify-content-between align-items-center pt-3 border-top fw-bold fs-5 text-primary"
+          >
+            <span>Total a Pagar:</span>
+            <span>{{ calcularTotal() | currency:'Bs ':'symbol':'1.2-2' }}</span>
           </div>
         </div>
 
-        <div
-          *ngIf="productosPorVender.length === 0"
-          class="text-center text-muted p-4 empty-state"
-        >
-          <i class="fas fa-box-open fa-2x mb-2 d-block"></i>
-          <p class="mb-0">No hay productos por vender.</p>
+        <!-- Botones de Acción -->
+        <div class="d-grid gap-3">
+          <button
+            class="btn btn-outline-danger btn-lg py-3 rounded-3"
+            (click)="volverAPreventa()"
+          >
+            <i class="fas fa-arrow-left me-2"></i> Volver a Preventa
+          </button>
+          <button
+            class="btn btn-success btn-lg py-3 rounded-3"
+            [disabled]="productosPorVender.length === 0"
+            (click)="abrirModalConfirmacion()"
+          >
+            <i class="fas fa-check-circle me-2"></i> Confirmar Venta
+          </button>
         </div>
       </div>
     </div>
@@ -250,7 +199,7 @@
 
 <!-- Modal de Confirmación -->
 <div class="modal fade" [class.show]="mostrarConfirmModal" [style.display]="mostrarConfirmModal ? 'block' : 'none'" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title">Confirmar Venta</h5>
@@ -261,111 +210,196 @@
                 ></button>
             </div>
             <div class="modal-body">
-                <p>
-                    Por favor, completa los datos del cliente para registrar la venta.
+                <p class="mb-4">
+                    Complete los datos del cliente para registrar la venta.
                 </p>
                 <form #clienteVentaForm="ngForm">
-                    <div class="mb-3">
-                        <label for="clienteBuscador" class="form-label"
-                            >Buscar cliente existente:</label
-                        >
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="clienteBuscador"
-                            placeholder="Buscar por nombre completo"
-                            name="clienteBuscador"
-                            [(ngModel)]="clienteNombreBuscador"
-                            (input)="filtrarClientes()"
-                            (blur)="clientesFiltrados = []"
-                        />
-                        <ul
-                            class="list-group mt-1"
-                            [hidden]="clientesFiltrados.length === 0"
-                        >
-                            <li
-                                *ngFor="let cliente of clientesFiltrados"
-                                class="list-group-item list-group-item-action"
-                                (mousedown)="seleccionarCliente(cliente)"
-                            >
-                                {{ cliente.nombre }} {{ cliente.appaterno }}
-                                {{ cliente.apmaterno }}
-                            </li>
-                        </ul>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="clienteBuscador" class="form-label">Buscar cliente existente:</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="clienteBuscador"
+                                    placeholder="Buscar por nombre completo"
+                                    name="clienteBuscador"
+                                    [(ngModel)]="clienteNombreBuscador"
+                                    (input)="filtrarClientes()"
+                                    (blur)="clientesFiltrados = []"
+                                />
+                                <ul
+                                    class="list-group mt-1"
+                                    *ngIf="clientesFiltrados.length > 0"
+                                >
+                                    <li
+                                        *ngFor="let cliente of clientesFiltrados"
+                                        class="list-group-item list-group-item-action"
+                                        (mousedown)="seleccionarCliente(cliente)"
+                                    >
+                                        {{ cliente.nombre }} {{ cliente.appaterno }}
+                                        {{ cliente.apmaterno }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="metodoPago" class="form-label">Método de Pago:</label>
+                                <select
+                                    class="form-control rounded-pill"
+                                    name="metodoDePago"
+                                    id="metodoPago"
+                                    required
+                                    #metodoDePago="ngModel"
+                                    [(ngModel)]="metodoDePagoSeleccionado"
+                                    (change)="obtenerMetodoDePago(metodoDePago.value)"
+                                >
+                                    <option value="efectivo">Efectivo</option>
+                                    <option value="QR">QR</option>
+                                </select>
+                                <div *ngIf="metodoDePago.invalid && (metodoDePago.dirty || metodoDePago.touched)" class="text-danger small">
+                                    <div *ngIf="metodoDePago.errors?.['required']">El método de pago es obligatorio</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                     <hr />
-                    <div class="mb-3">
-                        <label for="clienteCelular" class="form-label"
-                            >CI:</label
-                        >
-                        <input
-                            type="number"
-                            class="form-control"
-                            id="ci"
-                            name="numeroci"
-                            required
-                            [(ngModel)]="clienteVenta.ci"
-                            [disabled]="isCiDisabled"
-                        />
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="ci" class="form-label">CI <span class="text-danger">*</span>:</label>
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    id="ci"
+                                    name="numeroci"
+                                    required
+                                    min="1"
+                                    [(ngModel)]="clienteVenta.ci"
+                                    #ciInput="ngModel"
+                                    [disabled]="isCiDisabled"
+                                />
+                                <div *ngIf="ciInput.invalid && (ciInput.dirty || ciInput.touched)" class="text-danger small">
+                                    <div *ngIf="ciInput.errors?.['required']">El CI es obligatorio</div>
+                                    <div *ngIf="ciInput.errors?.['min']">El CI debe ser mayor a 0</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="clienteNombre" class="form-label">Nombre <span class="text-danger">*</span>:</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="clienteNombre"
+                                    name="clienteNombre"
+                                    required
+                                    minlength="2"
+                                    [(ngModel)]="clienteVenta.nombre"
+                                    #nombreInput="ngModel"
+                                />
+                                <div *ngIf="nombreInput.invalid && (nombreInput.dirty || nombreInput.touched)" class="text-danger small">
+                                    <div *ngIf="nombreInput.errors?.['required']">El nombre es obligatorio</div>
+                                    <div *ngIf="nombreInput.errors?.['minlength']">El nombre debe tener al menos 2 caracteres</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="clienteNombre" class="form-label">Nombre :</label>
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="clienteNombre"
-                            name="clienteNombre"
-                            [(ngModel)]="clienteVenta.nombre"
-                            required
-                        />
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="apellidoPaterno" class="form-label">Apellido Paterno <span class="text-danger">*</span>:</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="apellidoPaterno"
+                                    name="apellidoPaterno"
+                                    required
+                                    minlength="2"
+                                    [(ngModel)]="clienteVenta.appaterno"
+                                    #apellidoPInput="ngModel"
+                                />
+                                <div *ngIf="apellidoPInput.invalid && (apellidoPInput.dirty || apellidoPInput.touched)" class="text-danger small">
+                                    <div *ngIf="apellidoPInput.errors?.['required']">El apellido paterno es obligatorio</div>
+                                    <div *ngIf="apellidoPInput.errors?.['minlength']">El apellido paterno debe tener al menos 2 caracteres</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="apellidoMaterno" class="form-label">Apellido Materno:</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="apellidoMaterno"
+                                    name="apellidoMaterno"
+                                    [(ngModel)]="clienteVenta.apmaterno"
+                                    #apellidoMInput="ngModel"
+                                />
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="clienteApellidos" class="form-label">Apellidos :</label>
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="apellidosClientes"
-                            name="apellidosClientes"
-                            [(ngModel)]="clienteVenta.appaterno"
-                            required
-                        />
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="numeroCliente" class="form-label">Celular (opcional):</label>
+                                <input
+                                    type="tel"
+                                    class="form-control"
+                                    id="numeroCliente"
+                                    name="numeroCliente"
+                                    pattern="[0-9]*"
+                                    minlength="7"
+                                    maxlength="15"
+                                    [(ngModel)]="clienteVenta.telefono"
+                                    #telefonoInput="ngModel"
+                                />
+                                <div *ngIf="telefonoInput.invalid && (telefonoInput.dirty || telefonoInput.touched)" class="text-danger small">
+                                    <div *ngIf="telefonoInput.errors?.['pattern']">El celular debe contener solo números</div>
+                                    <div *ngIf="telefonoInput.errors?.['minlength']">El celular debe tener al menos 7 dígitos</div>
+                                    <div *ngIf="telefonoInput.errors?.['maxlength']">El celular no puede tener más de 15 dígitos</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="clienteCelular" class="form-label"
-                            >Celular (opcional):</label
-                        >
-                        <input
-                            type="tel"
-                            class="form-control"
-                            id="numeroCliente"
-                            name="numeroCliente"
-                            [(ngModel)]="clienteVenta.telefono"
-                        />
-                    </div>
+
                     <div class="mb-3">
                         <label for="ventaNotas" class="form-label">Notas (opcional):</label>
                         <textarea
                             class="form-control"
                             id="ventaNotas"
-                            rows="2"
-                            placeholder="Ej: Se realizo un descuento de promocion"
+                            rows="3"
+                            placeholder="Ej: Se realizó un descuento de promoción"
                             [(ngModel)]="notaVenta"
                             name="notaVenta"
                         ></textarea>
                     </div>
-                    <div class="col-12 col-md-auto">
-                        <label for="metodoPago" class="form-label">Metodo de Pago: </label>
-                        <select
-                            class="form-control rounded-pill w-100"
-                            name="metodoDePago"
-                            id="metodoPago"
-                            required
-                            #metodoDePago
-                            (change)="obtenerMetodoDePago(metodoDePago.value)"
-                        >
-                            <option value="efectivo">Efectivo</option>
-                            <option value="QR">QR</option>
-                        </select>
+
+                    <!-- Resumen de la venta en el modal -->
+                    <div class="card mt-4">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">Resumen de la Venta</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <span>Subtotal:</span>
+                                <span class="fw-bold">{{ calcularSubtotal() | currency:'Bs ':'symbol':'1.2-2' }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Descuento:</span>
+                                <span class="fw-bold text-danger">- {{ descuentoGeneral | currency:'Bs ':'symbol':'1.2-2' }}</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between fs-5">
+                                <span class="fw-bold">Total:</span>
+                                <span class="fw-bold text-success">{{ calcularTotal() | currency:'Bs ':'symbol':'1.2-2' }}</span>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -383,7 +417,7 @@
                     (click)="realizarVenta()"
                     [disabled]="!clienteVentaForm.form.valid"
                 >
-                    Confirmar
+                    Confirmar Venta
                 </button>
             </div>
         </div>
@@ -395,7 +429,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-body text-center p-5">
-        <i class="bi bi-check-circle-fill success-icon mb-4"></i>
+        <div class="success-icon mb-4" style="font-size: 4rem; color: #28a745;">✓</div>
         <h5 class="modal-title mb-3" id="successModalLabel">¡Venta Registrada con Éxito!</h5>
         <p class="mb-4">La transacción se ha completado correctamente.</p>
         <button type="button" class="btn btn-primary" (click)="cerrarModalExito()">Aceptar</button>
@@ -406,6 +440,6 @@
 
 <!-- Backdrop para los modales -->
 <div class="modal-backdrop fade show" 
-     [style.display]="(mostrarConfirmModal || mostrarSuccessModal) ? 'block' : 'none'"
+     *ngIf="mostrarConfirmModal || mostrarSuccessModal"
      (click)="cerrarModales()">
 </div>

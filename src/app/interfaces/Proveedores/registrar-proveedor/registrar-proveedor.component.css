@@ -176,3 +176,22 @@ textarea.form-control {
 .form-control:hover, .form-select:hover {
   border-color: #1E8099;
 }
+/*
+ * Solución para el "Layout Shift" de la validación de Bootstrap.
+ * Esto hace que el contenedor del error siempre ocupe espacio,
+ * pero solo sea visible cuando el campo es inválido.
+ */
+.invalid-feedback {
+  display: block;      /* 1. Sobrescribe el 'display: none' de Bootstrap */
+  visibility: hidden;  /* 2. Lo oculta, pero mantiene su altura */
+  height: 1.25rem;     /* 3. Le da una altura fija (ajusta si tus mensajes son más largos) */
+  margin-top: 0.25rem; /* 4. Mantiene el espaciado de Bootstrap */
+}
+
+/*
+ * Cuando el input es inválido, simplemente volvemos visible el texto
+ * del error, sin cambiar el layout.
+ */
+.is-invalid ~ .invalid-feedback {
+  visibility: visible;
+}

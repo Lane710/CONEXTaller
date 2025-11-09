@@ -13,6 +13,7 @@ export class EnviosService {
   
   constructor( private http:HttpClient) { }
 
+  // Métodos existentes...
   listado():Observable<ApiResponse>{
     return this.http.get<ApiResponse>(`${this.Url}findAll`);
   }
@@ -25,12 +26,7 @@ export class EnviosService {
       return this.http.post<ApiResponse>(`${this.Url}save`,envio);
   }
 
-  /**
-   * --- ¡CORREGIDO! ---
-   * La URL ahora apunta a "updateById/{id}" para que coincida con el controlador.
-   */
   update(idEnvio: number, envioData: any): Observable<ApiResponse> {
-    // CAMBIO: de "update/" a "updateById/"
     return this.http.put<ApiResponse>(`${this.Url}updateById/${idEnvio}`, envioData);
   }
 
@@ -41,5 +37,45 @@ export class EnviosService {
 
   findByPedidoId(idPedido: number): Observable<ApiResponse> {
     return this.http.get<ApiResponse>(`${this.Url}findByPedidoId/${idPedido}`);
+  }
+
+  // NUEVOS MÉTODOS:
+
+  /**
+   * Buscar envío por ID de venta
+   */
+  findByVentaId(idVenta: number): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.Url}findByVentaId/${idVenta}`);
+  }
+
+  /**
+   * Buscar envío por código de seguimiento
+   */
+  findByCodigoSeguimiento(codigoSeguimiento: string): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.Url}findByCodigoSeguimiento/${codigoSeguimiento}`);
+  }
+
+  /**
+   * Buscar envío por ID de pedido o venta (endpoint combinado)
+   */
+  buscarEnvio(idPedido?: number, idVenta?: number): Observable<ApiResponse> {
+    let params: any = {};
+    
+    if (idPedido !== undefined && idPedido !== null) {
+      params.idPedido = idPedido.toString();
+    }
+    
+    if (idVenta !== undefined && idVenta !== null) {
+      params.idVenta = idVenta.toString();
+    }
+
+    return this.http.get<ApiResponse>(`${this.Url}buscar`, { params });
+  }
+
+  /**
+   * Eliminar envío por ID
+   */
+  deleteById(idEnvio: number): Observable<ApiResponse> {
+    return this.http.delete<ApiResponse>(`${this.Url}deleteById/${idEnvio}`);
   }
 }

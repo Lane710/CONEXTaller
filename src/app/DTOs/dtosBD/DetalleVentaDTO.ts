@@ -9,4 +9,5 @@ export interface DetalleVentaDTO {
   cantidad: number;
   precioUnitario: number;
   subtotal: number;
+  descuento:number;
 }

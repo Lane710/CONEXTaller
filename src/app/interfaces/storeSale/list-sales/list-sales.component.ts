@@ -47,7 +47,8 @@ export class ListSalesComponent implements OnInit, AfterViewInit {
 
   private confirmarAccionModalInstance: any;
   private detallesVentaModalInstance: any;
-
+isCheckingEnvio: boolean = false;
+ventaEnProceso: number | null = null;
   // Propiedades para el listado de ventas y filtrado
   allVentas: ventas[] = [];
   filteredVentas: ventas[] = [];
@@ -149,7 +150,7 @@ export class ListSalesComponent implements OnInit, AfterViewInit {
           detalles: detalles,
         };
         this.ListaDetalleVentaSelec = detalles;
-        
+
         // Abrir el modal después de cargar los datos
         this.openDetallesVentaModal();
       },
@@ -189,7 +190,7 @@ export class ListSalesComponent implements OnInit, AfterViewInit {
           this.closeConfirmarAccionModal();
 
           // SIN delay, ya que el método hide() de Bootstrap maneja el backdrop
-          this.listadoVetnas(); 
+          this.listadoVetnas();
 
           this.selecVetaEstado = null;
         },
@@ -340,13 +341,38 @@ export class ListSalesComponent implements OnInit, AfterViewInit {
   }
 
 
-  //Registrar un envio nuevo
-  // Asumo que tu tipo 'ventas' tiene una propiedad 'id_venta'
+// En tu list-sales.component.ts
 registrarEnvio(venta: ventas) {
-  console.log('Entraste a registro envio para la venta:', venta.idVenta);
+  console.log('Verificando envío para la venta:', venta.idVenta);
   
-  // CAMBIO AQUÍ: Usamos navigate para pasar el ID
-  // Esto creará la URL: /home/envios/registrarEnvio/123
-  this.router.navigate(['/home/envios/registrarEnvio', venta.idVenta]);
+  this.ventasS.findVentaConEnvio(venta.idVenta!).subscribe({
+    next: (response) => {
+      if (response.success && response.data) {
+        // 🔥 CASO 1: La venta YA TIENE un envío registrado
+        console.log('La venta ya tiene un envío registrado:', response.data);
+        
+        // REDIRIGIR A LA NUEVA RUTA PARA VENTAS
+        this.router.navigate(['/home/envios/list-envios-venta', venta.idVenta]);
+        
+      } else {
+        // 🔥 CASO 2: La venta NO TIENE envío registrado
+        console.log('La venta no tiene envío registrado, redirigiendo a registro...');
+        this.router.navigate(['/home/envios/registrarEnvio', venta.idVenta]);
+      }
+    },
+    error: (error) => {
+      console.error('Error al verificar envío de la venta:', error);
+      
+      if (error.status === 404) {
+        // Error 404 = No se encontró envío, redirigir a registro
+        this.router.navigate(['/home/envios/registrarEnvio', venta.idVenta]);
+      } else {
+        // Para otros errores, redirigir a la lista general de envíos
+        alert('Error al verificar el estado del envío. Serás redirigido a la lista de envíos.');
+        this.router.navigate(['/home/envios/list-envios']);
+      }
+    }
+  });
 }
+  
 }

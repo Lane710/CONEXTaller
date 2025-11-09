@@ -1,9 +1,7 @@
 <div class="container mt-4">
   <h2 class="mb-4">Reportes de Negocio</h2>
 
-  <!-- ===================================================================== -->
-  <!-- ======================= NAVEGACIÓN (TABS) DINÁMICA ==================== -->
-  <!-- ===================================================================== -->
+  <!-- NAVEGACIÓN (TABS) -->
   <ul class="nav nav-tabs" role="tablist">
     <li class="nav-item" *ngFor="let tab of reportTabs" role="presentation">
       <button
@@ -20,33 +18,27 @@
     </li>
   </ul>
 
-  <!-- ===================================================================== -->
-  <!-- ===================== CONTENIDO DINÁMICO POR REPORTE ==================== -->
-  <!-- El ngSwitch decide qué componente renderizar en el contenedor principal. -->
-  <!-- ===================================================================== -->
+  <!-- CONTENIDO DINÁMICO -->
   <div class="tab-content bg-white p-3 border border-top-0 rounded-bottom">
-        <div class="contenido-dinamico" [ngSwitch]="currentReport">
-            
-            <app-reporte-ventas *ngSwitchCase="'ventas'"></app-reporte-ventas>
+    <div class="contenido-dinamico" [ngSwitch]="currentReport">
+      
+      <!-- REPORTE DE GANANCIAS - ACTUALIZADO -->
+      <app-reporte-ganancias *ngSwitchCase="'ganancias'"></app-reporte-ganancias> <!-- ← CAMBIA ESTO -->
 
-            <app-reporte-pedidos *ngSwitchCase="'pedidos'"></app-reporte-pedidos> 
+      <app-reporte-ventas *ngSwitchCase="'ventas'"></app-reporte-ventas>
+      <app-reporte-pedidos *ngSwitchCase="'pedidos'"></app-reporte-pedidos> 
+      <app-reporte-productos *ngSwitchCase="'productos'"></app-reporte-productos>
+      <app-reporte-envios *ngSwitchCase="'envios'"></app-reporte-envios>
 
-            <app-reporte-productos *ngSwitchCase="'productos'"></app-reporte-productos>
+      <!-- REPORTE DE FACTURAS (mantiene el genérico) -->
+      <ng-template [ngSwitchCase]="'facturas'">
+        <app-reporte-generico [reportName]="'Facturas'"></app-reporte-generico>
+      </ng-template>
+      
+      <div *ngSwitchDefault class="alert alert-warning mt-3">
+        Seleccione un tipo de reporte para comenzar.
+      </div>
 
-            <app-reporte-envios *ngSwitchCase="'envios'"></app-reporte-envios>
-
-            <ng-template [ngSwitchCase]="'ganancias'">
-                <app-reporte-generico [reportName]="'Ganancias'"></app-reporte-generico>
-            </ng-template>
-            <ng-template [ngSwitchCase]="'facturas'">
-                <app-reporte-generico [reportName]="'Facturas'"></app-reporte-generico>
-            </ng-template>
-            
-            <div *ngSwitchDefault class="alert alert-warning mt-3">
-                Seleccione un tipo de reporte para comenzar.
-            </div>
-
-        </div>
     </div>
-
+  </div>
 </div>

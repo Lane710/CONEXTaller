@@ -7,7 +7,12 @@ import { ApiResponse } from '../../models/api-response'; // Asegúrate de que es
   providedIn: 'root'
 })
 export class ReportesService {
+  
+  // URLS ANTIGUAS
   private baseUrl = 'http://localhost:8080/reportes/';
+  
+  // URL NUEVA PARA REPORTES DE GANANCIAS
+  private gananciasBaseUrl = 'http://localhost:8080/api/reportes/ganancias/';
 
   constructor(private http: HttpClient) { }
 
@@ -96,5 +101,67 @@ export class ReportesService {
     if (idMetodoEnvio) params = params.append('idMetodoEnvio', idMetodoEnvio.toString());
 
     return this.http.get<ApiResponse>(`${this.baseUrl}envios`, { params });
+  }
+
+  // ====================================================================
+  // 
+  //     NUEVOS MÉTODOS DE REPORTE DE GANANCIAS
+  // 
+  // ====================================================================
+
+  /**
+   * GET: /api/reportes/ganancias/pedidos
+   * Obtiene el reporte detallado de ganancias de pedidos (online).
+   */
+  getReporteGananciasPedidos(fechaInicio: string, fechaFin: string): Observable<ApiResponse> {
+    let params = new HttpParams()
+      .set('fechaInicio', fechaInicio)
+      .set('fechaFin', fechaFin);
+    
+    return this.http.get<ApiResponse>(`${this.gananciasBaseUrl}pedidos`, { params });
+  }
+
+  /**
+   * GET: /api/reportes/ganancias/ventas
+   * Obtiene el reporte detallado de ganancias de ventas (tienda).
+   */
+  getReporteGananciasVentas(fechaInicio: string, fechaFin: string): Observable<ApiResponse> {
+    let params = new HttpParams()
+      .set('fechaInicio', fechaInicio)
+      .set('fechaFin', fechaFin);
+    
+    return this.http.get<ApiResponse>(`${this.gananciasBaseUrl}ventas`, { params });
+  }
+
+  /**
+   * GET: /api/reportes/ganancias/combinado
+   * Obtiene el reporte combinado de ganancias (pedidos + ventas).
+   */
+  getReporteGananciasCombinado(fechaInicio: string, fechaFin: string): Observable<ApiResponse> {
+    let params = new HttpParams()
+      .set('fechaInicio', fechaInicio)
+      .set('fechaFin', fechaFin);
+    
+    return this.http.get<ApiResponse>(`${this.gananciasBaseUrl}combinado`, { params });
+  }
+
+  /**
+   * GET: /api/reportes/ganancias/resumen
+   * Obtiene el resumen ejecutivo de ganancias.
+   */
+  getResumenGanancias(fechaInicio: string, fechaFin: string): Observable<ApiResponse> {
+    let params = new HttpParams()
+      .set('fechaInicio', fechaInicio)
+      .set('fechaFin', fechaFin);
+    
+    return this.http.get<ApiResponse>(`${this.gananciasBaseUrl}resumen`, { params });
+  }
+
+  /**
+   * GET: /api/reportes/ganancias/tipos
+   * Obtiene la lista de tipos de reportes de ganancias disponibles.
+   */
+  getTiposReporteGanancias(): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.gananciasBaseUrl}tipos`);
   }
 }

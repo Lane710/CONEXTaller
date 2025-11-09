@@ -1,256 +1,424 @@
-<div class="p-4">
-    <h4 class="mb-4">Informes de Productos</h4>
-
-    <ul class="nav nav-tabs mb-3" role="tablist">
-        <li class="nav-item" *ngFor="let tab of productTabs" role="presentation">
-            <button 
-                class="nav-link" 
-                [class.active]="tab.id === currentProductReport"
-                (click)="setActiveProductReport(tab.id)"
-                type="button"
-            >
-                {{ tab.label }}
-            </button>
-        </li>
-    </ul>
-
-    <div class="tab-content border p-3 bg-white rounded">
-        <div [ngSwitch]="currentProductReport">
-            
-            <div *ngIf="cargandoReporte" class="text-center my-5">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Cargando...</span>
-                </div>
-                <p class="mt-2">Generando reporte, por favor espere...</p>
-            </div>
-
-
-            <div *ngSwitchCase="'bajo_stock'">
-                
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="mb-0">Productos con Bajo Stock</h5>
-                    <div>
-                        <button class="btn btn-primary btn-sm" (click)="aplicarFiltros('bajo_stock')"><i class="bi bi-arrow-clockwise"></i> Actualizar</button>
-                        <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-box-arrow-up-right"></i> Exportar</button>
-                    </div>
-                </div>
-            
-                <div class="row g-3 mb-4 p-3 border bg-light rounded align-items-end" [hidden]="cargandoReporte">
-                    <div class="col-md-4">
-                        <label for="umbral-stock" class="form-label">Umbral de Stock (Máx.)</label>
-                        <input type="number" class="form-control form-control-sm" id="umbral-stock" 
-                               [(ngModel)]="filtrosBajoStock.umbralStock" min="0">
-                    </div>
-                    <div class="col-md-4">
-                        <label for="categoria-id" class="form-label">Categoría</label>
-                        <select id="categoria-id" class="form-select form-select-sm" 
-                                [(ngModel)]="filtrosBajoStock.idCategoria">
-                            <option selected value="">Todas las categorías</option>
-                            <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre }}</option>
-                        </select>
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-secondary btn-sm w-100" (click)="aplicarFiltros('bajo_stock')">Filtrar</button>
-                    </div>
-                </div>
-
-                <div *ngIf="!cargandoReporte">
-                    <div *ngIf="reporteBajoStock.length > 0">
-                        <h6>{{ reporteBajoStock.length }} Productos Encontrados con Stock ≤ {{ filtrosBajoStock.umbralStock }}</h6>
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover table-sm">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th style="width: 25%;">Producto</th>
-                                        <th style="width: 10%;">SKU</th>
-                                        <th style="width: 15%;">Categoría</th>
-                                        <th style="width: 10%;" class="text-end">Stock Actual</th>
-                                        <th style="width: 15%;" class="text-end">Precio Compra</th>
-                                        <th style="width: 15%;">Proveedor</th>
-                                        <th style="width: 10%;">Teléfono Prov.</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let prod of reporteBajoStock">
-                                        <td>{{ prod.nombre }}</td>
-                                        <td>{{ prod.sku }}</td>
-                                        <td>{{ prod.categoria }}</td>
-                                        <td class="text-end">{{ prod.stockActual }}</td>
-                                        <td class="text-end">{{ prod.precioCompra | currency:'Bs.' }}</td>
-                                        <td>{{ prod.proveedor }}</td>
-                                        <td>{{ prod.telefonoProveedor }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div *ngIf="reporteBajoStock.length === 0" class="mt-3">
-                        <div *ngIf="!busquedaRealizada" class="alert alert-info" role="alert">
-                            Defina el umbral y presione **Filtrar** para generar el reporte.
-                        </div>
-                        <div *ngIf="busquedaRealizada" class="alert alert-warning" role="alert">
-                            No se encontraron productos con el stock actual igual o menor a {{ filtrosBajoStock.umbralStock }} en el filtro seleccionado.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <div *ngSwitchCase="'mas_vendidos'">
-                
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="mb-0">Productos Más Vendidos</h5>
-                    <div>
-                        <button class="btn btn-primary btn-sm" (click)="aplicarFiltros('mas_vendidos')"><i class="bi bi-arrow-clockwise"></i> Actualizar</button>
-                        <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-box-arrow-up-right"></i> Exportar</button>
-                    </div>
-                </div>
-
-                <div class="row g-3 mb-4 p-3 border bg-light rounded align-items-end" [hidden]="cargandoReporte">
-                    <div class="col-md-3">
-                        <label for="fecha-inicio-mv" class="form-label">Fecha Inicio</label>
-                        <input type="date" class="form-control form-control-sm" id="fecha-inicio-mv" 
-                               [(ngModel)]="filtrosMasVendidos.fechaInicio" [max]="filtrosMasVendidos.fechaFin" (change)="validarFechas()">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="fecha-fin-mv" class="form-label">Fecha Fin</label>
-                        <input type="date" class="form-control form-control-sm" id="fecha-fin-mv" 
-                               [(ngModel)]="filtrosMasVendidos.fechaFin" [max]="maxDate" (change)="validarFechas()">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="categoria-mv" class="form-label">Categoría</label>
-                        <select id="categoria-mv" class="form-select form-select-sm" 
-                                [(ngModel)]="filtrosMasVendidos.idCategoria">
-                            <option selected value="">Todas las categorías</option>
-                            <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre }}</option>
-                        </select>
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-secondary btn-sm w-100" (click)="aplicarFiltros('mas_vendidos')">Filtrar</button>
-                    </div>
-                </div>
-
-                <div *ngIf="!cargandoReporte">
-                    <div *ngIf="reporteMasVendidos.length > 0">
-                        <h6>Productos Más Vendidos en el Periodo Seleccionado</h6>
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover table-sm">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th style="width: 30%;">Producto</th>
-                                        <th style="width: 15%;">SKU</th>
-                                        <th style="width: 15%;">Categoría</th>
-                                        <th style="width: 10%;" class="text-end">Stock Actual</th>
-                                        <th style="width: 15%;" class="text-end">Unidades Vendidas</th>
-                                        <th style="width: 15%;" class="text-end">Ingresos Totales</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let prod of reporteMasVendidos">
-                                        <td>{{ prod.nombre }}</td>
-                                        <td>{{ prod.sku }}</td>
-                                        <td>{{ prod.categoria }}</td>
-                                        <td class="text-end">{{ prod.stockActual }}</td>
-                                        <td class="text-end">{{ prod.unidadesVendidas }}</td>
-                                        <td class="text-end">{{ prod.ingresosTotales | currency:'Bs.' }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div *ngIf="reporteMasVendidos.length === 0" class="mt-3">
-                        <div *ngIf="!busquedaRealizada" class="alert alert-info" role="alert">
-                            Defina el rango de fechas y presione **Filtrar** para generar el reporte.
-                        </div>
-                        <div *ngIf="busquedaRealizada" class="alert alert-warning" role="alert">
-                            No se encontraron ventas en el periodo seleccionado.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <div *ngSwitchCase="'maestro'">
-                
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="mb-0">Maestro de Productos (Inventario General)</h5>
-                    <div>
-                        <button class="btn btn-primary btn-sm" (click)="aplicarFiltros('maestro')"><i class="bi bi-arrow-clockwise"></i> Filtrar</button>
-                        <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-box-arrow-up-right"></i> Exportar</button>
-                    </div>
-                </div>
-
-                <div class="row g-3 mb-4 p-3 border bg-light rounded align-items-end" [hidden]="cargandoReporte">
-                    <div class="col-md-3">
-                        <label for="estado-prod" class="form-label">Estado</label>
-                        <select id="estado-prod" class="form-select form-select-sm" 
-                                [(ngModel)]="filtrosMaestro.estadoProducto">
-                            <option selected value="">Todos los estados</option>
-                            <option *ngFor="let est of estadosProducto" [value]="est.value">{{ est.viewValue }}</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="categoria-maestro" class="form-label">Categoría</label>
-                        <select id="categoria-maestro" class="form-select form-select-sm" 
-                                [(ngModel)]="filtrosMaestro.idCategoria">
-                            <option selected value="">Todas las categorías</option>
-                            <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre }}</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="usuario-registro" class="form-label">Registrado por</label>
-                        <select id="usuario-registro" class="form-select form-select-sm" 
-                                [(ngModel)]="filtrosMaestro.usuarioRegistro">
-                            <option selected value="">Cualquier usuario</option>
-                            <option *ngFor="let user of usuariosRegistro" [value]="user.username">{{ user.email }}</option>
-                        </select>
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-secondary btn-sm w-100" (click)="aplicarFiltros('maestro')">Filtrar</button>
-                    </div>
-                </div>
-
-                <div *ngIf="!cargandoReporte">
-                    <div *ngIf="reporteMaestro.length > 0">
-                        <h6>{{ reporteMaestro.length }} Productos en el Maestro</h6>
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover table-sm">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th style="width: 20%;">Producto</th>
-                                        <th style="width: 10%;">SKU</th>
-                                        <th style="width: 10%;">Estado</th>
-                                        <th style="width: 10%;" class="text-end">Precio Compra</th>
-                                        <th style="width: 10%;" class="text-end">Precio Venta</th>
-                                        <th style="width: 15%;">Fecha Registro</th>
-                                        <th style="width: 15%;">Registrado por</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let prod of reporteMaestro">
-                                        <td>{{ prod.nombre }}</td>
-                                        <td>{{ prod.sku }}</td>
-                                        <td>{{ prod.estado === 1 ? 'Activo' : 'Inactivo' }}</td>
-                                        <td class="text-end">{{ prod.precioCompra | currency:'Bs.' }}</td>
-                                        <td class="text-end">{{ prod.precio | currency:'Bs.' }}</td>
-                                        <td>{{ prod.fechaRegistro | date:'mediumDate' }}</td>
-                                        <td>{{ prod.registradoPor }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div *ngIf="reporteMaestro.length === 0" class="mt-3">
-                        <div *ngIf="!busquedaRealizada" class="alert alert-info" role="alert">
-                            Defina los filtros y presione **Filtrar** para generar el reporte.
-                        </div>
-                        <div *ngIf="busquedaRealizada" class="alert alert-warning" role="alert">
-                            No se encontraron productos con los filtros seleccionados.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+<div class="reporte-productos-container">
+  <!-- Header del Reporte -->
+  <div class="report-header">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="report-title">📦 Reporte de Productos</h2>
+        <p class="text-muted mb-0">Gestión y análisis completo del inventario</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline-primary btn-sm" (click)="aplicarFiltros(currentProductReport)" [disabled]="cargandoReporte">
+          <i class="bi bi-arrow-clockwise"></i> {{ cargandoReporte ? 'Actualizando...' : 'Actualizar' }}
+        </button>
+        <button class="btn btn-success btn-sm" (click)="exportarPDF()" [disabled]="!tieneDatos()">
+          <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+        </button>
+      </div>
     </div>
+  </div>
+
+  <!-- Tabs de Navegación -->
+  <div class="product-tabs">
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item" *ngFor="let tab of productTabs" role="presentation">
+        <button 
+          class="nav-link" 
+          [class.active]="tab.id === currentProductReport"
+          (click)="setActiveProductReport(tab.id)"
+          type="button"
+        >
+          {{ tab.label }}
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Contenido de Tabs -->
+  <div class="tab-content">
+    <div [ngSwitch]="currentProductReport">
+      
+      <!-- Loading General -->
+      <div *ngIf="cargandoReporte" class="loading-container">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-3 text-muted">Generando reporte, por favor espere...</p>
+      </div>
+
+      <!-- ============ TAB BAJO STOCK ============ -->
+      <div *ngSwitchCase="'bajo_stock'" class="tab-pane tab-bajo-stock">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="mb-0">📉 Productos con Bajo Stock</h4>
+          <div class="header-actions">
+            <button class="btn btn-primary btn-sm" (click)="aplicarFiltros('bajo_stock')">
+              <i class="bi bi-arrow-clockwise"></i> Actualizar
+            </button>
+          </div>
+        </div>
+
+        <!-- Filtros Bajo Stock -->
+        <div class="filtros-section">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+              <label class="form-label">Umbral de Stock Máximo</label>
+              <input type="number" class="form-control" 
+                     [(ngModel)]="filtrosBajoStock.umbralStock" 
+                     min="0" 
+                     placeholder="Ej: 10">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Categoría</label>
+              <select class="form-select" [(ngModel)]="filtrosBajoStock.idCategoria">
+                <option value="">Todas las categorías</option>
+                <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre }}</option>
+              </select>
+            </div>
+            <div class="col-md-auto">
+              <button class="btn btn-primary w-100" (click)="aplicarFiltros('bajo_stock')">
+                <i class="bi bi-funnel"></i> Filtrar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estadísticas Bajo Stock -->
+        <div *ngIf="busquedaRealizada && reporteBajoStock.length > 0" class="estadisticas-section">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="stat-card text-white">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ reporteBajoStock.length }}</div>
+                  <div class="stat-label">Productos Bajo Stock</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-card text-white">
+                <div class="stat-icon">🔴</div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ getStockCriticoCount() }}</div>
+                  <div class="stat-label">Stock Crítico</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-card text-white">
+                <div class="stat-icon">📞</div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ getProveedoresUnicos() }}</div>
+                  <div class="stat-label">Proveedores</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resultados Bajo Stock -->
+        <div *ngIf="!cargandoReporte">
+          <div *ngIf="reporteBajoStock.length > 0" class="reporte-section">
+            <h5 class="mb-3">{{ reporteBajoStock.length }} productos con stock ≤ {{ filtrosBajoStock.umbralStock }}</h5>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Producto</th>
+                    <th>SKU</th>
+                    <th>Categoría</th>
+                    <th class="text-end">Stock Actual</th>
+                    <th class="text-end">Precio Compra</th>
+                    <th>Proveedor</th>
+                    <th>Contacto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let prod of reporteBajoStock" 
+                      class="producto-row"
+                      [ngClass]="{'stock-critico': prod.stockActual <= 5, 'stock-bajo': prod.stockActual > 5 && prod.stockActual <= filtrosBajoStock.umbralStock}">
+                    <td>
+                      <div class="producto-nombre">{{ prod.nombre }}</div>
+                    </td>
+                    <td>
+                      <code class="producto-sku">{{ prod.sku }}</code>
+                    </td>
+                    <td>{{ prod.categoria }}</td>
+                    <td class="text-end" [ngClass]="{'stock-critico': prod.stockActual <= 5, 'stock-bajo': prod.stockActual > 5 && prod.stockActual <= filtrosBajoStock.umbralStock}">
+                      <strong>{{ prod.stockActual }}</strong>
+                    </td>
+                    <td class="text-end">{{ prod.precioCompra | currency:'Bs. ' }}</td>
+                    <td>{{ prod.proveedor }}</td>
+                    <td>{{ prod.telefonoProveedor }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Sin Resultados Bajo Stock -->
+          <div *ngIf="reporteBajoStock.length === 0" class="no-results">
+            <i class="bi bi-inbox" style="font-size: 4rem; color: #6c757d;"></i>
+            <h4 class="mt-3 text-muted">No se encontraron productos con bajo stock</h4>
+            <p class="text-muted">Intenta ajustar el umbral de stock o seleccionar una categoría diferente.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ TAB MÁS VENDIDOS ============ -->
+      <div *ngSwitchCase="'mas_vendidos'" class="tab-pane tab-mas-vendidos">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="mb-0">🏆 Productos Más Vendidos</h4>
+          <div class="header-actions">
+            <button class="btn btn-primary btn-sm" (click)="aplicarFiltros('mas_vendidos')">
+              <i class="bi bi-arrow-clockwise"></i> Actualizar
+            </button>
+          </div>
+        </div>
+
+        <!-- Filtros Más Vendidos -->
+        <div class="filtros-section">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+              <label class="form-label">Fecha Inicio</label>
+              <input type="date" class="form-control" 
+                     [(ngModel)]="filtrosMasVendidos.fechaInicio" 
+                     [max]="filtrosMasVendidos.fechaFin" 
+                     (change)="validarFechas()">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Fecha Fin</label>
+              <input type="date" class="form-control" 
+                     [(ngModel)]="filtrosMasVendidos.fechaFin" 
+                     [max]="maxDate" 
+                     (change)="validarFechas()">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Categoría</label>
+              <select class="form-select" [(ngModel)]="filtrosMasVendidos.idCategoria">
+                <option value="">Todas las categorías</option>
+                <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre }}</option>
+              </select>
+            </div>
+            <div class="col-md-auto">
+              <button class="btn btn-primary w-100" (click)="aplicarFiltros('mas_vendidos')">
+                <i class="bi bi-funnel"></i> Filtrar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estadísticas Más Vendidos -->
+        <div *ngIf="busquedaRealizada && reporteMasVendidos.length > 0" class="estadisticas-section">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="stat-card text-white">
+                <div class="stat-icon">📦</div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ getTotalUnidadesVendidas() }}</div>
+                  <div class="stat-label">Unidades Vendidas</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-card text-white">
+                <div class="stat-icon">💰</div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ getTotalIngresos() | currency:'Bs. ' }}</div>
+                  <div class="stat-label">Ingresos Totales</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-card text-white">
+                <div class="stat-icon">📊</div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ reporteMasVendidos.length }}</div>
+                  <div class="stat-label">Productos Vendidos</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resultados Más Vendidos -->
+        <div *ngIf="!cargandoReporte">
+          <div *ngIf="reporteMasVendidos.length > 0" class="reporte-section">
+            <h5 class="mb-3">Productos más vendidos en el período seleccionado</h5>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Producto</th>
+                    <th>SKU</th>
+                    <th>Categoría</th>
+                    <th class="text-end">Stock Actual</th>
+                    <th class="text-end">Unidades Vendidas</th>
+                    <th class="text-end">Ingresos Totales</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let prod of reporteMasVendidos; let i = index" class="producto-row">
+                    <td>
+                      <div class="producto-nombre">
+                        <span class="badge bg-primary me-2">{{ i + 1 }}</span>
+                        {{ prod.nombre }}
+                      </div>
+                    </td>
+                    <td>
+                      <code class="producto-sku">{{ prod.sku }}</code>
+                    </td>
+                    <td>{{ prod.categoria }}</td>
+                    <td class="text-end stock-ok">{{ prod.stockActual }}</td>
+                    <td class="text-end">
+                      <strong>{{ prod.unidadesVendidas }}</strong>
+                    </td>
+                    <td class="text-end">
+                      <strong class="text-success">{{ prod.ingresosTotales | currency:'Bs. ' }}</strong>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Sin Resultados Más Vendidos -->
+          <div *ngIf="reporteMasVendidos.length === 0" class="no-results">
+            <i class="bi bi-graph-up" style="font-size: 4rem; color: #6c757d;"></i>
+            <h4 class="mt-3 text-muted">No se encontraron ventas</h4>
+            <p class="text-muted">Intenta ajustar el rango de fechas o seleccionar una categoría diferente.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ TAB MAESTRO ============ -->
+      <div *ngSwitchCase="'maestro'" class="tab-pane tab-maestro">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="mb-0">📋 Maestro de Productos</h4>
+          <div class="header-actions">
+            <button class="btn btn-primary btn-sm" (click)="aplicarFiltros('maestro')">
+              <i class="bi bi-funnel"></i> Filtrar
+            </button>
+          </div>
+        </div>
+
+        <!-- Filtros Maestro -->
+        <div class="filtros-section">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+              <label class="form-label">Estado</label>
+              <select class="form-select" [(ngModel)]="filtrosMaestro.estadoProducto">
+                <option value="">Todos los estados</option>
+                <option *ngFor="let est of estadosProducto" [value]="est.value">{{ est.viewValue }}</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Categoría</label>
+              <select class="form-select" [(ngModel)]="filtrosMaestro.idCategoria">
+                <option value="">Todas las categorías</option>
+                <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre }}</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Registrado por</label>
+              <select class="form-select" [(ngModel)]="filtrosMaestro.usuarioRegistro">
+                <option value="">Cualquier usuario</option>
+                <option *ngFor="let user of usuariosRegistro" [value]="user.username">{{ user.email }}</option>
+              </select>
+            </div>
+            <div class="col-md-auto">
+              <button class="btn btn-primary w-100" (click)="aplicarFiltros('maestro')">
+                <i class="bi bi-funnel"></i> Filtrar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estadísticas Maestro -->
+        <div *ngIf="busquedaRealizada && reporteMaestro.length > 0" class="estadisticas-section">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="stat-card text-white">
+                <div class="stat-icon">📦</div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ reporteMaestro.length }}</div>
+                  <div class="stat-label">Total Productos</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-card text-white">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ getProductosActivos() }}</div>
+                  <div class="stat-label">Productos Activos</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-card text-white">
+                <div class="stat-icon">👥</div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ getUsuariosUnicos() }}</div>
+                  <div class="stat-label">Usuarios Registro</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resultados Maestro -->
+        <div *ngIf="!cargandoReporte">
+          <div *ngIf="reporteMaestro.length > 0" class="reporte-section">
+            <h5 class="mb-3">{{ reporteMaestro.length }} productos en el inventario</h5>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Producto</th>
+                    <th>SKU</th>
+                    <th>Estado</th>
+                    <th class="text-end">Precio Compra</th>
+                    <th class="text-end">Precio Venta</th>
+                    <th>Fecha Registro</th>
+                    <th>Registrado por</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let prod of reporteMaestro" class="producto-row">
+                    <td>
+                      <div class="producto-nombre">{{ prod.nombre }}</div>
+                    </td>
+                    <td>
+                      <code class="producto-sku">{{ prod.sku }}</code>
+                    </td>
+                    <td>
+                      <span class="badge-producto" [ngClass]="{'bg-producto-activo': prod.estado === 1, 'bg-producto-inactivo': prod.estado === 0}">
+                        {{ prod.estado === 1 ? 'Activo' : 'Inactivo' }}
+                      </span>
+                    </td>
+                    <td class="text-end">{{ prod.precioCompra | currency:'Bs. ' }}</td>
+                    <td class="text-end">
+                      <strong class="text-success">{{ prod.precio | currency:'Bs. ' }}</strong>
+                    </td>
+                    <td>{{ prod.fechaRegistro | date:'dd/MM/yyyy' }}</td>
+                    <td>{{ prod.registradoPor }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Sin Resultados Maestro -->
+          <div *ngIf="reporteMaestro.length === 0" class="no-results">
+            <i class="bi bi-clipboard-data" style="font-size: 4rem; color: #6c757d;"></i>
+            <h4 class="mt-3 text-muted">No se encontraron productos</h4>
+            <p class="text-muted">Intenta ajustar los filtros para ver los resultados.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </div>

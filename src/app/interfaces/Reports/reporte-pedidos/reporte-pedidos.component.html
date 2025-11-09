@@ -1,124 +1,226 @@
-<!-- ===================== CONTENIDO ESPECÍFICO DE PEDIDOS ==================== -->
-<div class="p-4">
+<div class="reporte-pedidos-container">
+  <!-- Header del Reporte -->
+  <div class="report-header">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="mb-0">Reporte de Pedidos</h4>
-        <div>
-            <button class="btn btn-primary btn-sm" (click)="aplicarFiltrosPedidos()"><i class="bi bi-arrow-clockwise"></i> Actualizar</button>
-            <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-box-arrow-up-right"></i> Exportar</button>
-        </div>
+      <div>
+        <h2 class="report-title">📦 Reporte de Pedidos</h2>
+        <p class="text-muted mb-0">Analiza el desempeño de los pedidos online</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline-primary btn-sm" (click)="aplicarFiltrosPedidos()" [disabled]="cargandoReporte">
+          <i class="bi bi-arrow-clockwise"></i> {{ cargandoReporte ? 'Actualizando...' : 'Actualizar' }}
+        </button>
+        <button class="btn btn-success btn-sm" (click)="exportarPDF()" [disabled]="!reportePedidosAgrupado.length">
+          <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+        </button>
+      </div>
     </div>
+  </div>
 
-    <!-- ================ FILTROS DE BÚSQUEDA PARA PEDIDOS ================ -->
-    <div class="row g-3 mb-4 p-3 border bg-light rounded align-items-end">
-        
+  <!-- Filtros -->
+  <div class="filtros-section card">
+    <div class="card-body">
+      <h5 class="card-title">Filtros del Reporte</h5>
+      
+      <div class="row g-3 align-items-end">
         <!-- Fecha Inicio -->
         <div class="col-md">
-            <label for="fecha-inicio-ped" class="form-label">Fecha Inicio</label>
-            <input type="date" class="form-control form-control-sm" id="fecha-inicio-ped" 
-                   [(ngModel)]="filtrosPedidos.fechaInicio" [max]="filtrosPedidos.fechaFin" (change)="validarFechas()">
+          <label class="form-label">Fecha Inicio</label>
+          <input type="date" class="form-control" 
+                 [(ngModel)]="filtrosPedidos.fechaInicio" 
+                 (change)="validarFechas()"
+                 [max]="filtrosPedidos.fechaFin">
         </div>
 
         <!-- Fecha Fin -->
         <div class="col-md">
-            <label for="fecha-fin-ped" class="form-label">Fecha Fin</label>
-            <input type="date" class="form-control form-control-sm" id="fecha-fin-ped" 
-                   [(ngModel)]="filtrosPedidos.fechaFin" [max]="maxDate" (change)="validarFechas()">
+          <label class="form-label">Fecha Fin</label>
+          <input type="date" class="form-control" 
+                 [(ngModel)]="filtrosPedidos.fechaFin"
+                 (change)="validarFechas()"
+                 [max]="maxDate">
         </div>
 
         <!-- Estado de Pedido -->
         <div class="col-md">
-            <label for="estado-ped" class="form-label">Estado</label>
-            <select id="estado-ped" class="form-select form-select-sm" 
-                    [(ngModel)]="filtrosPedidos.estado">
-                <option selected value="">Todos...</option>
-                <option *ngFor="let estado of estadosPedido" [value]="estado.value">{{ estado.viewValue }}</option>
-            </select>
+          <label class="form-label">Estado</label>
+          <select class="form-select" [(ngModel)]="filtrosPedidos.estado">
+            <option selected value="">Todos los estados...</option>
+            <option *ngFor="let estado of estadosPedido" [value]="estado.value">
+              {{ estado.viewValue }}
+            </option>
+          </select>
         </div>
 
         <!-- Forma de Pago -->
         <div class="col-md">
-            <label for="forma-pago-ped" class="form-label">Forma de Pago</label>
-            <select id="forma-pago-ped" class="form-select form-select-sm" 
-                    [(ngModel)]="filtrosPedidos.formaPagoId">
-                <option selected value="">Todas...</option>
-                <option *ngFor="let pago of formasDePago" [value]="pago.idFormaPago">{{ pago.nombre }}</option>
-            </select>
+          <label class="form-label">Forma de Pago</label>
+          <select class="form-select" [(ngModel)]="filtrosPedidos.formaPagoId">
+            <option selected value="">Todas las formas...</option>
+            <option *ngFor="let pago of formasDePago" [value]="pago.idFormaPago">
+              {{ pago.nombre }}
+            </option>
+          </select>
         </div>
 
         <!-- Botón Filtrar -->
         <div class="col-md-auto">
-            <button class="btn btn-secondary btn-sm w-100" (click)="aplicarFiltrosPedidos()">Filtrar</button>
+          <button class="btn btn-primary w-100" (click)="aplicarFiltrosPedidos()" [disabled]="cargandoReporte">
+            <i class="bi bi-funnel"></i> Filtrar
+          </button>
         </div>
+      </div>
     </div>
-    <!-- ============ FIN DE FILTROS DE BÚSQUEDA ============ -->
+  </div>
 
-    <!-- =================== SECCIÓN DE RESULTADOS =================== -->
+  <!-- Estadísticas Resumen -->
+  <div *ngIf="busquedaRealizada && reportePedidosAgrupado.length > 0" class="estadisticas-section">
+    <div class="row g-3">
+      <div class="col-md-3">
+        <div class="stat-card bg-primary text-white">
+          <div class="stat-icon">📦</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ reportePedidosAgrupado.length }}</div>
+            <div class="stat-label">Total Pedidos</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card bg-success text-white">
+          <div class="stat-icon">💰</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ totalGeneralPedidos | currency:'Bs. ' }}</div>
+            <div class="stat-label">Valor Total</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card bg-info text-white">
+          <div class="stat-icon">📊</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ getPromedioPedido() | currency:'Bs. ' }}</div>
+            <div class="stat-label">Ticket Promedio</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card bg-warning text-white">
+          <div class="stat-icon">🔄</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ getPedidosCompletados() }}</div>
+            <div class="stat-label">Completados</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="cargandoReporte" class="loading-container text-center">
+    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-3 text-muted">Generando reporte de pedidos, por favor espere...</p>
+  </div>
+
+  <!-- Resultados -->
+  <div *ngIf="!cargandoReporte && busquedaRealizada">
     
-    <div *ngIf="cargandoReporte" class="text-center my-5">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Cargando...</span>
+    <!-- Con Resultados -->
+    <div *ngIf="reportePedidosAgrupado.length > 0" class="reporte-section">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-dark">
+            <tr>
+              <th style="width: 35%;">Producto</th>
+              <th style="width: 15%;" class="text-end">Cantidad</th>
+              <th style="width: 25%;" class="text-end">Precio Unit.</th>
+              <th style="width: 25%;" class="text-end">Subtotal</th>
+            </tr>
+          </thead>
+          
+          <ng-container *ngFor="let pedido of reportePedidosAgrupado; let i = index">
+            <tbody class="table-group-divider">
+              <!-- Encabezado del Pedido -->
+              <tr class="pedido-header">
+                <td colspan="4">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong>Pedido #{{ pedido.idPedido }}</strong>
+                      <small class="ms-2 text-muted">{{ pedido.fechaPedido | date:'dd/MM/yyyy' }} {{ pedido.horaPedido }}</small>
+                    </div>
+                    <div class="d-flex gap-3">
+                      <span class="cliente-info">
+                        <i class="bi bi-person"></i> {{ pedido.cliente }}
+                      </span>
+                      <span class="badge" [ngClass]="{
+                        'bg-success': pedido.estado === 'ENTREGADO',
+                        'bg-warning': pedido.estado === 'PENDIENTE',
+                        'bg-info': pedido.estado === 'PROCESANDO',
+                        'bg-danger': pedido.estado === 'CANCELADO'
+                      }">
+                        {{ pedido.estado }}
+                      </span>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              
+              <!-- Detalles de Productos -->
+              <tr *ngFor="let detalle of pedido.detalles" class="detalle-producto">
+                <td>
+                  <div class="cliente-info">
+                    <strong>{{ detalle.producto }}</strong>
+                  </div>
+                </td>
+                <td class="text-end">{{ detalle.cantidad }}</td>
+                <td class="text-end">{{ detalle.precioUnitario | currency:'Bs. ' }}</td>
+                <td class="text-end">{{ detalle.subtotal | currency:'Bs. ' }}</td>
+              </tr>
+
+              <!-- Total del Pedido -->
+              <tr class="total-pedido">
+                <td colspan="2"></td>
+                <td class="text-end"><strong>Total Pedido:</strong></td>
+                <td class="text-end"><strong>{{ pedido.totalNeto | currency:'Bs. ' }}</strong></td>
+              </tr>
+            </tbody>
+          </ng-container>
+        </table>
+      </div>
+
+      <!-- Total General -->
+      <div class="total-general mt-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h4 class="mb-1">Resumen General</h4>
+            <p class="mb-0 opacity-75">{{ reportePedidosAgrupado.length }} pedidos procesados</p>
+          </div>
+          <div class="text-end">
+            <h3 class="mb-0">{{ totalGeneralPedidos | currency:'Bs. ' }}</h3>
+            <small class="opacity-75">Total General</small>
+          </div>
         </div>
-        <p class="mt-2">Generando reporte, por favor espere...</p>
+      </div>
     </div>
 
-    <!-- Resultados (Tabla) -->
-    <div *ngIf="!cargandoReporte && reportePedidosAgrupado.length > 0">
-        <h5>Resultados del Reporte</h5>
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover table-sm">
-                <thead class="table-light">
-                    <tr>
-                        <th style="width: 35%;">Producto</th>
-                        <th style="width: 15%;" class="text-end">Cantidad</th>
-                        <th style="width: 25%;" class="text-end">Precio Unit.</th>
-                        <th style="width: 25%;" class="text-end">Subtotal</th>
-                    </tr>
-                </thead>
-                
-                <ng-container *ngFor="let pedido of reportePedidosAgrupado">
-                    <tbody class="table-group-divider">
-                        <!-- Fila de Encabezado de Pedido -->
-                        <tr class="table-primary">
-                            <td colspan="4">
-                                <div class="d-flex justify-content-between fw-bold">
-                                    <span>Pedido #{{ pedido.idPedido }} - {{ pedido.fechaPedido | date:'dd/MM/yyyy' }} {{ pedido.horaPedido }}</span>
-                                    <span>Cliente: {{ pedido.cliente }}</span>
-                                    <span>Estado: {{ pedido.estado }}</span>
-                                </div>
-                            </td>
-                        </tr>
-                        
-                        <!-- Filas de Detalle de Productos -->
-                        <tr *ngFor="let detalle of pedido.detalles">
-                            <td>{{ detalle.producto }}</td>
-                            <td class="text-end">{{ detalle.cantidad }}</td>
-                            <td class="text-end">{{ detalle.precioUnitario | currency:'Bs.' }}</td>
-                            <td class="text-end">{{ detalle.subtotal | currency:'Bs.' }}</td>
-                        </tr>
-
-                        <!-- Fila de Total Neto del Pedido -->
-                        <tr class="fw-bold">
-                            <td colspan="2"></td>
-                            <td class="text-end">Total Pedido:</td>
-                            <td class="text-end">{{ pedido.totalNeto | currency:'Bs.' }}</td>
-                        </tr>
-                    </tbody>
-                </ng-container>
-            </table>
-        </div>
-
-        <div class="d-flex justify-content-end mt-3 alert alert-success">
-            <h4 class="fw-bold mb-0">Total General de Pedidos: {{ totalGeneralPedidos | currency:'Bs.' }}</h4>
-        </div>
+    <!-- Sin Resultados -->
+    <div *ngIf="reportePedidosAgrupado.length === 0" class="no-results">
+      <i class="bi bi-inbox" style="font-size: 4rem; color: #6c757d;"></i>
+      <h4 class="mt-3 text-muted">No se encontraron pedidos</h4>
+      <p class="text-muted">Intenta ajustar los filtros o seleccionar un rango de fechas diferente.</p>
+      <button class="btn btn-outline-primary mt-2" (click)="aplicarFiltrosPedidos()">
+        <i class="bi bi-arrow-clockwise"></i> Reintentar
+      </button>
     </div>
+  </div>
 
-    <!-- Mensajes sin resultados -->
-    <div *ngIf="!cargandoReporte && reportePedidosAgrupado.length === 0" class="mt-3">
-        <div *ngIf="!busquedaRealizada" class="alert alert-info" role="alert">
-            Seleccione los filtros y presione "Filtrar" para ver los resultados.
-        </div>
-        <div *ngIf="busquedaRealizada" class="alert alert-warning" role="alert">
-            No se encontraron resultados para los filtros seleccionados.
-        </div>
+  <!-- Mensaje Inicial -->
+  <div *ngIf="!busquedaRealizada && !cargandoReporte" class="text-center py-5">
+    <div class="alert alert-info">
+      <i class="bi bi-info-circle" style="font-size: 2rem;"></i>
+      <h4 class="mt-3">Seleccione los filtros</h4>
+      <p class="mb-0">Configure los filtros y presione "Filtrar" para generar el reporte de pedidos.</p>
     </div>
+  </div>
 </div>

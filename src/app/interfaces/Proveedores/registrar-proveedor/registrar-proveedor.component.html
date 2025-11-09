@@ -11,7 +11,6 @@
 
     <form [formGroup]="proveedorForm" (ngSubmit)="onSubmit()">
 
-      <!-- Información de la Empresa -->
       <h3 class="mb-3 text-secondary">Información de la Empresa</h3>
       <div class="row mb-3">
         <div class="col-md-6">
@@ -45,7 +44,7 @@
       </div>
 
       <div class="row mb-3">
-        <div class="col-md-6">
+        <div class="col-md-12">
           <label for="ciudad" class="form-label">Ciudad <span class="text-danger">*</span></label>
           <input type="text" id="ciudad" class="form-control" placeholder="Ingrese la ciudad"
             formControlName="ciudad" [class.is-invalid]="ciudad?.invalid && ciudad?.touched" />
@@ -55,26 +54,10 @@
             <div *ngIf="ciudad?.errors?.['maxlength']">Máximo 50 caracteres.</div>
           </div>
         </div>
-
-        <!-- 🆕 Selección de Categoría -->
-        <div class="col-md-6">
-          <label for="idCategoria" class="form-label">Categoría <span class="text-danger">*</span></label>
-          <select id="idCategoria" class="form-select" formControlName="idCategoria"
-            [class.is-invalid]="idCategoria?.invalid && idCategoria?.touched">
-            <option value="" disabled selected>Seleccione una categoría</option>
-            <option *ngFor="let cat of categorias" [value]="cat.idCategoria">
-              {{ cat.nombre }}
-            </option>
-          </select>
-          <div *ngIf="idCategoria?.invalid && idCategoria?.touched" class="invalid-feedback">
-            <div *ngIf="idCategoria?.errors?.['required']">Debe seleccionar una categoría.</div>
-          </div>
-        </div>
       </div>
 
       <hr>
 
-      <!-- Información de Contacto -->
       <h3 class="mb-3 text-secondary">Información de Contacto</h3>
       <div class="row mb-3">
         <div class="col-md-6">
@@ -95,7 +78,8 @@
             [class.is-invalid]="emailContacto?.invalid && emailContacto?.touched" />
           <div *ngIf="emailContacto?.invalid && emailContacto?.touched" class="invalid-feedback">
             <div *ngIf="emailContacto?.errors?.['required']">El email es obligatorio.</div>
-            <div *ngIf="emailContacto?.errors?.['email']">Formato inválido.</div>
+            <div *ngIf="emailContacto?.errors?.['email']">Formato de correo inválido.</div>
+            <div *ngIf="emailContacto?.errors?.['pattern']">El correo debe ser &#64;gmail.com.</div>
             <div *ngIf="emailContacto?.errors?.['exists']">Este correo ya está registrado.</div>
           </div>
         </div>
@@ -110,16 +94,17 @@
           <div *ngIf="telefonoContacto?.invalid && telefonoContacto?.touched" class="invalid-feedback">
             <div *ngIf="telefonoContacto?.errors?.['required']">El teléfono es obligatorio.</div>
             <div *ngIf="telefonoContacto?.errors?.['exists']">Este teléfono ya está registrado.</div>
-
-            <div *ngIf="telefonoContacto?.errors?.['pattern']">Debe tener entre 6 y 15 dígitos.</div>
+            <div *ngIf="telefonoContacto?.errors?.['pattern']">Debe ser solo números, entre 6 y 15 dígitos.</div>
           </div>
         </div>
       </div>
 
-      <div class="mb-4">
-        <label for="notas" class="form-label">Notas Adicionales</label>
-        <textarea id="notas" class="form-control" rows="3" placeholder="Ingrese notas adicionales"
-          formControlName="notas"></textarea>
+      <div class="row mb-4">
+        <div class="col-12">
+          <label for="notas" class="form-label">Notas Adicionales</label>
+          <textarea id="notas" class="form-control" rows="3" placeholder="Ingrese notas adicionales"
+            formControlName="notas"></textarea>
+          </div>
       </div>
 
       <div class="d-flex justify-content-center gap-3 mt-4">
@@ -129,11 +114,11 @@
         </button>
         <button type="button" class="btn btn-secondary btn-lg px-5" (click)="cancelar()">Cancelar</button>
       </div>
+
     </form>
   </div>
 </div>
 
-<!-- Modal de Éxito -->
 <div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content text-center">

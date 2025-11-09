@@ -1,16 +1,26 @@
+/* ===== ESTILOS GENERALES Y LISTA DE PEDIDOS ===== */
+
 .order-card {
   border-radius: 1rem;
+  transition: all 0.3s ease;
+}
+
+.order-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
 }
 
 .container {
   margin-bottom: 40px;
 }
+
 .order-details-section {
   flex-grow: 1;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
 }
+
 .pagination .page-item.disabled .page-link {
   color: #6c757d;
   pointer-events: none;
@@ -18,27 +28,46 @@
 }
 
 .order-header {
-  background-color: #0d6efd;
   color: white;
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 1rem 0 0 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
+.order-header:hover {
+  background: linear-gradient(135deg, #0aa4ca 0%, #088098 100%);
+}
+
+/* PRODUCTOS CONTAINER - LISTA DE PEDIDOS */
 .products-list-container {
-  height: 150px; /* Altura fija para mostrar 2 productos */
+  height: 220px;
   overflow-y: auto;
+  transition: all 0.3s ease;
+}
+
+.products-list-container.is-expanded {
+  height: 500px;
+  padding: 1rem;
 }
 
 .order-footer {
   border-top: 1px solid rgba(0, 0, 0, 0.125);
+  background: #f8f9fa;
 }
 
 .product-item {
   background-color: #f8f9fa;
   border: 1px solid #dee2e6;
+  transition: all 0.2s ease;
+}
+
+.product-item:hover {
+  background-color: #e9ecef;
+  transform: translateX(2px);
 }
 
 /* Sección de botones de acción */
@@ -50,35 +79,150 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  flex-shrink: 0; /* Evita que este contenedor se encoja */
+  flex-shrink: 0;
 }
 
-/* Media Query para pantallas grandes */
-@media (min-width: 768px) {
-  .order-details-section {
-    border-right: 1px solid #dee2e6;
-  }
+/* ===== ESTILOS ESPECÍFICOS PARA EL MODAL DE DETALLES ===== */
 
-  .order-actions-section {
-    width: auto; /* Permite que el contenedor se ajuste al contenido, o sea, que crezca */
-    border-radius: 0 0.5rem 0.5rem 0;
-  }
-
-  .order-header {
-    border-radius: 0.5rem 0 0 0.5rem;
-  }
+.modal-detalle-pedido {
+  border: none;
 }
 
-/* Estilos para los botones de expansión */
+/* Contenedor principal del modal CORREGIDO CON SCROLL */
+.modal-fixed-height {
+  max-height: 85vh;
+  min-height: 400px;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 85vh;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto; /* Scroll vertical cuando el contenido excede */
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Importante para que flex funcione con scroll */
+}
+
+/* Sección de información - ARRIBA */
+.info-sections-container {
+  flex-shrink: 0;
+  min-height: 200px;
+  max-height: none; /* Eliminamos límite máximo */
+  overflow: visible;
+  background: white;
+  position: relative;
+  z-index: 2;
+}
+
+.info-sections-container .card {
+  height: auto; /* Altura automática */
+  min-height: 180px;
+}
+
+.info-sections-container .card-body {
+  overflow: visible;
+  font-size: 0.85rem;
+}
+
+.info-sections-container .fw-semibold {
+  font-size: 0.9rem;
+}
+
+.info-sections-container .text-muted {
+  font-size: 0.75rem;
+}
+
+/* Sección de productos - ABAJO CON SCROLL INTERNO */
+.products-section-container {
+  flex: 1;
+  min-height: 250px;
+  max-height: none; /* Eliminamos límite máximo */
+  background: #f8f9fa;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.products-section-container .card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 250px;
+}
+
+.products-section-container .card-body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+  min-height: 0; /* Importante para scroll interno */
+}
+
+/* Tabla con scroll interno CORREGIDA */
+.table-container-fixed {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px; /* Altura mínima para la tabla */
+}
+
+.table-container-fixed table {
+  margin-bottom: 0;
+  flex-grow: 1;
+  min-height: 150px;
+}
+
+/* Header fijo de la tabla */
+.sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #f8f9fa;
+}
+
+.table-container-fixed thead th {
+  border-bottom: 2px solid #dee2e6;
+  position: sticky;
+  top: 0;
+  background: #f8f9fa;
+  z-index: 11;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.75rem;
+}
+
+.table-container-fixed tbody td {
+  padding: 0.75rem;
+  font-size: 0.85rem;
+}
+
+/* ===== ESTILOS COMPARTIDOS Y UTILITARIOS ===== */
+
+/* Botones de expansión */
 .btn-icon-expand {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0.5rem 0.75rem;
-  width: 44px; /* Ancho inicial */
-  transition: width 0.3s ease-in-out;
+  width: 44px;
+  transition: all 0.3s ease-in-out;
   overflow: hidden;
   white-space: nowrap;
+  border-radius: 50px !important;
+  font-weight: 500;
 }
 
 .btn-icon-expand .btn-label {
@@ -88,8 +232,10 @@
 }
 
 .btn-icon-expand:hover {
-  width: 140px; /* Ancho expandido */
+  width: 140px;
   justify-content: start;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .btn-icon-expand:hover .btn-label {
@@ -98,329 +244,16 @@
   margin-left: 0.5rem;
 }
 
-.order-card {
-  border: 1px solid #dee2e6;
-  border-radius: 0.5rem;
-}
-
-.order-details-section {
-  flex-grow: 1;
-}
-
-.order-header {
-  background-color: #0d6efd;
-  color: white;
-  border-bottom: 1px solid #dee2e6;
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
-}
-
-@media (min-width: 768px) {
-  .order-header {
-    border-bottom-left-radius: 0;
-    border-top-right-radius: 0;
-  }
-}
-
-.order-actions-section {
-  background-color: #f8f9fa;
-  border-left: 1px solid #dee2e6;
-  border-bottom-left-radius: 0.5rem;
-  border-bottom-right-radius: 0.5rem;
-}
-
-@media (min-width: 768px) {
-  .order-actions-section {
-    /* No definas un ancho fijo aquí */
-    border-radius: 0 1rem 1rem 0;
-  }
-}
-
-.products-list-container {
-  height: 150px;
-  overflow-y: auto;
-}
-
-.products-list-container.is-expanded {
-  height: 400px;
-  padding: 1rem;
-}
-
-.product-item {
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
-}
-
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-3px);
-  }
-  50% {
-    transform: translateX(3px);
-  }
-  75% {
-    transform: translateX(-3px);
-  }
-}
-
-.list-group-item:not(.is-cancelled):hover {
-  animation: shake 0.5s ease-in-out infinite;
-}
-.border-blue {
-  border-radius: 12px;
-  margin: 5px;
-  border-color: #0d6efd !important;
-}
-
-.border-red {
-  border-radius: 12px;
-  margin: 5px;
-  border-color: #dc3545 !important;
-}
-
-/* Estilos para el modal de cancelación */
-.list-group-item.border-red,
-.list-group-item.border-blue {
-  border-width: 3px;
-  border-style: solid;
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-/* Estilo para el contenedor de productos en el modal */
-.productos-container {
-  max-height: 400px; /* Ajusta este valor según la altura que necesites */
-  overflow-y: auto; /* Habilita el scroll vertical cuando el contenido excede la altura */
-  padding-right: 15px; /* Añade un espacio para que el scroll bar no se pegue al borde */
-}
-
-/* Estilo para el card de un producto cancelado */
-.card-canceled {
-  border: 2px solid #dc3545; /* Borde rojo */
-}
-
-
-
-
-/* Estilos específicos para el modal de detalles */
-.modal-detalle-pedido {
-  border: none;
-}
-
-.bg-gradient-primary {
-  background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%) !important;
-}
-
-/* Estilos para la sección de información del pedido */
-.info-pedido-card {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-}
-
-.total-pedido-card {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border: 1px solid #dee2e6;
-}
-
-/* Estilos para los productos */
-.productos-container-custom {
-  max-height: 500px;
-  overflow-y: auto;
-  padding-right: 10px;
-}
-
-.productos-container-custom::-webkit-scrollbar {
-  width: 6px;
-}
-
-.productos-container-custom::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
-
-.productos-container-custom::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 10px;
-}
-
-.productos-container-custom::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-
-.producto-card-wrapper {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.producto-card-wrapper:hover {
-  transform: translateY(-2px);
-}
-
-.producto-card {
-  border-radius: 12px !important;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
-}
-
-.producto-activo {
-  border-left: 4px solid #198754 !important;
-  background: linear-gradient(135deg, #ffffff 0%, #f8fff9 100%);
-}
-
-.producto-cancelado {
-  border-left: 4px solid #dc3545 !important;
-  background: linear-gradient(135deg, #ffffff 0%, #fff8f8 100%);
-  opacity: 0.8;
-}
-
-.producto-nombre {
-  color: #2c3e50;
-  line-height: 1.3;
-}
-
-/* Estilos para los badges */
+/* Badges mejorados */
 .badge {
-  font-size: 0.75em;
-  padding: 0.35em 0.65em;
-}
-
-/* Estilos responsivos */
-@media (max-width: 768px) {
-  .modal-dialog {
-    margin: 1rem;
-  }
-  
-  .productos-container-custom {
-    max-height: 300px;
-  }
-  
-  .producto-card {
-    margin-bottom: 1rem;
-  }
-}
-
-/* Animaciones suaves */
-.modal-content {
-  animation: modalEnter 0.3s ease-out;
-}
-
-@keyframes modalEnter {
-  from {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* Mejoras para los íconos */
-.bi::before {
-  vertical-align: middle;
-}
-
-/* Estilos para los textos */
-.text-muted {
-  font-size: 0.875rem;
-}
-
-.fw-semibold {
+  font-size: 0.7rem;
   font-weight: 600;
-}
-
-/* Efectos hover mejorados */
-.btn-outline-secondary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-/* Mejora en la visualización de cantidades y precios */
-.row.g-2 > .col-6 {
-  padding: 0.5rem;
-}
-
-.row.g-2 > .col-6:first-child {
-  border-right: 1px solid #e9ecef;
-}
-
-/* Estilos para modal de altura fija */
-.modal-fixed-height {
-  max-height: 90vh;
-}
-
-.modal-body-fixed {
-  height: calc(90vh - 140px); /* Altura total menos header y footer */
-  overflow: hidden;
-}
-
-/* Contenedor de información superior */
-.info-sections-container {
-  height: 40%; /* 40% para la sección superior */
-  min-height: 250px;
-}
-
-/* Contenedor de productos con scroll fijo */
-.products-section-container {
-  height: 60%; /* 60% para la sección de productos */
-  min-height: 300px;
-}
-
-/* Tabla con scroll interno */
-.table-container-fixed {
-  height: 100%;
-  overflow-y: auto;
-  position: relative;
-}
-
-/* Header fijo de la tabla */
-.sticky-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: #f8f9fa;
-}
-
-/* Ajustes específicos para la tabla */
-.table-container-fixed table {
-  margin-bottom: 0;
-}
-
-.table-container-fixed thead th {
-  border-bottom: 2px solid #dee2e6;
-  position: sticky;
-  top: 0;
-  background: #f8f9fa;
-  z-index: 11;
-}
-
-/* Scroll personalizado para la tabla */
-.table-container-fixed::-webkit-scrollbar {
-  width: 8px;
-}
-
-.table-container-fixed::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
-}
-
-.table-container-fixed::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 4px;
-}
-
-.table-container-fixed::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  padding: 0.4rem 0.75rem;
 }
 
 /* Cards de información */
 .info-item {
-  padding: 0.75rem 0;
+  padding: 0.5rem 0;
   border-bottom: 1px solid #f8f9fa;
 }
 
@@ -428,56 +261,16 @@
   border-bottom: none;
 }
 
-/* Ajustes responsive */
-@media (max-width: 768px) {
-  .modal-fixed-height {
-    max-height: 95vh;
-  }
-  
-  .modal-body-fixed {
-    height: calc(95vh - 140px);
-  }
-  
-  .info-sections-container {
-    height: auto;
-    min-height: auto;
-  }
-  
-  .products-section-container {
-    height: 60%;
-    min-height: 250px;
-  }
-  
-  .table-container-fixed {
-    font-size: 0.875rem;
-  }
-}
-
-/* Mejoras visuales */
-.card {
-  border-radius: 12px;
-  transition: box-shadow 0.2s ease;
-}
-
-.card:hover {
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-/* Badges mejorados */
-.badge {
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
 /* Iconos de productos */
 .product-icon {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
   border-radius: 8px;
+  font-size: 0.9rem;
 }
 
 /* Estados de productos en tabla */
@@ -487,31 +280,67 @@
 
 /* Efectos hover en filas */
 .table tbody tr:hover {
-  background-color: rgba(0, 123, 255, 0.02);
+  background-color: rgba(0, 123, 255, 0.03) !important;
 }
 
 /* Header compacto mejorado */
 .modal-header .vr {
-  height: 30px;
+  height: 25px;
   opacity: 0.3;
 }
 
-/* Asegurar que el modal no se desborde en pantallas pequeñas */
-@media (max-width: 576px) {
-  .modal-dialog {
-    margin: 0.5rem;
-  }
-  
-  .modal-content {
-    border-radius: 8px;
-  }
+/* Scrollbar personalizado para todo el modal */
+.modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Scrollbar personalizado para tabla interna */
+.table-container-fixed::-webkit-scrollbar {
+  width: 6px;
+}
+
+.table-container-fixed::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.table-container-fixed::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.table-container-fixed::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Z-index para controlar el orden de apilamiento */
+.position-relative.z-2 {
+  z-index: 2;
+}
+
+.position-relative.z-1 {
+  z-index: 1;
+}
+
+.position-relative.z-3 {
+  z-index: 3;
 }
 
 /* Animación de entrada suave */
-.modal-content {
-  animation: modalSlideIn 0.3s ease-out;
-}
-
 @keyframes modalSlideIn {
   from {
     opacity: 0;
@@ -520,5 +349,132 @@
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+/* Mejoras para breadcrumb */
+.breadcrumb {
+  font-size: 0.9rem;
+}
+
+.breadcrumb-item a {
+  text-decoration: none;
+  color: #6c757d;
+}
+
+.breadcrumb-item a:hover {
+  color: #0d6efd;
+}
+
+/* Mejoras para inputs y selects */
+.form-control, .form-select {
+  font-size: 0.9rem;
+}
+
+/* Paginación mejorada */
+.pagination .page-link {
+  font-size: 0.85rem;
+  padding: 0.5rem 0.75rem;
+}
+
+/* Textos más pequeños y compactos */
+.text-muted {
+  font-size: 0.8rem;
+}
+
+.fw-semibold {
+  font-weight: 500;
+}
+
+/* Botones del modal */
+.btn {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* ===== MEDIA QUERIES ===== */
+
+/* Media Query para pantallas grandes */
+@media (min-width: 768px) {
+  .order-details-section {
+    border-right: 1px solid #dee2e6;
+  }
+
+  .order-actions-section {
+    width: auto;
+    border-radius: 0 0.5rem 0.5rem 0;
+  }
+
+  .order-header {
+    border-radius: 0.5rem 0 0 0.5rem;
+  }
+}
+
+/* Media Query para tablets */
+@media (max-width: 768px) {
+  .modal-fixed-height {
+    max-height: 90vh;
+    margin: 1rem;
+  }
+  
+  .modal-content {
+    max-height: 90vh;
+  }
+  
+  .info-sections-container {
+    min-height: 180px;
+  }
+  
+  .products-section-container {
+    min-height: 220px;
+  }
+  
+  .table-container-fixed {
+    font-size: 0.8rem;
+    min-height: 180px;
+  }
+  
+  .products-list-container {
+    height: 180px;
+  }
+  
+  .products-list-container.is-expanded {
+    height: 400px;
+  }
+}
+
+/* Media Query para móviles */
+@media (max-width: 576px) {
+  .modal-dialog {
+    margin: 0.5rem;
+  }
+  
+  .modal-content {
+    border-radius: 8px;
+    max-height: 95vh;
+  }
+  
+  .modal-fixed-height {
+    max-height: 95vh;
+  }
+  
+  .info-sections-container {
+    min-height: 200px;
+  }
+  
+  .products-section-container {
+    min-height: 200px;
+  }
+  
+  .table-container-fixed {
+    min-height: 150px;
+  }
+  
+  .products-list-container {
+    height: 150px;
+  }
+  
+  .products-list-container.is-expanded {
+    height: 350px;
   }
 }

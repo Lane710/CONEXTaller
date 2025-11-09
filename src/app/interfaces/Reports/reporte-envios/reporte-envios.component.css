@@ -1,0 +1,417 @@
+.reporte-envios-container {
+  padding: 0;
+}
+
+/* Header Styles */
+.report-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.report-title {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-size: 1.8rem;
+}
+
+/* Filtros Section */
+.filtros-section {
+  border: none;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.filtros-section .card-body {
+  padding: 1.5rem;
+}
+
+.card-title {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 1rem;
+}
+
+/* Estadísticas Cards */
+.estadisticas-section {
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  border-radius: 10px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+  height: 100%;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-icon {
+  font-size: 2.5rem;
+  opacity: 0.9;
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Table Styles */
+.reporte-section {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.table {
+  margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table th {
+  border-top: none;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  padding: 1rem 0.75rem;
+  background-color: #343a40;
+  color: white;
+  border: none;
+}
+
+.table td {
+  padding: 1rem 0.75rem;
+  vertical-align: middle;
+  border-color: #dee2e6;
+}
+
+/* Estilos específicos para envíos */
+.envio-row:hover {
+  background-color: rgba(33, 150, 243, 0.04) !important;
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+
+.costo-envio {
+  font-weight: 600;
+  color: #e91e63;
+}
+
+.codigo-seguimiento {
+  font-family: 'Courier New', monospace;
+  background-color: #f8f9fa;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+  font-size: 0.875rem;
+}
+
+/* Badge Styles para estados de envío */
+.badge-envio {
+  font-size: 0.75rem;
+  padding: 0.35em 0.65em;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+/* Total General */
+.total-general {
+  background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+  color: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
+}
+
+/* No Results */
+.no-results {
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.no-results i {
+  opacity: 0.7;
+}
+
+/* Loading */
+.loading-container {
+  padding: 3rem 1rem;
+}
+
+.spinner-border {
+  animation: spinner-border 0.75s linear infinite;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .report-header {
+    padding: 1.5rem;
+  }
+  
+  .report-title {
+    font-size: 1.5rem;
+  }
+  
+  .stat-card {
+    padding: 1rem;
+  }
+  
+  .stat-icon {
+    font-size: 2rem;
+  }
+  
+  .stat-value {
+    font-size: 1.25rem;
+  }
+  
+  .table-responsive {
+    font-size: 0.875rem;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+  }
+
+  .filtros-section .row {
+    margin-bottom: 1rem;
+  }
+
+  .filtros-section .col-md {
+    margin-bottom: 1rem;
+  }
+
+  /* Ajustes específicos para tabla de envíos en móviles */
+  .table-envios-mobile {
+    font-size: 0.8rem;
+  }
+  
+  .table-envios-mobile th,
+  .table-envios-mobile td {
+    padding: 0.5rem 0.25rem;
+  }
+}
+
+/* Custom Scrollbar */
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Button Styles */
+.btn {
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+}
+
+.btn-outline-primary {
+  border: 2px solid #667eea;
+  color: #667eea;
+  background: transparent;
+}
+
+.btn-outline-primary:hover {
+  background: #667eea;
+  color: white;
+}
+
+/* Form Controls */
+.form-control, .form-select {
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  transition: border-color 0.3s ease;
+  padding: 0.5rem 0.75rem;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.form-label {
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+/* Alert Styles */
+.alert {
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 1rem 1.5rem;
+}
+
+.alert-info {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  color: #1565c0;
+}
+
+.alert-warning {
+  background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+  color: #ef6c00;
+}
+
+.alert-success {
+  background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+  color: #7b1fa2;
+}
+
+/* Color variations for status badges */
+.bg-envio-pendiente { 
+  background: linear-gradient(135deg, #ff9800, #f57c00) !important; 
+  color: white;
+}
+
+.bg-envio-enviado { 
+  background: linear-gradient(135deg, #2196f3, #1976d2) !important; 
+  color: white;
+}
+
+.bg-envio-entregado { 
+  background: linear-gradient(135deg, #4caf50, #45a049) !important; 
+  color: white;
+}
+
+.bg-envio-cancelado { 
+  background: linear-gradient(135deg, #f44336, #d32f2f) !important; 
+  color: white;
+}
+
+.bg-envio-proceso { 
+  background: linear-gradient(135deg, #9c27b0, #7b1fa2) !important; 
+  color: white;
+}
+
+/* Tipo de origen badges */
+.bg-origen-pedido { 
+  background: linear-gradient(135deg, #2196f3, #1976d2) !important; 
+  color: white;
+}
+
+.bg-origen-venta { 
+  background: linear-gradient(135deg, #4caf50, #45a049) !important; 
+  color: white;
+}
+
+/* Animation for table rows */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.table tbody tr {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Header actions */
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Empresa envio styles */
+.empresa-envio {
+  font-weight: 600;
+  color: #7b1fa2;
+}
+
+.metodo-envio {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+/* Cliente info */
+.cliente-info {
+  font-weight: 500;
+  color: #495057;
+}
+
+@media (max-width: 576px) {
+  .header-actions {
+    justify-content: flex-start;
+    margin-top: 1rem;
+  }
+  
+  .header-actions .btn {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  /* Stack table columns on mobile */
+  .table-envios-mobile tr {
+    border-bottom: 2px solid #dee2e6;
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .table-envios-mobile td {
+    display: block;
+    text-align: right;
+    border: none;
+    position: relative;
+    padding-left: 50%;
+  }
+
+  .table-envios-mobile td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    width: 45%;
+    padding-left: 1rem;
+    font-weight: 600;
+    text-align: left;
+    color: #495057;
+  }
+}
