@@ -1,0 +1,476 @@
+/* ===== ESTILOS PARA MODALES ===== */
+
+/* Modal de Éxito */
+#modalExitoEstado .modal-content {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+#modalExitoEstado .modal-header {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  border-bottom: none;
+  padding: 1.25rem 1.5rem;
+}
+
+#modalExitoEstado .modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+}
+
+#modalExitoEstado .modal-body {
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+#modalExitoEstado .modal-body i.bi-check-circle-fill {
+  font-size: 4rem;
+  color: #28a745;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+#modalExitoEstado .modal-body h4 {
+  color: #28a745;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+#modalExitoEstado .modal-body p {
+  color: #495057;
+  font-size: 1.1rem;
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+#modalExitoEstado .modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+  justify-content: center;
+}
+
+#modalExitoEstado .btn-success {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  border: none;
+  padding: 0.75rem 2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+#modalExitoEstado .btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+/* Modal de Confirmación de Acción de Usuario */
+#confirmarAccionUsuarioModal .modal-content {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+#confirmarAccionUsuarioModal .modal-header {
+  background: linear-gradient(135deg, #1E8099, #29aaca);
+  border-bottom: none;
+  padding: 1.25rem 1.5rem;
+}
+
+#confirmarAccionUsuarioModal .modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+}
+
+#confirmarAccionUsuarioModal .modal-body {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+#confirmarAccionUsuarioModal .modal-body p {
+  color: #495057;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+#confirmarAccionUsuarioModal .modal-body strong {
+  color: #1E8099;
+  font-weight: 600;
+}
+
+#confirmarAccionUsuarioModal .modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+  gap: 0.75rem;
+}
+
+#confirmarAccionUsuarioModal .btn-secondary {
+  background: #6c757d;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+#confirmarAccionUsuarioModal .btn-primary {
+  background: linear-gradient(135deg, #1E8099, #29aaca);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+#confirmarAccionUsuarioModal .btn-secondary:hover,
+#confirmarAccionUsuarioModal .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Modal para Cambiar Rol de Usuario */
+#cambiarRolUsuarioModal .modal-content {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+#cambiarRolUsuarioModal .modal-header {
+  background: linear-gradient(135deg, #1E8099, #29aaca);
+  border-bottom: none;
+  padding: 1.25rem 1.5rem;
+}
+
+#cambiarRolUsuarioModal .modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+}
+
+#cambiarRolUsuarioModal .modal-body {
+  padding: 1.5rem;
+}
+
+#cambiarRolUsuarioModal .modal-body p {
+  color: #495057;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+#cambiarRolUsuarioModal .modal-body strong {
+  color: #1E8099;
+  font-weight: 600;
+}
+
+#cambiarRolUsuarioModal .form-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+#cambiarRolUsuarioModal .form-select {
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #fff;
+}
+
+#cambiarRolUsuarioModal .form-select:focus {
+  border-color: #1E8099;
+  box-shadow: 0 0 0 3px rgba(30, 128, 153, 0.1);
+  background-color: #ffffff;
+}
+
+#cambiarRolUsuarioModal .alert-warning {
+  background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  color: #856404;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+#cambiarRolUsuarioModal .modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+  gap: 0.75rem;
+}
+
+#cambiarRolUsuarioModal .btn-secondary {
+  background: #6c757d;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+#cambiarRolUsuarioModal .btn-primary {
+  background: linear-gradient(135deg, #1E8099, #29aaca);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+#cambiarRolUsuarioModal .btn-primary:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+#cambiarRolUsuarioModal .btn-secondary:hover,
+#cambiarRolUsuarioModal .btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Modal de Mensaje General */
+.modal[style*="display: block"] .modal-content {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.modal[style*="display: block"] .modal-header {
+  border-bottom: none;
+  padding: 1.25rem 1.5rem;
+}
+
+.modal[style*="display: block"] .modal-header.bg-success {
+  background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.modal[style*="display: block"] .modal-header.bg-danger {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+}
+
+.modal[style*="display: block"] .modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+}
+
+.modal[style*="display: block"] .modal-body {
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.modal[style*="display: block"] .modal-body i.bi {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.modal[style*="display: block"] .modal-body i.bi-check-circle-fill {
+  color: #28a745;
+}
+
+.modal[style*="display: block"] .modal-body i.bi-x-circle-fill {
+  color: #dc3545;
+}
+
+.modal[style*="display: block"] .modal-body p {
+  color: #495057;
+  font-size: 1.1rem;
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+.modal[style*="display: block"] .modal-body ul {
+  text-align: left;
+  margin-top: 1rem;
+}
+
+.modal[style*="display: block"] .modal-body ul li {
+  color: #495057;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.modal[style*="display: block"] .modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+  justify-content: center;
+}
+
+.modal[style*="display: block"] .btn {
+  padding: 0.75rem 2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.modal[style*="display: block"] .btn-success {
+  background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.modal[style*="display: block"] .btn-danger {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+}
+
+.modal[style*="display: block"] .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Modal de Detalles del Usuario */
+#modalDetallesUsuario .modal-content {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+#modalDetallesUsuario .modal-header {
+  background: linear-gradient(135deg, #1E8099, #29aaca);
+  border-bottom: none;
+  padding: 1.25rem 1.5rem;
+}
+
+#modalDetallesUsuario .modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+}
+
+#modalDetallesUsuario .modal-body {
+  padding: 1.5rem;
+}
+
+#modalDetallesUsuario .product-detail-image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border: 3px solid #f1f5f9;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+#modalDetallesUsuario .product-detail-image:hover {
+  transform: scale(1.05);
+  border-color: #29aaca;
+}
+
+#modalDetallesUsuario h4 {
+  color: #2c3e50;
+  margin-top: 1rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+#modalDetallesUsuario h5 {
+  color: #1E8099;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 0.5rem;
+}
+
+#modalDetallesUsuario .row.g-2 {
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: background 0.3s ease;
+  font-size: 0.9rem;
+}
+
+#modalDetallesUsuario .row.g-2:hover {
+  background: #f8f9fa;
+}
+
+#modalDetallesUsuario .row.g-2 div:first-child {
+  color: #6c757d;
+  font-weight: 600;
+}
+
+#modalDetallesUsuario .row.g-2 div:last-child {
+  color: #495057;
+  font-weight: 500;
+}
+
+#modalDetallesUsuario .modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+  justify-content: center;
+}
+
+#modalDetallesUsuario .btn-secondary {
+  background: #6c757d;
+  border: none;
+  padding: 0.75rem 2rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+#modalDetallesUsuario .btn-secondary:hover {
+  background: #5a6268;
+  transform: translateY(-2px);
+}
+
+/* Botones de cierre blancos para modales con header de color */
+.modal-header .btn-close-white {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Animaciones suaves para todos los modales */
+.modal-content {
+  transition: all 0.3s ease;
+}
+
+.modal.fade .modal-content {
+  transform: translateY(-50px);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.modal.show .modal-content {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Responsive para modales */
+@media (max-width: 576px) {
+  .modal-dialog {
+    margin: 0.5rem;
+  }
+  
+  .modal-header {
+    padding: 1rem;
+  }
+  
+  .modal-body {
+    padding: 1rem;
+  }
+  
+  .modal-footer {
+    padding: 1rem;
+  }
+  
+  #modalExitoEstado .modal-body i.bi-check-circle-fill,
+  .modal[style*="display: block"] .modal-body i.bi {
+    font-size: 3rem;
+  }
+  
+  #modalExitoEstado .modal-body h4,
+  .modal[style*="display: block"] .modal-body p {
+    font-size: 1rem;
+  }
+}

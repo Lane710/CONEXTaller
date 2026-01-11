@@ -5,7 +5,6 @@
   >
     <div class="product-detail-full-width bg-white shadow-sm rounded">
       <div class="row g-0">
-        <!--contenedor de las imagenes-->
         <div
           class="col-lg-6 product-gallery-full p-lg-5 p-4 d-flex flex-column align-items-center"
         >
@@ -19,13 +18,14 @@
               id="mainProductImage"
             />
           </div>
+
           <div
             class="thumbnail-gallery d-flex flex-wrap justify-content-center gap-2"
           >
             <div
               class="thumbnail-image-wrapper border rounded d-flex justify-content-center align-items-center"
               [ngClass]="{ active: mainImageUrl === details.producto.imagen }"
-              (click)="changeMainImage(details.producto.imagen||'')"
+              (click)="changeMainImage(details.producto.imagen || '')"
             >
               <img
                 [src]="details.producto.imagen"
@@ -117,17 +117,18 @@
           <br />
           <div class="action-buttons d-flex gap-3 mb-4 flex-wrap">
             <button
-            style="background-color: #29aaca;"
-              class="btn btn-dark add-to-cart-btn flex-grow-1 align-items-center border-0 "
+              style="background-color: #29aaca"
+              class="btn btn-dark add-to-cart-btn flex-grow-1 align-items-center border-0"
               [disabled]="details.cantidad === 0"
               (click)="AddProductCarrito(details)"
             >
-              <i class="fas fa-cart-plus me-2"></i> Agregar al carrito
+              <i class="fas fa-cart-plus me-2"></i>
+              {{ details.cantidad === 0 ? "Producto no disponible" : "Agregar al carrito" }}
             </button>
           </div>
 
           <div class="product-meta text-muted border-top pt-3">
-            <span class="d-block mb-1">SKU: N/D</span>
+            <span class="d-block mb-1">SKU: {{ details.producto.sku || 'N/D' }}</span>
             <span class="d-block mb-1"
               >Categoría: {{ details.producto.categoria.nombre }}</span
             >
@@ -153,66 +154,63 @@
     </div>
   </ng-template>
 
+  <!-- SECCIÓN DE PROPIEDADES -->
   <div class="propiedadesProducto-section bg-light shadow-sm rounded mt-5 p-4">
-    <div
-      class="product-specifications mb-5"
-      *ngIf="especificaciones.length > 0"
-    >
-      <h2
-        class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block"
-      >
+    
+    <!-- ESPECIFICACIONES -->
+    <div class="product-specifications mb-5" *ngIf="especificaciones.length > 0">
+      <h2 class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block">
         Especificaciones
       </h2>
       <div class="table-responsive">
         <table class="table table-striped product-table table-sm">
-          <!-- <thead>
-            <tr>
-              <th>Propiedad</th>
-              <th>Valor</th>
-            </tr>
-          </thead>-->
           <tbody>
             <tr *ngFor="let spec of especificaciones">
-              <td>{{ spec.nombre }}</td>
-              <td>{{ spec.tipo }}</td>
+              
+              
             </tr>
           </tbody>
         </table>
       </div>
     </div>
 
+    <!-- ATRIBUTOS -->
     <div class="product-attributes mb-5" *ngIf="atributos.length > 0">
-      <h2
-        class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block"
-      >
+      <h2 class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block">
         Atributos
       </h2>
       <ul class="product-list list-unstyled ps-3">
         <li *ngFor="let attr of atributos" class="mb-2">
-          <strong>{{ attr.nombre }}:</strong> {{ attr.tipo }}
+          
         </li>
       </ul>
     </div>
 
+    <!-- CARACTERÍSTICAS -->
     <div class="product-characteristics" *ngIf="caracteristicas.length > 0">
-      <h2
-        class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block"
-      >
+      <h2 class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block">
         Características
       </h2>
       <ul class="product-list list-unstyled ps-3">
         <li *ngFor="let char of caracteristicas" class="mb-2">
-          <strong>{{ char.nombre }}:</strong> {{ char.tipo }}
+          
         </li>
       </ul>
     </div>
+
+    <!-- MENSAJE SI NO HAY PROPIEDADES -->
+    <div 
+      *ngIf="especificaciones.length === 0 && atributos.length === 0 && caracteristicas.length === 0 && !isLoading" 
+      class="text-center text-muted p-3"
+    >
+      No hay especificaciones adicionales para este producto.
+    </div>
   </div>
 
+  <!-- PRODUCTOS SIMILARES -->
   <div class="productosSimilares">
     <div class="similar-products-section bg-light shadow-sm rounded mt-5 p-4">
-      <h2
-        class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block"
-      >
+      <h2 class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block">
         Productos Tecnológicos que Podrían Interesarte
       </h2>
       <div class="carousel-wrapper d-flex align-items-center">
@@ -222,6 +220,7 @@
         >
           &#10094;
         </button>
+
         <div
           class="carousel-container d-flex flex-nowrap overflow-auto py-2"
           #carouselContainer
@@ -243,25 +242,24 @@
               class="card-body product-info text-center d-flex flex-column justify-content-between"
             >
               <h3 class="product-name card-title fs-5 fw-bold mb-2">
-                {{ product.producto.descripcion }}
+                {{ product.producto.nombre }}
               </h3>
               <p class="product-price fs-4 fw-bolder text-success mb-2">
-                {{
-                  product.producto.precio
-                    | currency : "USD" : "symbol" : "1.2-2"
-                }}
+                {{ product.producto.precio | currency : "Bs. " : "symbol" : "1.2-2" }}
               </p>
-             
+              
               <button
                 class="btn btn-primary add-to-cart-btn-sm d-flex align-items-center justify-content-center gap-2"
-                [disabled]="product.cantidad"
+                [disabled]="product.cantidad === 0"
                 (click)="AddProductCarrito(product)"
               >
-                <i class="fas fa-cart-plus"></i> Añadir
+                <i class="fas fa-cart-plus"></i>
+                {{ product.cantidad === 0 ? 'Sin Stock' : 'Añadir' }}
               </button>
             </div>
           </div>
         </div>
+
         <button
           class="carousel-nav-btn right btn btn-dark rounded-circle"
           (click)="scrollCarousel('right')"

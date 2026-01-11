@@ -9,6 +9,7 @@ import { clients } from './Client/client.routes';
 import { StoreComponent } from '../interfaces/Store/store/store.component';
 import { ReporteRouter } from './Reportes.routes';
 import { EnviosRouter } from './envios.routes';
+import { DashboardComponent } from '../interfaces/dashboard/dashboard/dashboard.component';
 
 
 // Importa las rutas de los otros módulos
@@ -19,7 +20,7 @@ export const componentsRoutes: Routes = [
   { path: 'inicio', component: InicioComponent },
   { path: 'Gestion', component: HomeGestionComponent },
   { path: 'Store', component: StoreComponent },
-
+  {path: 'Dashboard', component:DashboardComponent},
 
   // Extiende las rutas de los otros módulos
   ...productsRoutes,

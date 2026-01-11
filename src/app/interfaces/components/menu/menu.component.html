@@ -314,7 +314,7 @@
           aria-expanded="false"
         >
           <span class="icon">📝</span>
-          <span class="text">Gestionar Pedidos</span>
+          <span class="text">Historial de Pedidos</span>
         </a>
         <ul class="dropdown-menu" aria-labelledby="pedidosDropdown">
           <li>
@@ -322,15 +322,7 @@
               class="dropdown-item"
               routerLink="/home/cliente/PedidosEnvios"
               routerLinkActive="active"
-              >Listar Pedidos</a
-            >
-          </li>
-          <li *ngIf="authService.hasRole('cliente')">
-            <a
-              class="dropdown-item"
-              routerLink="/pedidos/crear"
-              routerLinkActive="active"
-              >Crear Pedido</a
+              >Historial de mis pedidos</a
             >
           </li>
         </ul>

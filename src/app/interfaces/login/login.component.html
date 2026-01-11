@@ -1,4 +1,3 @@
-<!-- src/app/components/login/login.component.html -->
 <div class="login-container">
   <div class="login-card">
     <div class="login-branding">
@@ -11,16 +10,15 @@
     <div class="login-form-area">
       <h2 class="welcome-title">Bienvenido de nuevo</h2>
 
-      <!-- Mensajes de Estado -->
       <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
         {{ errorMessage }}
       </div>
       <div *ngIf="successMessage" class="alert alert-success" role="alert">
         {{ successMessage }}
       </div>
+      
       <div *ngIf="throttlingMessage" class="alert alert-warning" role="alert">
         {{ throttlingMessage }}
-        <span *ngIf="remainingTime > 0"> ({{ remainingTime }} segundos restantes)</span>
       </div>
 
       <form [formGroup]="loginForm" (ngSubmit)="login()" class="login-form">
@@ -53,12 +51,12 @@
               [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
             >
              <i class="password-icon" [class.visible]="showPassword">
-  <img 
-    [src]="showPassword ? '/icon_login/mdi--eye-off-outline.svg' : '/icon_login/hugeicons--eye.svg'" 
-    [alt]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-    class="icon-image"
-  />
-</i>
+                <img 
+                  [src]="showPassword ? '/icon_login/mdi--eye-off-outline.svg' : '/icon_login/hugeicons--eye.svg'" 
+                  [alt]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                  class="icon-image"
+                />
+              </i>
             </button>
           </div>
           <div *ngIf="f['password'].invalid && f['password'].touched" class="invalid-feedback">

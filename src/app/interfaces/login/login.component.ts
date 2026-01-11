@@ -21,11 +21,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   errorMessage: string | null = null;
   successMessage: string | null = null;
   
-  // Nueva propiedad para controlar la visibilidad de la contraseña
   showPassword: boolean = false;
 
-  throttlingMessage: string | null = null;
-  remainingTime: number = 0;
+  throttlingMessage: string | null = null; // Este mensaje AHORA será dinámico
+  remainingTime: number = 0; // Sigue siendo el total de segundos
   private countdownSubscription: Subscription | null = null;
 
   constructor(
@@ -54,9 +53,31 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   get f() { return this.loginForm.controls; }
 
-  // Nueva función para alternar la visibilidad de la contraseña
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
+  }
+
+  // --- ¡NUEVA FUNCIÓN UTILITARIA! ---
+  /**
+   * Formatea un número total de segundos en un string HH:MM:SS o MM:SS.
+   * @param totalSeconds El número total de segundos.
+   * @returns Un string formateado.
+   */
+  private formatTime(totalSeconds: number): string {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = Math.floor(totalSeconds % 60);
+
+    // Rellenar con ceros a la izquierda
+    const hh = String(hours).padStart(2, '0');
+    const mm = String(minutes).padStart(2, '0');
+    const ss = String(seconds).padStart(2, '0');
+
+    if (hours > 0) {
+      return `${hh}:${mm}:${ss}`; // Formato 01:30:15
+    } else {
+      return `${mm}:${ss}`; // Formato 05:15
+    }
   }
 
   login(): void {
@@ -77,6 +98,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     this.usuariosService.login(username, password).subscribe({
       next: (response: LoginResponse) => {
+        // ... (lógica de éxito igual que antes)
         this.isLoading = false;
         this.successMessage = response.message || 'Inicio de sesión exitoso.';
         
@@ -92,15 +114,20 @@ export class LoginComponent implements OnInit, OnDestroy {
       error: (errorResponse: HttpErrorResponse) => {
         this.isLoading = false;
         if (errorResponse.status === 429) {
+          // --- SECCIÓN MODIFICADA ---
           const message = errorResponse.error?.message || 'Demasiados intentos de inicio de sesión fallidos.';
-          const match = message.match(/(\d+)\ssegundos/);
+          const match = message.match(/(\d+)\ssegundos/); // El backend sigue enviando segundos
           let delaySeconds = 0;
           if (match && match[1]) {
             delaySeconds = parseInt(match[1], 10);
           }
-          this.throttlingMessage = message;
           this.remainingTime = delaySeconds;
+          
+          // ¡Aquí usamos la nueva función de formateo por PRIMERA VEZ!
+          this.throttlingMessage = `Demasiados intentos. Podrás intentarlo de nuevo en ${this.formatTime(this.remainingTime)}.`;
+          
           this.startCountdown();
+          // --- FIN SECCIÓN MODIFICADA ---
         } else if (errorResponse.status === 401 || errorResponse.status === 403) {
           this.errorMessage = 'Nombre de usuario o contraseña incorrectos.';
         } else if (errorResponse.status >= 500) {
@@ -117,12 +144,18 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (this.countdownSubscription) {
       this.countdownSubscription.unsubscribe();
     }
-    this.loginForm.disable();
+    this.loginForm.disable(); // Deshabilita el formulario
+
     this.countdownSubscription = interval(1000).subscribe(() => {
-      this.remainingTime--;
-      if (this.remainingTime <= 0) {
-        this.stopCountdown();
+      // --- LÓGICA DE CONTADOR MODIFICADA ---
+      if (this.remainingTime > 0) {
+        this.remainingTime--; // Reduce el tiempo
+        // ¡Actualiza el mensaje en CADA SEGUNDO!
+        this.throttlingMessage = `Demasiados intentos. Podrás intentarlo de nuevo en ${this.formatTime(this.remainingTime)}.`;
+      } else {
+        this.stopCountdown(); // Detiene cuando llega a cero
       }
+      // --- FIN LÓGICA MODIFICADA ---
     });
   }
 
@@ -131,9 +164,9 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.countdownSubscription.unsubscribe();
       this.countdownSubscription = null;
     }
-    this.throttlingMessage = null;
+    this.throttlingMessage = null; // Limpia el mensaje de error
     this.remainingTime = 0;
-    this.loginForm.enable();
+    this.loginForm.enable(); // Rehabilita el formulario
   }
 
   goToRegister(): void {

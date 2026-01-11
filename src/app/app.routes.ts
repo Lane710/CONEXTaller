@@ -3,6 +3,7 @@ import { HomeComponent } from './interfaces/components/home/home.component';
 import { authRoutes } from './routes/authRoutes.routes';
 import { componentsRoutes } from './routes/componentsRoutes.routes';
 import { authGuard } from './guards/auth.guard';
+import { DashboardComponent } from './interfaces/dashboard/dashboard/dashboard.component';
 
 // Importa los conjuntos de rutas subdivididas
 
@@ -16,8 +17,11 @@ export const routes: Routes = [
     path: 'home',component: HomeComponent, // HomeComponent es quien contiene el Header, Footer y su propio router-outlet
     children: [ // Las rutas hijas de 'home' ahora vienen de componentsRoutes
       ...componentsRoutes // Incluye inicio, gestión, productos, usuarios, carrito, etc.
-    ]
+    ],
+    
+
   },
+  
 
   // Redirección por defecto y manejo de rutas no encontradas
   { path: '', redirectTo: 'home', pathMatch: 'full' },

@@ -146,4 +146,14 @@ export class ListPedidosComponent implements OnInit {
       });
     }
   }
+
+  /**
+   * Función trackBy para optimizar el rendimiento de ngFor
+   * @param index Índice del elemento
+   * @param detalle Objeto detallePedido
+   * @returns Identificador único para el detalle
+   */
+  trackByDetalleId(index: number, detalle: detallePedido): number {
+    return detalle?.idDetallePedido || index;
+  }
 }

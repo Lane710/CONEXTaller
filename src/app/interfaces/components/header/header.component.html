@@ -33,7 +33,7 @@
             <a
               *ngIf="authService.isLoggedIn()"
               (click)="insertarModificar()"
-              routerLink="/home/modificarUser"
+              routerLink="/home/modificarUserHeader"
               >Modificar</a
             >
             <a (click)="logout()" *ngIf="authService.isLoggedIn()"

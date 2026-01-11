@@ -1,0 +1,371 @@
+<div class="container-fluid p-4 bg-light min-vh-100">
+
+  <!-- Header con botones CRUD -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold text-dark mb-0">Dashboard Tech Store</h3>
+      <p class="text-muted small mb-0">Visión general del negocio</p>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-primary btn-sm" (click)="recargarDatos()">
+        <i class="fas fa-sync-alt"></i> Actualizar
+      </button>
+      <div class="badge bg-primary fs-6 shadow-sm">
+        <i class="fas fa-calendar-alt"></i> Hoy: {{ kpiVentasTotal.valor | currency:'Bs ' }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulario de Producto -->
+  <div *ngIf="showProductForm" class="card shadow-sm mb-4 border-primary">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h6 class="m-0">{{ editingProduct ? 'Editar' : 'Nuevo' }} Producto</h6>
+      <button class="btn btn-sm btn-light" (click)="cancelarEdicion()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="form-control" [(ngModel)]="newProduct.nombre" placeholder="Nombre del producto">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Categoría</label>
+          <input type="text" class="form-control" [(ngModel)]="newProduct.categoria" placeholder="Categoría">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Marca</label>
+          <input type="text" class="form-control" [(ngModel)]="newProduct.marca" placeholder="Marca">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Precio (Bs)</label>
+          <input type="number" class="form-control" [(ngModel)]="newProduct.precio" step="0.01">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Stock</label>
+          <input type="number" class="form-control" [(ngModel)]="newProduct.stock">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Costo (Bs)</label>
+          <input type="number" class="form-control" [(ngModel)]="newProduct.costo" step="0.01">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Estado</label>
+          <select class="form-control" [(ngModel)]="newProduct.estado">
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Imagen URL</label>
+          <input type="text" class="form-control" [(ngModel)]="newProduct.imagen" placeholder="URL de la imagen">
+        </div>
+        <div class="col-12">
+          <div class="d-flex gap-2">
+            <button class="btn btn-success" (click)="agregarProducto()">
+              <i class="fas fa-save"></i> {{ editingProduct ? 'Actualizar' : 'Guardar' }}
+            </button>
+            <button class="btn btn-secondary" (click)="cancelarEdicion()">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPIs Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col">
+      <div class="card shadow-sm border-start border-4 border-primary h-100">
+        <div class="card-body py-2">
+          <small class="text-uppercase fw-bold text-primary">Ventas Globales</small>
+          <div class="h3 fw-bold text-gray-800 mb-0">Bs {{ kpiVentasTotal.valor | number:'1.0-0' }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card shadow-sm border-start border-4 border-success h-100">
+        <div class="card-body py-2">
+          <small class="text-uppercase fw-bold text-success">Pedidos Web</small>
+          <div class="h3 fw-bold text-gray-800 mb-0">{{ kpiPedidosOnline.valor }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card shadow-sm border-start border-4 border-info h-100">
+        <div class="card-body py-2">
+          <small class="text-uppercase fw-bold text-info">Ticket Prom.</small>
+          <div class="h3 fw-bold text-gray-800 mb-0">Bs {{ kpiTicketPromedio.valor | number:'1.0-0' }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card shadow-sm border-start border-4 border-warning h-100">
+        <div class="card-body py-2">
+          <small class="text-uppercase fw-bold text-warning">Clientes Nuevos</small>
+          <div class="h3 fw-bold text-gray-800 mb-0">{{ kpiClientesNuevos.valor }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráfico Línea -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-white py-3">
+      <h6 class="m-0 fw-bold text-primary">Tendencia de Ventas Online</h6>
+    </div>
+    <div class="card-body">
+      <div style="height: 300px;">
+        <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" type="line"></canvas>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- Gráficos de Categoría y Usuarios -->
+  <div class="row g-3 mb-4">
+    <div class="col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+          <h6 class="m-0 fw-bold text-dark">Ventas por Categoría</h6>
+          <span class="badge bg-secondary">Top Categorías</span>
+        </div>
+        <div class="card-body d-flex justify-content-center">
+          <div style="height: 250px; width: 250px;">
+            <canvas baseChart [data]="categoryChartData" [options]="{responsive:true}" type="pie"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white py-3">
+          <h6 class="m-0 fw-bold text-dark">Segmentación de Clientes</h6>
+        </div>
+        <div class="card-body d-flex justify-content-center">
+          <div style="height: 250px; width: 250px;">
+            <canvas baseChart [data]="userTypeChartData" [options]="{responsive:true}" type="polarArea"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráficos de Pedidos y Logística -->
+  <div class="row g-3 mb-4">
+    <div class="col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white">
+          <h6 class="m-0 fw-bold text-dark">Estado de Pedidos</h6>
+        </div>
+        <div class="card-body">
+          <div style="height: 220px;">
+            <canvas baseChart [data]="barHorizData" [options]="barHorizOptions" type="bar"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white">
+          <h6 class="m-0 fw-bold text-dark">Eficiencia Logística</h6>
+        </div>
+        <div class="card-body">
+          <div class="row h-100 align-items-center">
+            <div class="col-6">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                  En Tránsito <span class="badge bg-primary rounded-pill">{{ logisticsStats.pendientes }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                  Retrasados <span class="badge bg-danger rounded-pill">{{ logisticsStats.retrasados }}</span>
+                </li>
+                <li class="list-group-item px-0 mt-2">
+                  <small class="text-muted">Tiempo Promedio</small>
+                  <h4 class="fw-bold">{{ logisticsStats.tiempoPromedio | number:'1.1-1' }} días</h4>
+                </li>
+              </ul>
+            </div>
+            <div class="col-6 d-flex justify-content-center">
+              <div style="height: 180px; width: 180px;">
+                <canvas baseChart [data]="logisticsChartData" [options]="{responsive:true}" type="doughnut"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gestión de Productos -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+      <h6 class="m-0 fw-bold text-dark">Gestión de Productos</h6>
+      <span class="badge bg-info">{{ rawProductos.length }} productos</span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Estado</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let producto of rawProductos.slice(0, 8)">
+            <td>
+              <div class="d-flex align-items-center">
+                <img [src]="producto.imagen || 'https://picsum.photos/50'" 
+                     class="rounded me-2" 
+                     width="30" 
+                     height="30" 
+                     onerror="this.src='https://picsum.photos/50'">
+                <div>
+                  <div class="fw-bold small">{{ producto.nombre }}</div>
+                  <small class="text-muted">{{ producto.marca }}</small>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge bg-secondary">{{ producto.categoria }}</span></td>
+            <td class="fw-bold text-success">Bs {{ producto.precio | number:'1.2-2' }}</td>
+            <td>
+              <span [class]="'badge ' + ((producto.stock || 50) <= 10 ? 'bg-danger' : 'bg-success')">
+                {{ producto.stock || 50 }}
+              </span>
+            </td>
+            <td>
+              <span [class]="'badge ' + (producto.estado === 'Activo' ? 'bg-success' : 'bg-warning')">
+                {{ producto.estado }}
+              </span>
+            </td>
+            <td class="text-center">
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-primary" (click)="editarProducto(producto)" title="Editar">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-outline-danger" (click)="eliminarProducto(producto.id)" title="Eliminar">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tablas de Alerta Stock y Clientes Recientes -->
+  <div class="row g-3">
+    <div class="col-lg-4">
+      <div class="card shadow-sm h-100 border-danger">
+        <div class="card-header bg-danger text-white fw-bold">⚠️ Alerta de Stock</div>
+        <div class="table-responsive">
+          <table class="table table-sm table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Producto</th>
+                <th class="text-center">Cant.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of lowStockProductos">
+                <td><small>{{ p.nombre }}</small></td>
+                <td class="text-center fw-bold text-danger">{{ p.stock || 50 }}</td>
+              </tr>
+              <tr *ngIf="lowStockProductos.length === 0">
+                <td colspan="2" class="text-center text-muted py-3">
+                  <small>No hay productos con stock bajo</small>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white fw-bold">Últimos Clientes Activos</div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Cliente</th>
+                <th>Tipo</th>
+                <th>Total Compra</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of clientesRecientes">
+                <td>
+                  <div class="d-flex align-items-center">
+                    <img [src]="c.avatar" 
+                         class="rounded-circle me-2" 
+                         width="30" 
+                         height="30"
+                         onerror="this.src='https://randomuser.me/api/portraits/men/1.jpg'">
+                    <span class="fw-bold small">{{ c.nombre }}</span>
+                  </div>
+                </td>
+                <td><span class="badge bg-light text-dark border">{{ c.tipo }}</span></td>
+                <td class="fw-bold text-success">Bs {{ c.monto | number:'1.0-0' }}</td>
+                <td><span class="badge bg-primary">{{ c.estado }}</span></td>
+              </tr>
+              <tr *ngIf="clientesRecientes.length === 0">
+                <td colspan="4" class="text-center text-muted py-3">
+                  <small>No hay clientes recientes</small>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Productos -->
+  <div class="card shadow-sm mt-4">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+      <h6 class="m-0 fw-bold text-dark">Top 5 Productos Más Vendidos</h6>
+      <span class="badge bg-success">Mejor desempeño</span>
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-6 col-lg-4" *ngFor="let producto of topProductos">
+          <div class="card border-0 bg-light h-100">
+            <div class="card-body">
+              <div class="d-flex align-items-start">
+                <img [src]="producto.imagen || 'https://picsum.photos/100'" 
+                     class="rounded me-3" 
+                     width="60" 
+                     height="60"
+                     onerror="this.src='https://picsum.photos/100'">
+                <div class="flex-grow-1">
+                  <h6 class="card-title mb-1">{{ producto.nombre }}</h6>
+                  <p class="card-text text-muted small mb-1">{{ producto.marca }}</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-success">Bs {{ producto.precio | number:'1.2-2' }}</span>
+                    <span class="badge bg-info">
+                      {{ producto.ventas_totales || 0 }} ventas
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12" *ngIf="topProductos.length === 0">
+          <div class="text-center text-muted py-4">
+            <small>No hay datos de productos vendidos</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

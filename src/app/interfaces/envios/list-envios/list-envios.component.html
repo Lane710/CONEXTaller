@@ -109,7 +109,7 @@
 
       <div class="table-responsive" *ngIf="!isLoading && paginatedEnvios.length > 0">
         <table class="table table-hover mb-0">
-          <thead>
+          <thead style="color: black;">
             <tr>
               <th scope="col">Código Envío</th>
               <th scope="col">Receptor</th>
@@ -343,7 +343,13 @@
                 </div>
                 <div class="d-flex justify-content-between border-bottom py-2">
                   <span class="text-muted">Dirección:</span>
-                  <span class="text-end">{{ selectedEnvio.direccionEnvio }}</span>
+<p class="text-end" style="margin-bottom: 0;">
+  Barrio: {{ selectedEnvio.direccionEnvio?.barrio }}
+</p>
+<br>
+<p>
+  Calles:  {{ selectedEnvio.direccionEnvio?.direccion }}
+</p>
                 </div>
                 <div class="d-flex justify-content-between pt-2">
                   <span class="text-muted">Ciudad:</span>

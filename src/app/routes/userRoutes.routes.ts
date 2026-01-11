@@ -6,6 +6,7 @@ import { authGuard } from '../guards/auth.guard';
 import { ListadoProveedorComponent } from '../interfaces/Proveedores/listado-proveedor/listado-proveedor.component';
 import { RegistrarProveedorComponent } from '../interfaces/Proveedores/registrar-proveedor/registrar-proveedor.component';
 import { ModificarProveedorComponent } from '../interfaces/Proveedores/modificar-proveedor/modificar-proveedor.component';
+import { ModificarUsuarioComponent } from '../interfaces/ClienteOnline/modificar-usuario/modificar-usuario.component';
 
 export const userRoutes: Routes = [
   {
@@ -29,4 +30,7 @@ export const userRoutes: Routes = [
     path: 'proveedores/editar/:id',
     component: ModificarProveedorComponent,
   },
+  {
+    path:'modificarUserHeader', component: ModificarUsuarioComponent, canActivate:[authGuard]
+  }
 ];

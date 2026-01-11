@@ -1,0 +1,128 @@
+  .dashboard-container {
+            background-color: #f8f9fc; /* Fondo gris muy suave típico de dashboards */
+            min-height: 100vh;
+        }
+
+        /* --- TARJETAS (CARDS) --- */
+        .card {
+            border: none;
+            border-radius: 0.75rem; /* Bordes redondeados modernos (approx 12px) */
+            transition: transform 0.2s ease-in-out;
+        }
+
+        /* Efecto hover suave para las tarjetas KPI */
+        .card-kpi:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Bordes laterales de colores para KPIs */
+        .border-left-primary { border-left: 0.25rem solid #4e73df !important; }
+        .border-left-success { border-left: 0.25rem solid #1cc88a !important; }
+        .border-left-info    { border-left: 0.25rem solid #36b9cc !important; }
+        .border-left-warning { border-left: 0.25rem solid #f6c23e !important; }
+
+        /* Sombras suaves */
+        .shadow-sm {
+            box-shadow: 0 0.125rem 0.25rem 0 rgba(58, 59, 69, 0.15) !important;
+        }
+
+        /* --- ICONOS Y AVATARES --- */
+        /* Círculos de fondo para los iconos de KPI */
+        .icon-circle {
+            height: 4rem;
+            width: 4rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Colores de fondo suaves para iconos */
+        .bg-primary-light { background-color: rgba(78, 115, 223, 0.1); }
+        .bg-success-light { background-color: rgba(28, 200, 138, 0.1); }
+        .bg-info-light    { background-color: rgba(54, 185, 204, 0.1); }
+        .bg-warning-light { background-color: rgba(246, 194, 62, 0.1); }
+
+        /* Avatar en la tabla */
+        .avatar-circle {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* --- CONTENEDORES DE GRÁFICOS (Importante para Chart.js) --- */
+        /* Deben tener altura relativa para que Chart.js se adapte */
+        .chart-area-big {
+            position: relative;
+            height: 20rem; /* aprox 320px */
+            width: 100%;
+        }
+
+        .chart-pie {
+            position: relative;
+            height: 15rem; /* aprox 240px */
+            width: 100%;
+        }
+
+        .chart-bar-small, .chart-radar {
+            position: relative;
+            height: 15rem;
+            width: 100%;
+        }
+
+        /* --- TABLA --- */
+        .table thead th {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #858796;
+            background-color: #f8f9fc;
+        }
+
+        .table tbody td {
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+
+        .rounded-pill {
+            border-radius: 50rem !important;
+        }
+
+        /* Estilos para elementos interactivos */
+        .interactive-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .interactive-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .filter-badge {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-badge:hover {
+            transform: scale(1.05);
+        }
+        
+        .product-row:hover {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+        
+        .tooltip-icon {
+            cursor: help;
+            color: #6c757d;
+        }
+        
+        .search-highlight {
+            background-color: #fff3cd;
+            transition: background-color 0.5s ease;
+        }
