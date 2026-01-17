@@ -1,14 +1,26 @@
-import { categorias } from './categorias'; // Si estás usando el objeto completo
+// src/app/models/ProductModel/subcategoria.ts
+
+import { categorias } from "./categorias";
+
 
 export interface subcategoria {
-  idSubcategoria?: number;         // Long en Java → number en TS
-  nombre: string;
+  // PK: Long -> number
+  idSubcategoria?: number; 
+  
+  // Campo obligatorio en el backend
+  nombre: string; 
+  
   descripcion?: string;
-  estado?: boolean;                // Valor por defecto: true
-  fechaCreacion?: string;          // LocalDateTime → string ISO
-  urlImagen ?: string;
-  // Si el backend devuelve el objeto completo:
-  categoria?: categorias;
+  
+  // Backend lo inicializa en true por defecto
+  estado?: boolean; 
+  
+  // LocalDateTime -> Recibido como String ISO ("2026-01-11T18:42:00")
+  fechaCreacion?: string; 
+  
+  urlImagen?: string;
+
+  // Relación ManyToOne: El backend enviará el objeto Categoria completo
+  // Usamos Partial para evitar ciclos innecesarios
+  categoria?: Partial<categorias>;
 }
-  // Alternativa si solo se usa el ID:
-  // idCategoria?: number;

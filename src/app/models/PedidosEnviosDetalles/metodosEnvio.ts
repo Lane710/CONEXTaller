@@ -1,11 +1,23 @@
+// src/app/models/ShipmentModel/metodoEnvio.ts
+
 export interface metodoEnvio {
-  idMetodoEnvio?: number;               // Long en Java → number en TS
-  nombre?: string;                       // Obligatorio
-  descripcion?: string;                 // Opcional
-  costo?: number;                        // BigDecimal → number
-  diasEstimadosEntregaMin?: number;    // Opcional
-  diasEstimadosEntregaMax?: number;    // Opcional
-  estaActivo?: boolean;                // Opcional, valor por defecto: true
-  fechaCreacion?: string;              // OffsetDateTime → string ISO
-  fechaActualizacion?: string;         // OffsetDateTime → string ISO
+  idMetodoEnvio?: number; 
+  
+  // En Java es nullable = false y unique = true
+  nombre: string; 
+  
+  descripcion?: string;
+  
+  // BigDecimal se mapea como number para cálculos en el front
+  costo: number; 
+  
+  diasEstimadosEntregaMin?: number;
+  diasEstimadosEntregaMax?: number;
+  
+  // El backend lo inicializa en true por defecto
+  estaActivo?: boolean; 
+  
+  // OffsetDateTime llega como String ISO 8601
+  fechaCreacion?: string;
+  fechaActualizacion?: string;
 }

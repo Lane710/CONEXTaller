@@ -205,9 +205,7 @@ export class ModificarComponent implements OnInit, AfterViewInit {
         this.proveedores = results.proveedores.data || [];
 
         // Filtrar subcategorías según la categoría del producto
-        if (this.producto.categoria?.idCategoria) {
-          this.onCategoriaChange();
-        }
+        
 
         // Cargar imágenes secundarias
         if (results.imagenes.success && results.imagenes.data) {
@@ -294,32 +292,32 @@ export class ModificarComponent implements OnInit, AfterViewInit {
 
   // ========== MANEJO DE CAMBIOS EN JERARQUÍA ==========
   onCategoriaChange(): void {
-    if (this.producto?.categoria?.idCategoria) {
-      this.subcategoriaService
-        .ListadoSubCategoriasPorCategoria(this.producto.categoria.idCategoria)
-        .subscribe({
-          next: (res) => {
-            this.subcategoriasFiltradas = res.data || [];
-            console.log('Subcategorías filtradas:', this.subcategoriasFiltradas);
-          },
-          error: (error) => {
-            console.error('Error al cargar subcategorías:', error);
-            this.mostrarError('Error al cargar subcategorías.');
-          }
-        });
-    } else {
-      this.subcategoriasFiltradas = [];
-      if (this.producto) {
-        this.producto.subcategoria = {
-          idSubcategoria: -1,
-          nombre: '',
-          descripcion: '',
-          estado: true,
-          urlImagen: '',
-          categoria: { idCategoria: -1, nombre: '' },
-        };
-      }
-    }
+    // if (this.producto?.categoria?.idCategoria) {
+    //   this.subcategoriaService
+    //     .ListadoSubCategoriasPorCategoria(this.producto.categoria.idCategoria)
+    //     .subscribe({
+    //       next: (res) => {
+    //         this.subcategoriasFiltradas = res.data || [];
+    //         console.log('Subcategorías filtradas:', this.subcategoriasFiltradas);
+    //       },
+    //       error: (error) => {
+    //         console.error('Error al cargar subcategorías:', error);
+    //         this.mostrarError('Error al cargar subcategorías.');
+    //       }
+    //     });
+    // } else {
+    //   this.subcategoriasFiltradas = [];
+    //   if (this.producto) {
+    //     this.producto.subcategoria = {
+    //       idSubcategoria: -1,
+    //       nombre: '',
+    //       descripcion: '',
+    //       estado: true,
+    //       urlImagen: '',
+    //       categoria: { idCategoria: -1, nombre: '' },
+    //     };
+    //   }
+    // }
   }
 
   // ========== MANEJO DE ARCHIVOS ==========
@@ -502,7 +500,7 @@ export class ModificarComponent implements OnInit, AfterViewInit {
   // ========== MANEJO DE INPUTS ==========
   onTipoInput(event: any): void {
     if (this.producto) {
-      this.producto.tipo = (event.target.value || '').trim() || null;
+      console.log('esto sacar capas')
     }
   }
 
@@ -540,9 +538,7 @@ export class ModificarComponent implements OnInit, AfterViewInit {
       errores.push('La marca es obligatoria.');
     }
 
-    if (!this.producto?.categoria?.idCategoria || this.producto.categoria.idCategoria === -1) {
-      errores.push('Debe seleccionar una categoría.');
-    }
+    
 
     if (!this.producto?.subcategoria?.idSubcategoria || this.producto.subcategoria.idSubcategoria === -1) {
       errores.push('Debe seleccionar una subcategoría.');
@@ -592,16 +588,16 @@ export class ModificarComponent implements OnInit, AfterViewInit {
     // Preparar datos del producto
     const productoPayload = {
       ...this.producto,
-      tipo: this.producto.tipo?.trim() || null,
-      variante: this.producto.variante?.trim() || null,
+      //tipo: this.producto.tipo?.trim() || null,
+      //variante: this.producto.variante?.trim() || null,
     };
 
     // Convertir strings vacíos a null
     if (this.producto.sku?.trim() === '') {
-      productoPayload.sku = null;
+      productoPayload.sku = undefined;
     }
     if (this.producto.codigoBarras?.trim() === '') {
-      productoPayload.codigoBarras = null;
+      productoPayload.codigoBarras = undefined;
     }
 
     this.isLoading = true;
@@ -940,72 +936,7 @@ export class ModificarComponent implements OnInit, AfterViewInit {
   }
 
   private actualizarTipoYVariante(): Observable<any> {
-    if (!this.producto?.tipo && !this.producto?.variante) {
-      return of(null);
-    }
-
-    let tipoObj: tipo = {
-      nombre: this.producto.tipo || '',
-      subcategoria: { 
-        idSubcategoria: this.producto.subcategoria.idSubcategoria || -1, 
-        nombre: this.producto.subcategoria.nombre || '' 
-      },
-    };
-
-    let varianteObj: variante = {
-      nombre: this.producto.variante || '',
-    };
-
-    console.log("Actualizando tipo y variante:", { tipoObj, varianteObj });
-
-    // Si hay tipo, lo guardamos
-    if (this.producto.tipo) {
-      return this.tipoService.findByNombre(tipoObj.nombre).pipe(
-        concatMap((res: ApiResponse) => {
-          if (res.success && res.data) {
-            console.log('Tipo existente encontrado:', res.data);
-            // Si hay variante, la guardamos con el tipo existente
-            if (this.producto?.variante) {
-              varianteObj.tipo = { 
-                idTipo: res.data.idTipo, 
-                nombre: res.data.nombre 
-              };
-              return this.varianteService.save(varianteObj);
-            }
-            return of(null);
-          } else {
-            console.log('Tipo no encontrado, se creará uno nuevo.');
-            return this.tipoService.save(tipoObj).pipe(
-              concatMap((res: ApiResponse) => {
-                console.log('Tipo nuevo guardado:', res);
-                // Si hay variante, la guardamos con el tipo nuevo
-                if (this.producto?.variante) {
-                  varianteObj.tipo = { 
-                    idTipo: res.data.idTipo, 
-                    nombre: res.data.nombre 
-                  };
-                  return this.varianteService.save(varianteObj);
-                }
-                return of(null);
-              })
-            );
-          }
-        }),
-        catchError((err) => {
-          console.error('Error actualizando tipo y variante:', err);
-          return of(null);
-        })
-      );
-    } else if (this.producto.variante) {
-      // Si solo hay variante sin tipo
-      return this.varianteService.save(varianteObj).pipe(
-        catchError((err) => {
-          console.error('Error guardando variante:', err);
-          return of(null);
-        })
-      );
-    }
-
+    
     return of(null);
   }
 
@@ -1096,7 +1027,6 @@ export class ModificarComponent implements OnInit, AfterViewInit {
     const nombreValido = !!this.producto.nombre && this.producto.nombre.trim().length >= 3;
     const precioValido = !!this.producto.precio && this.producto.precio > 0;
     const marcaValida = !!this.producto.marca && this.producto.marca.trim().length > 0;
-    const categoriaValida = !!this.producto.categoria?.idCategoria && this.producto.categoria.idCategoria !== -1;
     const subcategoriaValida = !!this.producto.subcategoria?.idSubcategoria && this.producto.subcategoria.idSubcategoria !== -1;
     const proveedorValido = !!this.producto.proveedor?.idProveedor && this.producto.proveedor.idProveedor !== -1;
     const stockValido = this.cantidadStock !== null && this.cantidadStock !== undefined && this.cantidadStock >= 0;
@@ -1112,7 +1042,6 @@ export class ModificarComponent implements OnInit, AfterViewInit {
     return nombreValido && 
            precioValido && 
            marcaValida && 
-           categoriaValida && 
            subcategoriaValida && 
            proveedorValido && 
            stockValido && 

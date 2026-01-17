@@ -237,8 +237,8 @@
                                         class="list-group-item list-group-item-action"
                                         (mousedown)="seleccionarCliente(cliente)"
                                     >
-                                        {{ cliente.nombre }} {{ cliente.appaterno }}
-                                        {{ cliente.apmaterno }}
+<!--                                        {{ cliente.nombre }} {{ cliente.appaterno }}
+                                        {{ cliente.apmaterno }}-->
                                     </li>
                                 </ul>
                             </div>
@@ -298,7 +298,7 @@
                                     name="clienteNombre"
                                     required
                                     minlength="2"
-                                    [(ngModel)]="clienteVenta.nombre"
+                                    [(ngModel)]="clienteVenta"
                                     #nombreInput="ngModel"
                                 />
                                 <div *ngIf="nombreInput.invalid && (nombreInput.dirty || nombreInput.touched)" class="text-danger small">
@@ -320,7 +320,7 @@
                                     name="apellidoPaterno"
                                     required
                                     minlength="2"
-                                    [(ngModel)]="clienteVenta.appaterno"
+                                    [(ngModel)]="clienteVenta"
                                     #apellidoPInput="ngModel"
                                 />
                                 <div *ngIf="apellidoPInput.invalid && (apellidoPInput.dirty || apellidoPInput.touched)" class="text-danger small">
@@ -337,7 +337,7 @@
                                     class="form-control"
                                     id="apellidoMaterno"
                                     name="apellidoMaterno"
-                                    [(ngModel)]="clienteVenta.apmaterno"
+                                    [(ngModel)]="clienteVenta"
                                     #apellidoMInput="ngModel"
                                 />
                             </div>
@@ -356,7 +356,7 @@
                                     pattern="[0-9]*"
                                     minlength="7"
                                     maxlength="15"
-                                    [(ngModel)]="clienteVenta.telefono"
+                                    [(ngModel)]="clienteVenta"
                                     #telefonoInput="ngModel"
                                 />
                                 <div *ngIf="telefonoInput.invalid && (telefonoInput.dirty || telefonoInput.touched)" class="text-danger small">

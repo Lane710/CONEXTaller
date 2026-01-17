@@ -63,19 +63,15 @@ export class SalesComponent implements OnInit {
 
   clienteVenta: clientes = {
     ci: '0',
-    nombre: '',
-    appaterno: '',
-    apmaterno: '',
-    telefono: '',
+    razonSocial: '',
+    persona: undefined,
   };
   clienteNombreBuscador: string = '';
   clientesFiltrados: clientes[] = [];
   clienteSeleccionado: clientes = {
     ci: '0',
-    nombre: '',
-    appaterno: '',
-    apmaterno: '',
-    telefono: '',
+    razonSocial:'',
+    persona: undefined,
   };
   clienteExistes: clientes[] = [];
   nombreProductoModal: string = '';
@@ -525,12 +521,7 @@ export class SalesComponent implements OnInit {
     // 🔥 CORRECCIÓN: Usar normalización segura
     const clienteParaProcesar: clientes = {
         ci: numeroci.trim(),
-        nombre: nombreClient.trim(),
-        appaterno: apellidoPaterno.trim(),
-        apmaterno: apellidoMaterno ? apellidoMaterno.trim() : '',
-        telefono: celularClient ? celularClient.trim().replace(/\s+/g, '') : '',
-        email: '',
-        direccion: ''
+        persona:undefined,
     };
 
     this.iniciarTransaccionConValidacion(clienteParaProcesar);
@@ -720,36 +711,7 @@ export class SalesComponent implements OnInit {
     console.log('Cliente nuevo:', clienteNuevo);
     console.log('Cliente existente:', clienteExistente);
     
-    // Comparar cada campo relevante con manejo seguro de null
-    if (normalizar(clienteNuevo.nombre) !== normalizar(clienteExistente.nombre)) {
-        console.log(`Diferencia en nombre: "${clienteExistente.nombre}" vs "${clienteNuevo.nombre}"`);
-        return true;
-    }
-    
-    if (normalizar(clienteNuevo.appaterno) !== normalizar(clienteExistente.appaterno)) {
-        console.log(`Diferencia en apellido paterno: "${clienteExistente.appaterno}" vs "${clienteNuevo.appaterno}"`);
-        return true;
-    }
-    
-    if (normalizar(clienteNuevo.apmaterno) !== normalizar(clienteExistente.apmaterno)) {
-        console.log(`Diferencia en apellido materno: "${clienteExistente.apmaterno}" vs "${clienteNuevo.apmaterno}"`);
-        return true;
-    }
-    
-    if (normalizar(clienteNuevo.telefono) !== normalizar(clienteExistente.telefono)) {
-        console.log(`Diferencia en teléfono: "${clienteExistente.telefono}" vs "${clienteNuevo.telefono}"`);
-        return true;
-    }
-    
-    if (normalizar(clienteNuevo.email) !== normalizar(clienteExistente.email)) {
-        console.log(`Diferencia en email: "${clienteExistente.email}" vs "${clienteNuevo.email}"`);
-        return true;
-    }
-    
-    if (normalizar(clienteNuevo.direccion) !== normalizar(clienteExistente.direccion)) {
-        console.log(`Diferencia en dirección: "${clienteExistente.direccion}" vs "${clienteNuevo.direccion}"`);
-        return true;
-    }
+   
     
     console.log('No se encontraron diferencias en los datos del cliente');
     return false;
@@ -766,12 +728,7 @@ private normalizarDatosCliente(cliente: clientes): clientes {
 
     return {
         ci: normalizarCampo(cliente.ci),
-        nombre: normalizarCampo(cliente.nombre),
-        appaterno: normalizarCampo(cliente.appaterno),
-        apmaterno: normalizarCampo(cliente.apmaterno),
-        telefono: normalizarCampo(cliente.telefono)?.replace(/\s+/g, '') || '',
-        email: normalizarCampo(cliente.email)?.toLowerCase() || '',
-        direccion: normalizarCampo(cliente.direccion)
+   
     };
 }
 
@@ -795,10 +752,8 @@ private normalizarDatosCliente(cliente: clientes): clientes {
     if (this.clienteNombreBuscador.length > 0) {
       const terminoBusqueda = this.clienteNombreBuscador.toLowerCase();
       this.clientesFiltrados = this.clienteExistes.filter((cliente) => {
-        const nombreCompleto = `${cliente.nombre} ${cliente.appaterno || ''} ${
-          cliente.apmaterno || ''
-        }`.toLowerCase();
-        return nombreCompleto.includes(terminoBusqueda);
+        
+        return '';
       });
     } else {
       this.clientesFiltrados = [];
@@ -809,19 +764,11 @@ private normalizarDatosCliente(cliente: clientes): clientes {
     this.clienteSeleccionado = cliente;
     console.log('Cliente seleccionado:', this.clienteSeleccionado);
 
-    this.clienteNombreBuscador = `${cliente.nombre} ${
-      cliente.appaterno || ''
-    } ${cliente.apmaterno || ''}`.trim();
+
 
     // 🔥 CORREGIDO: Asignar correctamente los campos separados
     this.clienteVenta = { 
       ci: cliente.ci,
-      nombre: cliente.nombre || '',
-      appaterno: cliente.appaterno || '',
-      apmaterno: cliente.apmaterno || '',
-      telefono: cliente.telefono || '',
-      email: cliente.email || '',
-      direccion: cliente.direccion || ''
     };
 
     this.clientesFiltrados = [];
@@ -842,17 +789,14 @@ private normalizarDatosCliente(cliente: clientes): clientes {
   limpiarDatosCliente() {
     this.clienteVenta = {
       ci: '0',
-      nombre: '',
-      appaterno: '',
-      apmaterno: '',
-      telefono: '',
+      razonSocial: '',
+      persona: undefined,
+      
     };
     this.clienteSeleccionado = {
       ci: '0',
-      nombre: '',
-      appaterno: '',
-      apmaterno: '',
-      telefono: '',
+      razonSocial:'',
+      persona: undefined,
     };
     this.clienteNombreBuscador = '';
     this.clientesFiltrados = [];

@@ -118,6 +118,7 @@ export class ListarComponent implements OnInit, AfterViewInit {
     this.stockService.findAll().subscribe({
       next: (response: ApiResponse) => {
         if (response && response.data) {
+          console.log('Respuesta de stock recibida:', response);
           const stockData = response.data as stock[];
 
           // 1. Ordenar la lista (del más nuevo al más viejo)
@@ -188,7 +189,7 @@ export class ListarComponent implements OnInit, AfterViewInit {
 
       const matchesCategory =
         this.filterCategory === 'todos' ||
-        (item.producto?.categoria?.nombre === this.filterCategory);
+        (item.producto?.subcategoria?.categoria?.nombre === this.filterCategory);
 
       return matchesSearch && matchesStatus && matchesCategory;
     });
@@ -211,6 +212,7 @@ export class ListarComponent implements OnInit, AfterViewInit {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     this.paginatedStocks = this.filteredStocks.slice(startIndex, endIndex);
+    console.log('Paginated Stocks:', this.paginatedStocks);
   }
 
   /**
@@ -301,6 +303,7 @@ export class ListarComponent implements OnInit, AfterViewInit {
   }
 
   getCategoryName(idCategoria: number | undefined): string {
+    console.log('ID de categoría recibido:', idCategoria);  
     if (idCategoria === undefined || idCategoria === null) {
       return 'N/A';
     }

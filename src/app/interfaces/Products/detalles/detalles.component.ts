@@ -219,8 +219,8 @@ export class DetallesComponent implements OnInit, AfterViewInit {
     const detalle: DetalleCarrito = {
       stock: stockItem, 
       cantidad: this.cantidadSeleccionada,
-      precioUnitario: precioUnitario.toString(),
-      subtotal: (precioUnitario * this.cantidadSeleccionada).toString() // Calculamos el subtotal
+      precioUnitario: precioUnitario,
+      subtotal: (precioUnitario * this.cantidadSeleccionada) // Calculamos el subtotal
     };
 
     this.carritoService.agregarProductoACarrito(usuarioId, detalle).subscribe({

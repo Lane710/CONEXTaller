@@ -225,8 +225,8 @@ agregarAlCarrito(prod: StockDTO): void {
     idDetalleCarrito: 0, // 0 para nuevo detalle
     cantidad: 1,
     stock: prod,
-    subtotal: (prod.producto.precio ?? 0).toString(),
-    precioUnitario: (prod.producto.precio ?? 0).toString()
+    subtotal: (prod.producto.precio ?? 0),
+    precioUnitario: (prod.producto.precio ?? 0)
   };
 
   console.log('Detalle a enviar:', nuevoDetalle);

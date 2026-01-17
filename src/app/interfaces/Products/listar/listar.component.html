@@ -185,7 +185,7 @@
                 {{ producto.nombre }}
               </td>
               <td data-label="Categoría">
-                {{ getCategoryName(producto?.categoria?.idCategoria) }}
+                {{ getCategoryName(producto?.subcategoria?.categoria?.idCategoria) }}
               </td>
               <td data-label="Stock" style="text-align: center">
                 <span class="badge bg-info text-dark">{{ item.cantidad }}</span>
@@ -634,8 +634,8 @@
                   </div>
                   <div class="col-6">
                     <strong>Tipo:</strong>
-                    <div [class.text-muted]="!producto.tipo">
-                      {{ producto.tipo || "N/A" }}
+                    <div [class.text-muted]="!producto">
+                      {{ producto || "N/A" }}
                     </div>
                   </div>
                   <div class="col-6">
@@ -657,7 +657,7 @@
                     <div>
                       <span class="badge bg-primary">
                         {{
-                          getCategoryName(producto.categoria.idCategoria) ||
+                          getCategoryName(producto.subcategoria.categoria?.idCategoria) ||
                             "N/A"
                         }}
                       </span>
@@ -696,7 +696,7 @@
                     </div>
                     <div class="col-md-6">
                       <strong>Contacto:</strong>
-                      <div>{{ producto.proveedor.nombre }}</div>
+                      <div>{{ producto.proveedor.nombreContacto }}</div>
                     </div>
                     <div class="col-md-6">
                       <strong>Email:</strong>
@@ -734,7 +734,7 @@
               </div>
             </div>
 
-            <div classF="row" *ngIf="producto.codigoBarras || producto.tipo">
+            <div classF="row" *ngIf="producto.codigoBarras || producto">
               <div class="col-12">
                 <h6 class="text-primary mb-3 border-bottom pb-2">
                   <i class="bi bi-info-circle me-2"></i>Información Adicional
@@ -746,9 +746,9 @@
                       {{ producto.codigoBarras }}
                     </div>
                   </div>
-                  <div class="col-md-6" *ngIf="producto.tipo">
+                  <div class="col-md-6" *ngIf="producto">
                     <strong>Tipo Producto:</strong>
-                    <div>{{ producto.tipo }}</div>
+                    <div>{{ producto }}</div>
                   </div>
                 </div>
               </div>

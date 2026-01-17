@@ -1,33 +1,47 @@
+// src/app/models/ProductModel/productos.ts
 import { usuarios } from "../PersonModel/usuarios";
-import { categorias } from "./categorias";
 import { proveedores } from "./proveedores";
+
 import { subcategoria } from "./subcategorias";
+import { tipo } from "./tipo"; // Importante: Crear la interfaz Tipo
 
 export interface productos {
   idProducto?: number;
   nombre: string;
-  descripcion?: string;
-  precio?: number;
-  precioCompra?: number;  // NUEVO CAMPO
-  sku?: string | null;
-  codigoBarras?: string | null;
   marca?: string;
+  descripcion?: string;
+  
+  // Precios (BigDecimal -> number)
+  precio: number; 
+  precioCompra?: number;
+
+  sku?: string;
+  codigoBarras?: string;
   color?: string;
-  estado?: number;
-  imagen?: string | null;
+  
+  // Campo que faltaba en el TS
+  mesesGarantia?: number; 
+  
+  estado?: number; // Default 1
+  imagen?: string;
+  
+  // En Java es String, en TS también
+  variante?: string; 
+  
   disponibleOnline?: boolean;
 
-  // CAMBIO: Tipo y variante ahora son strings
-  tipo?: string | null;
-  variante?: string | null;
+  // --- CAMBIO CLAVE: Relación Many-to-Many ---
+  // En Java tienes Set<tipo> tiposAsignados, no un string simple.
+  tiposAsignados?: tipo[];
 
-  // Relaciones
-  categoria: categorias;
-  subcategoria: subcategoria;
-  proveedor: proveedores;
-  usuarioRegistro?: usuarios;
+  // --- RELACIONES ---
+  // Nota: Si el backend solo tiene subcategoria, la categoria
+  // se accede usualmente a través de producto.subcategoria.categoria
+  subcategoria: subcategoria; 
+  proveedor?: proveedores;
+  usuarioRegistro?: Partial<usuarios>;
 
-  // Fechas
-  fechaRegistro?: string;          // LocalDateTime → string ISO
-  ultimaActualizacion?: string;    // LocalDateTime → string ISO
+  // Fechas (LocalDateTime -> ISO String)
+  fechaRegistro?: string;
+  ultimaActualizacion?: string;
 }

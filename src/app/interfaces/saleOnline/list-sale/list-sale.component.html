@@ -548,22 +548,22 @@
                     <div class="info-item">
                       <small class="text-muted d-block mb-1">Nombre Completo</small>
                       <div class="fw-semibold text-dark">
-                        {{ pedidoSeleccionado.pedido.usuario.persona.nombre || '' }} 
-                        {{ pedidoSeleccionado.pedido.usuario.persona.apellidop || '' }} 
-                        {{ pedidoSeleccionado.pedido.usuario.persona.apellidom || '' }}
+                        {{ pedidoSeleccionado.pedido.usuario.persona?.nombre || '' }} 
+                        {{ pedidoSeleccionado.pedido.usuario.persona?.apellidop || '' }} 
+                        {{ pedidoSeleccionado.pedido.usuario.persona?.apellidom || '' }}
                       </div>
                     </div>
                     <div class="info-item">
                       <small class="text-muted d-block mb-1">Numero de celular</small>
                       <div class="fw-semibold text-dark">
-                        {{ pedidoSeleccionado.pedido.usuario.persona.telefono || 'No disponible' }}
+                        {{ pedidoSeleccionado.pedido.usuario.persona?.telefono || 'No disponible' }}
                       </div>
                     </div>
                     <div class="info-item">
                       <small class="text-muted d-block mb-1">Ubicación</small>
                       <div class="fw-semibold text-dark">
-                        {{ pedidoSeleccionado.pedido.usuario.persona.ciudad || '' }}, 
-                        {{ pedidoSeleccionado.pedido.usuario.persona.pais || '' }}
+                        {{ pedidoSeleccionado.pedido.usuario.persona?.ciudad || '' }}, 
+                        {{ pedidoSeleccionado.pedido.usuario.persona?.pais || '' }}
                       </div>
                     </div>
                   </div>

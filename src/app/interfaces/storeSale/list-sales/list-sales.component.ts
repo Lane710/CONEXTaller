@@ -235,7 +235,7 @@ ventaEnProceso: number | null = null;
       const term = this.searchTerm.toLowerCase();
       tempVentas = tempVentas.filter(
         (venta) =>
-          venta.cliente?.nombre.toLowerCase().includes(term) ||
+          venta.cliente?.ci.toLowerCase().includes(term) ||
           `vnt${venta.idVenta}`.toLowerCase().includes(term)
       );
     }

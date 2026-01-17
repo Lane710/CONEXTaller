@@ -181,7 +181,7 @@ export class ModificarUserComponent implements OnInit, AfterViewInit {
   loadUser(username: string): void {
     this.isLoading = true;
     this.usuariosService
-      .findById(username)
+      .findByIdMod(username)
       .pipe(
         catchError((err: HttpErrorResponse) => {
           this.isLoading = false;

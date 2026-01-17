@@ -93,6 +93,7 @@ export class DatosClienteComponent implements OnInit {
     empresaEnvio: 'Empresa de Envíos',
     notas: '',
     estado: 'PENDIENTE',
+    costoEnvio: 0,
   };
 
   seleccionMetodoPago: string = 'transferenciaBancaria';
@@ -448,6 +449,7 @@ export class DatosClienteComponent implements OnInit {
       empresaEnvio: 'Empresa de Envíos',
       notas: formData.datos.notas,
       estado: 'PENDIENTE',
+      costoEnvio: 0
     };
   }
 

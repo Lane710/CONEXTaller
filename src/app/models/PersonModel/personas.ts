@@ -1,9 +1,16 @@
+// src/app/models/PersonModel/personas.ts
+
 export interface personas {
-  ci: string;                      // Clave primaria, tipo String
+  // PK - Al ser String en Java, se maneja como string en TS
+  ci: string; 
+
   nombre: string;
-  apellidop: string;
-  apellidom: string;
-  fechaNacimiento?: string;        // LocalDate → string ISO (ej. "1990-05-20")
+  apellidop: string; // Apellido Paterno
+  apellidom: string; // Apellido Materno
+
+  // Formato: "YYYY-MM-DD" gracias al @JsonFormat en Java
+  fechaNacimiento?: string; 
+
   genero?: string;
   telefono?: string;
   email?: string;
@@ -13,5 +20,6 @@ export interface personas {
   pais?: string;
   codigoPostal?: string;
   fotoUrl?: string;
-  fechaRegistro?: string;          // LocalDateTime → string ISO (ej. "2025-09-24T00:12:30")
+  // Formato ISO: "YYYY-MM-DDTHH:mm:ss"
+  fechaRegistro?: string; 
 }

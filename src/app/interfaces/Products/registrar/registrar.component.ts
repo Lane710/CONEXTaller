@@ -72,7 +72,6 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
     codigoBarras: '',
     estado: 1,
     disponibleOnline: true,
-    tipo: '',
     variante: '',
     usuarioRegistro: {
       username: this.username,
@@ -86,13 +85,6 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
         apellidom: '',
       },
       rol: { idRol: -1, nombreRol: '' },
-    },
-    categoria: {
-      idCategoria: -1,
-      nombre: '',
-      descripcion: '',
-      estado: true,
-      urlImagen: '',
     },
     subcategoria: {
       idSubcategoria: -1,
@@ -233,16 +225,16 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
       categoria: { idCategoria: -1, nombre: '' },
     };
 
-    if (this.producto.categoria?.idCategoria) {
+    /*if (this.producto) {
       this.subcategoriaService
-        .ListadoSubCategoriasPorCategoria(this.producto.categoria.idCategoria)
+        .ListadoSubCategoriasPorCategoria(this.producto)
         .subscribe({
           next: (res) => (this.subcategoriasFiltradas = res.data || []),
           error: () => this.mostrarError('Error al cargar subcategorías.'),
         });
     } else {
       this.subcategoriasFiltradas = [];
-    }
+    }*/
   }
 
   // ========== MANEJO DE ARCHIVOS ==========
@@ -356,15 +348,13 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
       errores.push('La marca es obligatoria.');
     }
 
-    if (!this.producto.categoria?.idCategoria || this.producto.categoria.idCategoria === -1) {
-      errores.push('Debe seleccionar una categoría.');
-    }
+    
 
     if (!this.producto.subcategoria.idSubcategoria || this.producto.subcategoria.idSubcategoria === -1) {
       errores.push('Debe seleccionar una subcategoría.');
     }
 
-    if (!this.producto.proveedor.idProveedor || this.producto.proveedor.idProveedor === -1) {
+    if (!this.producto.proveedor?.idProveedor || this.producto.proveedor.idProveedor === -1) {
       errores.push('Debe seleccionar un proveedor.');
     }
 
@@ -391,7 +381,6 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
     const nombreValido = !!this.producto.nombre && this.producto.nombre.trim().length >= 3;
     const precioValido = !!this.producto.precio && this.producto.precio > 0;
     const marcaValida = !!this.producto.marca && this.producto.marca.trim().length > 0;
-    const categoriaValida = !!this.producto.categoria?.idCategoria && this.producto.categoria.idCategoria !== -1;
     const subcategoriaValida = !!this.producto.subcategoria?.idSubcategoria && this.producto.subcategoria.idSubcategoria !== -1;
     const proveedorValido = !!this.producto.proveedor?.idProveedor && this.producto.proveedor.idProveedor !== -1;
     const stockValido = this.cantidadStock !== null && this.cantidadStock !== undefined && this.cantidadStock >= 1;
@@ -407,7 +396,6 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
     return nombreValido && 
            precioValido && 
            marcaValida && 
-           categoriaValida && 
            subcategoriaValida && 
            proveedorValido && 
            stockValido && 
@@ -424,8 +412,8 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
 
     const productoPayload = {
       ...this.producto,
-      tipo: this.producto.tipo?.trim() || null,
-      variante: this.producto.variante?.trim() || null,
+      //tipo: this.producto.tipo?.trim() || null,
+      //variante: this.producto.variante?.trim() || null,
     };
 
     if (!this.validarFormulario() || this.productForm.invalid) {
@@ -436,11 +424,11 @@ export class RegistrarComponent implements OnInit, AfterViewInit {
     }
 
     if (this.producto.sku !== null && this.producto.sku !== undefined && this.producto.sku.trim() === '') {
-      this.producto.sku = null;
+      this.producto.sku = undefined;
     }
 
     if (this.producto.codigoBarras !== null && this.producto.codigoBarras !== undefined && this.producto.codigoBarras.trim() === '') {
-      this.producto.codigoBarras = null;
+      this.producto.codigoBarras = undefined;
     }
 
     this.isLoading = true;
@@ -701,12 +689,12 @@ private buscarTipoPropiedadExacto(tipo: string, nombre: string): Observable<tipo
 
   // ========== GUARDADO DE TIPO Y VARIANTE ==========
   GuardarTipo() {
-    if (!this.producto.tipo && !this.producto.variante) {
+    if (!this.producto && !this.producto) {
       return;
     }
 
     let tipoObj: tipo = {
-      nombre: this.producto.tipo || '',
+      nombre: '',
       subcategoria: { 
         idSubcategoria: this.producto.subcategoria.idSubcategoria || -1, 
         nombre: this.producto.subcategoria.nombre || '' 
@@ -720,47 +708,47 @@ private buscarTipoPropiedadExacto(tipo: string, nombre: string): Observable<tipo
     console.log("Datos del producto:", this.producto);
 
     // Si hay tipo, lo guardamos
-    if (this.producto.tipo) {
-      this.tipoService.findByNombre(tipoObj.nombre).subscribe({
-        next: (res) => {
-          console.log('Tipo existente encontrado:', res.data);
-          // Si hay variante, la guardamos con el tipo existente
-          if (this.producto.variante) {
-            varianteObj.tipo = { 
-              idTipo: res.data.idTipo, 
-              nombre: res.data.nombre 
-            };
-            this.guardarVariante(varianteObj);
-          }
-        },
-        error: (err) => {
-          if (err.status === 404) {
-            console.log('Tipo no encontrado, se creará uno nuevo.');
-            this.tipoService.save(tipoObj).subscribe({
-              next: (res) => {
-                console.log('Tipo nuevo guardado:', res);
-                // Si hay variante, la guardamos con el tipo nuevo
-                if (this.producto.variante) {
-                  varianteObj.tipo = { 
-                    idTipo: res.data.idTipo, 
-                    nombre: res.data.nombre 
-                  };
-                  this.guardarVariante(varianteObj);
-                }
-              },
-              error: (err) => {
-                console.error('Error guardando tipo nuevo:', err);
-              },
-            });
-          } else {
-            console.error('Error buscando tipo:', err);
-          }
-        },
-      });
-    } else if (this.producto.variante) {
-      // Si solo hay variante sin tipo
-      this.guardarVariante(varianteObj);
-    }
+    // if (this.producto.tipo) {
+    //   this.tipoService.findByNombre(tipoObj.nombre).subscribe({
+    //     next: (res) => {
+    //       console.log('Tipo existente encontrado:', res.data);
+    //       // Si hay variante, la guardamos con el tipo existente
+    //       if (this.producto.variante) {
+    //         varianteObj.tipo = { 
+    //           idTipo: res.data.idTipo, 
+    //           nombre: res.data.nombre 
+    //         };
+    //         this.guardarVariante(varianteObj);
+    //       }
+    //     },
+    //     error: (err) => {
+    //       if (err.status === 404) {
+    //         console.log('Tipo no encontrado, se creará uno nuevo.');
+    //         this.tipoService.save(tipoObj).subscribe({
+    //           next: (res) => {
+    //             console.log('Tipo nuevo guardado:', res);
+    //             // Si hay variante, la guardamos con el tipo nuevo
+    //             if (this.producto.variante) {
+    //               varianteObj.tipo = { 
+    //                 idTipo: res.data.idTipo, 
+    //                 nombre: res.data.nombre 
+    //               };
+    //               this.guardarVariante(varianteObj);
+    //             }
+    //           },
+    //           error: (err) => {
+    //             console.error('Error guardando tipo nuevo:', err);
+    //           },
+    //         });
+    //       } else {
+    //         console.error('Error buscando tipo:', err);
+    //       }
+    //     },
+    //   });
+    // } else if (this.producto.variante) {
+    //   // Si solo hay variante sin tipo
+    //   this.guardarVariante(varianteObj);
+    // }
   }
 
   private guardarVariante(varianteObj: variante) {
@@ -889,15 +877,8 @@ addProperty(): void {
       codigoBarras: '',
       estado: 1,
       disponibleOnline: true,
-      tipo: '',
+ //     tipo: '',
       variante: '',
-      categoria: {
-        idCategoria: -1,
-        nombre: '',
-        descripcion: '',
-        estado: true,
-        urlImagen: '',
-      },
       subcategoria: {
         idSubcategoria: -1,
         nombre: '',
@@ -972,7 +953,7 @@ addProperty(): void {
   }
 
   onTipoInput(event: any): void {
-    this.producto.tipo = (event.target.value || '').trim() || null;
+    //this.producto = (event.target.value || '').trim() || null;
   }
 
   onVarianteInput(event: any): void {

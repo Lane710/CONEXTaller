@@ -46,22 +46,24 @@ export class RegistrarEnvioComponent implements OnInit, AfterViewInit {
     telefonoReceptor: '', 
     venta: undefined,
     pedido: undefined,
-    direccionEnvio: { 
+    direccionEnvio: {
       nombreDestinatario: '',
       apellidosDestinatario: '',
       direccion: '',
       barrio: '',
-      ciudad: 'Cercado (Tarija)', 
-      provinciaEstado: 'Tarija', 
-      codigoPostal: '0000', 
-      pais: 'Bolivia'
+      ciudad: 'Cercado (Tarija)',
+      provinciaEstado: 'Tarija',
+      codigoPostal: '0000',
+      pais: 'Bolivia',
+      usuario: {}
     },
-    metodoEnvio: undefined, // <-- CORRECCIÓN: Iniciar como 'undefined' para que el <select> funcione
+    metodoEnvio: {}, // <-- CORRECCIÓN: Iniciar como 'undefined' para que el <select> funcione
     empresaEnvio: 'FedEx',
     costoEnvio: 0,
     fechaEntregaEstimada: '',
     notas: '',
-    estado: 'PENDIENTE'
+    estado: 'PENDIENTE',
+    
   };
 
   origenEnvio: string = '';
@@ -110,10 +112,7 @@ export class RegistrarEnvioComponent implements OnInit, AfterViewInit {
       next: (response) => {
         if (response.success && response.data) {
           const ventaData: ventas = response.data;
-          this.envio.nombreReceptor = ventaData.cliente?.nombre || '';
-          this.envio.apellidosReceptor = `${ventaData.cliente?.appaterno || ''} ${ventaData.cliente?.apmaterno || ''}`.trim();
-          this.envio.telefonoReceptor = ventaData.cliente?.telefono || '';
-          this.envio.emailReceptor = ventaData.cliente?.email || '';
+          
         } else {
           this.showResponseModal(false, 'Error al Cargar Datos', response.message || 'No se encontraron datos para la venta.');
         }
@@ -187,7 +186,7 @@ export class RegistrarEnvioComponent implements OnInit, AfterViewInit {
             direccionEnvio: { idDireccionEnvio: nuevaDireccion.idDireccionEnvio } as direccionesEnvio,
             // --- ¡CORRECCIÓN 3: ESTA ES LA CLAVE! ---
             // Aplanamos el método de envío a solo el ID
-            metodoEnvio: { idMetodoEnvio: selectedMetodoId }
+            metodoEnvio: { idMetodoEnvio: selectedMetodoId, nombre: 'nose', costo:0 }
           };
 
           // Nos aseguramos de que el 'idVenta' esté en el objeto final

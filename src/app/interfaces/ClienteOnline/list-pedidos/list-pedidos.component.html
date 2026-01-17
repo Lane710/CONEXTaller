@@ -103,7 +103,7 @@
                       </div>
                       <div class="info-item">
                         <small class="text-muted">Nombre</small>
-                        <p class="mb-0 fw-medium">{{pedido.usuario.persona.nombre}} {{pedido.usuario.persona.apellidop}} {{pedido.usuario.persona.apellidom}}</p>
+                        <p class="mb-0 fw-medium">{{pedido.usuario.persona?.nombre}} {{pedido.usuario.persona?.apellidop}} {{pedido.usuario.persona?.apellidom}}</p>
                       </div>
                     </div>
                   </div>
@@ -349,9 +349,9 @@
                     <div class="info-item">
                       <small class="text-muted d-block mb-1">Nombre Completo</small>
                       <div class="fw-semibold text-dark">
-                        {{ pedidoSeleccionado.usuario.persona.nombre || '' }} 
-                        {{ pedidoSeleccionado.usuario.persona.apellidop || '' }} 
-                        {{ pedidoSeleccionado.usuario.persona.apellidom || '' }}
+                        {{ pedidoSeleccionado.usuario.persona?.nombre || '' }} 
+                        {{ pedidoSeleccionado.usuario.persona?.apellidop || '' }} 
+                        {{ pedidoSeleccionado.usuario.persona?.apellidom || '' }}
                       </div>
                     </div>
                   </div>

@@ -200,14 +200,7 @@ export class ModificarVentaComponent implements OnInit {
       email: this.emailCliente,
     } as clientes;
 
-    if (
-      clienteActualizado.nombre !== this.ventaExistente?.cliente?.nombre || //clienteActualizado.apellidos !== this.ventaExistente?.cliente?.apellidos ||
-      clienteActualizado.telefono !== this.ventaExistente?.cliente?.telefono ||
-      clienteActualizado.email !== this.ventaExistente?.cliente?.email
-    ) {
-      console.log('➡️ Actualizando datos del cliente...');
-      peticionesFinales.push(this.clienteS.update(clienteActualizado));
-    }
+    
 
     if (this.ventaExistente) {
       const ventaActualizada: ventas = {

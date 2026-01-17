@@ -23,6 +23,7 @@ export class PersonasService {
    */
   save(persona: personas): Observable<ApiResponse> {
     // HttpClient.post envía automáticamente el objeto como JSON con Content-Type: application/json
+    console.log(persona)
     return this.http.post<ApiResponse>(`${this.apiUrl}save`, persona);
   }
 

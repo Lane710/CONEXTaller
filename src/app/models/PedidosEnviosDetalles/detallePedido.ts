@@ -1,16 +1,25 @@
+// src/app/models/PedidoModel/detallePedido.ts
 import { productos } from '../ProductoStockModel/productos';
 import { pedidos } from './pedidos';
 
 export interface detallePedido {
-  idDetallePedido?: number;         // Long en Java → number en TS
-  pedido: pedidos;                  // Relación ManyToOne con pedidos
-  producto: productos;              // Relación ManyToOne con productos
-  cantidad: number;                 // Integer en Java → number en TS
-  precioUnitario: number;          // BigDecimal en Java → number en TS
-  subtotal?: number;               // Generado en la DB, opcional en TS
-  estado?: 'PENDIENTE' | 'CONFIRMADO' | 'EN_PROCESO' | 'ENVIADO' | 'ENTREGADO' | 'CANCELADO'; // Enum en Java → union type en TS
-  fechaCreacion?: string;          // OffsetDateTime en Java → string ISO en TS
-  fechaActualizacion?: string;     // OffsetDateTime en Java → string ISO en TS
+  idDetallePedido?: number;
+  
+  // Como usas @JsonIgnoreProperties en Java, el objeto pedido llegará 
+  // pero sin su propia lista de detalles para evitar recursión.
+  pedido: Partial<pedidos>; 
+  
+  producto: productos;
+  cantidad: number;
+  precioUnitario: number; 
+  
+  // Es opcional porque lo genera la base de datos
+  subtotal?: number; 
+  
+  // Union type para el Enum de Java
+  estado: 'PENDIENTE' | 'CONFIRMADO' | 'EN_PROCESO' | 'ENVIADO' | 'ENTREGADO' | 'CANCELADO';
+  
+  // En Java es LocalDate, así que llegará como "YYYY-MM-DD"
+  fechaCreacion?: string; 
+  fechaActualizacion?: string;
 }
-
-              

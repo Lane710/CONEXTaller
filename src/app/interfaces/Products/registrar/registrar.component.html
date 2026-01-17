@@ -268,7 +268,7 @@
             <select
               id="categoria"
               class="form-select"
-              [(ngModel)]="producto.categoria.idCategoria"
+              [(ngModel)]="producto.subcategoria.categoria"
               name="categoria"
               required
               #categoriaSelect="ngModel"
@@ -311,7 +311,7 @@
                 subCategoriaSelect.invalid &&
                 (subCategoriaSelect.dirty || subCategoriaSelect.touched)
               "
-              [disabled]="!producto.categoria.idCategoria"
+              [disabled]="!producto.subcategoria.categoria?.idCategoria"
             >
               <option [ngValue]="-1" disabled selected>Seleccione una subcategoría</option>
               @for (subcat of subcategoriasFiltradas; track subcat.idSubcategoria) {
@@ -340,7 +340,7 @@
               class="form-control"
               id="tipo"
               name="tipo"
-              [(ngModel)]="producto.tipo"
+              [(ngModel)]="producto.tiposAsignados"
               placeholder="Ej: Gaming, Oficina, etc."
             />
           </div>
@@ -364,7 +364,7 @@
             <select
               id="proveedor"
               class="form-select"
-              [(ngModel)]="producto.proveedor.idProveedor"
+              [(ngModel)]="producto.proveedor"
               name="proveedor"
               required
               #proveedorSelect="ngModel"

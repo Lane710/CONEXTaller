@@ -35,11 +35,18 @@ export class UsuariosService {
 
   // Cambiado id de String a string
   findById(username: string): Observable<ApiResponse> {
+    console.log(username)
+    return this.http.get<ApiResponse>(`${this.apiUrl}findById/${username}`);
+  }
+
+  findByIdMod(username: string): Observable<ApiResponse> {
+    console.log(username)
     return this.http.get<ApiResponse>(`${this.apiUrl}findById/${username}`);
   }
 
   // Cambiado 'usuarios' a 'Usuario'
   save(usuario: usuarios): Observable<ApiResponse> {
+    console.log(usuario)
     return this.http.post<ApiResponse>(`${this.apiUrl}save`, usuario);
   }
 

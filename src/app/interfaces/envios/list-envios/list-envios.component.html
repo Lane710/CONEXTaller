@@ -277,7 +277,7 @@
                 </div>
                 <div *ngIf="selectedEnvio.pedido" class="mt-2">
                   <strong class="text-primary">Cliente del Pedido:</strong><br>
-                  {{ selectedEnvio.pedido.usuario.persona.nombre }} 
+              <!--    {{ selectedEnvio.pedido.usuario.persona.nombre }} 
                   {{ selectedEnvio.pedido.usuario.persona.apellidop }} 
                   {{ selectedEnvio.pedido.usuario.persona.apellidom }}
                 </div>
@@ -285,7 +285,7 @@
                   <strong class="text-primary">Cliente de la Venta:</strong><br>
                   {{ selectedEnvio.venta.cliente.nombre }} 
                   {{ selectedEnvio.venta.cliente.appaterno }} 
-                  {{ selectedEnvio.venta.cliente.apmaterno }}
+                  {{ selectedEnvio.venta.cliente.apmaterno }}-->
                 </div>
               </div>
             </div>
@@ -344,16 +344,16 @@
                 <div class="d-flex justify-content-between border-bottom py-2">
                   <span class="text-muted">Dirección:</span>
 <p class="text-end" style="margin-bottom: 0;">
-  Barrio: {{ selectedEnvio.direccionEnvio?.barrio }}
+  Barrio: {{ selectedEnvio.direccionEnvio.barrio }}
 </p>
 <br>
 <p>
-  Calles:  {{ selectedEnvio.direccionEnvio?.direccion }}
+  Calles:  {{ selectedEnvio.direccionEnvio.direccion }}
 </p>
                 </div>
                 <div class="d-flex justify-content-between pt-2">
                   <span class="text-muted">Ciudad:</span>
-                  <span>{{ selectedEnvio.direccionEnvio?.ciudad }}</span>
+                  <span>{{ selectedEnvio.direccionEnvio.ciudad }}</span>
                 </div>
               </div>
             </div>

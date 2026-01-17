@@ -123,9 +123,9 @@ export class CarritoComponent implements OnInit, AfterViewInit {
     const detalle: DetalleCarrito = {
       stock: stockItem,
       cantidad: 1,
-      precioUnitario: (stockItem.producto.precio ?? 0).toString(),
+      precioUnitario: (stockItem.producto.precio ?? 0),
       idDetalleCarrito: 0,
-      subtotal: '',
+      subtotal: 0,
     };
 
     this.carritoService.agregarProductoACarrito(usuarioId, detalle).subscribe({
