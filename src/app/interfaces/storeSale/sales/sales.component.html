@@ -1,445 +1,543 @@
-<div class="row g-4 d-flex flex-column flex-lg-row">
-  <!-- Columna Izquierda: Lista de Productos Seleccionados -->
-  <div class="col-lg-7">
-    <h2 class="mt-5 mb-4">Productos Seleccionados</h2>
+<div class="container mt-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">
+        Registro de Venta
+      </li>
+    </ol>
+  </nav>
 
-    <div class="card shadow-sm mb-4">
-      <div class="card-body p-0">
-        <div class="table-responsive productos-container" 
-             [class.scroll-active]="productosPorVender.length > 5">
-          <table class="table table-hover mb-0">
-            <thead class="table-primary">
-              <tr>
-                <th scope="col" style="width: 80px;">Imagen</th>
-                <th scope="col" style="width: 200px;">Producto</th>
-                <th scope="col" style="width: 120px;">Precio Unitario</th>
-                <th scope="col" style="width: 100px;" class="text-center">Stock</th>
-                <th scope="col" style="width: 150px;" class="text-center">Cantidad</th>
-                <th scope="col" style="width: 120px;" class="text-center">Subtotal</th>
-                <th scope="col" style="width: 80px;" class="text-center">Acción</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let item of productosPorVender; let i = index">
-                <td class="align-middle">
-                  <img
-                    [src]="item.producto.imagen || 'https://via.placeholder.com/400x300'"
-                    alt="Producto"
-                    class="img-thumbnail product-image"
-                    style="width: 50px; height: 50px; object-fit: cover;"
-                  />
-                </td>
-                <td class="align-middle">
-                  <strong>{{ item.producto.nombre }}</strong>
-                  <br>
-                  <small class="text-muted">{{ item.producto.marca }}</small>
-                </td>
-                <td class="align-middle">{{ item.precioUnitario | currency:'Bs ':'symbol':'1.2-2' }}</td>
-                <td class="align-middle text-center">
-                  <span [class]="getStockClass(item.producto.idProducto || 0)">
-                    {{ obtenerStockDisponible(item.producto.idProducto || 0) }}
-                  </span>
-                </td>
-                <td class="align-middle text-center">
-                  <div class="quantity-control">
-                    <button
-                      class="btn btn-outline-secondary btn-sm minus-btn"
-                      [disabled]="item.cantidad <= 1"
-                      (click)="restarCantidad(i)"
-                    >
-                      <i class="fas fa-minus">-</i>
-                    </button>
-                    <input
-                      #cantidadInput
-                      class="quantity-value"
-                      [value]="item.cantidad"
-                      (blur)="actualizarCantidadManual(i, $event)"
-                      (keydown)="soloNumeros($event)"
-                      type="number"
-                      min="1"
-                      [max]="obtenerStockDisponible(item.producto.idProducto||0)"
+  <h1 class="mb-4">Carrito de Ventas</h1>
+
+  <div class="row g-4 d-flex flex-column flex-lg-row">
+    <div class="col-lg-7">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-shopping-cart me-2"></i>Productos Seleccionados
+          </h5>
+        </div>
+        <div class="card-body p-0">
+          <div
+            class="table-responsive productos-container"
+            [class.scroll-active]="productosPorVender.length > 5"
+          >
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" style="width: 80px">Imagen</th>
+                  <th scope="col" style="width: 200px">Producto</th>
+                  <th scope="col" style="width: 120px">Precio Unitario</th>
+                  <th scope="col" style="width: 100px" class="text-center">
+                    Stock
+                  </th>
+                  <th scope="col" style="width: 150px" class="text-center">
+                    Cantidad
+                  </th>
+                  <th scope="col" style="width: 120px" class="text-center">
+                    Subtotal
+                  </th>
+                  <th scope="col" style="width: 80px" class="text-center">
+                    Acción
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of productosPorVender; let i = index">
+                  <td class="align-middle">
+                    <img
+                      [src]="
+                        item.producto.imagen ||
+                        'https://via.placeholder.com/400x300'
+                      "
+                      alt="Producto"
+                      class="img-thumbnail product-image"
+                      style="width: 50px; height: 50px; object-fit: cover"
                     />
-                    <button
-                      class="btn btn-outline-secondary btn-sm plus-btn"
-                      [disabled]="item.cantidad >= obtenerStockDisponible(item.producto.idProducto||0)"
-                      (click)="sumarCantidad(i)"
+                  </td>
+                  <td class="align-middle">
+                    <strong class="text-primary">{{
+                      item.producto.nombre
+                    }}</strong>
+                    <br />
+                    <small class="text-muted">{{ item.producto.marca }}</small>
+                    <span
+                      *ngIf="item.producto.requiereSerial"
+                      class="badge bg-warning text-dark ms-2"
+                      style="font-size: 0.6rem"
+                      ><i class="fas fa-barcode"></i> Serial</span
                     >
-                      <i class="fas fa-plus">+</i>
+                  </td>
+                  <td class="align-middle">
+                    {{
+                      item.precioUnitario | currency: "Bs " : "symbol" : "1.2-2"
+                    }}
+                  </td>
+                  <td class="align-middle text-center">
+                    <span
+                      [class]="getStockClass(item.producto.idProducto || 0)"
+                    >
+                      {{
+                        obtenerStockDisponible(item.producto.idProducto || 0)
+                      }}
+                    </span>
+                  </td>
+                  <td class="align-middle text-center">
+                    <div
+                      class="quantity-control d-flex align-items-center justify-content-center gap-1"
+                    >
+                      <button
+                        class="btn btn-outline-secondary btn-sm"
+                        [disabled]="item.cantidad <= 1"
+                        (click)="restarCantidad(i)"
+                      >
+                        <i class="fas fa-minus"></i>
+                      </button>
+                      <input
+                        #cantidadInput
+                        class="form-control form-control-sm text-center"
+                        style="width: 60px"
+                        [value]="item.cantidad"
+                        (blur)="actualizarCantidadManual(i, $event)"
+                        (keydown)="soloNumeros($event)"
+                        type="number"
+                        min="1"
+                        [max]="
+                          obtenerStockDisponible(item.producto.idProducto || 0)
+                        "
+                      />
+                      <button
+                        class="btn btn-outline-secondary btn-sm"
+                        [disabled]="
+                          item.cantidad >=
+                          obtenerStockDisponible(item.producto.idProducto || 0)
+                        "
+                        (click)="sumarCantidad(i)"
+                      >
+                        <i class="fas fa-plus"></i>
+                      </button>
+                    </div>
+                  </td>
+                  <td class="align-middle text-center fw-bold text-success">
+                    {{
+                      item.cantidad * item.precioUnitario
+                        | currency: "Bs " : "symbol" : "1.2-2"
+                    }}
+                  </td>
+                  <td class="align-middle text-center">
+                    <button
+                      (click)="eliminarProducto(i)"
+                      class="btn btn-sm btn-outline-danger p-1 border-0"
+                      title="Eliminar producto"
+                    >
+                      <i class="fas fa-trash"></i>
                     </button>
-                  </div>
-                </td>
-                <td class="align-middle text-center fw-bold text-success">
-                  {{ (item.cantidad * item.precioUnitario) | currency:'Bs ':'symbol':'1.2-2' }}
-                </td>
-                <td class="align-middle text-center">
-                  <button
-                    (click)="eliminarProducto(i)"
-                    class="btn btn-sm btn-outline-danger p-1 border-0"
-                    title="Eliminar producto"
-                  >
-                    <img src="/icon_SaleOnline/ic--outline-cancel.svg" alt="Eliminar">
-                  </button>
-                </td>
-              </tr>
-              <tr *ngIf="productosPorVender.length === 0">
-                <td colspan="7" class="text-center text-muted py-4">
-                  <i class="fas fa-box-open fa-2x mb-2 d-block"></i>
-                  No hay productos seleccionados para la venta.
-                  <br>
-                  <button class="btn btn-primary mt-2" (click)="volverAPreventa()">
-                    <i class="fas fa-arrow-left me-2"></i>Ir a Seleccionar Productos
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  </td>
+                </tr>
+                <tr *ngIf="productosPorVender.length === 0">
+                  <td colspan="7" class="text-center text-muted py-5">
+                    <i
+                      class="fas fa-box-open fa-3x mb-3 d-block text-secondary"
+                    ></i>
+                    <h5>No hay productos en el carrito</h5>
+                    <button
+                      class="btn btn-primary mt-3"
+                      (click)="volverAPreventa()"
+                    >
+                      <i class="fas fa-arrow-left me-2"></i>Volver a la tienda
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Columna Derecha: Resumen de Venta -->
-  <div class="col-lg-5">
-    <div class="ticket ticket-section-sticky">
-      <div class="p-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h3 class="mb-0 text-primary">
-            <i class="fas fa-receipt me-2"></i>Resumen de Venta
-          </h3>
-          <span class="badge bg-primary rounded-pill p-2">
-            {{ productosPorVender.length }}
-            {{ productosPorVender.length === 1 ? "producto" : "productos" }}
-          </span>
-        </div>
-
-        <!-- Resumen de Compra -->
-        <div class="totales-section bg-light p-4 rounded-4 shadow-sm mb-4">
-          <h5 class="border-bottom pb-2 mb-3 fw-semibold">Detalles de la Venta</h5>
-          
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="text-secondary">Subtotal:</span>
-            <span class="fw-semibold">{{ calcularSubtotal() | currency:'Bs ':'symbol':'1.2-2' }}</span>
+    <div class="col-lg-5">
+      <div class="ticket ticket-section-sticky">
+        <div class="p-4 bg-white rounded shadow-sm border">
+          <div
+            class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3"
+          >
+            <h4 class="mb-0 text-dark">
+              <i class="fas fa-receipt me-2 text-primary"></i>Resumen de Venta
+            </h4>
+            <span class="badge bg-primary fs-6"
+              >{{ productosPorVender.length }} items</span
+            >
           </div>
-          
-          <!-- Sección de Descuento con Botón Aplicar -->
-          <div class="descuento-section mb-3 py-2">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <span class="text-secondary">Descuento General:</span>
-              <span class="fw-semibold text-danger">- {{ descuentoGeneral | currency:'Bs ':'symbol':'1.2-2' }}</span>
-            </div>
-            <div class="d-flex gap-2 align-items-center">
-              <div class="input-group input-group-sm flex-grow-1">
-                <span class="input-group-text bg-white">Bs</span>
-                <input
-                  #descuentoInput
-                  type="number"
-                  class="form-control form-control-sm"
-                  step="0.01"
-                  min="0"
-                  [max]="calcularSubtotal() * 0.5"
-                  placeholder="0.00"
-                  [disabled]="productosPorVender.length === 0"
-                  [(ngModel)]="descuentoInputValue"
-                  (keydown)="soloNumerosDecimales($event)"
-                  (keyup.enter)="aplicarDescuento()"
-                />
-              </div>
+
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-secondary fs-5">Subtotal:</span>
+            <span class="fw-semibold fs-5">{{
+              calcularSubtotal() | currency: "Bs " : "symbol" : "1.2-2"
+            }}</span>
+          </div>
+
+          <div class="bg-light p-3 rounded mb-3 border">
+            <label class="form-label text-secondary small fw-bold mb-1"
+              >Aplicar Descuento (Bs)</label
+            >
+            <div class="input-group input-group-sm mb-2">
+              <span class="input-group-text bg-white"
+                ><i class="fas fa-tag text-danger"></i
+              ></span>
+              <input
+                type="number"
+                class="form-control"
+                step="0.01"
+                min="0"
+                [max]="calcularSubtotal() * 0.5"
+                [disabled]="productosPorVender.length === 0"
+                [(ngModel)]="descuentoInputValue"
+                (keydown)="soloNumerosDecimales($event)"
+                (keyup.enter)="aplicarDescuento()"
+                placeholder="0.00"
+              />
               <button
-                class="btn btn-primary btn-sm aplicar-descuento-btn"
+                class="btn btn-dark"
                 [disabled]="productosPorVender.length === 0"
                 (click)="aplicarDescuento()"
-                title="Aplicar descuento"
               >
-                <i class="fas fa-check me-1"></i>Aplicar
+                Aplicar
               </button>
             </div>
-            <small class="text-muted mt-1 d-block">
-              Máximo permitido: {{ calcularSubtotal() * 0.5 | currency:'Bs ':'symbol':'1.2-2' }} (50% del subtotal)
-            </small>
-            <div *ngIf="mensajeDescuento" 
-                 [class]="mensajeDescuentoClase" 
-                 class="mt-2 small p-2 rounded">
+            <div
+              class="d-flex justify-content-between text-danger fw-bold"
+              *ngIf="descuentoGeneral > 0"
+            >
+              <span>Descuento aplicado:</span>
+              <span
+                >-
+                {{
+                  descuentoGeneral | currency: "Bs " : "symbol" : "1.2-2"
+                }}</span
+              >
+            </div>
+            <div
+              *ngIf="mensajeDescuento"
+              [class]="mensajeDescuentoClase"
+              class="mt-2 small p-2 rounded text-center"
+            >
               {{ mensajeDescuento }}
             </div>
           </div>
-          
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="text-secondary">Total de Productos:</span>
-            <span class="fw-semibold">{{ obtenerTotalProductos() }}</span>
-          </div>
-          
+
           <div
-            class="d-flex justify-content-between align-items-center pt-3 border-top fw-bold fs-5 text-primary"
+            class="d-flex justify-content-between align-items-center pt-3 border-top mb-4"
           >
-            <span>Total a Pagar:</span>
-            <span>{{ calcularTotal() | currency:'Bs ':'symbol':'1.2-2' }}</span>
+            <span class="fw-bold fs-4 text-dark">Total a Pagar:</span>
+            <span class="fw-bold fs-3 text-success">{{
+              calcularTotal() | currency: "Bs " : "symbol" : "1.2-2"
+            }}</span>
+          </div>
+
+          <div class="d-grid gap-2">
+            <button
+              class="btn btn-success btn-lg py-3 fw-bold shadow-sm"
+              [disabled]="productosPorVender.length === 0"
+              (click)="abrirModalConfirmacion()"
+            >
+              <i class="fas fa-check-circle me-2"></i> Procesar Pago
+            </button>
+            <button
+              class="btn btn-outline-danger py-2 fw-bold mt-2"
+              (click)="volverAPreventa()"
+            >
+              Cancelar Venta
+            </button>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-        <!-- Botones de Acción -->
-        <div class="d-grid gap-3">
-          <button
-            class="btn btn-outline-danger btn-lg py-3 rounded-3"
-            (click)="volverAPreventa()"
+<div
+  class="modal fade"
+  [class.show]="mostrarConfirmModal"
+  [style.display]="mostrarConfirmModal ? 'block' : 'none'"
+  tabindex="-1"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">
+          <i class="fas fa-user-check me-2"></i>Datos de Facturación / Entrega
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          (click)="cerrarModalConfirmacion()"
+        ></button>
+      </div>
+      <div class="modal-body bg-light">
+        <form #clienteVentaForm="ngForm">
+          <div class="row bg-white p-3 rounded shadow-sm mb-3 mx-1">
+            <div class="col-md-6 mb-3 mb-md-0">
+              <label
+                for="clienteBuscador"
+                class="form-label text-muted fw-bold small"
+                >Buscar cliente existente por CI o Nombre:</label
+              >
+              <div class="input-group">
+                <span class="input-group-text bg-white"
+                  ><i class="fas fa-search text-primary"></i
+                ></span>
+                <input
+                  type="text"
+                  class="form-control border-start-0"
+                  id="clienteBuscador"
+                  placeholder="Ej: 1234567 o Juan"
+                  name="clienteBuscador"
+                  [(ngModel)]="clienteNombreBuscador"
+                  (input)="filtrarClientes()"
+                  (blur)="clientesFiltrados = []"
+                />
+              </div>
+              <ul
+                class="list-group position-absolute w-100 z-3 shadow mt-1"
+                *ngIf="clientesFiltrados.length > 0"
+                style="max-height: 200px; overflow-y: auto"
+              >
+                <li
+                  *ngFor="let cliente of clientesFiltrados"
+                  class="list-group-item list-group-item-action cursor-pointer"
+                  (mousedown)="seleccionarCliente(cliente)"
+                >
+                  <strong>{{ cliente.ci }}</strong> - {{ cliente.razonSocial }}
+                </li>
+              </ul>
+            </div>
+
+            <div class="col-md-6">
+              <label
+                for="metodoPago"
+                class="form-label text-muted fw-bold small"
+                >Método de Pago:</label
+              >
+              <select
+                class="form-select fw-bold text-primary"
+                name="metodoDePago"
+                id="metodoPago"
+                required
+                #metodoDePago="ngModel"
+                [(ngModel)]="metodoDePagoSeleccionado"
+                (change)="obtenerMetodoDePago(metodoDePago.value)"
+              >
+                <option value="efectivo">💵 Efectivo</option>
+                <option value="QR">📱 QR / Transferencia</option>
+              </select>
+            </div>
+          </div>
+
+          <div
+            class="alert alert-info py-2 mx-1 border-info d-flex align-items-center"
+            role="alert"
           >
-            <i class="fas fa-arrow-left me-2"></i> Volver a Preventa
-          </button>
-          <button
-            class="btn btn-success btn-lg py-3 rounded-3"
-            [disabled]="productosPorVender.length === 0"
-            (click)="abrirModalConfirmacion()"
-          >
-            <i class="fas fa-check-circle me-2"></i> Confirmar Venta
-          </button>
+            <i class="fas fa-bolt fs-4 me-3 text-info"></i>
+            <div>
+              <strong>¿Venta rápida sin factura a nombre?</strong><br />
+              Ingrese <strong>0</strong> en el campo CI para registrar como
+              Consumidor Final (S/N).
+            </div>
+          </div>
+
+          <div class="bg-white p-4 rounded shadow-sm mx-1">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="ci" class="form-label fw-bold"
+                  >CI / NIT <span class="text-danger">*</span></label
+                >
+                <input
+                  type="text"
+                  class="form-control form-control-lg fw-bold text-primary"
+                  id="ci"
+                  name="ci"
+                  required
+                  [(ngModel)]="inputCi"
+                  #ciInput="ngModel"
+                  [disabled]="isCiDisabled"
+                  (input)="verificarVentaRapida()"
+                  placeholder="Nro de Documento"
+                />
+                <div
+                  *ngIf="ciInput.invalid && (ciInput.dirty || ciInput.touched)"
+                  class="text-danger small mt-1"
+                >
+                  El CI es obligatorio
+                </div>
+              </div>
+
+              <div class="col-md-8 mb-3">
+                <label for="clienteNombre" class="form-label fw-bold"
+                  >Nombre(s)
+                  <span *ngIf="!esVentaRapida" class="text-danger"
+                    >*</span
+                  ></label
+                >
+                <input
+                  type="text"
+                  class="form-control form-control-lg"
+                  id="clienteNombre"
+                  name="clienteNombre"
+                  [required]="!esVentaRapida"
+                  [disabled]="esVentaRapida"
+                  [(ngModel)]="inputNombre"
+                  #nombreInput="ngModel"
+                  placeholder="Nombres del cliente"
+                />
+                <div
+                  *ngIf="
+                    nombreInput.invalid &&
+                    (nombreInput.dirty || nombreInput.touched) &&
+                    !esVentaRapida
+                  "
+                  class="text-danger small mt-1"
+                >
+                  El nombre es obligatorio
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="apellidoPaterno" class="form-label fw-bold"
+                  >Apellido Paterno
+                  <span *ngIf="!esVentaRapida" class="text-danger"
+                    >*</span
+                  ></label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="apellidoPaterno"
+                  name="apellidoPaterno"
+                  [required]="!esVentaRapida"
+                  [disabled]="esVentaRapida"
+                  [(ngModel)]="inputApellidoP"
+                  #apellidoPInput="ngModel"
+                  placeholder="Apellido paterno"
+                />
+                <div
+                  *ngIf="
+                    apellidoPInput.invalid &&
+                    (apellidoPInput.dirty || apellidoPInput.touched) &&
+                    !esVentaRapida
+                  "
+                  class="text-danger small mt-1"
+                >
+                  El apellido paterno es obligatorio
+                </div>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="apellidoMaterno" class="form-label fw-bold"
+                  >Apellido Materno</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="apellidoMaterno"
+                  name="apellidoMaterno"
+                  [disabled]="esVentaRapida"
+                  [(ngModel)]="inputApellidoM"
+                  placeholder="Apellido materno (opcional)"
+                />
+              </div>
+            </div>
+
+            <div class="mb-2 mt-2 border-top pt-3">
+              <label
+                for="ventaNotas"
+                class="form-label text-muted small fw-bold"
+                ><i class="fas fa-sticky-note me-1"></i>Notas de la Venta
+                (opcional):</label
+              >
+              <textarea
+                class="form-control"
+                id="ventaNotas"
+                rows="2"
+                placeholder="Ej: Se entregó con bolsa de regalo..."
+                [(ngModel)]="notaVenta"
+                name="notaVenta"
+              ></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer bg-white border-top-0 pt-0">
+        <div class="w-100 d-flex justify-content-between align-items-center">
+          <div class="fs-4">
+            Total:
+            <strong class="text-success">{{
+              calcularTotal() | currency: "Bs " : "symbol" : "1.2-2"
+            }}</strong>
+          </div>
+          <div>
+            <button
+              type="button"
+              class="btn btn-secondary me-2"
+              (click)="cerrarModalConfirmacion()"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary btn-lg fw-bold"
+              (click)="realizarVenta()"
+              [disabled]="!clienteVentaForm.form.valid"
+            >
+              <i class="fas fa-save me-2"></i>Registrar Venta
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal de Confirmación -->
-<div class="modal fade" [class.show]="mostrarConfirmModal" [style.display]="mostrarConfirmModal ? 'block' : 'none'" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Confirmar Venta</h5>
-                <button
-                    type="button"
-                    class="btn-close btn-close-white"
-                    (click)="cerrarModalConfirmacion()"
-                ></button>
-            </div>
-            <div class="modal-body">
-                <p class="mb-4">
-                    Complete los datos del cliente para registrar la venta.
-                </p>
-                <form #clienteVentaForm="ngForm">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="clienteBuscador" class="form-label">Buscar cliente existente:</label>
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="clienteBuscador"
-                                    placeholder="Buscar por nombre completo"
-                                    name="clienteBuscador"
-                                    [(ngModel)]="clienteNombreBuscador"
-                                    (input)="filtrarClientes()"
-                                    (blur)="clientesFiltrados = []"
-                                />
-                                <ul
-                                    class="list-group mt-1"
-                                    *ngIf="clientesFiltrados.length > 0"
-                                >
-                                    <li
-                                        *ngFor="let cliente of clientesFiltrados"
-                                        class="list-group-item list-group-item-action"
-                                        (mousedown)="seleccionarCliente(cliente)"
-                                    >
-<!--                                        {{ cliente.nombre }} {{ cliente.appaterno }}
-                                        {{ cliente.apmaterno }}-->
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="metodoPago" class="form-label">Método de Pago:</label>
-                                <select
-                                    class="form-control rounded-pill"
-                                    name="metodoDePago"
-                                    id="metodoPago"
-                                    required
-                                    #metodoDePago="ngModel"
-                                    [(ngModel)]="metodoDePagoSeleccionado"
-                                    (change)="obtenerMetodoDePago(metodoDePago.value)"
-                                >
-                                    <option value="efectivo">Efectivo</option>
-                                    <option value="QR">QR</option>
-                                </select>
-                                <div *ngIf="metodoDePago.invalid && (metodoDePago.dirty || metodoDePago.touched)" class="text-danger small">
-                                    <div *ngIf="metodoDePago.errors?.['required']">El método de pago es obligatorio</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <hr />
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="ci" class="form-label">CI <span class="text-danger">*</span>:</label>
-                                <input
-                                    type="number"
-                                    class="form-control"
-                                    id="ci"
-                                    name="numeroci"
-                                    required
-                                    min="1"
-                                    [(ngModel)]="clienteVenta.ci"
-                                    #ciInput="ngModel"
-                                    [disabled]="isCiDisabled"
-                                />
-                                <div *ngIf="ciInput.invalid && (ciInput.dirty || ciInput.touched)" class="text-danger small">
-                                    <div *ngIf="ciInput.errors?.['required']">El CI es obligatorio</div>
-                                    <div *ngIf="ciInput.errors?.['min']">El CI debe ser mayor a 0</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="clienteNombre" class="form-label">Nombre <span class="text-danger">*</span>:</label>
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="clienteNombre"
-                                    name="clienteNombre"
-                                    required
-                                    minlength="2"
-                                    [(ngModel)]="clienteVenta"
-                                    #nombreInput="ngModel"
-                                />
-                                <div *ngIf="nombreInput.invalid && (nombreInput.dirty || nombreInput.touched)" class="text-danger small">
-                                    <div *ngIf="nombreInput.errors?.['required']">El nombre es obligatorio</div>
-                                    <div *ngIf="nombreInput.errors?.['minlength']">El nombre debe tener al menos 2 caracteres</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="apellidoPaterno" class="form-label">Apellido Paterno <span class="text-danger">*</span>:</label>
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="apellidoPaterno"
-                                    name="apellidoPaterno"
-                                    required
-                                    minlength="2"
-                                    [(ngModel)]="clienteVenta"
-                                    #apellidoPInput="ngModel"
-                                />
-                                <div *ngIf="apellidoPInput.invalid && (apellidoPInput.dirty || apellidoPInput.touched)" class="text-danger small">
-                                    <div *ngIf="apellidoPInput.errors?.['required']">El apellido paterno es obligatorio</div>
-                                    <div *ngIf="apellidoPInput.errors?.['minlength']">El apellido paterno debe tener al menos 2 caracteres</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="apellidoMaterno" class="form-label">Apellido Materno:</label>
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="apellidoMaterno"
-                                    name="apellidoMaterno"
-                                    [(ngModel)]="clienteVenta"
-                                    #apellidoMInput="ngModel"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="numeroCliente" class="form-label">Celular (opcional):</label>
-                                <input
-                                    type="tel"
-                                    class="form-control"
-                                    id="numeroCliente"
-                                    name="numeroCliente"
-                                    pattern="[0-9]*"
-                                    minlength="7"
-                                    maxlength="15"
-                                    [(ngModel)]="clienteVenta"
-                                    #telefonoInput="ngModel"
-                                />
-                                <div *ngIf="telefonoInput.invalid && (telefonoInput.dirty || telefonoInput.touched)" class="text-danger small">
-                                    <div *ngIf="telefonoInput.errors?.['pattern']">El celular debe contener solo números</div>
-                                    <div *ngIf="telefonoInput.errors?.['minlength']">El celular debe tener al menos 7 dígitos</div>
-                                    <div *ngIf="telefonoInput.errors?.['maxlength']">El celular no puede tener más de 15 dígitos</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="ventaNotas" class="form-label">Notas (opcional):</label>
-                        <textarea
-                            class="form-control"
-                            id="ventaNotas"
-                            rows="3"
-                            placeholder="Ej: Se realizó un descuento de promoción"
-                            [(ngModel)]="notaVenta"
-                            name="notaVenta"
-                        ></textarea>
-                    </div>
-
-                    <!-- Resumen de la venta en el modal -->
-                    <div class="card mt-4">
-                        <div class="card-header bg-light">
-                            <h6 class="mb-0">Resumen de la Venta</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <span>Subtotal:</span>
-                                <span class="fw-bold">{{ calcularSubtotal() | currency:'Bs ':'symbol':'1.2-2' }}</span>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <span>Descuento:</span>
-                                <span class="fw-bold text-danger">- {{ descuentoGeneral | currency:'Bs ':'symbol':'1.2-2' }}</span>
-                            </div>
-                            <hr>
-                            <div class="d-flex justify-content-between fs-5">
-                                <span class="fw-bold">Total:</span>
-                                <span class="fw-bold text-success">{{ calcularTotal() | currency:'Bs ':'symbol':'1.2-2' }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    (click)="cerrarModalConfirmacion()"
-                >
-                    Cancelar
-                </button>
-                <button
-                    type="button"
-                    class="btn btn-primary"
-                    (click)="realizarVenta()"
-                    [disabled]="!clienteVentaForm.form.valid"
-                >
-                    Confirmar Venta
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal de Éxito -->
-<div class="modal fade" [class.show]="mostrarSuccessModal" [style.display]="mostrarSuccessModal ? 'block' : 'none'" aria-labelledby="successModalLabel" aria-hidden="true">
+<div
+  class="modal fade"
+  [class.show]="mostrarSuccessModal"
+  [style.display]="mostrarSuccessModal ? 'block' : 'none'"
+  tabindex="-1"
+  style="z-index: 1060"
+>
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
+    <div class="modal-content border-0">
       <div class="modal-body text-center p-5">
-        <div class="success-icon mb-4" style="font-size: 4rem; color: #28a745;">✓</div>
-        <h5 class="modal-title mb-3" id="successModalLabel">¡Venta Registrada con Éxito!</h5>
-        <p class="mb-4">La transacción se ha completado correctamente.</p>
-        <button type="button" class="btn btn-primary" (click)="cerrarModalExito()">Aceptar</button>
+        <div class="mb-4 text-success">
+          <i class="fas fa-check-circle" style="font-size: 5rem"></i>
+        </div>
+        <h4 class="modal-title mb-3 fw-bold">¡Venta Registrada con Éxito!</h4>
+        <p class="text-muted mb-4">
+          La transacción ha sido guardada en la base de datos.
+        </p>
+        <button
+          type="button"
+          class="btn btn-success btn-lg px-5 rounded-pill"
+          (click)="cerrarModalExito()"
+        >
+          Aceptar y Continuar
+        </button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Backdrop para los modales -->
-<div class="modal-backdrop fade show" 
-     *ngIf="mostrarConfirmModal || mostrarSuccessModal"
-     (click)="cerrarModales()">
-</div>
+<div
+  class="modal-backdrop fade show"
+  *ngIf="mostrarConfirmModal || mostrarSuccessModal"
+  (click)="cerrarModales()"
+></div>
+
+<app-modal-scan
+  *ngIf="mostrarScanModal"
+  [detallesGuardados]="detallesGuardadosParaScan"
+  (onConfirm)="onScanCompleted()"
+>
+</app-modal-scan>

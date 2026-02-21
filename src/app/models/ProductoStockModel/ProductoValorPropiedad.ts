@@ -14,5 +14,5 @@ export interface ProductoValorPropiedad {
 
   // Relación con el producto padre
   // Se usa Partial para evitar ciclos infinitos al serializar
-  producto?: Partial<productos>; 
+  producto: Partial<productos>; 
 }

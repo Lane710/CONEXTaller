@@ -118,7 +118,7 @@ export class ListarComponent implements OnInit, AfterViewInit {
     this.stockService.findAll().subscribe({
       next: (response: ApiResponse) => {
         if (response && response.data) {
-          console.log('Respuesta de stock recibida:', response);
+          
           const stockData = response.data as stock[];
 
           // 1. Ordenar la lista (del más nuevo al más viejo)
@@ -212,7 +212,7 @@ export class ListarComponent implements OnInit, AfterViewInit {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     this.paginatedStocks = this.filteredStocks.slice(startIndex, endIndex);
-    console.log('Paginated Stocks:', this.paginatedStocks);
+    
   }
 
   /**
@@ -303,7 +303,7 @@ export class ListarComponent implements OnInit, AfterViewInit {
   }
 
   getCategoryName(idCategoria: number | undefined): string {
-    console.log('ID de categoría recibido:', idCategoria);  
+    //
     if (idCategoria === undefined || idCategoria === null) {
       return 'N/A';
     }
@@ -315,12 +315,12 @@ export class ListarComponent implements OnInit, AfterViewInit {
 
   verDetallesStock(stockItem: stock): void {
     this.stockSeleccionado = stockItem;
-    console.log('eikfujhsiepufhnsiuef', stockItem);
+    console.log(this.stockSeleccionado)
     this.modalDetallesProducto?.show();
   }
 
   abrirModalConfirmacion(stockItem: stock): void {
-    console.log('Stock seleccionado para cambio de estado:', stockItem);
+    
     this.stockSeleccionado = stockItem;
     this.confirmarAccionModal?.show();
   }
@@ -390,8 +390,8 @@ export class ListarComponent implements OnInit, AfterViewInit {
   abrirModalStock(stock: stock): void {
     this.modStockValue = stock;
     this.cantidadStock = stock.cantidad;
-    console.log('Cargar stock cantidad:', this.cantidadStock);
-    console.log('Modificar stock para:', stock);
+    
+    
 
     setTimeout(() => {
       if (this.stockModalInstance) {

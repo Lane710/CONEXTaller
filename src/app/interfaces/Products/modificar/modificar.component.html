@@ -4,15 +4,18 @@
       <i class="bi bi-pencil-square me-2"></i>Modificar Producto y Stock
     </h1>
 
-    <!-- ========== SECCIÓN: INDICADOR DE CARGA ========== -->
-    <div *ngIf="isLoading" class="alert alert-info text-center" role="alert">
+    <div
+      *ngIf="cargando"
+      class="alert alert-info text-center sticky-top shadow-sm"
+      role="alert"
+      style="z-index: 1050"
+    >
       <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-      Cargando...
+      <strong>Procesando...</strong> Por favor espere.
     </div>
 
-    <form (ngSubmit)="onSubmit()" #productForm="ngForm" *ngIf="producto">
-      <!-- ========== SECCIÓN: DETALLES BÁSICOS DEL PRODUCTO ========== -->
-      <fieldset class="border p-3 mb-4 rounded shadow-sm">
+    <form (ngSubmit)="f.form.valid && datosFormulario()" #f="ngForm" novalidate>
+      <fieldset class="border p-3 mb-4 rounded shadow-sm" [disabled]="cargando">
         <legend class="float-none w-auto px-2 text-secondary h5">
           <i class="bi bi-box me-2"></i>Detalles del Producto
         </legend>
@@ -25,12 +28,11 @@
               type="text"
               id="nombre"
               class="form-control"
-              placeholder="Ej: Teclado Mecánico RGB"
               [(ngModel)]="producto.nombre"
               name="nombre"
               required
-              minlength="3"
-              maxlength="255"
+              minlength="2"
+              maxlength="40"
               #nombreField="ngModel"
               [class.is-invalid]="
                 nombreField.invalid &&
@@ -38,225 +40,173 @@
               "
             />
             <div
+              class="invalid-feedback"
               *ngIf="
                 nombreField.invalid &&
                 (nombreField.dirty || nombreField.touched)
               "
-              class="invalid-feedback"
             >
               <div *ngIf="nombreField.errors?.['required']">
-                El nombre del producto es obligatorio.
+                El nombre es obligatorio.
               </div>
               <div *ngIf="nombreField.errors?.['minlength']">
-                Mínimo 3 caracteres.
+                Mínimo 2 caracteres.
               </div>
               <div *ngIf="nombreField.errors?.['maxlength']">
-                Máximo 255 caracteres.
+                Máximo 40 caracteres.
               </div>
             </div>
           </div>
+
           <div class="col-md-6">
             <label for="precio" class="form-label"
               >Precio de Venta <span class="text-danger">*</span></label
             >
-            <div class="input-group">
+            <div class="input-group has-validation">
               <span class="input-group-text">Bs.</span>
               <input
-                type="number"
-                id="precio"
-                class="form-control"
-                placeholder="Ej: 65.99"
-                [(ngModel)]="producto.precio"
                 name="precio"
+                [(ngModel)]="producto.precio"
+                type="number"
+                class="form-control"
                 required
-                min="0.01"
-                step="0.01"
+                min="0.1"
                 #precioField="ngModel"
                 [class.is-invalid]="
                   precioField.invalid &&
                   (precioField.dirty || precioField.touched)
                 "
               />
-              <div
-                *ngIf="
-                  precioField.invalid &&
-                  (precioField.dirty || precioField.touched)
-                "
-                class="invalid-feedback"
-              >
-                <div *ngIf="precioField.errors?.['required']">
-                  El precio de venta es obligatorio.
-                </div>
-                <div *ngIf="precioField.errors?.['min']">
-                  El precio debe ser mayor a 0.
-                </div>
-              </div>
+              <div class="invalid-feedback">El precio debe ser mayor a 0.</div>
             </div>
           </div>
 
-          <!-- NUEVO CAMPO: Precio de Compra -->
           <div class="col-md-6">
-            <label for="precioCompra" class="form-label"
-              >Precio de Compra
-              <span class="text-muted">(Opcional)</span></label
+            <label class="form-label"
+              >Precio Compra <span class="text-muted">(Opcional)</span></label
             >
-            <div class="input-group">
+            <div class="input-group has-validation">
               <span class="input-group-text">Bs.</span>
               <input
-                type="number"
-                id="precioCompra"
-                class="form-control"
-                placeholder="Ej: 45.00"
-                [(ngModel)]="producto.precioCompra"
                 name="precioCompra"
-                min="0"
-                step="0.01"
-                #precioCompraField="ngModel"
+                [(ngModel)]="producto.precioCompra"
+                type="number"
+                class="form-control"
+                placeholder="Opcional"
+                min="0.1"
+                #pCompraField="ngModel"
                 [class.is-invalid]="
-                  precioCompraField.invalid &&
-                  (precioCompraField.dirty || precioCompraField.touched)
-                "
-                [class.is-warning]="
-                  producto.precioCompra &&
-                  producto.precio &&
-                  producto.precioCompra > producto.precio
+                  (pCompraField.invalid &&
+                    (pCompraField.dirty || pCompraField.touched)) ||
+                  (producto.precioCompra &&
+                    producto.precio &&
+                    producto.precioCompra >= producto.precio)
                 "
               />
-              <div
-                *ngIf="
-                  precioCompraField.invalid &&
-                  (precioCompraField.dirty || precioCompraField.touched)
-                "
-                class="invalid-feedback"
-              >
-                <div *ngIf="precioCompraField.errors?.['min']">
-                  El precio de compra no puede ser negativo.
-                </div>
-              </div>
+              <div class="invalid-feedback">Debe ser positivo.</div>
             </div>
-            <!-- Advertencia si el precio de compra es mayor que el de venta -->
             <div
               *ngIf="
                 producto.precioCompra &&
                 producto.precio &&
-                producto.precioCompra > producto.precio
+                producto.precioCompra >= producto.precio
               "
-              class="text-warning mt-1"
+              class="text-danger mt-1 fw-bold"
             >
               <small>
-                <i class="bi bi-exclamation-triangle-fill me-1"></i>
-                El precio de compra es mayor que el precio de venta
-              </small>
-            </div>
-            <!-- Mostrar margen de ganancia -->
-            <div
-              *ngIf="
-                producto.precioCompra &&
-                producto.precio &&
-                producto.precioCompra > 0 &&
-                producto.precioCompra <= producto.precio
-              "
-              class="text-success mt-1"
-            >
-              <small>
-                <i class="bi bi-graph-up-arrow me-1"></i>
-                Margen: Bs.
-                {{ (producto.precio - producto.precioCompra).toFixed(2) }} ({{
-                  (
-                    ((producto.precio - producto.precioCompra) /
-                      producto.precioCompra) *
-                    100
-                  ).toFixed(1)
-                }}%)
+                <i class="bi bi-x-circle-fill me-1"></i>
+                Error: El precio de compra no puede ser mayor o igual al de
+                venta.
               </small>
             </div>
           </div>
+
           <div class="col-md-12">
-            <label for="descripcion" class="form-label">Descripción</label>
+            <label class="form-label"
+              >Descripción <span class="text-danger">*</span></label
+            >
             <textarea
-              id="descripcion"
-              class="form-control"
-              placeholder="Descripción detallada del producto"
-              [(ngModel)]="producto.descripcion"
               name="descripcion"
-              maxlength="500"
+              [(ngModel)]="producto.descripcion"
+              class="form-control"
+              required
+              maxlength="600"
               #descripcionField="ngModel"
+              [class.is-invalid]="
+                descripcionField.invalid &&
+                (descripcionField.dirty || descripcionField.touched)
+              "
             ></textarea>
+            <div class="invalid-feedback">
+              Es obligatorio poner una descripción (máx 600 caracteres).
+            </div>
           </div>
+
           <div class="col-md-6">
-            <label for="marca" class="form-label"
+            <label class="form-label"
               >Marca <span class="text-danger">*</span></label
             >
             <input
               type="text"
-              id="marca"
               class="form-control"
-              placeholder="Marca del producto"
-              [(ngModel)]="producto.marca"
               name="marca"
+              [(ngModel)]="producto.marca"
               required
-              maxlength="100"
+              minlength="2"
+              maxlength="30"
               #marcaField="ngModel"
               [class.is-invalid]="
                 marcaField.invalid && (marcaField.dirty || marcaField.touched)
               "
             />
-            <div
-              *ngIf="
-                marcaField.invalid && (marcaField.dirty || marcaField.touched)
-              "
-              class="invalid-feedback"
-            >
-              <div *ngIf="marcaField.errors?.['required']">
-                La marca es obligatoria.
+            <div class="invalid-feedback">
+              <div *ngIf="marcaField.errors?.['required']">Requerido.</div>
+              <div *ngIf="marcaField.errors?.['maxlength']">
+                Máximo 30 caracteres.
               </div>
             </div>
           </div>
 
           <div class="col-md-6">
-            <label for="color" class="form-label">Color</label>
+            <label class="form-label">Color</label>
             <input
               type="text"
-              id="color"
               class="form-control"
-              placeholder="Ej: Negro / Blanco"
-              [(ngModel)]="producto.color"
               name="color"
-              maxlength="50"
+              [(ngModel)]="producto.color"
+              maxlength="30"
+              #colorField="ngModel"
             />
+            <div
+              *ngIf="colorField.errors?.['maxlength']"
+              class="text-danger small"
+            >
+              Máximo 30 caracteres.
+            </div>
           </div>
 
           <div class="col-md-6">
-            <label for="sku" class="form-label">SKU (Opcional)</label>
+            <label class="form-label">SKU</label>
             <input
               type="text"
-              id="sku"
               class="form-control"
-              placeholder="Ej: UNQ-PRD-001"
-              [(ngModel)]="producto.sku"
               name="sku"
-              maxlength="100"
+              [(ngModel)]="producto.sku"
             />
           </div>
           <div class="col-md-6">
-            <label for="codigoBarras" class="form-label"
-              >Código de Barras (Opcional)</label
-            >
+            <label class="form-label">Código Barras</label>
             <input
               type="text"
-              id="codigoBarras"
               class="form-control"
-              placeholder="Ej: 9876543210987"
-              [(ngModel)]="producto.codigoBarras"
               name="codigoBarras"
-              maxlength="255"
+              [(ngModel)]="producto.codigoBarras"
             />
           </div>
         </div>
       </fieldset>
 
-      <!-- ========== SECCIÓN: CLASIFICACIÓN JERÁRQUICA DEL PRODUCTO ========== -->
-      <fieldset class="border p-3 mb-4 rounded shadow-sm">
+      <fieldset class="border p-3 mb-4 rounded shadow-sm" [disabled]="cargando">
         <legend class="float-none w-auto px-2 text-secondary h5">
           <i class="bi bi-diagram-3 me-2"></i>Clasificación del Producto
         </legend>
@@ -268,32 +218,19 @@
             <select
               id="categoria"
               class="form-select"
-              [(ngModel)]="producto.subcategoria.categoria"
-              name="categoria"
+              (change)="subCategorias($event)"
+              name="cat"
+              [(ngModel)]="producto.subcategoria.categoria!.idCategoria"
               required
-              #categoriaSelect="ngModel"
-              [class.is-invalid]="
-                categoriaSelect.invalid &&
-                (categoriaSelect.dirty || categoriaSelect.touched)
-              "
-              (change)="onCategoriaChange()"
             >
-              <option [ngValue]="-1" disabled>Seleccione una categoría</option>
-              <option *ngFor="let cat of categorias" [ngValue]="cat.idCategoria">
-                {{ cat.nombre }}
+              <option [value]="-1" disabled>Seleccione una categoría</option>
+              <option
+                *ngFor="let cate of Categorias"
+                [value]="cate.idCategoria"
+              >
+                {{ cate.nombre }}
               </option>
             </select>
-            <div
-              *ngIf="
-                categoriaSelect.invalid &&
-                (categoriaSelect.dirty || categoriaSelect.touched)
-              "
-              class="invalid-feedback"
-            >
-              <div *ngIf="categoriaSelect.errors?.['required']">
-                Debe seleccionar una categoría.
-              </div>
-            </div>
           </div>
 
           <div class="col-md-6">
@@ -303,58 +240,56 @@
             <select
               id="subCategoria"
               class="form-select"
+              name="subCat"
               [(ngModel)]="producto.subcategoria.idSubcategoria"
-              name="subCategoria"
+              (change)="tiposDeProductsBySubcategoria($event)"
               required
-              #subCategoriaSelect="ngModel"
-              [class.is-invalid]="
-                subCategoriaSelect.invalid &&
-                (subCategoriaSelect.dirty || subCategoriaSelect.touched)
-              "
-              [disabled]="!producto.subcategoria.categoria?.idCategoria || producto.subcategoria.categoria?.idCategoria === -1"
             >
-              <option [ngValue]="-1" disabled>Seleccione una subcategoría</option>
-              <option *ngFor="let subcat of subcategoriasFiltradas" [ngValue]="subcat.idSubcategoria">
-                {{ subcat.nombre }}
+              <option [value]="-1" disabled>Seleccione subcategoría</option>
+              <option
+                *ngFor="let sub of subcategoriasByCategoria"
+                [value]="sub.idSubcategoria"
+              >
+                {{ sub.nombre }}
               </option>
             </select>
-            <div
-              *ngIf="
-                subCategoriaSelect.invalid &&
-                (subCategoriaSelect.dirty || subCategoriaSelect.touched)
-              "
-              class="invalid-feedback"
-            >
-              <div *ngIf="subCategoriaSelect.errors?.['required']">
-                Debe seleccionar una subcategoría.
-              </div>
-            </div>
           </div>
 
-          <div class="col-md-6">
+          <div class="col-md-6 position-relative">
             <label for="tipo" class="form-label">Tipo</label>
             <input
               type="text"
               class="form-control"
               id="tipo"
-              name="tipo"
-              [(ngModel)]="producto.tiposAsignados"
-              placeholder="Ej: Gaming, Oficina, etc."
+              name="tipoA"
+              list="tiposExistentes"
+              [(ngModel)]="producto.tipoAsignado!.nombre"
               (input)="onTipoInput($event)"
+              placeholder="Escribe o selecciona..."
+              autocomplete="off"
+              maxlength="30"
+              #tipoField="ngModel"
             />
-          </div>
-
-          <div class="col-md-6">
-            <label for="variante" class="form-label">Variante</label>
-            <input
-              type="text"
-              class="form-control"
-              id="variante"
-              name="variante"
-              [(ngModel)]="producto.variante"
-              placeholder="Ej: RGB, Standard, Pro, etc."
-              (input)="onVarianteInput($event)"
-            />
+            <datalist id="tiposExistentes">
+              <option
+                *ngFor="let t of tiposDeSubcategoria"
+                [value]="t.nombre"
+              ></option>
+            </datalist>
+            <div
+              *ngIf="tipoField.errors?.['maxlength']"
+              class="text-danger small"
+            >
+              Máximo 30 caracteres.
+            </div>
+            <small class="text-muted" *ngIf="producto.tipoAsignado?.nombre">
+              {{
+                producto.tipoAsignado?.idTipo &&
+                producto.tipoAsignado?.idTipo !== -1
+                  ? "Existente"
+                  : "Nuevo (Se creará)"
+              }}
+            </small>
           </div>
 
           <div class="col-md-6">
@@ -364,425 +299,265 @@
             <select
               id="proveedor"
               class="form-select"
-              [(ngModel)]="producto.proveedor"
-              name="proveedor"
+              name="prov"
+              [(ngModel)]="producto.proveedor!.idProveedor"
               required
-              #proveedorSelect="ngModel"
-              [class.is-invalid]="
-                proveedorSelect.invalid &&
-                (proveedorSelect.dirty || proveedorSelect.touched)
-              "
             >
-              <option [ngValue]="-1" disabled>Seleccione un proveedor</option>
-              <option *ngFor="let prov of proveedores" [ngValue]="prov.idProveedor">
-                {{ prov.nombreEmpresa }}
+              <option [value]="-1" disabled>Seleccione un proveedor</option>
+              <option *ngFor="let p of Proveedores" [value]="p.idProveedor">
+                {{ p.nombreEmpresa }}
               </option>
             </select>
-            <div
-              *ngIf="
-                proveedorSelect.invalid &&
-                (proveedorSelect.dirty || proveedorSelect.touched)
-              "
-              class="invalid-feedback"
-            >
-              <div *ngIf="proveedorSelect.errors?.['required']">
-                Debe seleccionar un proveedor.
-              </div>
-            </div>
           </div>
         </div>
       </fieldset>
 
-      <!-- ========== SECCIÓN: IMAGEN PRINCIPAL DEL PRODUCTO ========== -->
-      <!-- ========== SECCIÓN: IMAGEN PRINCIPAL DEL PRODUCTO ========== -->
-<fieldset class="border p-3 mb-4 rounded shadow-sm">
-  <legend class="float-none w-auto px-2 text-secondary h5">
-    <i class="bi bi-image me-2"></i>Imagen Principal del Producto 
-    <span class="text-danger">*</span>
-  </legend>
-  <div class="mb-3">
-    <label for="productImage" class="form-label"
-      >Cambiar Imagen Principal <span class="text-danger">*</span></label
-    >
-    <input
-      type="file"
-      id="productImage"
-      class="form-control"
-      (change)="onFileSelected($event)"
-      accept="image/jpeg, image/png, image/gif"
-      #imageInput
-    />
-    <small class="form-text text-muted"
-      >Formatos: JPG, PNG, GIF. Tamaño máximo: 2MB.</small
-    >
-    <div *ngIf="!imageUrl" class="text-danger small mt-1">
-      La imagen principal es obligatoria
-    </div>
-  </div>
-  <div class="mt-3 text-center">
-    <h6>Imagen Actual: <span *ngIf="!imageUrl" class="text-danger">*Requerida</span></h6>
-    <img
-      [src]="imageUrl || 'https://placehold.co/200x200/ffcccc/ffffff?text=Imagen+Requerida'"
-      alt="Imagen del Producto"
-      class="img-thumbnail"
-      [class.border-danger]="!imageUrl"
-      style="max-width: 200px; max-height: 200px; object-fit: cover"
-    />
-  </div>
-</fieldset>
-
-      <!-- ========== SECCIÓN: IMÁGENES SECUNDARIAS ========== -->
-      <fieldset class="border p-3 mb-4 rounded shadow-sm">
+      <fieldset class="border p-3 mb-4 rounded shadow-sm" [disabled]="cargando">
         <legend class="float-none w-auto px-2 text-secondary h5">
-          <i class="bi bi-images me-2"></i>Imágenes Secundarias
+          <i class="bi bi-image me-2"></i>Imagen Principal
         </legend>
         <div class="mb-3">
-          <label for="secondaryImages" class="form-label"
-            >Añadir Nuevas Imágenes Secundarias</label
-          >
           <input
             type="file"
-            id="secondaryImages"
+            class="form-control"
+            (change)="onSelectFile($event)"
+            accept="image/*"
+          />
+        </div>
+        <div class="mt-3 text-center">
+          <img
+            [src]="imageUrl || 'https://placehold.co/200'"
+            class="img-thumbnail shadow-sm"
+            style="max-width: 200px; max-height: 200px; object-fit: cover"
+          />
+        </div>
+      </fieldset>
+
+      <fieldset class="border p-3 mb-4 rounded shadow-sm" [disabled]="cargando">
+        <legend
+          class="float-none w-auto px-2 text-secondary h5 d-flex justify-content-between align-items-center"
+        >
+          <span><i class="bi bi-images me-2"></i>Imágenes Secundarias</span>
+          <span
+            class="badge"
+            [ngClass]="
+              secondaryImageUrls.length >= 5 ? 'bg-danger' : 'bg-primary'
+            "
+          >
+            {{ secondaryImageUrls.length }} / 5
+          </span>
+        </legend>
+        <div class="mb-3">
+          <input
+            type="file"
             class="form-control"
             multiple
             (change)="onSecondaryFileSelected($event)"
-            accept="image/jpeg, image/png, image/gif"
+            accept="image/*"
+            [disabled]="secondaryImageUrls.length >= 5"
           />
-          <small class="form-text text-muted"
-            >Puedes seleccionar múltiples imágenes. Formatos: JPG, PNG, GIF.
-            Tamaño máximo por imagen: 2MB.</small
-          >
-        </div>
-
-        <div *ngIf="secondaryImageUrls.length > 0" class="mt-3">
-          <h6>Imágenes Secundarias:</h6>
-          <div class="d-flex flex-wrap gap-3 justify-content-center">
-            <div *ngFor="let img of secondaryImageUrls; let i = index" class="position-relative">
-              <img
-                [src]="img.url"
-                [alt]="img.isNew ? 'Nueva imagen' : 'Imagen existente'"
-                class="img-thumbnail"
-                style="width: 120px; height: 120px; object-fit: cover"
-              />
-              <button
-                type="button"
-                class="btn btn-danger btn-sm position-absolute top-0 end-0 translate-middle"
-                (click)="removeSecondaryImage(i)"
-                [title]="img.isNew ? 'Eliminar nueva imagen' : 'Eliminar imagen existente'"
-              >
-                <i class="bi bi-x"></i>
-              </button>
-              <div *ngIf="!img.isNew" class="position-absolute bottom-0 start-0">
-                <span class="badge bg-info">Existente</span>
-              </div>
-              <div *ngIf="img.isNew" class="position-absolute bottom-0 start-0">
-                <span class="badge bg-success">Nueva</span>
-              </div>
-            </div>
-          </div>
         </div>
         <div
-          *ngIf="secondaryImageUrls.length === 0"
-          class="mt-3 text-center text-muted"
+          *ngIf="secondaryImageUrls.length > 0"
+          class="d-flex flex-wrap gap-4 justify-content-center mt-4"
         >
-          <p>No hay imágenes secundarias.</p>
-        </div>
-      </fieldset>
-
-
-
-
-
-
-
-
-
-
-
-      <!-- ========== SECCIÓN: PROPIEDADES DEL PRODUCTO ========== -->
-     <!-- ========== SECCIÓN: PROPIEDADES DEL PRODUCTO ========== -->
-<fieldset class="border p-3 mb-4 rounded shadow-sm">
-  <legend class="float-none w-auto px-2 text-secondary h5">
-    <i class="bi bi-list-check me-2"></i>Propiedades del Producto
-    <span class="text-muted small ms-2">(Opcional)</span>
-  </legend>
-
-  <div class="row g-3 mb-3">
-    <div class="col-md-3">
-      <label for="propertyType" class="form-label">Tipo de Propiedad</label>
-      <select
-        id="propertyType"
-        class="form-select"
-        [(ngModel)]="newProperty.tipoPropiedad"
-        name="newPropertyType"
-      >
-        <option [ngValue]="null" disabled selected>Seleccione un tipo</option>
-        <option *ngFor="let tipo of tiposPropiedad" [ngValue]="tipo">
-          {{ tipo.nombre }}
-        </option>
-      </select>
-    </div>
-
-    <div class="col-md-4">
-      <label for="propertyName" class="form-label">Nombre de la Propiedad</label>
-      <input
-        type="text"
-        id="propertyName"
-        class="form-control"
-        placeholder="Ej: Material, RAM, Resolución"
-        [(ngModel)]="newProperty.nombrePropiedad"
-        name="newPropertyName"
-        maxlength="100"
-      />
-      <small class="text-muted">Este nombre debe ser único para cada tipo</small>
-    </div>
-
-    <div class="col-md-3">
-      <label for="propertyValue" class="form-label">Valor</label>
-      <input
-        type="text"
-        id="propertyValue"
-        class="form-control"
-        placeholder="Ej: Plástico, 16GB, 1920x1080"
-        [(ngModel)]="newProperty.valorPropiedad"
-        name="newPropertyValue"
-        maxlength="255"
-      />
-    </div>
-
-    <div class="col-md-2 d-flex align-items-end">
-      <button
-        type="button"
-        class="btn btn-info w-100"
-        (click)="addProperty()"
-        [disabled]="
-          !newProperty.tipoPropiedad ||
-          !newProperty.nombrePropiedad ||
-          !newProperty.valorPropiedad ||
-          newProperty.nombrePropiedad.trim() === '' ||
-          newProperty.valorPropiedad.trim() === ''
-        "
-      >
-        <i class="bi bi-plus-circle me-1"></i> Añadir
-      </button>
-    </div>
-  </div>
-
-  <div *ngIf="productProperties.length > 0" class="mt-3">
-    <h6>Propiedades ({{ productProperties.length }}):</h6>
-    <div class="table-responsive">
-      <table class="table table-sm table-striped">
-        <thead>
-          <tr>
-            <th>Tipo</th>
-            <th>Nombre</th>
-            <th>Valor</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let prop of productProperties; let i = index">
-            <td>
-              <span class="badge" [ngClass]="{
-                'bg-primary': prop.tipoPropiedad.tipo === 'atributo',
-                'bg-success': prop.tipoPropiedad.tipo === 'caracteristica',
-                'bg-warning': prop.tipoPropiedad.tipo === 'especificacion'
-              }">
-                {{ prop.tipoPropiedad.tipo }}
-              </span>
-            </td>
-            <td><strong>{{ prop.tipoPropiedad.nombre }}</strong></td>
-            <td>{{ prop.valor }}</td>
-            <td>
-              <button
-                type="button"
-                class="btn btn-outline-danger btn-sm"
-                (click)="removeProperty(i)"
-                title="Eliminar propiedad"
-              >
-                <i class="bi bi-trash"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div *ngIf="productProperties.length === 0" class="mt-3 text-center text-muted">
-    <p><i class="bi bi-info-circle me-2"></i>No hay propiedades añadidas. Esta sección es opcional.</p>
-  </div>
-</fieldset>
-
-
-
-
-
-
-
-      <!-- ========== SECCIÓN: DATOS DE STOCK INICIAL ========== -->
-      <fieldset class="border p-3 mb-4 rounded shadow-sm">
-        <legend class="float-none w-auto px-2 text-secondary h5">
-          <i class="bi bi-boxes me-2"></i>Datos de Stock
-        </legend>
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label for="cantidadStock" class="form-label"
-              >Cantidad en Stock <span class="text-danger">*</span></label
-            >
-            <input
-              type="number"
-              id="cantidadStock"
-              class="form-control"
-              placeholder="Ej: 150"
-              [(ngModel)]="cantidadStock"
-              name="cantidadStock"
-              required
-              min="0"
-              #cantidadStockField="ngModel"
-              [class.is-invalid]="
-                cantidadStockField.invalid &&
-                (cantidadStockField.dirty || cantidadStockField.touched)
-              "
+          <div
+            *ngFor="let img of secondaryImageUrls; let i = index"
+            class="position-relative shadow-sm rounded border"
+            style="width: 120px; height: 120px"
+          >
+            <img
+              [src]="img.url"
+              class="rounded w-100 h-100"
+              style="object-fit: cover"
             />
-            <div
-              *ngIf="
-                cantidadStockField.invalid &&
-                (cantidadStockField.dirty || cantidadStockField.touched)
+            <button
+              type="button"
+              class="btn btn-light shadow-sm p-0 position-absolute top-0 end-0 translate-middle border rounded-circle d-flex align-items-center justify-content-center"
+              style="
+                width: 28px;
+                height: 28px;
+                margin-top: -5px;
+                margin-right: -5px;
               "
-              class="invalid-feedback"
+              (click)="removeSecondaryImage(i)"
             >
-              <div *ngIf="cantidadStockField.errors?.['required']">
-                La cantidad de stock es obligatoria.
-              </div>
-              <div *ngIf="cantidadStockField.errors?.['min']">
-                La cantidad no puede ser menor a 0.
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-check form-switch mt-4 pt-2">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="estadoSwitch"
-                [checked]="producto.estado === 1"
-                (change)="onEstadoChange($event)"
-                name="estado"
+              <img
+                src="/icon_Productos/Modificar/eliminar.svg"
+                alt="X"
+                style="width: 16px; height: 16px"
+                onerror="
+                  this.style.display = 'none';
+                  this.nextElementSibling.style.display = 'block';
+                "
               />
-              <label class="form-check-label" for="estadoSwitch">
-                Estado: {{ producto.estado === 1 ? "Activo" : "Inactivo" }}
-              </label>
-            </div>
-            <div class="form-check form-switch mt-3">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="disponibleOnlineSwitch"
-                [checked]="producto.disponibleOnline"
-                (change)="onDisponibleOnlineChange($event)"
-                name="disponibleOnline"
-              />
-              <label class="form-check-label" for="disponibleOnlineSwitch">
-                Disponible Online: {{ producto.disponibleOnline ? "Sí" : "No" }}
-              </label>
+              <i
+                class="bi bi-x-lg text-dark"
+                style="font-size: 14px; display: none"
+              ></i>
+            </button>
+            <div
+              class="position-absolute bottom-0 start-0 w-100 text-center"
+              style="background: rgba(255, 255, 255, 0.7); font-size: 10px"
+            >
+              {{ img.isNew ? "NUEVA" : "EXISTENTE" }}
             </div>
           </div>
         </div>
       </fieldset>
 
-      <!-- ========== SECCIÓN: BOTONES DE ACCIÓN ========== -->
-      <!-- ========== SECCIÓN: BOTONES DE ACCIÓN ========== -->
-<div class="d-flex justify-content-center gap-3 mt-4">
-  <button
-    type="submit"
-    class="btn btn-primary btn-lg px-5"
-    [disabled]="!productForm.valid || isLoading || !formularioCompleto()"
-  >
-    <span *ngIf="!isLoading"
-      ><i class="bi bi-check-circle me-2"></i>Actualizar Producto</span
-    >
-    <span *ngIf="isLoading"
-      ><i
-        class="bi bi-arrow-repeat spinner-border spinner-border-sm me-2"
-      ></i
-      >Actualizando...</span
-    >
-  </button>
-  <button
-    type="button"
-    class="btn btn-secondary btn-lg px-5"
-    (click)="onCancel()"
-  >
-    <i class="bi bi-x-circle me-2"></i>Cancelar
-  </button>
-</div>
+      <fieldset class="border p-3 mb-4 rounded shadow-sm" [disabled]="cargando">
+        <legend class="float-none w-auto px-2 text-secondary h5">
+          <i class="bi bi-list-check me-2"></i>Propiedades
+        </legend>
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <select
+              class="form-select"
+              [(ngModel)]="nuevaPropiedad.tipo"
+              name="propTipo"
+            >
+              <option value="" disabled selected>Tipo...</option>
+              <option value="Atributo">Atributo</option>
+              <option value="Caracteristica">Característica</option>
+              <option value="Especificacion">Especificación</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Nombre (ej: Peso)"
+              [(ngModel)]="nuevaPropiedad.nombre"
+              name="propNombre"
+            />
+          </div>
+          <div class="col-md-4">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Valor (ej: 2kg)"
+              [(ngModel)]="nuevaPropiedad.valor"
+              name="propValor"
+            />
+          </div>
+        </div>
+        <div class="d-flex justify-content-end mb-3">
+          <button
+            type="button"
+            class="btn btn-info btn-sm text-white"
+            (click)="agregarPropiedad()"
+            [disabled]="
+              !nuevaPropiedad.tipo ||
+              !nuevaPropiedad.nombre ||
+              !nuevaPropiedad.valor
+            "
+          >
+            <i class="bi bi-plus-circle me-1"></i> Añadir Propiedad
+          </button>
+        </div>
+        <ul class="list-group">
+          <li
+            *ngIf="propiedadesProduct.length === 0"
+            class="list-group-item text-muted text-center"
+          >
+            Sin propiedades asignadas.
+          </li>
+          <li
+            *ngFor="let prop of propiedadesProduct; let i = index"
+            class="list-group-item d-flex justify-content-between align-items-center"
+          >
+            <div>
+              <span class="badge bg-primary me-2">{{ prop.tipo }}</span>
+              <strong>{{ prop.nombre }}:</strong> {{ prop.valor }}
+              <span *ngIf="prop.isNew" class="badge bg-success ms-2"
+                >Nuevo</span
+              >
+            </div>
+            <button
+              type="button"
+              class="btn btn-light shadow-sm p-0 border rounded-circle d-flex align-items-center justify-content-center"
+              style="width: 28px; height: 28px"
+              (click)="eliminarPropiedad(i)"
+            >
+              <img
+                src="/icon_Productos/Modificar/eliminar.svg"
+                alt="X"
+                style="width: 16px; height: 16px"
+                onerror="
+                  this.style.display = 'none';
+                  this.nextElementSibling.style.display = 'block';
+                "
+              />
+              <i
+                class="bi bi-x-lg text-dark"
+                style="font-size: 14px; display: none"
+              ></i>
+            </button>
+          </li>
+        </ul>
+      </fieldset>
+
+     
+
+      <div class="d-flex justify-content-center gap-3 mt-4">
+        <button
+          type="submit"
+          class="btn btn-primary btn-lg px-5 shadow"
+          [disabled]="
+            f.invalid ||
+            cargando ||
+            producto.subcategoria.idSubcategoria === -1 ||
+            (producto.precioCompra !== undefined &&
+              producto.precio !== undefined &&
+              producto.precioCompra >= producto.precio)
+          "
+        >
+          <i class="bi bi-save me-2"></i>
+          {{ cargando ? "Guardando..." : "Guardar Cambios" }}
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary btn-lg px-5 shadow"
+          (click)="onCancel()"
+          [disabled]="cargando"
+        >
+          Cancelar
+        </button>
+      </div>
     </form>
   </div>
 
-
-
-
-
-
-
-
-  
-
-  <!-- ========== SECCIÓN: MODAL DE RESPUESTA ========== -->
-  <div
-    class="modal fade"
-    id="responseModal"
-    tabindex="-1"
-    role="dialog"
-    aria-labelledby="responseModalLabel"
-    aria-hidden="true"
-    #responseModal
-  >
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
+  <div class="modal fade" id="responseModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg">
         <div
-          class="modal-header"
-          [ngClass]="{
-            'bg-success text-white': isModalSuccess,
-            'bg-danger text-white': !isModalSuccess
-          }"
+          class="modal-header text-white"
+          [ngClass]="isError ? 'bg-danger' : 'bg-success'"
         >
-          <h5 class="modal-title" id="responseModalLabel">{{ modalTitle }}</h5>
+          <h5 class="modal-title">{{ modalTitle }}</h5>
           <button
             type="button"
-            class="btn-close"
-            (click)="closeResponseModalAndRedirect()"
-            aria-label="Close"
+            class="btn-close btn-close-white"
+            data-bs-dismiss="modal"
           ></button>
         </div>
-        <div class="modal-body text-center">
-          <i
-            class="bi"
-            [ngClass]="{
-              'bi-check-circle-fill text-success': isModalSuccess,
-              'bi-x-circle-fill text-danger': !isModalSuccess
-            }"
-            style="font-size: 3rem"
-          ></i>
-          <p class="mt-3 fs-5">{{ modalMessage }}</p>
-          <ul *ngIf="modalDetails.length > 0" class="list-unstyled text-start">
-            <li *ngFor="let detail of modalDetails">
-              <i class="bi bi-info-circle me-2"></i>{{ detail }}
-            </li>
-          </ul>
+        <div class="modal-body text-center p-4">
+          <p class="mt-3 fs-5 fw-bold text-secondary">{{ modalMessage }}</p>
         </div>
-        <div class="modal-footer justify-content-center">
+        <div class="modal-footer justify-content-center border-0">
           <button
             type="button"
-            class="btn"
-            [ngClass]="{
-              'btn-success': isModalSuccess,
-              'btn-danger': !isModalSuccess
-            }"
-            (click)="closeResponseModalAndRedirect()"
+            class="btn px-4"
+            [ngClass]="isError ? 'btn-outline-danger' : 'btn-primary'"
+            data-bs-dismiss="modal"
+            (click)="cerrarModal()"
           >
-            Entendido
+            {{
+              isError
+                ? "Cerrar e Intentar de nuevo"
+                : "Entendido, ir al listado"
+            }}
           </button>
         </div>
       </div>

@@ -60,14 +60,14 @@
               >
             </li>
             @for (cat of categorias; track cat.idCategoria) {
-            <li>
-              <a
-                class="dropdown-item"
-                [ngClass]="{ active: filterCategory === cat.nombre }"
-                (click)="filterCategory = cat.nombre; onFilterChange()"
-                >{{ cat.nombre }}</a
-              >
-            </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  [ngClass]="{ active: filterCategory === cat.nombre }"
+                  (click)="filterCategory = cat.nombre; onFilterChange()"
+                  >{{ cat.nombre }}</a
+                >
+              </li>
             }
           </ul>
         </div>
@@ -89,8 +89,8 @@
               filterStatus === "todos"
                 ? "Todos"
                 : filterStatus === "activo"
-                ? "Activo"
-                : "Inactivo"
+                  ? "Activo"
+                  : "Inactivo"
             }}
           </button>
           <ul class="dropdown-menu" aria-labelledby="estadoDropdown">
@@ -141,9 +141,7 @@
         {{ errorMessage }}
       </div>
       <div
-        *ngIf="
-          !isLoading && paginatedStocks.length === 0 && !errorMessage
-        "
+        *ngIf="!isLoading && paginatedStocks.length === 0 && !errorMessage"
         class="alert alert-warning text-center py-4"
         role="alert"
       >
@@ -167,94 +165,126 @@
             </tr>
           </thead>
           <tbody>
-            @for (item of paginatedStocks; track item.idStock) { @if
-            (item.producto) { @let producto = item.producto;
-            <tr>
-              <td data-label="Foto">
-                <img
-                  [src]="
-                    producto.imagen ||
-                    'https://placehold.co/50x50/cccccc/ffffff?text=Prod'
-                  "
-                  alt="Foto del producto"
-                  class="img-thumbnail rounded-circle product-image"
-                  style="width: 50px; height: 50px; object-fit: cover"
-                />
-              </td>
-              <td data-label="Nombre del Producto">
-                {{ producto.nombre }}
-              </td>
-              <td data-label="Categoría">
-                {{ getCategoryName(producto?.subcategoria?.categoria?.idCategoria) }}
-              </td>
-              <td data-label="Stock" style="text-align: center">
-                <span class="badge bg-info text-dark">{{ item.cantidad }}</span>
-              </td>
-              <td data-label="Precio Unitario">
-                {{ producto.precio | currency : "Bs " : "symbol" : "1.2-2" }}
-              </td>
-              <td data-label="Estado">
-                <span
-                  [class]="
-                    producto?.estado === 1
-                      ? 'badge bg-success'
-                      : 'badge bg-danger'
-                  "
-                >
-                  {{ producto?.estado === 1 ? "Activo" : "Inactivo" }}
-                </span>
-              </td>
-              <td data-label="Acciones" class="actions-column">
-                <button
-                  class="btn btn-sm me-1"
-                  (click)="verDetallesStock(item)"
-                >
-                  <img
-                    src="/icon_Productos/Listar/ver_observar.svg"
-                    style="width: 30px; height: 30px; vertical-align: middle"
-                  />
-                </button>
-                <button
-                  class="btn btn-sm me-1"
-                  routerLink="/home/modificarProduc/{{ producto.idProducto }}"
-                >
-                  <img
-                    src="/icon_Productos/Listar/Modificar.svg"
-                    alt="Modificar"
-                    style="width: 30px; height: 30px; vertical-align: middle"
-                  />
-                </button>
-                <button class="btn btn-sm me-1" (click)="abrirModalStock(item)">
-                  <img
-                    src="/icon_Productos/Listar/gg--edit-exposure.svg"
-                    alt="Modificar Stock"
-                    style="width: 30px; height: 30px; vertical-align: middle"
-                  />
-                </button>
-                <button
-                  [class]="producto?.estado === 1 ? 'btn btn-sm' : 'btn btn-sm'"
-                  (click)="abrirModalConfirmacion(item)"
-                >
-                  <img
-                    [src]="
-                      producto?.estado === 1
-                        ? '/icon_Productos/Listar/deshabilitar.svg'
-                        : '/icon_Productos/Listar/habilitar.svg'
-                    "
-                    alt="Estado del producto"
-                    style="width: 30px; height: 30px; vertical-align: middle"
-                  />
-                </button>
-              </td>
-            </tr>
-            } @else {
-            <tr>
-              <td colspan="7" class="text-center text-warning py-2">
-                Producto asociado no encontrado para el registro de stock ID:
-                {{ item.idStock }}
-              </td>
-            </tr>
-            } }
+            @for (item of paginatedStocks; track item.idStock) {
+              @if (item.producto) {
+                @let producto = item.producto;
+                <tr>
+                  <td data-label="Foto">
+                    <img
+                      [src]="
+                        producto.imagen ||
+                        'https://placehold.co/50x50/cccccc/ffffff?text=Prod'
+                      "
+                      alt="Foto del producto"
+                      class="img-thumbnail rounded-circle product-image"
+                      style="width: 50px; height: 50px; object-fit: cover"
+                    />
+                  </td>
+                  <td data-label="Nombre del Producto">
+                    {{ producto.nombre }}
+                  </td>
+                  <td data-label="Categoría">
+                    {{
+                      getCategoryName(
+                        producto?.subcategoria?.categoria?.idCategoria
+                      )
+                    }}
+                  </td>
+                  <td data-label="Stock" style="text-align: center">
+                    <span class="badge bg-info text-dark">{{
+                      item.cantidad
+                    }}</span>
+                  </td>
+                  <td data-label="Precio Unitario">
+                    {{ producto.precio | currency: "Bs " : "symbol" : "1.2-2" }}
+                  </td>
+                  <td data-label="Estado">
+                    <span
+                      [class]="
+                        producto?.estado === 1
+                          ? 'badge bg-success'
+                          : 'badge bg-danger'
+                      "
+                    >
+                      {{ producto?.estado === 1 ? "Activo" : "Inactivo" }}
+                    </span>
+                  </td>
+                  <td data-label="Acciones" class="actions-column">
+                    <button
+                      class="btn btn-sm me-1"
+                      (click)="verDetallesStock(item)"
+                    >
+                      <img
+                        src="/icon_Productos/Listar/ver_observar.svg"
+                        style="
+                          width: 30px;
+                          height: 30px;
+                          vertical-align: middle;
+                        "
+                      />
+                    </button>
+                    <button
+                      class="btn btn-sm me-1"
+                      routerLink="/home/modificarProduc/{{
+                        producto.idProducto
+                      }}"
+                    >
+                      <img
+                        src="/icon_Productos/Listar/Modificar.svg"
+                        alt="Modificar"
+                        style="
+                          width: 30px;
+                          height: 30px;
+                          vertical-align: middle;
+                        "
+                      />
+                    </button>
+                    <button
+                      class="btn btn-sm me-1"
+                      (click)="abrirModalStock(item)"
+                    >
+                      <img
+                        src="/icon_Productos/Listar/gg--edit-exposure.svg"
+                        alt="Modificar Stock"
+                        style="
+                          width: 30px;
+                          height: 30px;
+                          vertical-align: middle;
+                        "
+                      />
+                    </button>
+                    <button
+                      [class]="
+                        producto?.estado === 1 ? 'btn btn-sm' : 'btn btn-sm'
+                      "
+                      (click)="abrirModalConfirmacion(item)"
+                    >
+                      <img
+                        [src]="
+                          producto?.estado === 1
+                            ? '/icon_Productos/Listar/deshabilitar.svg'
+                            : '/icon_Productos/Listar/habilitar.svg'
+                        "
+                        alt="Estado del producto"
+                        style="
+                          width: 30px;
+                          height: 30px;
+                          vertical-align: middle;
+                        "
+                      />
+                    </button>
+                  </td>
+                </tr>
+              } @else {
+                <tr>
+                  <td colspan="7" class="text-center text-warning py-2">
+                    Producto asociado no encontrado para el registro de stock
+                    ID:
+                    {{ item.idStock }}
+                  </td>
+                </tr>
+              }
+            }
           </tbody>
         </table>
       </div>
@@ -278,9 +308,11 @@
           </button>
         </li>
         @for (page of getPagesArray(); track page) {
-        <li class="page-item" [class.active]="currentPage === page">
-          <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
-        </li>
+          <li class="page-item" [class.active]="currentPage === page">
+            <button class="page-link" (click)="goToPage(page)">
+              {{ page }}
+            </button>
+          </li>
         }
         <li class="page-item" [class.disabled]="currentPage === totalPages">
           <button
@@ -319,8 +351,10 @@
         ></button>
       </div>
       <div class="modal-body">
-        @let nombreProducto = stockSeleccionado?.producto?.nombre || 'este
-        producto';
+        @let nombreProducto =
+          stockSeleccionado?.producto?.nombre ||
+          "este
+        producto";
         <p *ngIf="stockSeleccionado">
           ¿Estás seguro de que quieres
           <strong>{{
@@ -406,7 +440,7 @@
         class="modal-header"
         [ngClass]="{
           'bg-success text-white': isSuccessModal,
-          'bg-danger text-white': !isSuccessModal
+          'bg-danger text-white': !isSuccessModal,
         }"
       >
         <h5 class="modal-title" id="messageModalLabel">{{ modalTitle }}</h5>
@@ -416,7 +450,7 @@
           class="bi"
           [ngClass]="{
             'bi-check-circle-fill text-success': isSuccessModal,
-            'bi-x-circle-fill text-danger': !isSuccessModal
+            'bi-x-circle-fill text-danger': !isSuccessModal,
           }"
           style="font-size: 3rem"
         ></i>
@@ -433,7 +467,7 @@
           class="btn"
           [ngClass]="{
             'btn-success': isSuccessModal,
-            'btn-danger': !isSuccessModal
+            'btn-danger': !isSuccessModal,
           }"
           (click)="closeModal()"
         >
@@ -467,12 +501,18 @@
         ></button>
       </div>
 
-      <div class="modal-body p-0" *ngIf="stockSeleccionado?.producto as producto">
+      <div
+        class="modal-body p-0"
+        *ngIf="stockSeleccionado?.producto as producto"
+      >
         <div class="row g-0">
           <div class="col-lg-4 bg-light p-4">
             <div class="text-center mb-4">
               <img
-                [src]="producto.imagen || 'https://placehold.co/300x300/cccccc/ffffff?text=Sin+Imagen'"
+                [src]="
+                  producto.imagen ||
+                  'https://placehold.co/300x300/cccccc/ffffff?text=Sin+Imagen'
+                "
                 alt="Imagen del producto"
                 class="img-fluid rounded-3 shadow product-detail-image mb-3"
                 style="max-height: 250px; object-fit: contain"
@@ -524,7 +564,7 @@
                     <small class="text-muted">Precio Venta</small>
                     <div class="h5 fw-bold text-success text-center">
                       {{
-                        producto.precio | currency : "Bs " : "symbol" : "1.2-2"
+                        producto.precio | currency: "Bs " : "symbol" : "1.2-2"
                       }}
                     </div>
                   </div>
@@ -534,7 +574,7 @@
                   <div class="fw-bold text-muted">
                     {{
                       producto.precioCompra
-                        | currency : "Bs " : "symbol" : "1.2-2"
+                        | currency: "Bs " : "symbol" : "1.2-2"
                     }}
                   </div>
                 </div>
@@ -550,10 +590,9 @@
                     "
                   >
                     {{
-                      (((producto.precio - producto.precioCompra) /
+                      ((producto.precio - producto.precioCompra) /
                         producto.precioCompra) *
-                        100)
-                        | number : "1.0-0"
+                        100 | number: "1.0-0"
                     }}%
                   </div>
                 </div>
@@ -582,7 +621,7 @@
                     <strong>Fecha Registro:</strong>
                     <div>
                       {{
-                        (producto.fechaRegistro | date : "dd/MM/yyyy HH:mm") ||
+                        (producto.fechaRegistro | date: "dd/MM/yyyy HH:mm") ||
                           "N/A"
                       }}
                     </div>
@@ -592,7 +631,7 @@
                     <div>
                       {{
                         (producto.ultimaActualizacion
-                          | date : "dd/MM/yyyy HH:mm") || "N/A"
+                          | date: "dd/MM/yyyy HH:mm") || "N/A"
                       }}
                     </div>
                   </div>
@@ -634,8 +673,8 @@
                   </div>
                   <div class="col-6">
                     <strong>Tipo:</strong>
-                    <div [class.text-muted]="!producto">
-                      {{ producto || "N/A" }}
+                    <div [class.text-muted]="!producto.tipoAsignado?.nombre">
+                      {{ producto.tipoAsignado?.nombre || "N/A" }}
                     </div>
                   </div>
                   <div class="col-6">
@@ -657,8 +696,9 @@
                     <div>
                       <span class="badge bg-primary">
                         {{
-                          getCategoryName(producto.subcategoria.categoria?.idCategoria) ||
-                            "N/A"
+                          getCategoryName(
+                            producto.subcategoria.categoria?.idCategoria
+                          ) || "N/A"
                         }}
                       </span>
                     </div>
@@ -669,12 +709,6 @@
                       <span class="badge bg-info text-dark">
                         {{ producto.subcategoria.nombre || "N/A" }}
                       </span>
-                    </div>
-                  </div>
-                  <div class="col-12" *ngIf="producto.variante">
-                    <strong>Variante:</strong>
-                    <div [class.text-muted]="!producto.variante">
-                      {{ producto.variante || "N/A" }}
                     </div>
                   </div>
                 </div>
@@ -728,27 +762,6 @@
                       <strong>País:</strong>
                       <div>{{ producto.proveedor.pais || "N/A" }}</div>
                     </div>
-                   
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div classF="row" *ngIf="producto.codigoBarras || producto">
-              <div class="col-12">
-                <h6 class="text-primary mb-3 border-bottom pb-2">
-                  <i class="bi bi-info-circle me-2"></i>Información Adicional
-                </h6>
-                <div class="row g-2">
-                  <div class="col-md-6" *ngIf="producto.codigoBarras">
-                    <strong>Código de Barras:</strong>
-                    <div class="font-monospace">
-                      {{ producto.codigoBarras }}
-                    </div>
-                  </div>
-                  <div class="col-md-6" *ngIf="producto">
-                    <strong>Tipo Producto:</strong>
-                    <div>{{ producto }}</div>
                   </div>
                 </div>
               </div>

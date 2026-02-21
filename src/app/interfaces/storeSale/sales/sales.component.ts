@@ -1,21 +1,13 @@
-import {
-  Component,
-  OnInit,
-  ChangeDetectorRef,
-  ElementRef,
-  ViewChild,
-} from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { VentasService } from '../../../services/ventasTienda/ventas.service';
-
 import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
 import { detalleVenta } from '../../../models/Ventas/detalleVenta';
-import { FormsModule, NgForm } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { ClientesService } from '../../../services/ventasTienda/clientes.service';
 import { clientes } from '../../../models/Ventas/clientes';
 import { DetalleVentasService } from '../../../services/ventasTienda/detalle-ventas.service';
 import { catchError, concatMap, forkJoin, of, throwError } from 'rxjs';
-import { Router, RouterLink } from '@angular/router';
-
+import { Router } from '@angular/router';
 import { FormaPagoService } from '../../../services/PedidosEnviosDetalles/forma-pago.service';
 import { forma_pago } from '../../../models/PedidosEnviosDetalles/forma_pago';
 import { ventas } from '../../../models/Ventas/ventas';
@@ -26,19 +18,32 @@ import { productos } from '../../../models/ProductoStockModel/productos';
 import { PreventaService } from '../../../services/ventasTienda/pre-ventas.service';
 import { UsuariosService } from '../../../services/PersonServis/usuarios.service';
 import { StockService } from '../../../services/ProductosServis/stock.service';
+import { ModalScanComponent } from './modal-scan.component';
 
 @Component({
   selector: 'app-sales',
   standalone: true,
-  imports: [NgFor, CurrencyPipe, NgIf, FormsModule],
+  imports: [NgFor, CurrencyPipe, NgIf, FormsModule, ModalScanComponent],
   templateUrl: './sales.component.html',
   styleUrl: './sales.component.css',
 })
 export class SalesComponent implements OnInit {
-  // 🔥 PROPIEDADES PARA CONTROLAR MODALES
+  // 🔥 MODALES
   mostrarConfirmModal: boolean = false;
   mostrarSuccessModal: boolean = false;
   mostrarModalStock: boolean = false;
+  mostrarScanModal: boolean = false;
+  detallesGuardadosParaScan: any[] = [];
+
+  // 🔥 NUEVA VARIABLE PARA VENTA RÁPIDA
+  esVentaRapida: boolean = false;
+  // En la parte superior de tu clase
+  clienteExistenteEnMemoria: clientes | null = null;
+  // Variables para inputs separados
+  inputCi: string = '';
+  inputNombre: string = '';
+  inputApellidoP: string = '';
+  inputApellidoM: string = '';
 
   // Propiedades existentes
   usuarioTrabajador: usuarios = {
@@ -61,19 +66,15 @@ export class SalesComponent implements OnInit {
   productosPorVender: detalleVenta[] = [];
   productosConStockReal: StockDTO[] = [];
 
-  clienteVenta: clientes = {
-    ci: '0',
-    razonSocial: '',
-    persona: undefined,
-  };
   clienteNombreBuscador: string = '';
   clientesFiltrados: clientes[] = [];
   clienteSeleccionado: clientes = {
-    ci: '0',
-    razonSocial:'',
+    ci: '',
+    razonSocial: '',
     persona: undefined,
   };
   clienteExistes: clientes[] = [];
+
   nombreProductoModal: string = '';
   stockMaximoModal: number = 0;
   metodoDePagoSeleccionado: string = 'efectivo';
@@ -87,12 +88,11 @@ export class SalesComponent implements OnInit {
   formaPago: forma_pago = {
     idFormaPago: 3333,
     nombre: 'Efectivo',
-    descripcion: 'Pago a través de la plataforma',
+    descripcion: '',
     estado: 'Activo',
   };
 
   constructor(
-    private productosConStock: StockService,
     private ventasS: VentasService,
     private cdr: ChangeDetectorRef,
     private clienteS: ClientesService,
@@ -101,7 +101,7 @@ export class SalesComponent implements OnInit {
     private formaPagoS: FormaPagoService,
     private preventaService: PreventaService,
     private stockService: StockService,
-    private usuariosService: UsuariosService 
+    private usuariosService: UsuariosService,
   ) {}
 
   ngOnInit(): void {
@@ -111,51 +111,284 @@ export class SalesComponent implements OnInit {
     this.cargarProductosConStock();
   }
 
-  // 🔥 NUEVO MÉTODO: Aplicar descuento con botón
+  // Detecta si el CI escrito es 0
+  verificarVentaRapida() {
+    if (this.inputCi === '0') {
+      this.esVentaRapida = true;
+      this.inputNombre = 'S/N';
+      this.inputApellidoP = 'S/N';
+      this.inputApellidoM = '';
+    } else {
+      this.esVentaRapida = false;
+      if (this.inputNombre === 'S/N') {
+        this.inputNombre = '';
+        this.inputApellidoP = '';
+        this.inputApellidoM = '';
+      }
+    }
+  }
+
+  // ===================================================================
+  // 🔥 LÓGICA DE VENTA CORREGIDA
+  // ===================================================================
+
+  realizarVenta() {
+    const numeroci = this.inputCi ? this.inputCi.trim() : '';
+
+    if (!numeroci) {
+      alert('El CI es obligatorio. (Ingrese 0 para venta rápida)');
+      return;
+    }
+
+    if (
+      numeroci !== '0' &&
+      (!this.inputNombre || this.inputNombre.trim().length < 2)
+    ) {
+      alert('Por favor, complete el nombre del cliente');
+      return;
+    }
+
+    if (
+      numeroci !== '0' &&
+      (!this.inputApellidoP || this.inputApellidoP.trim().length < 2)
+    ) {
+      alert('Por favor, complete el apellido paterno del cliente');
+      return;
+    }
+
+    const clienteParaProcesar: clientes = {
+      ci: numeroci,
+      razonSocial:
+        numeroci === '0'
+          ? 'S/N'
+          : `${this.inputNombre} ${this.inputApellidoP}`.trim(),
+      persona: {
+        ci: numeroci,
+        nombre: numeroci === '0' ? 'S/N' : this.inputNombre,
+        apellidop: numeroci === '0' ? 'S/N' : this.inputApellidoP,
+        apellidom: this.inputApellidoM || '',
+      } as any,
+    };
+
+    this.iniciarTransaccionConValidacion(clienteParaProcesar);
+  }
+
+  private iniciarTransaccionConValidacion(clienteParaProcesar: clientes) {
+    let ventaId: number;
+
+    console.log('Iniciando transacción para CI:', clienteParaProcesar.ci);
+    const subtotalSinDescuento = this.calcularSubtotal();
+
+    let accionClienteObservable;
+
+    // 1. LÓGICA DE CLIENTE (Guardar, buscar o actualizar)
+    if (
+      this.clienteExistenteEnMemoria &&
+      this.clienteExistenteEnMemoria.ci === clienteParaProcesar.ci
+    ) {
+      const cambioRazonSocial =
+        this.clienteExistenteEnMemoria.razonSocial !==
+        clienteParaProcesar.razonSocial;
+
+      if (cambioRazonSocial) {
+        console.log('Actualizando Razón Social en BD...');
+        accionClienteObservable = this.clienteS.update(clienteParaProcesar);
+      } else {
+        console.log('Cliente sin cambios, procediendo a la venta...');
+        accionClienteObservable = of({
+          success: true,
+          data: clienteParaProcesar,
+        } as ApiResponse);
+      }
+    } else {
+      console.log('Evaluando nuevo cliente o CI 0 en BD...');
+      // 🔥 USAMOS findOrCreate. Si falla el Backend (Ej: 500), saltará directo al bloque error() final
+      accionClienteObservable = this.clienteS.findOrCreate(clienteParaProcesar);
+    }
+
+    // 2. LÓGICA DE VENTA EN CADENA (Solo se ejecuta si el cliente no dio error)
+    accionClienteObservable
+      .pipe(
+        concatMap((resCliente: ApiResponse) => {
+          // Validamos que el cliente haya retornado con éxito
+          if (!resCliente || (!resCliente.success && !resCliente.data)) {
+            return throwError(
+              () => new Error('Fallo en la verificación del cliente.'),
+            );
+          }
+
+          const ventaNueva: any = {
+            cliente: { ci: clienteParaProcesar.ci },
+            trabajador: { username: this.usuarioTrabajador.username },
+            formaPago: { idFormaPago: this.codigoMetodoPago },
+            total: subtotalSinDescuento,
+            descuento: this.descuentoGeneral,
+            notas: this.notaVenta,
+            estado: 'COMPLETADA',
+          };
+          console.log('Guardando Cabecera de Venta...');
+          return this.ventasS.save(ventaNueva);
+        }),
+        concatMap((resVenta: ApiResponse) => {
+          ventaId = resVenta.data.idVenta;
+          console.log('Venta creada con ID:', ventaId);
+
+          const peticionesDetalles = this.productosPorVender.map((prod) => {
+            const detalle: any = {
+              venta: { idVenta: ventaId },
+              producto: { idProducto: prod.producto.idProducto },
+              cantidad: prod.cantidad,
+              precioUnitario: prod.precioUnitario,
+              subtotal: prod.cantidad * prod.precioUnitario,
+            };
+            return this.detalleVentaS.save(detalle);
+          });
+
+          return forkJoin(peticionesDetalles).pipe(
+            catchError((err) => {
+              console.error('Error guardando detalles, haciendo rollback...');
+              this.ventasS.deleteById(ventaId).subscribe();
+              return throwError(
+                () => new Error('Error crítico al guardar los detalles'),
+              );
+            }),
+          );
+        }),
+      )
+      .subscribe({
+        next: (respuestasDetalles: ApiResponse[]) => {
+          console.log('Detalles guardados exitosamente. Preparando modal...');
+
+          const detallesFusionados = respuestasDetalles.map((res, index) => {
+            const prodLocal = this.productosPorVender[index].producto;
+            return {
+              idDetalleVenta:
+                res.data.idDetalleVenta ||
+                res.data.idDetallePedido ||
+                res.data.id,
+              cantidad: this.productosPorVender[index].cantidad,
+              producto: {
+                idProducto: prodLocal.idProducto,
+                nombre: prodLocal.nombre,
+                requiereSerial: prodLocal.requiereSerial, // Dato cruzado
+              },
+            };
+          });
+
+          const requiereEscaneo = detallesFusionados.some(
+            (d: any) =>
+              d.producto.requiereSerial === true ||
+              d.producto.requiereSerial === 'true' ||
+              d.producto.requiereSerial === 1,
+          );
+
+          if (requiereEscaneo) {
+            this.detallesGuardadosParaScan = detallesFusionados;
+            this.cerrarModalConfirmacion();
+            this.mostrarScanModal = true;
+          } else {
+            this.finalizarVentaExitosa();
+          }
+        },
+        error: (err) => {
+          console.error('Error final atrapado:', err);
+          // Ahora sí verás el error real en pantalla si la BD falla
+          alert(
+            'No se pudo registrar la venta. Motivo: Error en el procesamiento del Cliente o Servidor.',
+          );
+        },
+      });
+  }
+
+  // Método unificado para finalizar
+  finalizarVentaExitosa() {
+    this.cerrarModalConfirmacion();
+    this.mostrarScanModal = false;
+    this.abrirModalExito();
+
+    this.preventaService.limpiarPreventa();
+    this.productosPorVender = [];
+    this.descuentoGeneral = 0;
+    this.descuentoInputValue = 0;
+    this.limpiarDatosCliente();
+    this.cdr.detectChanges();
+  }
+
+  onScanCompleted() {
+    this.finalizarVentaExitosa();
+  }
+
+  seleccionarCliente(cliente: clientes) {
+    this.clienteSeleccionado = cliente;
+
+    // Guardamos una copia exacta de lo que vino de la BD
+    this.clienteExistenteEnMemoria = JSON.parse(JSON.stringify(cliente));
+
+    this.inputCi = cliente.ci;
+    this.inputNombre = cliente.persona?.nombre || cliente.razonSocial || '';
+    this.inputApellidoP = cliente.persona?.apellidop || '';
+    this.inputApellidoM = cliente.persona?.apellidom || '';
+
+    this.clientesFiltrados = [];
+    this.isCiDisabled = true;
+    this.verificarVentaRapida();
+  }
+
+  limpiarDatosCliente() {
+    this.inputCi = '';
+    this.inputNombre = '';
+    this.inputApellidoP = '';
+    this.inputApellidoM = '';
+
+    this.clienteNombreBuscador = '';
+    this.clientesFiltrados = [];
+    this.isCiDisabled = false;
+    this.esVentaRapida = false;
+
+    this.clienteExistenteEnMemoria = null;
+  }
+
+  // --- MÉTODOS DE CANTIDAD Y DESCUENTO (Mantenidos igual) ---
   aplicarDescuento(): void {
     const subtotal = this.calcularSubtotal();
     const maxDescuento = subtotal * 0.5;
 
-    // Validar que el descuento no sea negativo
     if (this.descuentoInputValue < 0) {
       this.descuentoInputValue = 0;
       this.mostrarMensajeDescuento(
         'El descuento no puede ser negativo',
-        'error'
+        'error',
       );
       return;
     }
 
-    // Validar que no supere el 50% del subtotal
     if (this.descuentoInputValue > maxDescuento) {
       this.descuentoInputValue = maxDescuento;
       this.mostrarMensajeDescuento(
         `El descuento no puede superar el 50% del subtotal (${maxDescuento.toFixed(2)} Bs)`,
-        'error'
+        'error',
       );
       return;
     }
 
-    // Aplicar el descuento
     this.descuentoGeneral = parseFloat(this.descuentoInputValue.toFixed(2));
 
-    // Mostrar mensaje de éxito
     if (this.descuentoGeneral > 0) {
       this.mostrarMensajeDescuento(
         `Descuento de ${this.descuentoGeneral.toFixed(2)} Bs aplicado correctamente`,
-        'success'
+        'success',
       );
     } else {
       this.mostrarMensajeDescuento('Descuento removido', 'info');
     }
-
     this.cdr.detectChanges();
   }
 
-  // 🔥 NUEVO MÉTODO: Mostrar mensajes de descuento
-  mostrarMensajeDescuento(mensaje: string, tipo: 'success' | 'error' | 'info'): void {
+  mostrarMensajeDescuento(
+    mensaje: string,
+    tipo: 'success' | 'error' | 'info',
+  ): void {
     this.mensajeDescuento = mensaje;
-
     switch (tipo) {
       case 'success':
         this.mensajeDescuentoClase = 'alert alert-success';
@@ -167,8 +400,6 @@ export class SalesComponent implements OnInit {
         this.mensajeDescuentoClase = 'alert alert-info';
         break;
     }
-
-    // Auto-ocultar el mensaje después de 3 segundos
     setTimeout(() => {
       this.mensajeDescuento = '';
       this.mensajeDescuentoClase = '';
@@ -176,18 +407,14 @@ export class SalesComponent implements OnInit {
     }, 3000);
   }
 
-  // 🔥 MÉTODO MODIFICADO: Calcular total final con descuento aplicado
   calcularTotal(): number {
-    const subtotal = this.calcularSubtotal();
-    return Math.max(0, subtotal - this.descuentoGeneral);
+    return Math.max(0, this.calcularSubtotal() - this.descuentoGeneral);
   }
 
-  // 🔥 CARGAR PRODUCTOS CON STOCK REAL
   cargarProductosConStock(): void {
     this.stockService.getLatestProducts(200).subscribe({
       next: (res: ApiResponse) => {
         this.productosConStockReal = res.data || [];
-        console.log('Productos con stock real cargados:', this.productosConStockReal);
       },
       error: (err) => {
         console.error('Error al cargar productos con stock:', err);
@@ -195,18 +422,11 @@ export class SalesComponent implements OnInit {
     });
   }
 
-  // 🔥 MÉTODO CORREGIDO: Obtener stock disponible del producto original
   obtenerStockDisponible(idProducto: number): number {
     const productoStock = this.productosConStockReal.find(
-      (p) => p.producto.idProducto === idProducto
+      (p) => p.producto.idProducto === idProducto,
     );
-
-    if (productoStock) {
-      return productoStock.cantidad;
-    }
-
-    console.warn(`Producto ${idProducto} no encontrado en stock real`);
-    return 0;
+    return productoStock ? productoStock.cantidad : 0;
   }
 
   obtenerCantidadEnCarrito(idProducto: number): number {
@@ -217,25 +437,22 @@ export class SalesComponent implements OnInit {
   }
 
   obtenerStockRestante(idProducto: number): number {
-    const stockDisponible = this.obtenerStockDisponible(idProducto);
-    const cantidadEnCarrito = this.obtenerCantidadEnCarrito(idProducto);
-    const stockRestante = stockDisponible - cantidadEnCarrito;
-    return stockRestante;
+    return (
+      this.obtenerStockDisponible(idProducto) -
+      this.obtenerCantidadEnCarrito(idProducto)
+    );
   }
 
   sumarCantidad(index: number): void {
     const producto = this.productosPorVender[index];
     const idProducto = producto.producto.idProducto || 0;
-    const stockRestante = this.obtenerStockRestante(idProducto);
-
-    if (stockRestante > 0) {
+    if (this.obtenerStockRestante(idProducto) > 0) {
       producto.cantidad++;
-      this.actualizarSubtotal(index);
       this.actualizarCantidadEnServicio(index);
     } else {
       this.mostrarModalStockAlerta(
         producto.producto.nombre,
-        this.obtenerStockDisponible(idProducto)
+        this.obtenerStockDisponible(idProducto),
       );
     }
   }
@@ -244,7 +461,6 @@ export class SalesComponent implements OnInit {
     const producto = this.productosPorVender[index];
     if (producto.cantidad > 1) {
       producto.cantidad--;
-      this.actualizarSubtotal(index);
       this.actualizarCantidadEnServicio(index);
     }
   }
@@ -253,15 +469,13 @@ export class SalesComponent implements OnInit {
     const producto = this.productosPorVender[index];
     const idProducto = producto.producto.idProducto || 0;
     let nuevaCantidad = parseInt(event.target.value, 10);
-    const stockRestante = this.obtenerStockRestante(idProducto);
     const stockDisponible = this.obtenerStockDisponible(idProducto);
 
-    if (isNaN(nuevaCantidad) || nuevaCantidad < 1) {
-      nuevaCantidad = 1;
-    }
+    if (isNaN(nuevaCantidad) || nuevaCantidad < 1) nuevaCantidad = 1;
 
     const cantidadMaximaPermitida =
-      this.obtenerCantidadEnCarrito(idProducto) + stockRestante;
+      this.obtenerCantidadEnCarrito(idProducto) +
+      this.obtenerStockRestante(idProducto);
 
     if (nuevaCantidad > cantidadMaximaPermitida) {
       nuevaCantidad = cantidadMaximaPermitida;
@@ -269,58 +483,45 @@ export class SalesComponent implements OnInit {
     }
 
     producto.cantidad = nuevaCantidad;
-    this.actualizarSubtotal(index);
     this.actualizarCantidadEnServicio(index);
   }
 
   soloNumeros(event: KeyboardEvent): boolean {
     const charCode = event.key.charCodeAt(0);
-
-    // Permitir teclas de control
     if (
-      event.key === 'Backspace' ||
-      event.key === 'Tab' ||
-      event.key === 'ArrowLeft' ||
-      event.key === 'ArrowRight' ||
-      event.key === 'Delete' ||
-      event.key === 'Home' ||
-      event.key === 'End'
-    ) {
+      [
+        'Backspace',
+        'Tab',
+        'ArrowLeft',
+        'ArrowRight',
+        'Delete',
+        'Home',
+        'End',
+      ].includes(event.key)
+    )
       return true;
-    }
-
-    // Permitir solo números
-    if (charCode >= 48 && charCode <= 57) {
-      return true;
-    }
-
+    if (charCode >= 48 && charCode <= 57) return true;
     event.preventDefault();
     return false;
   }
 
   soloNumerosDecimales(event: KeyboardEvent): boolean {
     const charCode = event.key.charCodeAt(0);
-
-    // Permitir teclas de control
     if (
-      event.key === 'Backspace' ||
-      event.key === 'Tab' ||
-      event.key === 'ArrowLeft' ||
-      event.key === 'ArrowRight' ||
-      event.key === 'Delete' ||
-      event.key === 'Home' ||
-      event.key === 'End' ||
-      event.key === '.' ||
-      event.key === ','
-    ) {
+      [
+        'Backspace',
+        'Tab',
+        'ArrowLeft',
+        'ArrowRight',
+        'Delete',
+        'Home',
+        'End',
+        '.',
+        ',',
+      ].includes(event.key)
+    )
       return true;
-    }
-
-    // Permitir solo números
-    if (charCode >= 48 && charCode <= 57) {
-      return true;
-    }
-
+    if (charCode >= 48 && charCode <= 57) return true;
     event.preventDefault();
     return false;
   }
@@ -328,37 +529,18 @@ export class SalesComponent implements OnInit {
   calcularSubtotal(): number {
     return this.productosPorVender.reduce(
       (acc, item) => acc + item.cantidad * item.precioUnitario,
-      0
+      0,
     );
-  }
-
-  actualizarSubtotal(index: number): void {
-    const producto = this.productosPorVender[index];
-    this.cdr.detectChanges();
   }
 
   inicializarProductosDesdePreventa(): void {
     this.productosPorVender = [];
-
     const productosPreventa = this.preventaService.getProductosSeleccionados();
-
     if (productosPreventa && productosPreventa.length > 0) {
       productosPreventa.forEach((prod) => {
         const detalle: detalleVenta = {
           producto: prod.producto as unknown as productos,
-          venta: {
-            idVenta: 0,
-            cliente: { ci: '0', nombre: '' },
-            trabajador: this.obtenerUsuarioBasico(),
-            total: 0,
-            formaPago: {
-              idFormaPago: 0,
-              nombre: '',
-              descripcion: '',
-              estado: '',
-            },
-            estado: 'PENDIENTE',
-          } as ventas,
+          venta: {} as ventas, // Mock
           cantidad: prod.cantidad,
           precioUnitario: prod.producto.precio || 0,
           subtotal: (prod.producto.precio || 0) * prod.cantidad,
@@ -366,31 +548,6 @@ export class SalesComponent implements OnInit {
         this.productosPorVender.push(detalle);
       });
     }
-    this.cdr.detectChanges();
-  }
-
-  // 🔥 NUEVO MÉTODO: Crear un objeto usuario básico
-  private obtenerUsuarioBasico(): usuarios {
-    return {
-      username: this.usuarioTrabajador.username || localStorage.getItem('current_username') || '',
-      email: '',
-      estado: 1,
-      fechaCreacion: '',
-      passwordHash: '',
-      persona: {
-        ci: '',
-        nombre: '',
-        apellidom: '',
-        apellidop: '',
-        direccion: '',
-        telefono: '',
-      },
-      rol: { 
-        idRol: 0, 
-        nombreRol: '', 
-        descripcion: '' 
-      },
-    };
   }
 
   getStockClass(idProducto: number): string {
@@ -404,20 +561,11 @@ export class SalesComponent implements OnInit {
     const username = localStorage.getItem('current_username');
     if (username) {
       this.usuarioTrabajador.username = username;
-      
       this.usuariosService.findById(username).subscribe({
         next: (response: ApiResponse) => {
-          if (response.success && response.data) {
+          if (response.success && response.data)
             this.usuarioTrabajador = response.data as usuarios;
-            console.log('Usuario trabajador cargado:', this.usuarioTrabajador);
-          } else {
-            console.warn('No se pudo cargar el usuario completo, usando datos básicos');
-          }
         },
-        error: (error) => {
-          console.error('Error al cargar usuario trabajador:', error);
-          console.warn('Usando datos básicos del usuario');
-        }
       });
     }
   }
@@ -426,8 +574,9 @@ export class SalesComponent implements OnInit {
     const producto = this.productosPorVender[index];
     this.preventaService.actualizarCantidad(
       producto.producto.idProducto || 0,
-      producto.cantidad
+      producto.cantidad,
     );
+    this.cdr.detectChanges();
   }
 
   eliminarProducto(index: number): void {
@@ -440,7 +589,7 @@ export class SalesComponent implements OnInit {
   obtenerTotalProductos(): number {
     return this.productosPorVender.reduce(
       (acc, item) => acc + item.cantidad,
-      0
+      0,
     );
   }
 
@@ -453,294 +602,29 @@ export class SalesComponent implements OnInit {
   ocultarModal() {
     this.mostrarModalStock = false;
   }
-
   abrirModalConfirmacion(): void {
     this.buscadorCliente();
     this.mostrarConfirmModal = true;
-    document.body.style.overflow = 'hidden';
   }
-
   cerrarModalConfirmacion(): void {
     this.mostrarConfirmModal = false;
     this.limpiarDatosCliente();
-    this.restaurarScrollBody();
   }
-
   abrirModalExito(): void {
     this.mostrarSuccessModal = true;
-    document.body.style.overflow = 'hidden';
   }
-
   cerrarModalExito(): void {
     this.mostrarSuccessModal = false;
-    this.restaurarScrollBody();
-    this.cerrarModalYRedirigir();
-  }
-
-  cerrarModales(): void {
-    if (this.mostrarConfirmModal) {
-      this.cerrarModalConfirmacion();
-    }
-    if (this.mostrarSuccessModal) {
-      this.cerrarModalExito();
-    }
-  }
-
-  private restaurarScrollBody(): void {
-    document.body.style.overflow = 'auto';
-  }
-
-  // ===================================================================
-  // 🔥 LÓGICA DE VENTA CORREGIDA
-  // ===================================================================
-
-  realizarVenta() {
-    const nombreClient = (document.getElementById('clienteNombre') as HTMLInputElement).value;
-    const apellidoPaterno = (document.getElementById('apellidoPaterno') as HTMLInputElement).value;
-    const apellidoMaterno = (document.getElementById('apellidoMaterno') as HTMLInputElement).value;
-    const celularClient = (document.getElementById('numeroCliente') as HTMLInputElement).value;
-    const numeroci = (document.getElementById('ci') as HTMLInputElement).value;
-    this.notaVenta = (document.getElementById('ventaNotas') as HTMLInputElement).value;
-
-    // 🔥 VALIDACIONES MEJORADAS - Campos obligatorios
-    if (!numeroci || numeroci === '0') {
-        alert('Por favor, complete el CI del cliente (debe ser mayor a 0)');
-        return;
-    }
-
-    if (!nombreClient || nombreClient.trim().length < 2) {
-        alert('Por favor, complete el nombre del cliente (mínimo 2 caracteres)');
-        return;
-    }
-
-    if (!apellidoPaterno || apellidoPaterno.trim().length < 2) {
-        alert('Por favor, complete el apellido paterno del cliente (mínimo 2 caracteres)');
-        return;
-    }
-
-    // 🔥 CORRECCIÓN: Usar normalización segura
-    const clienteParaProcesar: clientes = {
-        ci: numeroci.trim(),
-        persona:undefined,
-    };
-
-    this.iniciarTransaccionConValidacion(clienteParaProcesar);
-}
-
-  private iniciarTransaccionConValidacion(cliente: clientes) {
-    let ventaId: number;
-    let clienteProcesado: clientes;
-    let esClienteNuevo: boolean = false;
-    let clienteTieneVentas: boolean = false;
-    let necesitaActualizacion: boolean = false;
-
-    console.log('Iniciando transacción con validación de ventas...');
-
-    // 🔥 CALCULAR EL SUBTOTAL SIN DESCUENTO PARA ENVIAR AL BACKEND
-    const subtotalSinDescuento = this.calcularSubtotal();
-    const totalConDescuento = this.calcularTotal();
-    
-    console.log('Subtotal (sin descuento):', subtotalSinDescuento);
-    console.log('Descuento aplicado:', this.descuentoGeneral);
-    console.log('Total (con descuento):', totalConDescuento);
-
-    // 1. PRIMERO: Verificar si el cliente existe y comparar datos
-    this.clienteS.findById(cliente.ci)
-      .pipe(
-        catchError((errorClienteFind) => {
-          console.log('Cliente no encontrado, se creará nuevo:', errorClienteFind);
-          esClienteNuevo = true;
-          
-          // Crear nuevo cliente
-          return this.clienteS.save(cliente);
-        }),
-        concatMap((responseCliente: ApiResponse) => {
-          // Si llegamos aquí, el cliente EXISTE
-          const clienteExistente = responseCliente.data;
-          console.log('Cliente existente encontrado:', clienteExistente);
-          
-          // 🔥 COMPARAR DATOS PARA VER SI NECESITA ACTUALIZACIÓN
-          necesitaActualizacion = this.compararDatosCliente(cliente, clienteExistente);
-          
-          if (necesitaActualizacion) {
-            console.log('Cliente necesita actualización. Datos diferentes encontrados.');
-            // Actualizar cliente existente con los nuevos datos
-            const clienteActualizado = { ...clienteExistente, ...cliente };
-            return this.clienteS.update(clienteActualizado);
-          } else {
-            console.log('Cliente no necesita actualización. Datos idénticos.');
-            return of(responseCliente); // No hacer nada, usar cliente existente
-          }
-        }),
-        // 2. Verificar si el cliente tiene ventas (CORREGIDO)
-        concatMap((responseClienteActualizado: ApiResponse) => {
-          clienteProcesado = responseClienteActualizado.data;
-          
-          // Crear un ApiResponse compatible para el flujo
-          return this.ventasS.clienteConVenta(cliente.ci).pipe(
-            catchError((errorVentas) => {
-              console.log('Cliente no tiene ventas:', errorVentas);
-              clienteTieneVentas = false;
-              // Retornar un ApiResponse compatible
-              return of({ 
-                success: false, 
-                data: null, 
-                message: 'Sin ventas',
-                httpStatusCode: 404 
-              } as ApiResponse);
-            })
-          );
-        }),
-        // 3. Preparar y guardar la venta
-        concatMap((responseVentas: ApiResponse) => {
-          if (responseVentas.success && responseVentas.data) {
-            clienteTieneVentas = true;
-            console.log('Cliente tiene ventas existentes');
-          }
-
-          const ventaNueva: any = {
-            cliente: {
-              ci: clienteProcesado.ci
-            },
-            trabajador: {
-              username: this.usuarioTrabajador.username
-            },
-            formaPago: { 
-              idFormaPago: this.codigoMetodoPago 
-            },
-            // 🔥 CORRECCIÓN CRÍTICA: Enviar el SUBTOTAL sin descuento
-            total: subtotalSinDescuento, // Enviar subtotal sin descuento
-            descuento: this.descuentoGeneral,
-            notas: this.notaVenta,
-            estado: 'COMPLETADA'
-          };
-
-          console.log('Guardando venta:', ventaNueva);
-          return this.ventasS.save(ventaNueva);
-        }),
-        // 4. Guardar detalles de venta
-        concatMap((responseVenta: ApiResponse) => {
-          console.log('Venta guardada exitosamente:', responseVenta.data);
-          ventaId = responseVenta.data.idVenta;
-
-          if (this.productosPorVender.length === 0) {
-            return of(responseVenta);
-          }
-
-          const detalleVentaSaves = this.productosPorVender.map((producto) => {
-            const detalle: any = {
-              venta: {
-                idVenta: responseVenta.data.idVenta
-              },
-              producto: {
-                idProducto: producto.producto.idProducto
-              },
-              cantidad: producto.cantidad,
-              precioUnitario: producto.precioUnitario,
-              subtotal: producto.cantidad * producto.precioUnitario
-            };
-
-            console.log('Guardando detalle de venta:', detalle);
-            return this.detalleVentaS.save(detalle);
-          });
-
-          return forkJoin(detalleVentaSaves).pipe(
-            catchError((errorDetalles) => {
-              console.error('Error al guardar detalles. Revirtiendo venta...', errorDetalles);
-              
-              // Revertir la venta completa
-              if (ventaId) {
-                this.ventasS.deleteById(ventaId).subscribe({
-                  next: () => console.log('Venta revertida exitosamente'),
-                  error: (reversionError) => console.error('Error al revertir venta:', reversionError)
-                });
-              }
-              
-              alert('Error al guardar los detalles de la venta. La venta ha sido cancelada.');
-              return throwError(() => new Error('Error en el paso de Detalles de Venta'));
-            })
-          );
-        })
-      )
-      .subscribe({
-        next: (finalResponse) => {
-          console.log('Transacción de venta completada exitosamente.');
-          
-          let mensaje = '';
-          if (esClienteNuevo) {
-            mensaje = 'Venta completada con cliente NUEVO registrado';
-          } else if (necesitaActualizacion) {
-            mensaje = 'Venta completada con cliente EXISTENTE actualizado';
-          } else {
-            mensaje = 'Venta completada con cliente existente';
-          }
-          
-          console.log(mensaje);
-
-          this.cerrarModalConfirmacion();
-          this.abrirModalExito();
-
-          // Limpiar todo
-          this.preventaService.limpiarPreventa();
-          this.productosPorVender = [];
-          this.descuentoGeneral = 0;
-          this.descuentoInputValue = 0;
-          this.limpiarDatosCliente();
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          console.error('Transacción de venta fallida:', err);
-          alert('Error al procesar la venta: ' + err.message);
-        }
-      });
-  }
-
-  // 🔥 NUEVO MÉTODO: Comparar datos del cliente para detectar cambios
-  private compararDatosCliente(clienteNuevo: clientes, clienteExistente: clientes): boolean {
-    // 🔥 CORRECCIÓN: Función normalizar mejorada que maneja null/undefined
-    const normalizar = (str: string | null | undefined): string => {
-        // Si es null, undefined, o vacío, retornar string vacío
-        if (str === null || str === undefined || str === '') {
-            return '';
-        }
-        // Aplicar trim y convertir a minúsculas
-        return str.toString().trim().toLowerCase();
-    };
-    
-    console.log('Comparando datos del cliente:');
-    console.log('Cliente nuevo:', clienteNuevo);
-    console.log('Cliente existente:', clienteExistente);
-    
-   
-    
-    console.log('No se encontraron diferencias en los datos del cliente');
-    return false;
-}
-
-// 🔥 MÉTODO CORREGIDO: Normalizar datos del cliente antes de procesar
-private normalizarDatosCliente(cliente: clientes): clientes {
-    const normalizarCampo = (valor: string | null | undefined): string => {
-        if (valor === null || valor === undefined || valor === '') {
-            return '';
-        }
-        return valor.toString().trim();
-    };
-
-    return {
-        ci: normalizarCampo(cliente.ci),
-   
-    };
-}
-
-  cerrarModalYRedirigir() {
     this.router.navigate(['/home/listadoVentasStore']);
+  }
+  cerrarModales(): void {
+    if (this.mostrarConfirmModal) this.cerrarModalConfirmacion();
+    if (this.mostrarSuccessModal) this.cerrarModalExito();
   }
 
   obtenerMetodoDePago(valor: string) {
     this.metodoDePagoSeleccionado = valor;
-    if (this.metodoDePagoSeleccionado == 'QR') {
-      this.codigoMetodoPago = 1111;
-    }
+    this.codigoMetodoPago = valor === 'QR' ? 1111 : 3333;
     this.formaPagoS.findById(this.codigoMetodoPago).subscribe({
       next: (Response) => {
         this.formaPago = Response.data;
@@ -751,56 +635,23 @@ private normalizarDatosCliente(cliente: clientes): clientes {
   filtrarClientes() {
     if (this.clienteNombreBuscador.length > 0) {
       const terminoBusqueda = this.clienteNombreBuscador.toLowerCase();
-      this.clientesFiltrados = this.clienteExistes.filter((cliente) => {
-        
-        return '';
-      });
+      this.clientesFiltrados = this.clienteExistes.filter(
+        (cliente) =>
+          cliente.ci.includes(terminoBusqueda) ||
+          (cliente.razonSocial &&
+            cliente.razonSocial.toLowerCase().includes(terminoBusqueda)),
+      );
     } else {
       this.clientesFiltrados = [];
     }
-  }
-
-  seleccionarCliente(cliente: clientes) {
-    this.clienteSeleccionado = cliente;
-    console.log('Cliente seleccionado:', this.clienteSeleccionado);
-
-
-
-    // 🔥 CORREGIDO: Asignar correctamente los campos separados
-    this.clienteVenta = { 
-      ci: cliente.ci,
-    };
-
-    this.clientesFiltrados = [];
-    this.isCiDisabled = true;
-    
-    console.log('Datos cargados en formulario:', this.clienteVenta);
   }
 
   buscadorCliente() {
     this.clienteS.findAll().subscribe({
       next: (Response) => {
         this.clienteExistes = Response.data;
-        console.log('Clientes existentes cargados:', this.clienteExistes);
       },
     });
-  }
-
-  limpiarDatosCliente() {
-    this.clienteVenta = {
-      ci: '0',
-      razonSocial: '',
-      persona: undefined,
-      
-    };
-    this.clienteSeleccionado = {
-      ci: '0',
-      razonSocial:'',
-      persona: undefined,
-    };
-    this.clienteNombreBuscador = '';
-    this.clientesFiltrados = [];
-    this.isCiDisabled = false;
   }
 
   volverAPreventa(): void {

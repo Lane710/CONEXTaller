@@ -22,13 +22,13 @@ import { StockDTO } from '../../../DTOs/Produc/StockDTO';
 import { usuarios } from '../../../models/PersonModel/usuarios';
 import { forma_pago } from '../../../models/PedidosEnviosDetalles/forma_pago';
 import { UsuariosService } from '../../../services/PersonServis/usuarios.service';
-
+import { FormsModule } from '@angular/forms';
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-datos-cliente',
   standalone: true,
-  imports: [NgFor, NgIf],
+  imports: [NgFor, NgIf, FormsModule],
   templateUrl: './datos-cliente.component.html',
   styleUrl: './datos-cliente.component.css',
 })
@@ -41,7 +41,8 @@ export class DatosClienteComponent implements OnInit {
   productosCarrio: DetalleCarritoProducto[] = [];
   isLoading: boolean = false;
   errorMessage: string = '';
-
+  departamentoDefault: string = 'Tarija';
+  numeroTienda: string = '59175135309';
   // Información del usuario
   usuarioInfo: usuarios | null = null;
 
@@ -64,11 +65,11 @@ export class DatosClienteComponent implements OnInit {
         nombre: '',
         apellidop: '',
         apellidom: '',
-        telefono: ''
+        telefono: '',
       },
       rol: {
-        nombreRol: ''
-      }
+        nombreRol: '',
+      },
     },
     nombreDestinatario: '',
     apellidosDestinatario: '',
@@ -96,8 +97,6 @@ export class DatosClienteComponent implements OnInit {
     costoEnvio: 0,
   };
 
-  seleccionMetodoPago: string = 'transferenciaBancaria';
-
   constructor(
     private carritoService: CarritoService,
     private PedidosS: PedidosService,
@@ -106,7 +105,7 @@ export class DatosClienteComponent implements OnInit {
     private direccionEnvioS: DireccionEnvioService,
     private router: Router,
     private stockService: StockService,
-    private usuariosService: UsuariosService
+    private usuariosService: UsuariosService,
   ) {}
 
   ngOnInit(): void {
@@ -122,24 +121,27 @@ export class DatosClienteComponent implements OnInit {
     }
 
     console.log('Cargando información del usuario:', this.username);
-    
+
     this.usuariosService.findById(this.username).subscribe({
       next: (response: ApiResponse) => {
         console.log('Respuesta del servicio de usuario:', response);
-        
+
         if (response.success && response.data) {
           this.usuarioInfo = response.data as usuarios;
           console.log('Información del usuario cargada:', this.usuarioInfo);
           this.autoCompletarFormulario();
         } else {
-          console.error('Error en la respuesta del servicio:', response.message);
+          console.error(
+            'Error en la respuesta del servicio:',
+            response.message,
+          );
           this.autoCompletarFormulario();
         }
       },
       error: (error) => {
         console.error('Error al cargar información del usuario:', error);
         this.autoCompletarFormulario();
-      }
+      },
     });
   }
 
@@ -147,20 +149,28 @@ export class DatosClienteComponent implements OnInit {
   autoCompletarFormulario(): void {
     setTimeout(() => {
       console.log('Autocompletando formulario con información del usuario...');
-      
+
       // Obtener referencias a los inputs
       const nombreInput = document.getElementById('nombre') as HTMLInputElement;
-      const apellidosInput = document.getElementById('apellidos') as HTMLInputElement;
-      const direccionInput = document.getElementById('direccionCalle') as HTMLInputElement;
+      const apellidosInput = document.getElementById(
+        'apellidos',
+      ) as HTMLInputElement;
+      const direccionInput = document.getElementById(
+        'direccionCalle',
+      ) as HTMLInputElement;
       const barrioInput = document.getElementById('barrio') as HTMLInputElement;
-      const departamentoSelect = document.getElementById('departamento') as HTMLSelectElement;
-      const telefonoInput = document.getElementById('whatsapp') as HTMLInputElement;
+      const departamentoSelect = document.getElementById(
+        'departamento',
+      ) as HTMLSelectElement;
+      const telefonoInput = document.getElementById(
+        'whatsapp',
+      ) as HTMLInputElement;
       const emailInput = document.getElementById('email') as HTMLInputElement;
 
       // Autocompletar con información del usuario si está disponible
       if (this.usuarioInfo) {
         console.log('Usando información del usuario para autocompletar');
-        
+
         // Nombre
         if (nombreInput && this.usuarioInfo.persona?.nombre) {
           nombreInput.value = this.usuarioInfo.persona.nombre;
@@ -205,7 +215,7 @@ export class DatosClienteComponent implements OnInit {
   // Método para obtener apellidos completos
   getApellidosCompletos(): string {
     if (!this.usuarioInfo?.persona) return '';
-    
+
     const apellidos = [];
     if (this.usuarioInfo.persona.apellidop) {
       apellidos.push(this.usuarioInfo.persona.apellidop);
@@ -213,7 +223,7 @@ export class DatosClienteComponent implements OnInit {
     if (this.usuarioInfo.persona.apellidom) {
       apellidos.push(this.usuarioInfo.persona.apellidom);
     }
-    
+
     return apellidos.join(' ');
   }
 
@@ -251,7 +261,7 @@ export class DatosClienteComponent implements OnInit {
                   variante: item.stock.producto.variante,
                   fechaRegistro: item.stock.producto.fechaRegistro,
                   ultimaActualizacion: item.stock.producto.ultimaActualizacion,
-                  precioCompra: item.stock.producto.precioCompra
+                  precioCompra: item.stock.producto.precioCompra,
                 },
               };
 
@@ -262,7 +272,7 @@ export class DatosClienteComponent implements OnInit {
                 subtotal: new Decimal(item.subtotal).toString(),
                 stock: stockDTO,
               } as DetalleCarritoProducto;
-            }
+            },
           );
 
           this.productosCarrio = [...this.detallesCarrito];
@@ -270,7 +280,7 @@ export class DatosClienteComponent implements OnInit {
         } else {
           console.error(
             'Error al listar productos del carrito:',
-            response.message
+            response.message,
           );
           this.detallesCarrito = [];
           this.calcularTotales();
@@ -310,7 +320,7 @@ export class DatosClienteComponent implements OnInit {
     if (!formData.esValido) {
       this.mostrarError(
         formData.mensajeError ||
-          'Por favor, completa todos los campos obligatorios correctamente.'
+          'Por favor, completa todos los campos obligatorios correctamente.',
       );
       return;
     }
@@ -326,24 +336,24 @@ export class DatosClienteComponent implements OnInit {
   } {
     const inputNombre = document.getElementById('nombre') as HTMLInputElement;
     const apellidosInput = document.getElementById(
-      'apellidos'
+      'apellidos',
     ) as HTMLInputElement;
     const paisRegionInput = document.getElementById(
-      'paisRegion'
+      'paisRegion',
     ) as HTMLInputElement;
     const direccionCalleInput = document.getElementById(
-      'direccionCalle'
+      'direccionCalle',
     ) as HTMLInputElement;
     const barrioInput = document.getElementById('barrio') as HTMLInputElement;
     const departamentoInput = document.getElementById(
-      'departamento'
+      'departamento',
     ) as HTMLSelectElement;
     const numeroTelefonoInput = document.getElementById(
-      'whatsapp'
+      'whatsapp',
     ) as HTMLInputElement;
     const emailInput = document.getElementById('email') as HTMLInputElement;
     const notasPedidoInput = document.getElementById(
-      'notasPedido'
+      'notasPedido',
     ) as HTMLTextAreaElement;
 
     if (!inputNombre?.value?.trim()) {
@@ -376,8 +386,7 @@ export class DatosClienteComponent implements OnInit {
     if (!emailInput?.value?.trim() || !this.validarEmail(emailInput.value)) {
       return {
         esValido: false,
-        mensajeError:
-          'El email es obligatorio y debe tener formato válido',
+        mensajeError: 'El email es obligatorio y debe tener formato válido',
       };
     }
 
@@ -398,8 +407,6 @@ export class DatosClienteComponent implements OnInit {
   }
 
   private configurarObjetosPedido(formData: any): void {
-    const idFormaPagoSeleccionada = this.seleecionadoMetodoPago();
-
     const detalles: detallePedido[] = this.detallesCarrito.map((item) => {
       const productoMinimo = { idProducto: item.stock.producto.idProducto };
 
@@ -413,10 +420,9 @@ export class DatosClienteComponent implements OnInit {
 
     this.pedido = {
       usuario: { username: this.username } as usuarios,
-      formaPago: { 
-        idFormaPago: idFormaPagoSeleccionada,
-        nombre: this.seleccionMetodoPago === 'transferenciaBancaria' ? 'Pago por QR' : 'Pago en Entrega',
-        descripcion: this.seleccionMetodoPago === 'transferenciaBancaria' ? 'Pago mediante código QR' : 'Pago al momento de la entrega'
+      formaPago: {
+        idFormaPago: 2222,
+        nombre: 'Transferencia QR',
       } as forma_pago,
       notas: formData.datos.notas,
       estado: 'PENDIENTE',
@@ -449,20 +455,21 @@ export class DatosClienteComponent implements OnInit {
       empresaEnvio: 'Empresa de Envíos',
       notas: formData.datos.notas,
       estado: 'PENDIENTE',
-      costoEnvio: 0
+      costoEnvio: 0,
     };
   }
 
   private ejecutarSecuenciaGuardado(): void {
     this.isLoading = true;
-    
+
+    // 1. Guardamos el Pedido
     this.PedidosS.save(this.pedido)
       .pipe(
         switchMap((pedidoGuardado: ApiResponse) => {
           if (!pedidoGuardado.success || !pedidoGuardado.data) {
             throw new Error(
               'Error al guardar el pedido (incl. detalles): ' +
-                pedidoGuardado.message
+                pedidoGuardado.message,
             );
           }
 
@@ -476,87 +483,64 @@ export class DatosClienteComponent implements OnInit {
           this.envio.pedido = { ...this.pedido, idPedido: pedidoId };
 
           console.log(
-            `Pedido (y detalles) guardado con ID: ${pedidoId}. Procediendo con Stock y Envío.`
+            `Pedido (y detalles) guardado con ID: ${pedidoId}. Procediendo con Envío (Stock omitido).`,
           );
 
-          const stockUpdates = this.detallesCarrito.map((item) => {
-            const idStock = item.stock.idStock;
-            const cantidadVendida = item.cantidad;
+          // --- SECCIÓN ELIMINADA: Ya no calculamos ni ejecutamos stockUpdates ---
 
-            return this.stockService
-              .addorRestarStockProductos(idStock, -cantidadVendida)
-              .pipe(
-                catchError((error) => {
-                  console.error(
-                    `Error al actualizar stock para Producto ${item.stock.producto.idProducto}:`,
-                    error
-                  );
-                  return of({
-                    success: false,
-                    message: `Fallo de stock para ${item.stock.producto.idProducto}`,
-                  });
-                })
-              );
-          });
-
-          const guardarEnvio$ = this.direccionEnvioS
-            .save(this.direccionEnvio)
-            .pipe(
-              switchMap((direccionGuardada: ApiResponse) => {
-                if (!direccionGuardada.success || !direccionGuardada.data) {
-                  throw new Error(
-                    'Error al guardar la dirección de envío: ' +
-                      direccionGuardada.message
-                  );
-                }
-
-                const direccionGuardadaObj =
-                  direccionGuardada.data as direccionesEnvio;
-                const direccionId = direccionGuardadaObj.idDireccionEnvio;
-
-                if (!direccionId) {
-                  throw new Error(
-                    'El ID de la dirección guardada no fue retornado.'
-                  );
-                }
-
-                this.envio.direccionEnvio = {
-                  ...this.direccionEnvio,
-                  idDireccionEnvio: direccionId,
-                };
-
-                console.log(
-                  `Dirección de envío guardada con ID: ${direccionId}`
+          // 2. Guardamos la Dirección de Envío
+          return this.direccionEnvioS.save(this.direccionEnvio).pipe(
+            switchMap((direccionGuardada: ApiResponse) => {
+              if (!direccionGuardada.success || !direccionGuardada.data) {
+                throw new Error(
+                  'Error al guardar la dirección de envío: ' +
+                    direccionGuardada.message,
                 );
-                return this.enviosS.save(this.envio);
-              })
-            );
+              }
 
-          return forkJoin([...stockUpdates, guardarEnvio$]);
-        })
+              const direccionGuardadaObj =
+                direccionGuardada.data as direccionesEnvio;
+              const direccionId = direccionGuardadaObj.idDireccionEnvio;
+
+              if (!direccionId) {
+                throw new Error(
+                  'El ID de la dirección guardada no fue retornado.',
+                );
+              }
+
+              this.envio.direccionEnvio = {
+                ...this.direccionEnvio,
+                idDireccionEnvio: direccionId,
+              };
+
+              console.log(`Dirección de envío guardada con ID: ${direccionId}`);
+
+              // 3. Guardamos la información del Envío
+              return this.enviosS.save(this.envio);
+            }),
+          );
+        }),
       )
       .subscribe({
-        next: (responses) => {
+        next: (response) => {
           this.isLoading = false;
-          console.log(
-            'Todas las operaciones (pedido, detalles, stock, envío) completadas.',
-            responses
-          );
+          console.log('Pedido y envío registrados exitosamente.', response);
+
+          // 4. Limpiamos el carrito (Visual y base de datos del carrito, NO stock de productos)
           this.limpiarCarrito();
-          this.redireccionarMetodoPago();
+          this.mostrarModalExito();
         },
         error: (err: HttpErrorResponse) => {
           this.isLoading = false;
-          console.error('Error durante la secuencia de registro del pedido:', err);
-          
-          console.error('Error completo:', {
-            status: err.status,
-            statusText: err.statusText,
-            error: err.error,
-            url: err.url
-          });
-          
-          const errorMsg = err.error?.message || err.message || 'Ocurrió un error al procesar el pedido.';
+          console.error(
+            'Error durante la secuencia de registro del pedido:',
+            err,
+          );
+
+          const errorMsg =
+            err.error?.message ||
+            err.message ||
+            'Ocurrió un error al procesar el pedido.';
           this.mostrarErrorModal(errorMsg);
         },
       });
@@ -579,43 +563,24 @@ export class DatosClienteComponent implements OnInit {
     }
   }
 
-// Método para mostrar error
-mostrarErrorModal(mensaje: string): void {
-  this.errorMessage = mensaje;
-  const modalElement = document.getElementById('modalError');
-  if (modalElement) {
-    const errorMessageElement = modalElement.querySelector('#errorMessageText');
-    if (errorMessageElement) {
-      errorMessageElement.textContent = mensaje;
+  // Método para mostrar error
+  mostrarErrorModal(mensaje: string): void {
+    this.errorMessage = mensaje;
+    const modalElement = document.getElementById('modalError');
+    if (modalElement) {
+      const errorMessageElement =
+        modalElement.querySelector('#errorMessageText');
+      if (errorMessageElement) {
+        errorMessageElement.textContent = mensaje;
+      }
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
     }
-    const modal = new bootstrap.Modal(modalElement);
-    modal.show();
   }
-}
 
   validarEmail(email: string): boolean {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     return emailRegex.test(email);
-  }
-
-  onPaymentMethodChange(methodId: string): void {
-    this.seleccionMetodoPago = methodId;
-  }
-
-  seleecionadoMetodoPago(): number {
-    const metodosPago: { [key: string]: number } = {
-      'transferenciaBancaria': 3333,
-      'pagoEntrega': 1111
-    };
-    
-    const idSeleccionado = metodosPago[this.seleccionMetodoPago];
-    
-    if (!idSeleccionado) {
-      console.error('ID de forma de pago no encontrado para:', this.seleccionMetodoPago);
-      return 1111;
-    }
-    
-    return idSeleccionado;
   }
 
   limpiarCarrito(): void {
@@ -624,8 +589,8 @@ mostrarErrorModal(mensaje: string): void {
     const operacionesEliminacion = this.productosCarrio.map((item) =>
       this.carritoService.eliminarProductoDeCarrito(
         this.username,
-        item.idDetalleCarrito
-      )
+        item.idDetalleCarrito,
+      ),
     );
 
     forkJoin(operacionesEliminacion).subscribe({
@@ -641,34 +606,50 @@ mostrarErrorModal(mensaje: string): void {
     });
   }
 
-  redireccionarMetodoPago(): void {
-    if (this.seleccionMetodoPago === 'transferenciaBancaria') {
-      const datosParaOtraPagina = {
-        totalCarrito: this.totalCarrito,
-        pedido: this.pedido,
-      };
-      this.router.navigate(['/home/pedidoOnline/pagoQR'], {
-        state: { datosDelPedido: datosParaOtraPagina },
-      });
-    } else if (this.seleccionMetodoPago === 'pagoEntrega') {
-      this.mostrarModalExito();
+  // Método para mostrar modal de éxito
+  mostrarModalExito(): void {
+    const modalElement = document.getElementById('modalExito');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+      // NOTA: He quitado el listener que redirigía automáticamente al cerrar,
+      // ahora controlamos la redirección con los botones.
     }
   }
-  // Método para mostrar modal de éxito
-mostrarModalExito(): void {
-  const modalElement = document.getElementById('modalExito');
-  if (modalElement) {
-    const modal = new bootstrap.Modal(modalElement);
-    modal.show();
-    
-    // Redirigir al home cuando se cierre el modal
-    modalElement.addEventListener('hidden.bs.modal', () => {
-      this.router.navigate(['/home']);
-    }, { once: true });
+
+  // Función simple para limpiar y mover al usuario
+  cerrarYRedirigir(): void {
+    // Cierra el modal manualmente por si acaso (aunque data-bs-dismiss lo hace)
+    const modalElement = document.getElementById('modalExito');
+    // Aquí podrías usar lógica para cerrar la instancia de Bootstrap si fuera necesario,
+    // pero el router navigate usualmente limpia la vista.
+
+    this.router.navigate(['/perfil/mis-pedidos']); // O a ['/home']
   }
-}
 
+  // Función que arma el mensaje y abre WhatsApp
+  irAWhatsAppYFinalizar(): void {
+    // 1. Datos para el mensaje
+    const idPedido = this.pedido.idPedido || 'N/A';
+    const nombreCliente = this.usuarioInfo?.persona?.nombre || 'Cliente';
+    const total = this.totalCarrito;
 
+    // 2. Construimos el mensaje (usamos %0A para saltos de línea)
+    const mensaje =
+      `Hola, acabo de realizar el *Pedido #${idPedido}* en la web.%0A` +
+      `Soy *${nombreCliente}*.%0A` +
+      `El total es: *${total} Bs*.%0A` +
+      `Por favor, envíenme el QR para realizar el pago.`;
+
+    // 3. Crear la URL de WhatsApp
+    const url = `https://wa.me/${this.numeroTienda}?text=${mensaje}`;
+
+    // 4. Abrir en nueva pestaña
+    window.open(url, '_blank');
+
+    // 5. Redirigir la página actual a "Mis Pedidos" o "Home" para que no se queden en el checkout
+    this.cerrarYRedirigir();
+  }
 
   hayProductosEnCarrito(): boolean {
     return this.detallesCarrito && this.detallesCarrito.length > 0;
@@ -677,7 +658,7 @@ mostrarModalExito(): void {
   getTotalProductos(): number {
     return this.detallesCarrito.reduce(
       (total, item) => total + item.cantidad,
-      0
+      0,
     );
   }
 
@@ -688,6 +669,4 @@ mostrarModalExito(): void {
   getNombreProducto(item: DetalleCarritoProducto): string {
     return item.stock.producto.nombre;
   }
-
-
 }

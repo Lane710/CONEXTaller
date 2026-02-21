@@ -136,7 +136,7 @@
           <tbody>
             <tr *ngFor="let sale of paginatedVentas">
               <td data-label="Cliente">
-                <!--{{ sale.cliente.nombre }} {{ sale.cliente.appaterno || '' }} {{ sale.cliente.apmaterno || '' }}-->
+                {{ sale.cliente.persona?.nombre }} {{ sale.cliente.persona?.apellidop}} {{ sale.cliente.persona?.apellidom}}
               </td>
               <td data-label="Total">
                 {{ sale.total | currency : "Bs " : "symbol" : "1.2-2" }}
@@ -490,22 +490,22 @@
                 <div class="d-flex justify-content-between border-bottom py-2">
                   <span class="text-muted">Cliente:</span>
                   <span class="fw-semibold text-end"
-                    ><!--{{ ventaSeleccionada.venta.cliente.nombre }}
-                    {{ ventaSeleccionada.venta.cliente.appaterno }}
-                    {{ ventaSeleccionada.venta.cliente.apmaterno }}--></span
+                    >{{ ventaSeleccionada.venta.cliente.persona?.nombre }}
+                    {{ ventaSeleccionada.venta.cliente.persona?.apellidop}}
+                    {{ ventaSeleccionada.venta.cliente.persona?.apellidom }}</span
                   >
                 </div>
                 <div class="d-flex justify-content-between border-bottom py-2">
                   <span class="text-muted">Celular:</span>
-                  <!--<span>{{
-                    ventaSeleccionada.venta.cliente.telefono || "N/A"
-                  }}</span>-->
+                  <span>{{
+                    ventaSeleccionada.venta.cliente.persona?.telefono || "N/A"
+                  }}</span>
                 </div>
                 <div class="d-flex justify-content-between pt-2">
                   <span class="text-muted">Email:</span>
-                  <!--<span>{{
-                    ventaSeleccionada.venta.cliente.email || "N/A"
-                  }}</span>-->
+                  <span>{{
+                    ventaSeleccionada.venta.cliente.persona?.email || "N/A"
+                  }}</span>
                 </div>
               </div>
             </div>

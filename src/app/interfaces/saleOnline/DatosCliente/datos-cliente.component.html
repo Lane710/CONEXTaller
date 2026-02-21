@@ -4,33 +4,54 @@
     ya no tendrías acceso a la tienda en un futuro.
   </div>
 
-  <form class="datos-cliente-form">
+  <form class="datos-cliente-form" #pedidoForm="ngForm">
     <div class="row">
       <div class="col-md-7 datoscliente">
         <h5 class="section-title">Detalles de facturación</h5>
         <div class="row g-3">
+          
           <div class="col-md-6">
-            <label for="nombre" class="form-label"
-              >Nombre <span class="text-danger">*</span></label
-            >
+            <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
             <input 
               type="text" 
               class="form-control" 
               id="nombre" 
-              [value]="usuarioInfo?.persona?.nombre || ''"
+              name="nombre"
+              [ngModel]="usuarioInfo?.persona?.nombre || ''"
+              required
+              minlength="2"
+              maxlength="70"
+              #nombreInput="ngModel"
+              [class.is-invalid]="nombreInput.invalid && (nombreInput.dirty || nombreInput.touched)"
             />
+            <div *ngIf="nombreInput.invalid && (nombreInput.dirty || nombreInput.touched)" class="text-danger small mt-1">
+              <span *ngIf="nombreInput.errors?.['required']">El nombre es obligatorio.</span>
+              <span *ngIf="nombreInput.errors?.['minlength']">Mínimo 2 caracteres.</span>
+              <span *ngIf="nombreInput.errors?.['maxlength']">Máximo 70 caracteres.</span>
+            </div>
           </div>
+
           <div class="col-md-6">
-            <label for="apellidos" class="form-label"
-              >Apellidos <span class="text-danger">*</span></label
-            >
+            <label for="apellidos" class="form-label">Apellidos <span class="text-danger">*</span></label>
             <input 
               type="text" 
               class="form-control" 
               id="apellidos" 
-              [value]="getApellidosCompletos()"
+              name="apellidos"
+              [ngModel]="getApellidosCompletos()"
+              required
+              minlength="2"
+              maxlength="70"
+              #apellidosInput="ngModel"
+              [class.is-invalid]="apellidosInput.invalid && (apellidosInput.dirty || apellidosInput.touched)"
             />
+            <div *ngIf="apellidosInput.invalid && (apellidosInput.dirty || apellidosInput.touched)" class="text-danger small mt-1">
+              <span *ngIf="apellidosInput.errors?.['required']">Los apellidos son obligatorios.</span>
+              <span *ngIf="apellidosInput.errors?.['minlength']">Mínimo 2 caracteres.</span>
+              <span *ngIf="apellidosInput.errors?.['maxlength']">Máximo 70 caracteres.</span>
+            </div>
           </div>
+
           <div class="col-12">
             <label for="paisRegion" class="form-label">País</label>
             <input
@@ -41,69 +62,110 @@
               readonly
             />
           </div>
+
           <div class="col-12">
-            <label for="direccionCalle" class="form-label"
-              >Dirección de la calles <span class="text-danger">*</span></label
-            >
+            <label for="direccionCalle" class="form-label">Dirección de la calle <span class="text-danger">*</span></label>
             <input
               type="text"
               class="form-control"
               id="direccionCalle"
-              placeholder="House number and street name"
-              [value]="usuarioInfo?.persona?.direccion || ''"
+              name="direccionCalle"
+              placeholder="Número de casa y nombre de calle"
+              [ngModel]="usuarioInfo?.persona?.direccion || ''"
+              required
+              minlength="5"
+              maxlength="150"
+              #direccionInput="ngModel"
+              [class.is-invalid]="direccionInput.invalid && (direccionInput.dirty || direccionInput.touched)"
             />
-            <div class="form-text">
-              Velgrano, Espana, Av. la paz y circumbalacion, etc.
+            <div *ngIf="direccionInput.invalid && (direccionInput.dirty || direccionInput.touched)" class="text-danger small mt-1">
+              <span *ngIf="direccionInput.errors?.['required']">La dirección es obligatoria.</span>
+              <span *ngIf="direccionInput.errors?.['minlength']">Mínimo 5 caracteres.</span>
+              <span *ngIf="direccionInput.errors?.['maxlength']">Máximo 150 caracteres.</span>
             </div>
+            <div class="form-text">Velgrano, Espana, Av. la paz y circumbalacion, etc.</div>
           </div>
+
           <div class="col-12">
-            <label for="barrio" class="form-label"
-              >Barrio <span class="text-danger">*</span></label
-            >
+            <label for="barrio" class="form-label">Barrio <span class="text-danger">*</span></label>
             <input
               type="text"
               class="form-control"
               id="barrio"
-              placeholder="House number and street name"
+              name="barrio"
+              placeholder="Nombre del barrio"
+              ngModel
+              required
+              minlength="3"
+              maxlength="80"
+              #barrioInput="ngModel"
+              [class.is-invalid]="barrioInput.invalid && (barrioInput.dirty || barrioInput.touched)"
             />
+            <div *ngIf="barrioInput.invalid && (barrioInput.dirty || barrioInput.touched)" class="text-danger small mt-1">
+              <span *ngIf="barrioInput.errors?.['required']">El barrio es obligatorio.</span>
+              <span *ngIf="barrioInput.errors?.['minlength']">Mínimo 3 caracteres.</span>
+              <span *ngIf="barrioInput.errors?.['maxlength']">Máximo 80 caracteres.</span>
+            </div>
             <div class="form-text">Juan 23, Tablada grande, Senac, etc.</div>
           </div>
+
+        <div class="col-12">
+  <label for="departamento" class="form-label">Departamento <span class="text-danger">*</span></label>
+  <select 
+    class="form-select" 
+    id="departamento" 
+    name="departamento" 
+    [(ngModel)]="departamentoDefault" 
+    required
+    #deptInput="ngModel"
+    [class.is-invalid]="deptInput.invalid && (deptInput.dirty || deptInput.touched)"
+  >
+    <option value="Tarija">Tarija</option>
+  </select>
+</div>
           <div class="col-12">
-            <label for="departamento" class="form-label"
-              >Departamento <span class="text-danger">*</span></label
-            >
-            <select class="form-select" id="departamento">
-              <option value="Tarija" selected>Tarija</option>
-              <option value="La Paz">La Paz</option>
-              <option value="Cochabamba">Cochabamba</option>
-              <option value="Santa Cruz">Santa Cruz</option>
-            </select>
-          </div>
-          <div class="col-12">
-            <label for="whatsapp" class="form-label"
-              >WhatsApp <span class="text-danger">*</span></label
-            >
+            <label for="whatsapp" class="form-label">WhatsApp <span class="text-danger">*</span></label>
             <input
               id="whatsapp"
-              type="number"
+              name="whatsapp"
+              type="text"
               class="form-control"
               required
-              pattern="[0-9]*"
+              pattern="^[0-9]*$"
+              minlength="8"
+              maxlength="15"
               inputmode="numeric"
-              [value]="usuarioInfo?.persona?.telefono || ''"
+              [ngModel]="usuarioInfo?.persona?.telefono || ''"
+              #whatsappInput="ngModel"
+              [class.is-invalid]="whatsappInput.invalid && (whatsappInput.dirty || whatsappInput.touched)"
             />
+            <div *ngIf="whatsappInput.invalid && (whatsappInput.dirty || whatsappInput.touched)" class="text-danger small mt-1">
+              <span *ngIf="whatsappInput.errors?.['required']">El teléfono es obligatorio.</span>
+              <span *ngIf="whatsappInput.errors?.['pattern']">Solo se permiten números.</span>
+              <span *ngIf="whatsappInput.errors?.['minlength']">Mínimo 8 dígitos.</span>
+              <span *ngIf="whatsappInput.errors?.['maxlength']">Máximo 15 dígitos.</span>
+            </div>
           </div>
+
           <div class="col-12">
-            <label for="email" class="form-label"
-              >Dirección de correo electrónico
-              <span class="text-danger">*</span></label
-            >
+            <label for="email" class="form-label">Dirección de correo electrónico <span class="text-danger">*</span></label>
             <input 
               type="email" 
               class="form-control" 
               id="email" 
-              [value]="usuarioInfo?.email || ''"
+              name="email"
+              [ngModel]="usuarioInfo?.email || ''"
+              required
+              email
+              maxlength="100"
+              #emailInput="ngModel"
+              [class.is-invalid]="emailInput.invalid && (emailInput.dirty || emailInput.touched)"
             />
+            <div *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)" class="text-danger small mt-1">
+              <span *ngIf="emailInput.errors?.['required']">El correo es obligatorio.</span>
+              <span *ngIf="emailInput.errors?.['email']">Debe ser un correo válido.</span>
+              <span *ngIf="emailInput.errors?.['maxlength']">Máximo 100 caracteres.</span>
+            </div>
           </div>
         </div>
       </div>
@@ -111,115 +173,68 @@
       <div class="col-md-5">
         <h5 class="section-title">Información adicional</h5>
         <div class="mb-3">
-          <label for="notasPedido" class="form-label"
-            >Notas del pedido (opcional)</label
-          >
+          <label for="notasPedido" class="form-label">Notas del pedido (opcional)</label>
           <textarea
             class="form-control"
             id="notasPedido"
+            name="notasPedido"
             rows="4"
-            placeholder="Notes about your order, e.g. special notes for delivery"
+            maxlength="250"
+            ngModel
+            #notasInput="ngModel"
+            placeholder="Notas sobre tu pedido, ej. notas especiales para la entrega"
           ></textarea>
+          <div class="text-end small text-muted mt-1">
+             {{ notasInput.value?.length || 0 }} / 250
+           </div>
         </div>
       </div>
     </div>
 
-    <div class="my-5">
+  <div class="my-5">
       <h5 class="section-title">Tu pedido</h5>
-      <div class="order-summary">
+      <div class="order-summary card-pedido">
         <div class="productos-lista" [class.con-scroll]="detallesCarrito.length > 5">
-          <table class="table table-bordered">
-            <thead>
+          <table class="table table-borderless mb-0">
+            <thead class="table-light">
               <tr>
                 <th scope="col">Productos</th>
-                <th scope="col">Subtotal</th>
+                <th scope="col" class="text-end">Subtotal</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let item of detallesCarrito">
                 <td>
-                  {{ item.stock.producto.nombre }} &times; {{ item.cantidad }}
-                  <br />
+                  <div class="fw-bold">{{ item.stock.producto.nombre }}</div>
+                  <div class="text-muted small">Cant: {{ item.cantidad }}</div>
                   <small 
-                    [class.text-success]="hayStockSuficiente(item)"
-                    [class.text-danger]="!hayStockSuficiente(item)"
+                    class="badge rounded-pill mt-1"
+                    [class.bg-success-subtle]="hayStockSuficiente(item)"
+                    [class.text-success-emphasis]="hayStockSuficiente(item)"
+                    [class.bg-danger-subtle]="!hayStockSuficiente(item)"
+                    [class.text-danger-emphasis]="!hayStockSuficiente(item)"
                   >
-                    {{ hayStockSuficiente(item) ? 'Hay existencias' : 'Sin existencias' }}
+                    {{ hayStockSuficiente(item) ? 'Disponible' : 'Sin Stock' }}
                   </small>
                 </td>
-                <td>{{ item.subtotal }} Bs.</td>
+                <td class="text-end align-middle">{{ item.subtotal }} Bs.</td>
               </tr>
             </tbody>
-            <tfoot>
-              <tr>
-                <td class="total">Total</td>
-                <td class="total">{{ totalCarrito }} Bs.</td>
-              </tr>
-            </tfoot>
           </table>
         </div>
-      </div>
-    </div>
 
-    <div class="seleccionTarjetaQRPagoEntrega">
-      <div class="payment-option mb-3">
-        <div class="form-check">
-          <input
-            class="form-check-input"
-            type="radio"
-            name="paymentMethod"
-            id="transferenciaBancaria"
-            (change)="onPaymentMethodChange('transferenciaBancaria')"
-            [checked]="seleccionMetodoPago === 'transferenciaBancaria'"
-          />
-          <label class="form-check-label" for="transferenciaBancaria">
-            <i class="fas fa-qrcode me-2"></i>Pago por QR
-          </label>
-        </div>
-        <div
-          *ngIf="seleccionMetodoPago === 'transferenciaBancaria'"
-          class="payment-instructions mt-3"
-        >
-          <div class="alert alert-info">
-            <strong>Pago Rápido y Seguro</strong>
-            <p class="mb-2">Escanea el código QR con tu app bancaria para realizar el pago de forma instantánea.</p>
-            <ul class="mb-0">
-              <li>Pago inmediato y confirmación automática</li>
-              <li>Disponible 24/7</li>
-              <li>Soporte para todos los bancos nacionales</li>
-            </ul>
+        <div class="total-container">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-muted">Subtotal</span>
+            <span class="fw-bold">{{ subtotalCarrito }} Bs.</span>
+          </div>
+          <hr class="my-2">
+          <div class="d-flex justify-content-between align-items-center total-row mt-3 text">
+            <span class="total-label fw-bold">TOTAL A PAGAR</span>
+            <span class="total-amount fw-bold">{{ totalCarrito }} Bs.</span>
           </div>
         </div>
-      </div>
 
-      <div class="payment-option mb-3">
-        <div class="form-check">
-          <input
-            class="form-check-input"
-            type="radio"
-            name="paymentMethod"
-            id="pagoEntrega"
-            (change)="onPaymentMethodChange('pagoEntrega')"
-            [checked]="seleccionMetodoPago === 'pagoEntrega'"
-          />
-          <label class="form-check-label" for="pagoEntrega">
-            <i class="fas fa-truck me-2"></i>Pago en entrega
-          </label>
-        </div>
-        <div
-          *ngIf="seleccionMetodoPago === 'pagoEntrega'"
-          class="payment-instructions mt-3"
-        >
-          <div class="alert alert-warning">
-            <strong>Pago al Recibir tu Pedido</strong>
-            <p class="mb-2">Paga en efectivo cuando recibas tu pedido en la puerta de tu casa.</p>
-            <ul class="mb-0">
-              <li>Solo disponible en Ciudad de Tarija</li>
-              <li>Efectivo al momento de la entrega</li>
-              <li>Horario de entregas: 9:00 AM - 6:00 PM</li>
-            </ul>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -234,10 +249,10 @@
       class="btn btn-primary btn-lg w-100"
       type="button"
       (click)="DatosDelCLiente()"
-      [disabled]="!detallesCarrito || detallesCarrito.length === 0 || isLoading"
+      [disabled]="pedidoForm.invalid || !detallesCarrito || detallesCarrito.length === 0 || isLoading"
     >
       <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
-      {{ isLoading ? 'Procesando...' : 'Realizar Pedido' }}
+      {{ isLoading ? 'Procesando...' : (pedidoForm.invalid ? 'Completa los campos en rojo' : 'Realizar Pedido') }}
     </button>
   </form>
 </div>
@@ -245,32 +260,40 @@
 
 
 
-
-
-
-
-
-<!-- Modal de Éxito - Versión Simplificada -->
-<div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
+<div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-body text-center p-5">
-        <!-- Icono de éxito -->
-        <div class="success-icon mb-4">
-          <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+        
+        <div class="success-icon mb-4 position-relative">
+          <i class="fas fa-file-invoice text-primary" style="font-size: 4rem;"></i>
+          <i class="fas fa-check-circle text-success position-absolute bottom-0 end-0" style="font-size: 1.5rem; background: white; border-radius: 50%;"></i>
         </div>
         
-        <!-- Mensaje principal -->
-        <h4 class="text-success fw-bold mb-3">¡Pedido Realizado!</h4>
+        <h3 class="fw-bold mb-2">¡Pedido #{{ pedido.idPedido }} Registrado!</h3>
         <p class="text-muted mb-4">
-          Tu pedido se ha completado exitosamente. Para ver más detalles y seguir el estado de tu pedido, 
-          visita tu lista de pedidos en tu perfil.
+          Tu pedido por <strong>{{ totalCarrito }} Bs.</strong> ha sido reservado correctamente. 
+          <br><br>
+          <span class="text-dark fw-bold">⚠️ Para procesar el envío, por favor completa tu pago vía QR en nuestro WhatsApp.</span>
         </p>
 
-        <!-- Botón de acción -->
-        <button type="button" class="btn btn-success px-4" data-bs-dismiss="modal">
-          <i class="fas fa-times me-2"></i>Cerrar
+        <button 
+          type="button" 
+          class="btn btn-success btn-lg w-100 mb-3 shadow-sm" 
+          (click)="irAWhatsAppYFinalizar()"
+        >
+          <i class="fab fa-whatsapp me-2"></i> Pagar ahora por WhatsApp
         </button>
+
+        <button 
+          type="button" 
+          class="btn btn-outline-secondary btn-sm w-100" 
+          data-bs-dismiss="modal" 
+          (click)="cerrarYRedirigir()"
+        >
+          Pagaré más tarde (Ver mis pedidos)
+        </button>
+
       </div>
     </div>
   </div>

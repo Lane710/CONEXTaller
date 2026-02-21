@@ -185,3 +185,81 @@ input[type="number"]::-webkit-inner-spin-button {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
+
+/* Contenedor general de la orden (estilo tarjeta) */
+.card-pedido {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden; /* Para que las esquinas redondeadas funcionen */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Ajustes a la tabla para que se vea más limpia */
+.productos-lista table {
+  margin-bottom: 0;
+}
+
+.productos-lista thead th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+  color: #6c757d;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  padding: 1rem;
+}
+
+.productos-lista td {
+  padding: 1rem;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+/* Control del Scroll */
+.productos-lista {
+  max-height: auto;
+}
+
+.productos-lista.con-scroll {
+  max-height: 350px; /* Altura máxima antes de scroll */
+  overflow-y: auto;
+  /* Scrollbar personalizado fino */
+  scrollbar-width: thin;
+  scrollbar-color: #dee2e6 #fff;
+}
+
+/* === NUEVA SECCIÓN DE TOTAL === */
+.total-container {
+  background-color: #fcfcfc; /* Un gris muy sutil diferente al blanco */
+  padding: 1.5rem;
+  border-top: 2px dashed #dee2e6; /* Línea punteada como ticket de compra */
+  position: relative;
+  z-index: 2; /* Asegura que esté por encima si hay sombras */
+}
+
+.total-row {
+  color: #212529;
+}
+
+.total-label {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #495057;
+}
+
+.total-amount {
+  font-size: 1.5rem; /* Número grande */
+  font-weight: 800;
+  color: #0d6efd; /* Color primario o el color de tu marca */
+}
+
+/* Opcional: Si quieres un fondo oscuro para el total */
+/* .total-container {
+    background-color: #212529;
+    color: white;
+}
+.total-label, .text-muted { color: #adb5bd !important; }
+.total-amount { color: #fff; }
+hr { border-color: #495057; }
+*/

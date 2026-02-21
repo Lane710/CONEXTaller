@@ -24,7 +24,10 @@ export class TipoService {
   save(tipo:tipo): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(`${this.baseUrl}save`, tipo);
   }
-
+// ... dentro de TipoService
+update(id: number, tipo: tipo): Observable<ApiResponse> {
+  return this.http.put<ApiResponse>(`${this.baseUrl}updateById/${id}`, tipo);
+}
   // =================================================================
 // GET: /tipos/findByNombre/{nombre}
 // =================================================================

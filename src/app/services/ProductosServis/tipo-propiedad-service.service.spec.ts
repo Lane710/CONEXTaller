@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { TipoPropiedadServiceService } from './tipo-propiedad-service.service';
+import { TipoPropiedadService } from './tipo-propiedad-service.service';
 
 describe('TipoPropiedadServiceService', () => {
-  let service: TipoPropiedadServiceService;
+  let service: TipoPropiedadService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(TipoPropiedadServiceService);
+    service = TestBed.inject(TipoPropiedadService);
   });
 
   it('should be created', () => {
