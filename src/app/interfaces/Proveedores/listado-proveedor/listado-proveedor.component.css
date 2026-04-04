@@ -4,7 +4,10 @@
 body {
   font-family: 'Inter', sans-serif;
 }
-
+ 
+ .container{
+  margin-bottom: 5%;
+}
 /* ===== MEJORAS EJECUTIVAS SIN CAMBIAR TAMAÑOS ===== */
 
 /* Breadcrumb mejorado */

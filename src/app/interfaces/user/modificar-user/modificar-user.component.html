@@ -11,37 +11,46 @@
       [formGroup]="usuarioForm"
       (ngSubmit)="onModify()"
     >
-      <!-- DATOS DE LA CUENTA -->
       <fieldset class="border p-3 mb-4 rounded shadow-sm">
         <legend class="float-none w-auto px-2 text-secondary h5">
           Datos de la Cuenta
         </legend>
         <div class="row g-3">
           <div class="col-md-6">
-            <label for="username" class="form-label">Usuario</label>
+            <label for="username" class="form-label">Usuario <span class="text-danger">*</span></label>
             <input
               type="text"
               id="username"
               class="form-control"
               formControlName="username"
-              readonly
+              [class.is-invalid]="usuarioForm.get('username')?.invalid && usuarioForm.get('username')?.touched"
             />
+            <div *ngIf="usuarioForm.get('username')?.invalid && usuarioForm.get('username')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('username')?.errors?.['required']">El nombre de usuario es obligatorio.</div>
+              <div *ngIf="usuarioForm.get('username')?.errors?.['minlength']">Mínimo 5 caracteres.</div>
+              <div *ngIf="usuarioForm.get('username')?.errors?.['maxlength']">Máximo 20 caracteres.</div>
+              <div *ngIf="usuarioForm.get('username')?.errors?.['pattern']">Solo letras, números y guiones bajos.</div>
+            </div>
           </div>
 
           <div class="col-md-6">
-            <label for="email" class="form-label">Correo electrónico</label>
+            <label for="email" class="form-label">Correo electrónico <span class="text-danger">*</span></label>
             <input
               type="email"
               id="email"
               class="form-control"
               formControlName="email"
-              readonly
+              [class.is-invalid]="usuarioForm.get('email')?.invalid && usuarioForm.get('email')?.touched"
             />
+            <div *ngIf="usuarioForm.get('email')?.invalid && usuarioForm.get('email')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('email')?.errors?.['required']">El email es obligatorio.</div>
+              <div *ngIf="usuarioForm.get('email')?.errors?.['email']">Formato de email inválido.</div>
+              <div *ngIf="usuarioForm.get('email')?.errors?.['pattern']">Solo se permiten correos de Gmail.</div>
+            </div>
           </div>
         </div>
       </fieldset>
 
-      <!-- DATOS PERSONALES -->
       <fieldset formGroupName="persona" class="border p-3 mb-4 rounded shadow-sm">
         <legend class="float-none w-auto px-2 text-secondary h5">
           Datos Personales
@@ -49,69 +58,92 @@
 
         <div class="row g-3">
           <div class="col-md-6">
-            <label for="ci" class="form-label">CI</label>
+            <label for="ci" class="form-label">CI <span class="text-danger">*</span></label>
             <input
               type="text"
               id="ci"
               class="form-control"
               formControlName="ci"
-              readonly
+              [class.is-invalid]="usuarioForm.get('persona.ci')?.invalid && usuarioForm.get('persona.ci')?.touched"
             />
+            <div *ngIf="usuarioForm.get('persona.ci')?.invalid && usuarioForm.get('persona.ci')?.touched" class="invalid-feedback">
+              <div *ngIf="usuarioForm.get('persona.ci')?.errors?.['required']">El CI es obligatorio.</div>
+              <div *ngIf="usuarioForm.get('persona.ci')?.errors?.['pattern']">El CI debe contener solo números y letras (7-20 caracteres).</div>
+            </div>
           </div>
 
           <div class="col-md-6">
-            <label for="nombre" class="form-label">Nombre</label>
+            <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
             <input
               type="text"
               id="nombre"
               class="form-control"
               formControlName="nombre"
+              [class.is-invalid]="usuarioForm.get('persona.nombre')?.invalid && usuarioForm.get('persona.nombre')?.touched"
             />
+            <div *ngIf="usuarioForm.get('persona.nombre')?.invalid && usuarioForm.get('persona.nombre')?.touched" class="invalid-feedback">
+              El nombre es obligatorio y debe tener formato válido.
+            </div>
           </div>
 
           <div class="col-md-6">
-            <label for="apellidoP" class="form-label">Apellido Paterno</label>
+            <label for="apellidoP" class="form-label">Apellido Paterno <span class="text-danger">*</span></label>
             <input
               type="text"
               id="apellidoP"
               class="form-control"
               formControlName="apellidoP"
+              [class.is-invalid]="usuarioForm.get('persona.apellidoP')?.invalid && usuarioForm.get('persona.apellidoP')?.touched"
             />
+            <div *ngIf="usuarioForm.get('persona.apellidoP')?.invalid && usuarioForm.get('persona.apellidoP')?.touched" class="invalid-feedback">
+              El apellido paterno es obligatorio.
+            </div>
           </div>
 
           <div class="col-md-6">
-            <label for="apellidoM" class="form-label">Apellido Materno</label>
+            <label for="apellidoM" class="form-label">Apellido Materno <span class="text-muted fw-normal">(Opcional)</span></label>
             <input
               type="text"
               id="apellidoM"
               class="form-control"
               formControlName="apellidoM"
+              [class.is-invalid]="usuarioForm.get('persona.apellidoM')?.invalid && usuarioForm.get('persona.apellidoM')?.touched"
             />
+             <div *ngIf="usuarioForm.get('persona.apellidoM')?.invalid && usuarioForm.get('persona.apellidoM')?.touched" class="invalid-feedback">
+              El formato del apellido materno es inválido.
+            </div>
           </div>
 
           <div class="col-md-6">
-            <label for="telefono" class="form-label">Teléfono</label>
+            <label for="telefono" class="form-label">Teléfono <span class="text-muted fw-normal">(Opcional)</span></label>
             <input
               type="tel"
               id="telefono"
               class="form-control"
               formControlName="telefono"
-              readonly
+              [class.is-invalid]="usuarioForm.get('persona.telefono')?.invalid && usuarioForm.get('persona.telefono')?.touched"
             />
+             <div *ngIf="usuarioForm.get('persona.telefono')?.invalid && usuarioForm.get('persona.telefono')?.touched" class="invalid-feedback">
+              El teléfono debe contener solo números (6-15 dígitos).
+            </div>
           </div>
 
           <div class="col-md-6">
-            <label for="direccion" class="form-label">Dirección</label>
+            <label for="direccion" class="form-label">Dirección <span class="text-muted fw-normal">(Opcional)</span></label>
             <input
               type="text"
               id="direccion"
               class="form-control"
               formControlName="direccion"
+              [class.is-invalid]="usuarioForm.get('persona.direccion')?.invalid && usuarioForm.get('persona.direccion')?.touched"
             />
+             <div *ngIf="usuarioForm.get('persona.direccion')?.invalid && usuarioForm.get('persona.direccion')?.touched" class="invalid-feedback">
+              La dirección excede el límite de caracteres.
+            </div>
           </div>
 
           <div class="col-md-6">
-            <label for="ciudad" class="form-label">Ciudad</label>
+            <label for="ciudad" class="form-label">Ciudad <span class="text-muted fw-normal">(Opcional)</span></label>
             <select
               id="ciudad"
               class="form-select"
@@ -123,7 +155,7 @@
           </div>
 
           <div class="col-md-6">
-            <label for="pais" class="form-label">País</label>
+            <label for="pais" class="form-label">País <span class="text-muted fw-normal">(Opcional)</span></label>
             <select
               id="pais"
               class="form-select"
@@ -135,33 +167,40 @@
           </div>
 
           <div class="col-md-6">
-            <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
+            <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento <span class="text-danger">*</span></label>
             <input
               type="date"
               id="fechaNacimiento"
               class="form-control"
               formControlName="fechaNacimiento"
               [max]="maxDateAllowed"
+              [class.is-invalid]="usuarioForm.get('persona.fechaNacimiento')?.invalid && usuarioForm.get('persona.fechaNacimiento')?.touched"
             />
+            <div *ngIf="usuarioForm.get('persona.fechaNacimiento')?.invalid && usuarioForm.get('persona.fechaNacimiento')?.touched" class="invalid-feedback">
+              La fecha es obligatoria y debe ser mayor de 18 años.
+            </div>
           </div>
 
           <div class="col-md-6">
-            <label for="genero" class="form-label">Género</label>
+            <label for="genero" class="form-label">Género <span class="text-danger">*</span></label>
             <select
               id="genero"
               class="form-select"
               formControlName="genero"
+              [class.is-invalid]="usuarioForm.get('persona.genero')?.invalid && usuarioForm.get('persona.genero')?.touched"
             >
               <option value="" disabled>Seleccione su género</option>
               <option value="Masculino">Masculino</option>
               <option value="Femenino">Femenino</option>
               <option value="Otro">Otro</option>
             </select>
+             <div *ngIf="usuarioForm.get('persona.genero')?.invalid && usuarioForm.get('persona.genero')?.touched" class="invalid-feedback">
+              El género es obligatorio.
+            </div>
           </div>
         </div>
       </fieldset>
 
-      <!-- FOTO DE PERFIL -->
       <div class="mb-4">
         <label for="profileImage" class="form-label">Imagen de Perfil</label>
         <div>
@@ -228,7 +267,6 @@
     </form>
   </div>
 
-  <!-- MODAL MENSAJES -->
   <div
     class="modal fade"
     #messageModal

@@ -3,9 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReportesService } from '../../../services/Reportes/reportes.service';
 import { ApiResponse } from '../../../models/api-response';
-import { ReporteGananciaCombinada, ReporteGananciaPedidos, ReporteGananciaVentas, ResumenGanancias } from '../../../DTOs/dtosBD/Report/ReporteGanancia';
-
-
+import { PdfGeneratorService } from '../../../services/pdf-generator/pdf-generator.service';
 @Component({
   selector: 'app-reporte-ganancias',
   standalone: true,
@@ -15,41 +13,47 @@ import { ReporteGananciaCombinada, ReporteGananciaPedidos, ReporteGananciaVentas
 })
 export class ReporteGananciasComponent implements OnInit {
 
-  // Tipos de reporte disponibles
+  // --- Tipos de reporte extendidos (Ganancias + Tendencias) ---
   tiposReporte = [
-    { id: 'pedidos', label: 'Pedidos Online', icon: '🛒' },
-    { id: 'ventas', label: 'Ventas Tienda', icon: '🏪' },
-    { id: 'combinado', label: 'Combinado', icon: '📊' },
-    { id: 'resumen', label: 'Resumen Ejecutivo', icon: '📈' }
+    { id: 'combinado', label: 'Ganancias: Combinado (Tienda + Web)', icon: '📊' },
+    { id: 'pedidos', label: 'Ganancias: Pedidos Online', icon: '🛒' },
+    { id: 'ventas', label: 'Ganancias: Ventas Tienda', icon: '🏪' },
+    // { id: 'resumen', label: 'Ganancias: Resumen Ejecutivo', icon: '📈' },
+    // { id: 'tendencia_categorias', label: 'Tendencias: Por Categoría', icon: '🏷️' },
+    // { id: 'tendencia_dia_hora', label: 'Tendencias: Mapa de Calor (Día/Hora)', icon: '🕒' },
+    // { id: 'tendencia_estacionalidad', label: 'Tendencias: Estacionalidad Anual', icon: '📅' },
+    // { id: 'tendencia_estados', label: 'Tendencias: Estado de Transacciones', icon: '✅' },
+    // { id: 'tendencia_metodos', label: 'Tendencias: Métodos de Pago', icon: '💳' }
   ];
 
-  // Filtros
   filtros = {
     fechaInicio: '',
     fechaFin: '',
-    tipoReporte: 'combinado'
+    tipoReporte: 'combinado',
+    anioActual: new Date().getFullYear(),
+    anioPasado: new Date().getFullYear() - 1
   };
 
-  // Estados
   cargando = false;
   busquedaRealizada = false;
   error = '';
 
-  // Datos de reportes
-  reportePedidos: ReporteGananciaPedidos[] = [];
-  reporteVentas: ReporteGananciaVentas[] = [];
-  reporteCombinado: ReporteGananciaCombinada[] = [];
-  reporteResumen: ResumenGanancias[] = [];
+  // Arrays para almacenar los datos
+  reportePedidos: any[] = [];
+  reporteVentas: any[] = [];
+  reporteCombinado: any[] = [];
+  reporteResumen: any[] = [];
+  
+  // Arrays para las nuevas tendencias
+  reporteCategorias: any[] = [];
+  reporteDiaHora: any[] = [];
+  reporteEstacionalidad: any[] = [];
+  reporteEstados: any[] = [];
+  reporteMetodos: any[] = [];
 
-  // Estadísticas
-  estadisticas = {
-    totalGanancia: 0,
-    totalTransacciones: 0,
-    ticketPromedio: 0,
-    margenPromedio: 0
-  };
+  estadisticas = { totalGanancia: 0, totalTransacciones: 0, ticketPromedio: 0, margenPromedio: 0 };
 
-  constructor(private reportesService: ReportesService) {}
+  constructor(private reportesService: ReportesService,private pdfGenerator: PdfGeneratorService) {}
 
   ngOnInit(): void {
     this.inicializarFechas();
@@ -58,14 +62,11 @@ export class ReporteGananciasComponent implements OnInit {
   inicializarFechas(): void {
     const hoy = new Date();
     const primerDiaMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
-    
     this.filtros.fechaFin = this.formatearFecha(hoy);
     this.filtros.fechaInicio = this.formatearFecha(primerDiaMes);
   }
 
-  formatearFecha(fecha: Date): string {
-    return fecha.toISOString().split('T')[0];
-  }
+  formatearFecha(fecha: Date): string { return fecha.toISOString().split('T')[0]; }
 
   validarFechas(): void {
     if (this.filtros.fechaInicio > this.filtros.fechaFin) {
@@ -74,115 +75,127 @@ export class ReporteGananciasComponent implements OnInit {
   }
 
   generarReporte(): void {
-    if (!this.filtros.fechaInicio || !this.filtros.fechaFin) {
-      this.error = 'Por favor seleccione ambas fechas';
-      return;
+    // Si NO es estacionalidad, validamos fechas normales
+    if (this.filtros.tipoReporte !== 'tendencia_estacionalidad') {
+      if (!this.filtros.fechaInicio || !this.filtros.fechaFin) {
+        this.error = 'Por favor seleccione ambas fechas'; return;
+      }
+    } else {
+      if (!this.filtros.anioActual || !this.filtros.anioPasado) {
+        this.error = 'Por favor indique los años a comparar'; return;
+      }
     }
 
     this.cargando = true;
     this.busquedaRealizada = true;
     this.error = '';
 
+    // Limpiamos todo
+    this.reportePedidos = []; this.reporteVentas = []; this.reporteCombinado = []; 
+    this.reporteResumen = []; this.reporteCategorias = []; this.reporteDiaHora = [];
+    this.reporteEstacionalidad = []; this.reporteEstados = []; this.reporteMetodos = [];
+
+    // Rutero lógico
     switch (this.filtros.tipoReporte) {
-      case 'pedidos':
-        this.obtenerReportePedidos();
-        break;
-      case 'ventas':
-        this.obtenerReporteVentas();
-        break;
-      case 'combinado':
-        this.obtenerReporteCombinado();
-        break;
-      case 'resumen':
-        this.obtenerReporteResumen();
-        break;
+      // Ganancias (Ya existían)
+      case 'pedidos': this.obtenerReportePedidos(); break;
+      case 'ventas': this.obtenerReporteVentas(); break;
+      case 'combinado': this.obtenerReporteCombinado(); break;
+      case 'resumen': this.obtenerReporteResumen(); break;
+      
+      // Nuevos (Tendencias)
+      case 'tendencia_categorias': this.obtenerTendenciaCategorias(); break;
+      case 'tendencia_dia_hora': this.obtenerTendenciaDiaHora(); break;
+      case 'tendencia_estacionalidad': this.obtenerTendenciaEstacionalidad(); break;
+      case 'tendencia_estados': this.obtenerTendenciaEstados(); break;
+      case 'tendencia_metodos': this.obtenerTendenciaMetodos(); break;
     }
   }
 
+  // =================================================================================
+  // MÉTODOS EXISTENTES (Mantengo la estructura, acortados por legibilidad)
+  // =================================================================================
   obtenerReportePedidos(): void {
-    this.reportesService.getReporteGananciasPedidos(
-      this.filtros.fechaInicio, 
-      this.filtros.fechaFin
-    ).subscribe({
+    this.reportesService.getReporteGananciasPedidos(this.filtros.fechaInicio, this.filtros.fechaFin).subscribe({
       next: (res: ApiResponse) => {
-        if (res.success) {
-          this.reportePedidos = res.data || [];
-          this.calcularEstadisticasPedidos();
-        } else {
-          this.error = res.message || 'Error al obtener reporte de pedidos';
-        }
+        if (res.success) { this.reportePedidos = res.data || []; this.calcularEstadisticasPedidos(); } 
+        else { this.error = res.message; }
         this.cargando = false;
-      },
-      error: (err) => {
-        this.error = 'Error de conexión: ' + err.message;
-        this.cargando = false;
-      }
+      }, error: (err) => { this.error = err.message; this.cargando = false; }
     });
   }
 
   obtenerReporteVentas(): void {
-    this.reportesService.getReporteGananciasVentas(
-      this.filtros.fechaInicio, 
-      this.filtros.fechaFin
-    ).subscribe({
+    this.reportesService.getReporteGananciasVentas(this.filtros.fechaInicio, this.filtros.fechaFin).subscribe({
       next: (res: ApiResponse) => {
-        if (res.success) {
-          this.reporteVentas = res.data || [];
-          this.calcularEstadisticasVentas();
-        } else {
-          this.error = res.message || 'Error al obtener reporte de ventas';
-        }
+        if (res.success) { this.reporteVentas = res.data || []; this.calcularEstadisticasVentas(); } 
+        else { this.error = res.message; }
         this.cargando = false;
-      },
-      error: (err) => {
-        this.error = 'Error de conexión: ' + err.message;
-        this.cargando = false;
-      }
+      }, error: (err) => { this.error = err.message; this.cargando = false; }
     });
   }
 
   obtenerReporteCombinado(): void {
-    this.reportesService.getReporteGananciasCombinado(
-      this.filtros.fechaInicio, 
-      this.filtros.fechaFin
-    ).subscribe({
+    this.reportesService.getReporteGananciasCombinado(this.filtros.fechaInicio, this.filtros.fechaFin).subscribe({
       next: (res: ApiResponse) => {
-        if (res.success) {
-          this.reporteCombinado = res.data || [];
-          this.calcularEstadisticasCombinado();
-        } else {
-          this.error = res.message || 'Error al obtener reporte combinado';
-        }
+        if (res.success) { this.reporteCombinado = res.data || []; this.calcularEstadisticasCombinado(); } 
+        else { this.error = res.message; }
         this.cargando = false;
-      },
-      error: (err) => {
-        this.error = 'Error de conexión: ' + err.message;
-        this.cargando = false;
-      }
+      }, error: (err) => { this.error = err.message; this.cargando = false; }
     });
   }
 
   obtenerReporteResumen(): void {
-    this.reportesService.getResumenGanancias(
-      this.filtros.fechaInicio, 
-      this.filtros.fechaFin
-    ).subscribe({
+    this.reportesService.getResumenGanancias(this.filtros.fechaInicio, this.filtros.fechaFin).subscribe({
       next: (res: ApiResponse) => {
-        if (res.success) {
-          this.reporteResumen = res.data || [];
-          this.calcularEstadisticasResumen();
-        } else {
-          this.error = res.message || 'Error al obtener resumen';
-        }
+        if (res.success) { this.reporteResumen = res.data || []; this.calcularEstadisticasResumen(); } 
+        else { this.error = res.message; }
         this.cargando = false;
-      },
-      error: (err) => {
-        this.error = 'Error de conexión: ' + err.message;
-        this.cargando = false;
-      }
+      }, error: (err) => { this.error = err.message; this.cargando = false; }
     });
   }
 
+  // =================================================================================
+  // NUEVOS MÉTODOS DE TENDENCIAS
+  // =================================================================================
+  obtenerTendenciaCategorias(): void {
+    this.reportesService.getVentasPorCategoria(this.filtros.fechaInicio, this.filtros.fechaFin).subscribe({
+      next: (res) => { if(res.success) this.reporteCategorias = res.data || []; this.cargando = false; },
+      error: (err) => { this.error = err.message; this.cargando = false; }
+    });
+  }
+
+  obtenerTendenciaDiaHora(): void {
+    this.reportesService.getTransaccionesPorDiaYHora(this.filtros.fechaInicio, this.filtros.fechaFin).subscribe({
+      next: (res) => { if(res.success) this.reporteDiaHora = res.data || []; this.cargando = false; },
+      error: (err) => { this.error = err.message; this.cargando = false; }
+    });
+  }
+
+  obtenerTendenciaEstacionalidad(): void {
+    this.reportesService.getEstacionalidad(this.filtros.anioActual, this.filtros.anioPasado).subscribe({
+      next: (res) => { if(res.success) this.reporteEstacionalidad = res.data || []; this.cargando = false; },
+      error: (err) => { this.error = err.message; this.cargando = false; }
+    });
+  }
+
+  obtenerTendenciaEstados(): void {
+    this.reportesService.getResumenPorEstado(this.filtros.fechaInicio, this.filtros.fechaFin).subscribe({
+      next: (res) => { if(res.success) this.reporteEstados = res.data || []; this.cargando = false; },
+      error: (err) => { this.error = err.message; this.cargando = false; }
+    });
+  }
+
+  obtenerTendenciaMetodos(): void {
+    this.reportesService.getResumenMetodosPago(this.filtros.fechaInicio, this.filtros.fechaFin).subscribe({
+      next: (res) => { if(res.success) this.reporteMetodos = res.data || []; this.cargando = false; },
+      error: (err) => { this.error = err.message; this.cargando = false; }
+    });
+  }
+
+  // =================================================================================
+  // UTILS
+  // =================================================================================
   calcularEstadisticasPedidos(): void {
     this.estadisticas.totalGanancia = this.reportePedidos.reduce((sum, item) => sum + item.gananciaNeta, 0);
     this.estadisticas.totalTransacciones = this.reportePedidos.length;
@@ -217,6 +230,11 @@ export class ReporteGananciasComponent implements OnInit {
       case 'ventas': return this.reporteVentas;
       case 'combinado': return this.reporteCombinado;
       case 'resumen': return this.reporteResumen;
+      case 'tendencia_categorias': return this.reporteCategorias;
+      case 'tendencia_dia_hora': return this.reporteDiaHora;
+      case 'tendencia_estacionalidad': return this.reporteEstacionalidad;
+      case 'tendencia_estados': return this.reporteEstados;
+      case 'tendencia_metodos': return this.reporteMetodos;
       default: return [];
     }
   }
@@ -225,27 +243,42 @@ export class ReporteGananciasComponent implements OnInit {
     return this.getReporteActivo().length > 0;
   }
 
-  exportarExcel(): void {
-    // Implementar lógica de exportación
-    alert('Funcionalidad de exportación en desarrollo');
-  }
+  exportarExcel(): void { alert('Funcionalidad de exportación en desarrollo'); }
 
   getColorTipoVenta(tipo: string): string {
-    switch (tipo) {
-      case 'ONLINE': return 'badge bg-primary';
-      case 'TIENDA': return 'badge bg-success';
-      default: return 'badge bg-secondary';
-    }
+    return tipo === 'ONLINE' ? 'badge bg-primary' : 'badge bg-success';
   }
 
   getTextoEstado(estado: string): string {
-    const estados: { [key: string]: string } = {
-      'COMPLETADO': 'Completado',
-      'ENTREGADO': 'Entregado',
-      'PENDIENTE': 'Pendiente',
-      'CANCELADO': 'Cancelado',
-      'FINALIZADO': 'Finalizado'
-    };
+    const estados: { [key: string]: string } = { 'COMPLETADO': 'Completado', 'ENTREGADO': 'Entregado', 'PENDIENTE': 'Pendiente', 'CANCELADO': 'Cancelado' };
     return estados[estado] || estado;
+  }
+  
+  // Utilidad para obtener nombre del mes en texto
+  getNombreMes(numeroMes: number): string {
+    const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    return meses[numeroMes - 1] || 'Desconocido';
+  }
+
+  
+
+  // =================================================================================
+  // EXPORTACIÓN A PDF
+  // =================================================================================
+  exportarPDF(): void {
+    // 1. Obtenemos los datos de la tabla que se está viendo actualmente
+    const datosTabla = this.getReporteActivo();
+    
+    // 2. Buscamos el nombre bonito del reporte (ej: "Ganancias: Combinado (Tienda + Web)")
+    const tipoReporteObj = this.tiposReporte.find(t => t.id === this.filtros.tipoReporte);
+    const nombreReporteTexto = tipoReporteObj ? tipoReporteObj.label : 'General';
+
+    // 3. Le pasamos toda la información a nuestro servicio profesional
+    this.pdfGenerator.exportarReporteGanancias(
+      datosTabla,
+      this.estadisticas,
+      this.filtros,
+      nombreReporteTexto
+    );
   }
 }

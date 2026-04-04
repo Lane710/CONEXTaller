@@ -270,6 +270,7 @@ export class ModificarVentaComponent implements OnInit {
         cantidad: cantidad,
         precioUnitario: producto.producto.precio||0,
         subtotal: cantidad * (producto.producto.precio||0),
+        precioBase: producto.producto.precioCompra||0,
       });
     }
 

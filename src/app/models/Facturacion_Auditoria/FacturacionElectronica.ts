@@ -1,6 +1,7 @@
 // src/app/models/InvoiceModel/facturacionElectronica.ts
 
-import { Pedidos } from "../PedidosEnviosDetalles/pedidos";
+
+import { pedidos } from "../PedidosEnviosDetalles/pedidos";
 import { ventas } from "../Ventas/ventas";
 
 
@@ -8,7 +9,7 @@ export interface FacturacionElectronica {
   idFactura?: number;
 
   // Relaciones OneToOne (llegan como objetos parciales)
-  pedido?: Partial<Pedidos>;
+  pedido?: Partial<pedidos>;
   venta?: Partial<ventas>;
 
   cuf?: string; // Código Único de Factura (SIAT)

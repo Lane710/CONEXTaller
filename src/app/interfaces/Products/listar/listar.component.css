@@ -7,6 +7,11 @@ body {
 
 /* ===== MEJORAS EJECUTIVAS SIN CAMBIAR TAMAÑOS ===== */
 
+
+.container{
+  margin-bottom: 5%;
+}
+
 /* Breadcrumb mejorado */
 .breadcrumb {
   background: #f8f9fa;

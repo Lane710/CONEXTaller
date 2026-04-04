@@ -347,8 +347,6 @@ applyFilter() {
     } else if (this.selectedEnvio) {
       if (this.selectedEnvio.pedido) {
         return `PED-${this.selectedEnvio.pedido.idPedido}`;
-      } else if (this.selectedEnvio.venta) {
-        return `VNT-${this.selectedEnvio.venta.idVenta}`;
       }
     }
     return 'N/A';

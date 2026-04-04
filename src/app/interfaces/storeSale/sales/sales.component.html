@@ -92,7 +92,7 @@
                         [disabled]="item.cantidad <= 1"
                         (click)="restarCantidad(i)"
                       >
-                        <i class="fas fa-minus"></i>
+                        <i class="fas fa-plus" style="font-size: 24px;">-</i>
                       </button>
                       <input
                         #cantidadInput
@@ -115,7 +115,7 @@
                         "
                         (click)="sumarCantidad(i)"
                       >
-                        <i class="fas fa-plus"></i>
+                        <i class="fas fa-plus" style="font-size: 24px;">+</i>
                       </button>
                     </div>
                   </td>
@@ -131,7 +131,7 @@
                       class="btn btn-sm btn-outline-danger p-1 border-0"
                       title="Eliminar producto"
                     >
-                      <i class="fas fa-trash"></i>
+                       <img src="/icon_SaleOnline/ic--outline-cancel.svg" alt="" style="width: 30px;">
                     </button>
                   </td>
                 </tr>

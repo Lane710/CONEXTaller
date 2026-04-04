@@ -1,7 +1,10 @@
 .reporte-productos-container {
   padding: 0;
 }
-
+ 
+ .container{
+  margin-bottom: 7%;
+}
 /* Header Styles */
 .report-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

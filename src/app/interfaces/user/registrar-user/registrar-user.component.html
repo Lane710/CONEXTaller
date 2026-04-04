@@ -1,9 +1,6 @@
-
 <div class="container my-5">
   <div class="card shadow p-4 mx-auto" style="max-width: 800px;">
     <h1 class="text-center mb-4 text-primary">Nuevo Usuario</h1>
-
-   
 
     <form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()">
       <div class="row mb-3">
@@ -22,7 +19,6 @@
             <div *ngIf="usuarioForm.get('username')?.errors?.['minlength']">Mínimo 5 caracteres.</div>
             <div *ngIf="usuarioForm.get('username')?.errors?.['maxlength']">Máximo 20 caracteres.</div>
             <div *ngIf="usuarioForm.get('username')?.errors?.['pattern']">Solo letras, números y guiones bajos.</div>
-            <div *ngIf="usuarioForm.get('username')?.errors?.['exists']">Este nombre de usuario ya está en uso.</div>
           </div>
         </div>
         <div class="col-md-6">
@@ -39,83 +35,73 @@
             <div *ngIf="usuarioForm.get('email')?.errors?.['required']">El email es obligatorio.</div>
             <div *ngIf="usuarioForm.get('email')?.errors?.['email']">Formato de email inválido.</div>
             <div *ngIf="usuarioForm.get('email')?.errors?.['pattern']">Solo se permiten correos de Gmail.</div>
-            <div *ngIf="usuarioForm.get('email')?.errors?.['exists']">Este correo electrónico ya está registrado.</div>
           </div>
         </div>
       </div>
 
-   
-<div class="row mb-3">
-  <!-- Campo Contraseña -->
-  <div class="col-md-6">
-    <label for="password" class="form-label">Contraseña <span class="text-danger">*</span></label>
-    <div class="password-input-container">
-      <input
-        [type]="showPassword ? 'text' : 'password'"
-        id="password"
-        class="form-control password-input"
-        placeholder="Ingrese su contraseña"
-        formControlName="password"
-        [class.is-invalid]="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched"
-      />
-      <button
-        type="button"
-        class="password-toggle-btn"
-        (click)="togglePasswordVisibility()"
-        [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-      >
-        <img
-          [src]="showPassword ? '/icon_login/mdi--eye-off-outline.svg' : '/icon_login/hugeicons--eye.svg'"
-          [alt]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-          class="password-icon"
-        />
-      </button>
-    </div>
-    <!-- Mensajes de error JUSTO DEBAJO del input de contraseña -->
-    <div *ngIf="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched" class="invalid-feedback d-block">
-      <div *ngIf="usuarioForm.get('password')?.errors?.['required']">La contraseña es obligatoria.</div>
-      <div *ngIf="usuarioForm.get('password')?.errors?.['minlength']">Mínimo 8 caracteres.</div>
-      <div *ngIf="usuarioForm.get('password')?.errors?.['pattern']">Debe contener mayúscula, minúscula, número y símbolo.</div>
-    </div>
-  </div>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="password" class="form-label">Contraseña <span class="text-danger">*</span></label>
+          <div class="password-input-container position-relative">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="password"
+              class="form-control password-input"
+              placeholder="Ingrese su contraseña"
+              formControlName="password"
+              [class.is-invalid]="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched"
+            />
+            <button
+              type="button"
+              class="password-toggle-btn position-absolute top-50 end-0 translate-middle-y me-2 border-0 bg-transparent"
+              (click)="togglePasswordVisibility()"
+            >
+              <img
+                [src]="showPassword ? '/icon_login/mdi--eye-off-outline.svg' : '/icon_login/hugeicons--eye.svg'"
+                class="password-icon" style="width: 20px;"
+              />
+            </button>
+          </div>
+          <div *ngIf="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched" class="invalid-feedback d-block">
+            <div *ngIf="usuarioForm.get('password')?.errors?.['required']">La contraseña es obligatoria.</div>
+            <div *ngIf="usuarioForm.get('password')?.errors?.['minlength']">Mínimo 8 caracteres.</div>
+            <div *ngIf="usuarioForm.get('password')?.errors?.['pattern']">Debe contener mayúscula, minúscula, número y símbolo.</div>
+          </div>
+        </div>
 
-  <!-- Campo Repetir Contraseña -->
-  <div class="col-md-6">
-    <label for="confirmPassword" class="form-label">Repetir Contraseña <span class="text-danger">*</span></label>
-    <div class="password-input-container">
-      <input
-        [type]="showConfirmPassword ? 'text' : 'password'"
-        id="confirmPassword"
-        class="form-control password-input"
-        placeholder="Repita su contraseña"
-        formControlName="confirmPassword"
-        [class.is-invalid]="(usuarioForm.get('confirmPassword')?.invalid || usuarioForm.errors?.['passwordMismatch']) && usuarioForm.get('confirmPassword')?.touched"
-      />
-      <button
-        type="button"
-        class="password-toggle-btn"
-        (click)="toggleConfirmPasswordVisibility()"
-        [attr.aria-label]="showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-      >
-        <img
-          [src]="showConfirmPassword ? '/icon_login/mdi--eye-off-outline.svg' : '/icon_login/hugeicons--eye.svg'"
-          [alt]="showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-          class="password-icon"
-        />
-      </button>
-    </div>
-    <!-- Mensajes de error JUSTO DEBAJO del input de confirmar contraseña -->
-    <div *ngIf="usuarioForm.get('confirmPassword')?.touched" class="invalid-feedback d-block">
-      <div *ngIf="usuarioForm.get('confirmPassword')?.errors?.['required']">Debe confirmar la contraseña.</div>
-      <div *ngIf="usuarioForm.errors?.['passwordMismatch'] && !usuarioForm.get('confirmPassword')?.errors?.['required']">Las contraseñas no coinciden.</div>
-    </div>
-  </div>
-</div>
-
+        <div class="col-md-6">
+          <label for="confirmPassword" class="form-label">Repetir Contraseña <span class="text-danger">*</span></label>
+          <div class="password-input-container position-relative">
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              id="confirmPassword"
+              class="form-control password-input"
+              placeholder="Repita su contraseña"
+              formControlName="confirmPassword"
+              [class.is-invalid]="(usuarioForm.get('confirmPassword')?.invalid || usuarioForm.errors?.['passwordMismatch']) && usuarioForm.get('confirmPassword')?.touched"
+            />
+            <button
+              type="button"
+              class="password-toggle-btn position-absolute top-50 end-0 translate-middle-y me-2 border-0 bg-transparent"
+              (click)="toggleConfirmPasswordVisibility()"
+            >
+              <img
+                [src]="showConfirmPassword ? '/icon_login/mdi--eye-off-outline.svg' : '/icon_login/hugeicons--eye.svg'"
+                class="password-icon" style="width: 20px;"
+              />
+            </button>
+          </div>
+          <div *ngIf="usuarioForm.get('confirmPassword')?.touched" class="invalid-feedback d-block">
+            <div *ngIf="usuarioForm.get('confirmPassword')?.errors?.['required']">Debe confirmar la contraseña.</div>
+            <div *ngIf="usuarioForm.errors?.['passwordMismatch'] && !usuarioForm.get('confirmPassword')?.errors?.['required']">Las contraseñas no coinciden.</div>
+          </div>
+        </div>
+      </div>
 
       <hr>
       <div formGroupName="persona">
         <h3 class="mb-3 text-secondary">Datos Personales</h3>
+        
         <div class="row mb-3">
           <div class="col-md-6">
             <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
@@ -124,7 +110,8 @@
               id="nombre"
               class="form-control"
               placeholder="Ingrese su nombre"
-              formControlName="nombre" [class.is-invalid]="usuarioForm.get('persona.nombre')?.invalid && usuarioForm.get('persona.nombre')?.touched"
+              formControlName="nombre" 
+              [class.is-invalid]="usuarioForm.get('persona.nombre')?.invalid && usuarioForm.get('persona.nombre')?.touched"
             />
             <div *ngIf="usuarioForm.get('persona.nombre')?.invalid && usuarioForm.get('persona.nombre')?.touched" class="invalid-feedback">
               <div *ngIf="usuarioForm.get('persona.nombre')?.errors?.['required']">El nombre es obligatorio.</div>
@@ -140,7 +127,8 @@
               id="apellidoPaterno"
               class="form-control"
               placeholder="Ingrese su apellido paterno"
-              formControlName="apellidoPaterno" [class.is-invalid]="usuarioForm.get('persona.apellidoPaterno')?.invalid && usuarioForm.get('persona.apellidoPaterno')?.touched"
+              formControlName="apellidoPaterno" 
+              [class.is-invalid]="usuarioForm.get('persona.apellidoPaterno')?.invalid && usuarioForm.get('persona.apellidoPaterno')?.touched"
             />
             <div *ngIf="usuarioForm.get('persona.apellidoPaterno')?.invalid && usuarioForm.get('persona.apellidoPaterno')?.touched" class="invalid-feedback">
               <div *ngIf="usuarioForm.get('persona.apellidoPaterno')?.errors?.['required']">El apellido paterno es obligatorio.</div>
@@ -153,13 +141,14 @@
 
         <div class="row mb-3">
           <div class="col-md-6">
-            <label for="apellidoMaterno" class="form-label">Apellido Materno</label>
+            <label for="apellidoMaterno" class="form-label">Apellido Materno <span class="text-muted fw-normal">(Opcional)</span></label>
             <input
               type="text"
               id="apellidoMaterno"
               class="form-control"
               placeholder="Ingrese su apellido materno"
-              formControlName="apellidoMaterno" [class.is-invalid]="usuarioForm.get('persona.apellidoMaterno')?.invalid && usuarioForm.get('persona.apellidoMaterno')?.touched"
+              formControlName="apellidoMaterno" 
+              [class.is-invalid]="usuarioForm.get('persona.apellidoMaterno')?.invalid && usuarioForm.get('persona.apellidoMaterno')?.touched"
             />
             <div *ngIf="usuarioForm.get('persona.apellidoMaterno')?.invalid && usuarioForm.get('persona.apellidoMaterno')?.touched" class="invalid-feedback">
               <div *ngIf="usuarioForm.get('persona.apellidoMaterno')?.errors?.['minlength']">Mínimo 3 caracteres.</div>
@@ -173,82 +162,73 @@
               type="text"
               id="ci"
               class="form-control"
-              placeholder="Ingrese su ci"
-              formControlName="ci" [class.is-invalid]="usuarioForm.get('persona.ci')?.invalid && usuarioForm.get('persona.ci')?.touched"
+              placeholder="Ingrese su CI"
+              formControlName="ci" 
+              [class.is-invalid]="usuarioForm.get('persona.ci')?.invalid && usuarioForm.get('persona.ci')?.touched"
             />
             <div *ngIf="usuarioForm.get('persona.ci')?.invalid && usuarioForm.get('persona.ci')?.touched" class="invalid-feedback">
-              <div *ngIf="usuarioForm.get('persona.ci')?.errors?.['required']">El ci es obligatorio.</div>
-              <div *ngIf="usuarioForm.get('persona.ci')?.errors?.['pattern']">El ci debe contener solo números (7-10 dígitos).</div>
-              <div *ngIf="usuarioForm.get('persona.ci')?.errors?.['exists']">Este ci ya está registrado.</div>
+              <div *ngIf="usuarioForm.get('persona.ci')?.errors?.['required']">El CI es obligatorio.</div>
+              <div *ngIf="usuarioForm.get('persona.ci')?.errors?.['pattern']">El CI debe contener solo números (7-10 dígitos).</div>
             </div>
           </div>
         </div>
 
         <div class="row mb-3">
           <div class="col-md-6">
-            <label for="telefono" class="form-label">Teléfono <span class="text-danger">*</span></label>
+            <label for="telefono" class="form-label">Teléfono <span class="text-muted fw-normal">(Opcional)</span></label>
             <input
               type="tel"
               id="telefono"
               class="form-control"
               placeholder="Ingrese su teléfono"
-              formControlName="telefono" [class.is-invalid]="usuarioForm.get('persona.telefono')?.invalid && usuarioForm.get('persona.telefono')?.touched"
+              formControlName="telefono" 
+              [class.is-invalid]="usuarioForm.get('persona.telefono')?.invalid && usuarioForm.get('persona.telefono')?.touched"
             />
             <div *ngIf="usuarioForm.get('persona.telefono')?.invalid && usuarioForm.get('persona.telefono')?.touched" class="invalid-feedback">
-              <div *ngIf="usuarioForm.get('persona.telefono')?.errors?.['required']">El teléfono es obligatorio.</div>
               <div *ngIf="usuarioForm.get('persona.telefono')?.errors?.['pattern']">El teléfono debe contener solo números (6-15 dígitos).</div>
-              <div *ngIf="usuarioForm.get('persona.telefono')?.errors?.['exists']">Este número de teléfono ya está registrado.</div>
             </div>
           </div>
           <div class="col-md-6">
-            <label for="direccion" class="form-label">Dirección <span class="text-danger">*</span></label>
+            <label for="direccion" class="form-label">Dirección <span class="text-muted fw-normal">(Opcional)</span></label>
             <input
               type="text"
               id="direccion"
               class="form-control"
               placeholder="Ingrese su dirección"
-              formControlName="direccion" [class.is-invalid]="usuarioForm.get('persona.direccion')?.invalid && usuarioForm.get('persona.direccion')?.touched"
+              formControlName="direccion" 
+              [class.is-invalid]="usuarioForm.get('persona.direccion')?.invalid && usuarioForm.get('persona.direccion')?.touched"
             />
             <div *ngIf="usuarioForm.get('persona.direccion')?.invalid && usuarioForm.get('persona.direccion')?.touched" class="invalid-feedback">
-              <div *ngIf="usuarioForm.get('persona.direccion')?.errors?.['required']">La dirección es obligatoria.</div>
               <div *ngIf="usuarioForm.get('persona.direccion')?.errors?.['maxlength']">Máximo 100 caracteres.</div>
             </div>
           </div>
         </div>
 
         <div class="row mb-3">
-  <div class="col-md-6">
-    <label for="ciudad" class="form-label">Ciudad <span class="text-danger">*</span></label>
-    <select
-      id="ciudad"
-      class="form-select"
-      formControlName="ciudad"
-      [class.is-invalid]="usuarioForm.get('persona.ciudad')?.invalid && usuarioForm.get('persona.ciudad')?.touched"
-    >
-      <option value="" disabled selected>Seleccione su ciudad</option>
-      <option value="Tarija">Tarija</option>
-    </select>
-    <div *ngIf="usuarioForm.get('persona.ciudad')?.invalid && usuarioForm.get('persona.ciudad')?.touched" class="invalid-feedback">
-      <div *ngIf="usuarioForm.get('persona.ciudad')?.errors?.['required']">La ciudad es obligatoria.</div>
-    </div>
-  </div>
-  
-  <div class="col-md-6">
-    <label for="pais" class="form-label">País <span class="text-danger">*</span></label>
-    <select
-      id="pais"
-      class="form-select"
-      formControlName="pais"
-      [class.is-invalid]="usuarioForm.get('persona.pais')?.invalid && usuarioForm.get('persona.pais')?.touched"
-    >
-      <option value="" disabled selected>Seleccione su país</option>
-      <option value="Bolivia">Bolivia</option>
-    </select>
-    <div *ngIf="usuarioForm.get('persona.pais')?.invalid && usuarioForm.get('persona.pais')?.touched" class="invalid-feedback">
-      <div *ngIf="usuarioForm.get('persona.pais')?.errors?.['required']">El país es obligatorio.</div>
-    </div>
-  </div>
-</div>
+          <div class="col-md-6">
+            <label for="ciudad" class="form-label">Ciudad <span class="text-muted fw-normal">(Opcional)</span></label>
+            <select
+              id="ciudad"
+              class="form-select"
+              formControlName="ciudad"
+            >
+              <option value="" disabled selected>Seleccione su ciudad</option>
+              <option value="Tarija">Tarija</option>
+            </select>
+          </div>
+          
+          <div class="col-md-6">
+            <label for="pais" class="form-label">País <span class="text-muted fw-normal">(Opcional)</span></label>
+            <select
+              id="pais"
+              class="form-select"
+              formControlName="pais"
+            >
+              <option value="" disabled selected>Seleccione su país</option>
+              <option value="Bolivia">Bolivia</option>
+            </select>
+          </div>
+        </div>
 
         <div class="row mb-4">
           <div class="col-md-6">
@@ -273,7 +253,8 @@
             <select
               id="genero"
               class="form-select"
-              formControlName="genero" [class.is-invalid]="usuarioForm.get('persona.genero')?.invalid && usuarioForm.get('persona.genero')?.touched"
+              formControlName="genero" 
+              [class.is-invalid]="usuarioForm.get('persona.genero')?.invalid && usuarioForm.get('persona.genero')?.touched"
             >
               <option value="" disabled>Seleccione su género</option>
               <option value="Masculino">Masculino</option>
@@ -286,50 +267,42 @@
           </div>
         </div>
       </div>
+
       <hr>
- <div *ngIf="errorMessage" class="alert alert-danger mb-3" role="alert">
-      {{ errorMessage }}
-    </div>
-    <div *ngIf="successMessage" class="alert alert-success mb-3" role="alert">
-      {{ successMessage }}
-    </div>
+
+      <div *ngIf="errorMessage" class="alert alert-danger mb-3" role="alert">
+        {{ errorMessage }}
+      </div>
+      <div *ngIf="successMessage" class="alert alert-success mb-3" role="alert">
+        {{ successMessage }}
+      </div>
+      
       <div class="d-flex justify-content-center gap-3 mt-4">
-        <button type="submit" class="btn btn-primary btn-lg px-5" >Registrar</button>
-        <button type="button" class="btn btn-secondary btn-lg px-5" (click)="goToLogin()">Cancelar</button>
+        <button type="submit" class="btn btn-primary btn-lg px-5" [disabled]="isLoading">
+          <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+          {{ isLoading ? 'Registrando...' : 'Registrar' }}
+        </button>
+        <button type="button" class="btn btn-secondary btn-lg px-5" (click)="goToLogin()" [disabled]="isLoading">Cancelar</button>
       </div>
     </form>
   </div>
 </div>
 
-
-
-
-
-
-
-
-
-
-
-<!-- Modal de éxito -->
-<!-- Modal de éxito mejorado -->
-<div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
+<div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-center">
-      <div class="modal-header">
-        <h5 class="modal-title text-white" id="modalExitoLabel">
+    <div class="modal-content text-center border-0 shadow">
+      <div class="modal-header bg-success text-white border-0">
+        <h5 class="modal-title w-100" id="modalExitoLabel">
           <i class="bi bi-check-circle me-2"></i>Registro Exitoso
         </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        <i class="bi bi-check-circle-fill mb-3 d-block"></i>
-        <h4 class="mb-3" style="color: #28a745;">¡Perfecto!</h4>
-        <p class="mb-0">El Usuario fue registrada correctamente en el sistema.</p>
+      <div class="modal-body py-4">
+        <h4 class="mb-3 text-success">¡Perfecto!</h4>
+        <p class="mb-0 text-muted">Tu cuenta ha sido creada correctamente. Ahora puedes iniciar sesión.</p>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-success" data-bs-dismiss="modal" (click)="redireccionar()">
-          <i class="bi bi-check-lg me-2"></i>Continuar
+      <div class="modal-footer border-0 justify-content-center bg-light">
+        <button type="button" class="btn btn-success px-4 rounded-pill" data-bs-dismiss="modal" (click)="redireccionar()">
+          Ir al Login
         </button>
       </div>
     </div>

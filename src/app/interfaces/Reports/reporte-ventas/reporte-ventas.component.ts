@@ -1,24 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
 import { FormsModule } from '@angular/forms'; 
-// Asume que estas rutas son correctas en tu proyecto
 import { forma_pago } from '../../../models/PedidosEnviosDetalles/forma_pago'; 
 import { UsuariosService } from '../../../services/PersonServis/usuarios.service';
 import { ApiResponse } from '../../../models/api-response';
 import { ReportesService } from '../../../services/Reportes/reportes.service';
-import { ReporteVenta } from '../../../DTOs/dtosBD/Report/ReporteVenta'; 
+import { PdfGeneratorService } from '../../../services/pdf-generator/pdf-generator.service';
 
-
-// --- INTERFACES PARA LA ESTRUCTURA AGRUPADA (Movidas aquí para independencia) ---
-// Representa un solo producto dentro de una venta
-interface DetalleVentaAgrupado {
+// --- INTERFACES PARA LA ESTRUCTURA AGRUPADA ---
+export interface DetalleVentaAgrupado {
   producto: string;
   cantidad: number;
   precioUnitario: number;
   subtotal: number;
 }
 
-// Representa una venta completa con sus detalles anidados
 export interface VentaAgrupada {
   idVenta: number;
   fechaVenta: string;
@@ -30,34 +26,31 @@ export interface VentaAgrupada {
   total: number;
   descuento: number;
   totalNeto: number;
-  detalles: DetalleVentaAgrupado[]; // Array de productos
+  detalles: DetalleVentaAgrupado[];
 }
 
-// Interfaces para los filtros
 interface EstadoVenta {
   value: string;
   viewValue: string;
 }
 
-
 @Component({
   selector: 'app-reporte-ventas',
   standalone: true,
-  imports: [CommonModule, FormsModule], // Aseguramos los módulos necesarios
+  imports: [CommonModule, FormsModule],
   templateUrl: './reporte-ventas.component.html',
-  styleUrl: './reporte-ventas.component.css' // Usamos styleUrl para estilos separados
+  styleUrl: './reporte-ventas.component.css'
 })
 export class ReporteVentasComponent implements OnInit {
   
   // =================================================================
   // ================== MODELOS PARA LOS FILTROS =====================
   // =================================================================
-  
   filtrosVentas = {
     fechaInicio: '',
     fechaFin: '',
     estado: '',
-    formaPagoId: '',
+    formaPagoId: '', 
     trabajadorUsername: ''
   };
   maxDate: string;
@@ -65,7 +58,6 @@ export class ReporteVentasComponent implements OnInit {
   // =================================================================
   // ============ PROPIEDADES PARA DATOS Y ESTADO DE LA VISTA ==========
   // =================================================================
-  
   estadosVenta: EstadoVenta[] = [];
   trabajadoresVentas: any[] = [];
   formasDePago: forma_pago[] = [];
@@ -76,10 +68,10 @@ export class ReporteVentasComponent implements OnInit {
   cargandoReporte: boolean = false;
   busquedaRealizada: boolean = false;
 
-  // Los servicios deben ser inyectados aquí
   constructor(
     private usuariosService: UsuariosService, 
-    private reportesService: ReportesService
+    private reportesService: ReportesService,
+    private pdfGenerator: PdfGeneratorService
   ) {
     this.maxDate = this.getTodayAsString();
   }
@@ -102,41 +94,43 @@ export class ReporteVentasComponent implements OnInit {
   }
 
   private consultaReporteVentas(): void {
-    // Lógica ORIGINAL de la API RESTAURADA
+    // Validamos las fechas antes de enviar la petición
+    this.validarFechas();
+
+    // Enviamos 'undefined' si el filtro está vacío para que el backend lo ignore correctamente
+    const estado = this.filtrosVentas.estado || undefined;
+    const pagoId = this.filtrosVentas.formaPagoId || undefined;
+    const trabajador = this.filtrosVentas.trabajadorUsername || undefined;
+
     this.reportesService.findReporteVentas(
       this.filtrosVentas.fechaInicio,
       this.filtrosVentas.fechaFin,
-      this.filtrosVentas.estado,
-      this.filtrosVentas.formaPagoId,
-      this.filtrosVentas.trabajadorUsername
+      estado,
+      pagoId,
+      trabajador
     ).subscribe({
       next: (res: ApiResponse) => {
-        if (res.success && res.data) {
-          // LLAMAMOS AL MÉTODO PARA AGRUPAR LOS DATOS
+        if (res.success && res.data && Array.isArray(res.data)) {
           this.reporteVentasAgrupado = this.agruparVentasPorId(res.data);
-          this.calcularTotalGeneralVentas(); // Calculamos el total general
-          console.log('Reporte de ventas AGRUPADO:', this.reporteVentasAgrupado);
+          this.calcularTotalGeneralVentas();
         } else {
           this.reporteVentasAgrupado = [];
+          this.totalGeneralVentas = 0;
         }
         this.cargandoReporte = false;
       },
       error: (err) => {
         console.error('Error al generar el reporte de ventas:', err);
         this.cargandoReporte = false;
-        // Opcional: Mostrar mensaje de error al usuario
+        this.reporteVentasAgrupado = [];
       }
     });
   }
 
-  /**
-   * Transforma la lista plana de reportes en una lista agrupada por idVenta.
-   */
-  private agruparVentasPorId(reportePlano: ReporteVenta[]): VentaAgrupada[] {
+  private agruparVentasPorId(reportePlano: any[]): VentaAgrupada[] {
     const mapaVentas = new Map<number, VentaAgrupada>();
 
     reportePlano.forEach(item => {
-      // Si la venta no existe en el mapa, la creamos
       if (!mapaVentas.has(item.idVenta)) {
         mapaVentas.set(item.idVenta, {
           idVenta: item.idVenta,
@@ -146,34 +140,34 @@ export class ReporteVentasComponent implements OnInit {
           empleado: item.empleado,
           formaPago: item.formaPago,
           estado: item.estado,
-          total: item.total,
-          descuento: item.descuento,
-          totalNeto: item.totalNeto,
-          detalles: [] // Inicializamos el array de detalles vacío
+          total: Number(item.total) || 0,
+          descuento: Number(item.descuento) || 0,
+          totalNeto: Number(item.totalNeto) || 0,
+          detalles: [] 
         });
       }
 
-      // Añadimos el detalle del producto a la venta correspondiente
-      mapaVentas.get(item.idVenta)!.detalles.push({
-        producto: item.producto,
-        cantidad: item.cantidad,
-        precioUnitario: item.precioUnitario,
-        subtotal: item.subtotal
-      });
+      // Evitamos añadir detalles vacíos si por alguna razón la DB devuelve nulos
+      if (item.producto) {
+        mapaVentas.get(item.idVenta)!.detalles.push({
+          producto: item.producto,
+          cantidad: Number(item.cantidad) || 0,
+          precioUnitario: Number(item.precioUnitario) || 0,
+          subtotal: Number(item.subtotal) || 0
+        });
+      }
     });
 
-    // Convertimos el mapa a un array de sus valores
     return Array.from(mapaVentas.values());
   }
 
-  /**
-   * Calcula la suma de los 'totalNeto' de cada venta agrupada.
-   */
   private calcularTotalGeneralVentas(): void {
     this.totalGeneralVentas = this.reporteVentasAgrupado.reduce((acc, venta) => acc + venta.totalNeto, 0);
   }
 
-  // --- Métodos de utilidad y carga de filtros (manteniendo la lógica original) ---
+  // =================================================================
+  // ================== UTILIDADES Y FILTROS =========================
+  // =================================================================
   
   validarFechas(): void {
     if (this.filtrosVentas.fechaInicio > this.filtrosVentas.fechaFin) {
@@ -183,8 +177,11 @@ export class ReporteVentasComponent implements OnInit {
 
   private inicializarFiltrosDeVentas(): void {
     const hoy = this.getTodayAsString();
-    this.filtrosVentas.fechaInicio = hoy;
+    const hace30Dias = new Date();
+    hace30Dias.setDate(hace30Dias.getDate() - 30);
+
     this.filtrosVentas.fechaFin = hoy;
+    this.filtrosVentas.fechaInicio = hace30Dias.toISOString().split('T')[0];
   }
   
   private cargarDatosParaFiltrosDeVentas(): void {
@@ -196,68 +193,60 @@ export class ReporteVentasComponent implements OnInit {
   private cargarEstadosDeVenta(): void {
     this.estadosVenta = [
       { value: 'COMPLETADA', viewValue: 'Completada' },
-      { value: 'PENDIENTE',  viewValue: 'Pendiente' },
       { value: 'CANCELADA',  viewValue: 'Cancelada' },
-      { value: 'DEVUELTA',   viewValue: 'Devuelta' }
     ];
   }
 
   private cargarFormasDePago(): void {
-    // Simulación de data de pago (Mantener hasta que se conecte a la API)
+    // Si tienes un endpoint para formas de pago real, deberías llamarlo aquí.
     this.formasDePago = [
-      { idFormaPago: 1111, nombre: 'Efectivo', estado: 'activo' } as forma_pago,
-      { idFormaPago: 3333, nombre: 'Transferencia QR', estado: 'activo' } as forma_pago
+      { idFormaPago: 3333, nombre: 'Efectivo', estado: 'activo' } as forma_pago,
+      { idFormaPago: 2222, nombre: 'Transferencia QR', estado: 'activo' } as forma_pago,
     ];
-    // Lógica real de API para formas de pago:
-    // this.reportesService.findFormasDePago().subscribe({ ... }); 
   }
 
   private cargarTrabajadoresParaVentas(): void {
-    // Lógica ORIGINAL de la API RESTAURADA (la que usa el servicio de usuarios)
     this.usuariosService.findTrabajadoresParaFiltro().subscribe({
       next: (res: ApiResponse) => {
-        this.trabajadoresVentas = res.data;
+        if(res.success && res.data) {
+          this.trabajadoresVentas = res.data;
+        }
       },
       error: (err) => {
+        console.error('Error al cargar trabajadores', err);
         this.trabajadoresVentas = [];
       }
     });
   }
 
   private getTodayAsString(): string {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = ('0' + (today.getMonth() + 1)).slice(-2);
-    const day = ('0' + today.getDate()).slice(-2);
-    return `${year}-${month}-${day}`;
+    return new Date().toISOString().split('T')[0];
   }
 
-  // Métodos para las estadísticas
-getVentasCompletadas(): number {
-  return this.reporteVentasAgrupado.filter(venta => 
-    venta.estado === 'COMPLETADA'
-  ).length;
-}
+  // --- MÉTODOS PARA ESTADÍSTICAS HTML ---
+  getVentasCompletadas(): number {
+    return this.reporteVentasAgrupado.filter(venta => venta.estado === 'COMPLETADA').length;
+  }
 
-getTotalProductosVendidos(): number {
-  return this.reporteVentasAgrupado.reduce((total, venta) => {
-    return total + venta.detalles.reduce((sum, detalle) => sum + detalle.cantidad, 0);
-  }, 0);
-}
+  getTotalProductosVendidos(): number {
+    return this.reporteVentasAgrupado.reduce((total, venta) => {
+      return total + venta.detalles.reduce((sum, detalle) => sum + detalle.cantidad, 0);
+    }, 0);
+  }
 
-exportarPDF(): void {
-  // Implementar lógica de exportación PDF
-  alert('Funcionalidad de exportación PDF en desarrollo');
-}
+  exportarPDF(): void {
+    // Recopilamos los totales que ya calcula tu componente
+    const totales = {
+      ingresos: this.totalGeneralVentas,
+      completadas: this.getVentasCompletadas(),
+      productos: this.getTotalProductosVendidos()
+    };
 
-// Método para obtener el texto del estado
-getTextoEstado(estado: string): string {
-  const estados: { [key: string]: string } = {
-    'COMPLETADA': 'Completada',
-    'PENDIENTE': 'Pendiente', 
-    'CANCELADA': 'Cancelada',
-    'DEVUELTA': 'Devuelta'
-  };
-  return estados[estado] || estado;
-}
+    // Llamamos al servicio pasando los datos estructurados
+    this.pdfGenerator.exportarReporteVentas(
+      this.reporteVentasAgrupado,
+      totales,
+      this.filtrosVentas
+    );
+  }
 }

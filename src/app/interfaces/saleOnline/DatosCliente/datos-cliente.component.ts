@@ -45,6 +45,8 @@ export class DatosClienteComponent implements OnInit {
   numeroTienda: string = '59175135309';
   // Información del usuario
   usuarioInfo: usuarios | null = null;
+  // Nueva variable para guardar el link generado antes de borrar el carrito
+  enlaceWhatsAppDefinitivo: string = '';
 
   pedido: pedidos = {
     usuario: { username: '' } as usuarios,
@@ -415,6 +417,7 @@ export class DatosClienteComponent implements OnInit {
         cantidad: item.cantidad,
         precioUnitario: parseFloat(item.precioUnitario),
         subtotal: parseFloat(item.subtotal),
+        precioBase: item.stock.producto.precioCompra || 0,
       } as detallePedido;
     });
 
@@ -526,7 +529,10 @@ export class DatosClienteComponent implements OnInit {
           this.isLoading = false;
           console.log('Pedido y envío registrados exitosamente.', response);
 
-          // 4. Limpiamos el carrito (Visual y base de datos del carrito, NO stock de productos)
+          // 🔥 NUEVO: PREPARAMOS EL MENSAJE AQUÍ MISMO ANTES DE VACIAR EL CARRITO
+          this.prepararMensajeWhatsApp();
+
+          // 4. Limpiamos el carrito (Visual y base de datos)
           this.limpiarCarrito();
           this.mostrarModalExito();
         },
@@ -546,6 +552,39 @@ export class DatosClienteComponent implements OnInit {
       });
   }
 
+
+  // 1. Método que arma y guarda el mensaje ANTES de limpiar el carrito
+  prepararMensajeWhatsApp(): void {
+    const idPedido = this.pedido.idPedido || 'N/A';
+    const nombreCliente = this.usuarioInfo?.persona?.nombre || 'Cliente';
+    const total = this.totalCarrito;
+
+    // Construimos la lista con guiones normales para evitar símbolos raros
+    let listaProductos = '';
+    this.detallesCarrito.forEach((item) => {
+      const nombreProducto = item.stock.producto.nombre;
+      const cantidad = item.cantidad;
+      const precioUnitario = item.precioUnitario;
+      const subtotal = item.subtotal;
+      
+      listaProductos += `- ${cantidad}x ${nombreProducto} (Bs ${precioUnitario}) = *Bs ${subtotal}*\n`;
+    });
+
+    // Construimos el mensaje limpio sin emojis conflictivos
+    const mensajeBruto = 
+      `*NUEVO PEDIDO WEB - #${idPedido}*\n\n` +
+      `Hola, soy *${nombreCliente}*. Acabo de realizar este pedido:\n\n` +
+      `*Detalle de compra:*\n` +
+      `${listaProductos}\n` +
+      `*TOTAL A PAGAR: Bs ${total}*\n\n` +
+      `Por favor, envíenme el código QR para realizar el pago mediante transferencia. Quedo atento/a.`;
+
+    // Codificamos y guardamos el enlace listo para usarse
+    const mensajeCodificado = encodeURIComponent(mensajeBruto);
+    this.enlaceWhatsAppDefinitivo = `https://wa.me/${this.numeroTienda}?text=${mensajeCodificado}`;
+  }
+
+  
   private ocultarMensajes(): void {
     this.errorMessage = '';
     const errorContainer = document.getElementById('errorContainer');
@@ -617,40 +656,42 @@ export class DatosClienteComponent implements OnInit {
     }
   }
 
-  // Función simple para limpiar y mover al usuario
+ // Función simple para limpiar y mover al usuario
   cerrarYRedirigir(): void {
-    // Cierra el modal manualmente por si acaso (aunque data-bs-dismiss lo hace)
     const modalElement = document.getElementById('modalExito');
-    // Aquí podrías usar lógica para cerrar la instancia de Bootstrap si fuera necesario,
-    // pero el router navigate usualmente limpia la vista.
+    if (modalElement) {
+      // 1. Obtener la instancia del modal y cerrarlo formalmente
+      const modal = bootstrap.Modal.getInstance(modalElement);
+      if (modal) {
+        modal.hide();
+      }
+    }
 
-    this.router.navigate(['/perfil/mis-pedidos']); // O a ['/home']
+    // 🔥 2. LIMPIEZA MANUAL DE SEGURIDAD 🔥
+    // Como la navegación de Angular es casi instantánea, a veces interrumpe la animación 
+    // de cierre de Bootstrap. Esto garantiza que el fondo oscuro se elimine y la pantalla se desbloquee.
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+    const backdrops = document.querySelectorAll('.modal-backdrop');
+    backdrops.forEach(backdrop => backdrop.remove());
+
+    // 3. Finalmente redirigimos
+    this.router.navigate(['/home']);
   }
 
   // Función que arma el mensaje y abre WhatsApp
+ // Función que arma el mensaje y abre WhatsApp
   irAWhatsAppYFinalizar(): void {
-    // 1. Datos para el mensaje
-    const idPedido = this.pedido.idPedido || 'N/A';
-    const nombreCliente = this.usuarioInfo?.persona?.nombre || 'Cliente';
-    const total = this.totalCarrito;
-
-    // 2. Construimos el mensaje (usamos %0A para saltos de línea)
-    const mensaje =
-      `Hola, acabo de realizar el *Pedido #${idPedido}* en la web.%0A` +
-      `Soy *${nombreCliente}*.%0A` +
-      `El total es: *${total} Bs*.%0A` +
-      `Por favor, envíenme el QR para realizar el pago.`;
-
-    // 3. Crear la URL de WhatsApp
-    const url = `https://wa.me/${this.numeroTienda}?text=${mensaje}`;
-
-    // 4. Abrir en nueva pestaña
-    window.open(url, '_blank');
-
-    // 5. Redirigir la página actual a "Mis Pedidos" o "Home" para que no se queden en el checkout
+    if (this.enlaceWhatsAppDefinitivo) {
+      window.open(this.enlaceWhatsAppDefinitivo, '_blank');
+    } else {
+      console.error("El enlace de WhatsApp no se generó correctamente.");
+    }
+    
+    // Redirigimos a la página de inicio o historial
     this.cerrarYRedirigir();
   }
-
   hayProductosEnCarrito(): boolean {
     return this.detallesCarrito && this.detallesCarrito.length > 0;
   }

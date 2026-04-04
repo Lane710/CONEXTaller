@@ -10,7 +10,7 @@ import { ReporteBajoStock } from '../../../DTOs/dtosBD/Report/ReporteBajoStock';
 import { ReporteMasVendido } from '../../../DTOs/dtosBD/Report/ReporteMasVendido';
 import { ReporteMaestroProducto } from '../../../DTOs/dtosBD/Report/ReporteMaestroProducto';
 import { CategoriasService } from '../../../services/ProductosServis/categorias.service';
-
+import { PdfGeneratorService } from '../../../services/pdf-generator/pdf-generator.service';
 
 // =========================================================================
 // ========================= 1. INTERFACES DE DATOS ========================
@@ -41,9 +41,20 @@ export class ReporteProductosComponent implements OnInit {
   productTabs = [
     { id: 'bajo_stock', label: 'Bajo Stock', active: true },
     { id: 'mas_vendidos', label: 'Más Vendidos', active: false },
+    { id: 'menos_vendidos', label: 'Menos Vendidos', active: false }, // <-- NUEVO
+    { id: 'quietos', label: 'Productos Quietos', active: false },    // <-- NUEVO
     { id: 'maestro', label: 'Maestro de Productos', active: false },
   ];
+// Añade estos filtros debajo de filtrosMasVendidos
+  filtrosMenosVendidos = { fechaInicio: '', fechaFin: '', idCategoria: '' };
+  filtrosQuietos = { fechaLimite: '' };
 
+  // Añade estas variables de resultados debajo de reporteMaestro
+  reporteMenosVendidos: any[] = []; 
+  reporteQuietos: any[] = [];
+
+
+  
   maxDate: string;
   cargandoReporte: boolean = false;
   // FALSO por defecto: hasta que se presione filtrar
@@ -88,7 +99,8 @@ export class ReporteProductosComponent implements OnInit {
   constructor(
     private reportesService: ReportesService,
     private usuariosService: UsuariosService,
-    private categoriasService: CategoriasService 
+    private categoriasService: CategoriasService,
+    private pdfGenerator: PdfGeneratorService
   ) {
     this.maxDate = this.getTodayAsString();
   }
@@ -118,33 +130,69 @@ export class ReporteProductosComponent implements OnInit {
     }
   }
 
-  // Este método solo se llama al presionar el botón "Filtrar"
-  aplicarFiltros(reportId: string): void {
+aplicarFiltros(reportId: string): void {
     this.cargandoReporte = true;
-    this.busquedaRealizada = true; // Marcamos que se inició una búsqueda
+    this.busquedaRealizada = true;
 
-    // Limpiamos los resultados del reporte actual antes de la consulta
+    // Limpiar resultados
     switch (reportId) {
         case 'bajo_stock': this.reporteBajoStock = []; break;
         case 'mas_vendidos': this.reporteMasVendidos = []; break;
+        case 'menos_vendidos': this.reporteMenosVendidos = []; break; // <-- NUEVO
+        case 'quietos': this.reporteQuietos = []; break;              // <-- NUEVO
         case 'maestro': this.reporteMaestro = []; break;
     }
 
-    // Llama al método de consulta específico
+    // Llamar a consulta
     switch (reportId) {
-      case 'bajo_stock':
-        this.consultaReporteBajoStock();
-        break;
-      case 'mas_vendidos':
-        this.consultaReporteMasVendidos();
-        break;
-      case 'maestro':
-        this.consultaReporteMaestro();
-        break;
-      default:
-        this.cargandoReporte = false;
+      case 'bajo_stock': this.consultaReporteBajoStock(); break;
+      case 'mas_vendidos': this.consultaReporteMasVendidos(); break;
+      case 'menos_vendidos': this.consultaReporteMenosVendidos(); break; // <-- NUEVO
+      case 'quietos': this.consultaReporteQuietos(); break;              // <-- NUEVO
+      case 'maestro': this.consultaReporteMaestro(); break;
+      default: this.cargandoReporte = false;
     }
   }
+
+  // --- AÑADE ESTOS DOS MÉTODOS NUEVOS DE CONSULTA ---
+  private consultaReporteMenosVendidos(): void {
+    const idCat: number | undefined = this.filtrosMenosVendidos.idCategoria ? 
+                                      parseInt(this.filtrosMenosVendidos.idCategoria, 10) : undefined;
+    
+    this.reportesService.findReporteMenosVendidos(
+      this.filtrosMenosVendidos.fechaInicio,
+      this.filtrosMenosVendidos.fechaFin,
+      idCat
+    ).subscribe({
+      next: (res: ApiResponse) => {
+        if (res.success && res.data) {
+          this.reporteMenosVendidos = res.data;
+        }
+        this.cargandoReporte = false;
+      },
+      error: (err) => {
+        console.error('Error Menos Vendidos:', err);
+        this.cargandoReporte = false;
+      }
+    });
+  }
+
+  private consultaReporteQuietos(): void {
+    this.reportesService.findReporteProductosQuietos(this.filtrosQuietos.fechaLimite).subscribe({
+      next: (res: ApiResponse) => {
+        if (res.success && res.data) {
+          this.reporteQuietos = res.data;
+        }
+        this.cargandoReporte = false;
+      },
+      error: (err) => {
+        console.error('Error Productos Quietos:', err);
+        this.cargandoReporte = false;
+      }
+    });
+  }
+
+  
 
   // =========================================================================
   // ==================== 6. MÉTODOS DE CONSULTA A LA API ====================
@@ -247,13 +295,15 @@ export class ReporteProductosComponent implements OnInit {
     });
   }
   
-  inicializarFechas(): void {
+inicializarFechas(): void {
     const hoy = this.getTodayAsString();
     this.filtrosMasVendidos.fechaFin = hoy;
+    this.filtrosMenosVendidos.fechaFin = hoy; // <-- NUEVO
+    this.filtrosQuietos.fechaLimite = hoy;    // <-- NUEVO
     
-    // Fecha de inicio por defecto (ej: hace 30 días)
     const thirtyDaysAgo = new Date(new Date().setDate(new Date().getDate() - 30));
     this.filtrosMasVendidos.fechaInicio = this.formatDate(thirtyDaysAgo);
+    this.filtrosMenosVendidos.fechaInicio = this.formatDate(thirtyDaysAgo); // <-- NUEVO
   }
 
   validarFechas(): void {
@@ -275,18 +325,61 @@ export class ReporteProductosComponent implements OnInit {
 
   // Métodos utilitarios
 tieneDatos(): boolean {
-  switch (this.currentProductReport) {
-    case 'bajo_stock': return this.reporteBajoStock.length > 0;
-    case 'mas_vendidos': return this.reporteMasVendidos.length > 0;
-    case 'maestro': return this.reporteMaestro.length > 0;
-    default: return false;
+    switch (this.currentProductReport) {
+      case 'bajo_stock': return this.reporteBajoStock.length > 0;
+      case 'mas_vendidos': return this.reporteMasVendidos.length > 0;
+      case 'menos_vendidos': return this.reporteMenosVendidos.length > 0; // <-- NUEVO
+      case 'quietos': return this.reporteQuietos.length > 0;              // <-- NUEVO
+      case 'maestro': return this.reporteMaestro.length > 0;
+      default: return false;
+    }
   }
-}
 
 exportarPDF(): void {
-  // Implementar lógica de exportación PDF
-  alert('Funcionalidad de exportación PDF en desarrollo');
-}
+    let datosTabla = [];
+    let estadisticas = {};
+    let filtrosActivos = {};
+
+    // Recolectar datos según la pestaña activa
+    switch (this.currentProductReport) {
+      case 'bajo_stock':
+        datosTabla = this.reporteBajoStock;
+        filtrosActivos = this.filtrosBajoStock;
+        estadisticas = { criticos: this.getStockCriticoCount(), proveedores: this.getProveedoresUnicos() };
+        break;
+      case 'mas_vendidos':
+        datosTabla = this.reporteMasVendidos;
+        filtrosActivos = this.filtrosMasVendidos;
+        estadisticas = { unidades: this.getTotalUnidadesVendidas(), ingresos: this.getTotalIngresos() };
+        break;
+      case 'menos_vendidos':
+        datosTabla = this.reporteMenosVendidos;
+        filtrosActivos = this.filtrosMenosVendidos;
+        // Para "menos vendidos" usamos la misma lógica de suma que en "más vendidos"
+        estadisticas = { 
+          unidades: this.reporteMenosVendidos.reduce((sum, p) => sum + p.unidadesVendidas, 0), 
+          ingresos: this.reporteMenosVendidos.reduce((sum, p) => sum + p.ingresosTotales, 0) 
+        };
+        break;
+      case 'quietos':
+        datosTabla = this.reporteQuietos;
+        filtrosActivos = this.filtrosQuietos;
+        break;
+      case 'maestro':
+        datosTabla = this.reporteMaestro;
+        filtrosActivos = this.filtrosMaestro;
+        estadisticas = { activos: this.getProductosActivos(), usuarios: this.getUsuariosUnicos() };
+        break;
+    }
+
+    // Llamar al generador
+    this.pdfGenerator.exportarReporteProductos(
+      datosTabla,
+      this.currentProductReport,
+      estadisticas,
+      filtrosActivos
+    );
+  }
 
 // Métodos para estadísticas de Bajo Stock
 getStockCriticoCount(): number {

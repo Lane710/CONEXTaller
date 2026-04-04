@@ -35,17 +35,13 @@ export class SalesComponent implements OnInit {
   mostrarScanModal: boolean = false;
   detallesGuardadosParaScan: any[] = [];
 
-  // 🔥 NUEVA VARIABLE PARA VENTA RÁPIDA
   esVentaRapida: boolean = false;
-  // En la parte superior de tu clase
   clienteExistenteEnMemoria: clientes | null = null;
-  // Variables para inputs separados
   inputCi: string = '';
   inputNombre: string = '';
   inputApellidoP: string = '';
   inputApellidoM: string = '';
 
-  // Propiedades existentes
   usuarioTrabajador: usuarios = {
     username: localStorage.getItem('current_username') || '',
     email: '',
@@ -111,7 +107,6 @@ export class SalesComponent implements OnInit {
     this.cargarProductosConStock();
   }
 
-  // Detecta si el CI escrito es 0
   verificarVentaRapida() {
     if (this.inputCi === '0') {
       this.esVentaRapida = true;
@@ -128,10 +123,6 @@ export class SalesComponent implements OnInit {
     }
   }
 
-  // ===================================================================
-  // 🔥 LÓGICA DE VENTA CORREGIDA
-  // ===================================================================
-
   realizarVenta() {
     const numeroci = this.inputCi ? this.inputCi.trim() : '';
 
@@ -140,18 +131,12 @@ export class SalesComponent implements OnInit {
       return;
     }
 
-    if (
-      numeroci !== '0' &&
-      (!this.inputNombre || this.inputNombre.trim().length < 2)
-    ) {
+    if (numeroci !== '0' && (!this.inputNombre || this.inputNombre.trim().length < 2)) {
       alert('Por favor, complete el nombre del cliente');
       return;
     }
 
-    if (
-      numeroci !== '0' &&
-      (!this.inputApellidoP || this.inputApellidoP.trim().length < 2)
-    ) {
+    if (numeroci !== '0' && (!this.inputApellidoP || this.inputApellidoP.trim().length < 2)) {
       alert('Por favor, complete el apellido paterno del cliente');
       return;
     }
@@ -181,7 +166,6 @@ export class SalesComponent implements OnInit {
 
     let accionClienteObservable;
 
-    // 1. LÓGICA DE CLIENTE (Guardar, buscar o actualizar)
     if (
       this.clienteExistenteEnMemoria &&
       this.clienteExistenteEnMemoria.ci === clienteParaProcesar.ci
@@ -191,26 +175,20 @@ export class SalesComponent implements OnInit {
         clienteParaProcesar.razonSocial;
 
       if (cambioRazonSocial) {
-        console.log('Actualizando Razón Social en BD...');
         accionClienteObservable = this.clienteS.update(clienteParaProcesar);
       } else {
-        console.log('Cliente sin cambios, procediendo a la venta...');
         accionClienteObservable = of({
           success: true,
           data: clienteParaProcesar,
         } as ApiResponse);
       }
     } else {
-      console.log('Evaluando nuevo cliente o CI 0 en BD...');
-      // 🔥 USAMOS findOrCreate. Si falla el Backend (Ej: 500), saltará directo al bloque error() final
       accionClienteObservable = this.clienteS.findOrCreate(clienteParaProcesar);
     }
 
-    // 2. LÓGICA DE VENTA EN CADENA (Solo se ejecuta si el cliente no dio error)
     accionClienteObservable
       .pipe(
         concatMap((resCliente: ApiResponse) => {
-          // Validamos que el cliente haya retornado con éxito
           if (!resCliente || (!resCliente.success && !resCliente.data)) {
             return throwError(
               () => new Error('Fallo en la verificación del cliente.'),
@@ -226,7 +204,6 @@ export class SalesComponent implements OnInit {
             notas: this.notaVenta,
             estado: 'COMPLETADA',
           };
-          console.log('Guardando Cabecera de Venta...');
           return this.ventasS.save(ventaNueva);
         }),
         concatMap((resVenta: ApiResponse) => {
@@ -240,6 +217,7 @@ export class SalesComponent implements OnInit {
               cantidad: prod.cantidad,
               precioUnitario: prod.precioUnitario,
               subtotal: prod.cantidad * prod.precioUnitario,
+              precioBase: prod.producto.precioCompra || 0,
             };
             return this.detalleVentaS.save(detalle);
           });
@@ -259,6 +237,7 @@ export class SalesComponent implements OnInit {
         next: (respuestasDetalles: ApiResponse[]) => {
           console.log('Detalles guardados exitosamente. Preparando modal...');
 
+          // 🔥 CORRECCIÓN CLAVE AQUÍ 🔥 (Estructura plana)
           const detallesFusionados = respuestasDetalles.map((res, index) => {
             const prodLocal = this.productosPorVender[index].producto;
             return {
@@ -267,19 +246,17 @@ export class SalesComponent implements OnInit {
                 res.data.idDetallePedido ||
                 res.data.id,
               cantidad: this.productosPorVender[index].cantidad,
-              producto: {
-                idProducto: prodLocal.idProducto,
-                nombre: prodLocal.nombre,
-                requiereSerial: prodLocal.requiereSerial, // Dato cruzado
-              },
+              idProducto: prodLocal.idProducto, // Formato plano esperado por ModalScan
+              nombre: prodLocal.nombre,         // Formato plano esperado por ModalScan
+              requiereSerial: prodLocal.requiereSerial // Agregamos esto solo para la validación de abajo
             };
           });
 
           const requiereEscaneo = detallesFusionados.some(
             (d: any) =>
-              d.producto.requiereSerial === true ||
-              d.producto.requiereSerial === 'true' ||
-              d.producto.requiereSerial === 1,
+              d.requiereSerial === true ||
+              d.requiereSerial === 'true' ||
+              d.requiereSerial === 1,
           );
 
           if (requiereEscaneo) {
@@ -292,7 +269,6 @@ export class SalesComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error final atrapado:', err);
-          // Ahora sí verás el error real en pantalla si la BD falla
           alert(
             'No se pudo registrar la venta. Motivo: Error en el procesamiento del Cliente o Servidor.',
           );
@@ -300,7 +276,6 @@ export class SalesComponent implements OnInit {
       });
   }
 
-  // Método unificado para finalizar
   finalizarVentaExitosa() {
     this.cerrarModalConfirmacion();
     this.mostrarScanModal = false;
@@ -320,8 +295,6 @@ export class SalesComponent implements OnInit {
 
   seleccionarCliente(cliente: clientes) {
     this.clienteSeleccionado = cliente;
-
-    // Guardamos una copia exacta de lo que vino de la BD
     this.clienteExistenteEnMemoria = JSON.parse(JSON.stringify(cliente));
 
     this.inputCi = cliente.ci;
@@ -348,17 +321,13 @@ export class SalesComponent implements OnInit {
     this.clienteExistenteEnMemoria = null;
   }
 
-  // --- MÉTODOS DE CANTIDAD Y DESCUENTO (Mantenidos igual) ---
   aplicarDescuento(): void {
     const subtotal = this.calcularSubtotal();
     const maxDescuento = subtotal * 0.5;
 
     if (this.descuentoInputValue < 0) {
       this.descuentoInputValue = 0;
-      this.mostrarMensajeDescuento(
-        'El descuento no puede ser negativo',
-        'error',
-      );
+      this.mostrarMensajeDescuento('El descuento no puede ser negativo', 'error');
       return;
     }
 
@@ -384,21 +353,12 @@ export class SalesComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  mostrarMensajeDescuento(
-    mensaje: string,
-    tipo: 'success' | 'error' | 'info',
-  ): void {
+  mostrarMensajeDescuento(mensaje: string, tipo: 'success' | 'error' | 'info'): void {
     this.mensajeDescuento = mensaje;
     switch (tipo) {
-      case 'success':
-        this.mensajeDescuentoClase = 'alert alert-success';
-        break;
-      case 'error':
-        this.mensajeDescuentoClase = 'alert alert-danger';
-        break;
-      case 'info':
-        this.mensajeDescuentoClase = 'alert alert-info';
-        break;
+      case 'success': this.mensajeDescuentoClase = 'alert alert-success'; break;
+      case 'error': this.mensajeDescuentoClase = 'alert alert-danger'; break;
+      case 'info': this.mensajeDescuentoClase = 'alert alert-info'; break;
     }
     setTimeout(() => {
       this.mensajeDescuento = '';
@@ -416,9 +376,7 @@ export class SalesComponent implements OnInit {
       next: (res: ApiResponse) => {
         this.productosConStockReal = res.data || [];
       },
-      error: (err) => {
-        console.error('Error al cargar productos con stock:', err);
-      },
+      error: (err) => console.error('Error al cargar productos con stock:', err),
     });
   }
 
@@ -437,10 +395,7 @@ export class SalesComponent implements OnInit {
   }
 
   obtenerStockRestante(idProducto: number): number {
-    return (
-      this.obtenerStockDisponible(idProducto) -
-      this.obtenerCantidadEnCarrito(idProducto)
-    );
+    return this.obtenerStockDisponible(idProducto) - this.obtenerCantidadEnCarrito(idProducto);
   }
 
   sumarCantidad(index: number): void {
@@ -488,18 +443,7 @@ export class SalesComponent implements OnInit {
 
   soloNumeros(event: KeyboardEvent): boolean {
     const charCode = event.key.charCodeAt(0);
-    if (
-      [
-        'Backspace',
-        'Tab',
-        'ArrowLeft',
-        'ArrowRight',
-        'Delete',
-        'Home',
-        'End',
-      ].includes(event.key)
-    )
-      return true;
+    if (['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Home', 'End'].includes(event.key)) return true;
     if (charCode >= 48 && charCode <= 57) return true;
     event.preventDefault();
     return false;
@@ -507,20 +451,7 @@ export class SalesComponent implements OnInit {
 
   soloNumerosDecimales(event: KeyboardEvent): boolean {
     const charCode = event.key.charCodeAt(0);
-    if (
-      [
-        'Backspace',
-        'Tab',
-        'ArrowLeft',
-        'ArrowRight',
-        'Delete',
-        'Home',
-        'End',
-        '.',
-        ',',
-      ].includes(event.key)
-    )
-      return true;
+    if (['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Home', 'End', '.', ','].includes(event.key)) return true;
     if (charCode >= 48 && charCode <= 57) return true;
     event.preventDefault();
     return false;
@@ -540,10 +471,11 @@ export class SalesComponent implements OnInit {
       productosPreventa.forEach((prod) => {
         const detalle: detalleVenta = {
           producto: prod.producto as unknown as productos,
-          venta: {} as ventas, // Mock
+          venta: {} as ventas,
           cantidad: prod.cantidad,
           precioUnitario: prod.producto.precio || 0,
           subtotal: (prod.producto.precio || 0) * prod.cantidad,
+          precioBase: prod.producto.precioCompra || 0,
         };
         this.productosPorVender.push(detalle);
       });
@@ -587,10 +519,7 @@ export class SalesComponent implements OnInit {
   }
 
   obtenerTotalProductos(): number {
-    return this.productosPorVender.reduce(
-      (acc, item) => acc + item.cantidad,
-      0,
-    );
+    return this.productosPorVender.reduce((acc, item) => acc + item.cantidad, 0);
   }
 
   mostrarModalStockAlerta(nombreProducto: string, stockMaximo: number) {

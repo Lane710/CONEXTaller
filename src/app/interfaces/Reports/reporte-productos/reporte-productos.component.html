@@ -418,7 +418,122 @@
           </div>
         </div>
       </div>
+<div *ngSwitchCase="'menos_vendidos'" class="tab-pane tab-menos-vendidos">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="mb-0">📉 Productos Menos Vendidos</h4>
+        </div>
 
+        <div class="filtros-section">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+              <label class="form-label">Fecha Inicio</label>
+              <input type="date" class="form-control" [(ngModel)]="filtrosMenosVendidos.fechaInicio" [max]="filtrosMenosVendidos.fechaFin">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Fecha Fin</label>
+              <input type="date" class="form-control" [(ngModel)]="filtrosMenosVendidos.fechaFin" [max]="maxDate">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Categoría</label>
+              <select class="form-select" [(ngModel)]="filtrosMenosVendidos.idCategoria">
+                <option value="">Todas las categorías</option>
+                <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre }}</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-primary w-100" (click)="aplicarFiltros('menos_vendidos')">
+                <i class="bi bi-funnel"></i> Filtrar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="!cargandoReporte">
+          <div *ngIf="reporteMenosVendidos.length > 0" class="reporte-section mt-4">
+            <h5 class="mb-3">Los 20 productos menos vendidos</h5>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Producto</th>
+                    <th>SKU</th>
+                    <th>Categoría</th>
+                    <th class="text-end">Stock Actual</th>
+                    <th class="text-end">Unidades Vendidas</th>
+                    <th class="text-end">Ingresos Generados</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let prod of reporteMenosVendidos" class="producto-row">
+                    <td><strong>{{ prod.nombre }}</strong></td>
+                    <td><code>{{ prod.sku }}</code></td>
+                    <td>{{ prod.categoria }}</td>
+                    <td class="text-end">{{ prod.stockActual }}</td>
+                    <td class="text-end text-danger"><strong>{{ prod.unidadesVendidas }}</strong></td>
+                    <td class="text-end">{{ prod.ingresosTotales | currency:'Bs. ' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div *ngIf="busquedaRealizada && reporteMenosVendidos.length === 0" class="alert alert-info mt-4">
+            No hay datos de productos menos vendidos para este rango de fechas.
+          </div>
+        </div>
+      </div>
+
+      <div *ngSwitchCase="'quietos'" class="tab-pane tab-quietos">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="mb-0">🛑 Capital Estancado (Productos sin movimiento)</h4>
+        </div>
+
+        <div class="filtros-section">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+              <label class="form-label">Sin ventas desde la fecha (Límite):</label>
+              <input type="date" class="form-control" [(ngModel)]="filtrosQuietos.fechaLimite" [max]="maxDate">
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-primary w-100" (click)="aplicarFiltros('quietos')">
+                <i class="bi bi-funnel"></i> Analizar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="!cargandoReporte">
+          <div *ngIf="reporteQuietos.length > 0" class="reporte-section mt-4">
+            <h5 class="mb-3">Inventario inmovilizado</h5>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Producto</th>
+                    <th>SKU</th>
+                    <th class="text-end">Stock Actual</th>
+                    <th class="text-end">Precio Compra Unit.</th>
+                    <th class="text-end">Capital Estancado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let prod of reporteQuietos" class="producto-row">
+                    <td><strong>{{ prod.nombre }}</strong></td>
+                    <td><code>{{ prod.sku }}</code></td>
+                    <td class="text-end text-warning"><strong>{{ prod.stockActual }}</strong></td>
+                    <td class="text-end">{{ prod.precioCompra | currency:'Bs. ' }}</td>
+                    <td class="text-end text-danger"><strong>{{ prod.capitalEstancado | currency:'Bs. ' }}</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div *ngIf="busquedaRealizada && reporteQuietos.length === 0" class="alert alert-success mt-4">
+            <i class="bi bi-check-circle"></i> ¡Excelente! No tienes capital estancado desde esa fecha.
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

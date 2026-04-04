@@ -1,272 +1,166 @@
-<div class="container-fluid">
-  <div
-    class="productoDetalle"
-    *ngIf="productDetails as details; else loadingOrError"
-  >
-    <div class="product-detail-full-width bg-white shadow-sm rounded">
+<div class="container-xl py-3">
+  <div class="productoDetalle" *ngIf="productDetails as details; else loadingOrError">
+    
+    <div class="bg-white shadow-sm rounded-4 overflow-hidden mb-4">
       <div class="row g-0">
-        <div
-          class="col-lg-6 product-gallery-full p-lg-5 p-4 d-flex flex-column align-items-center"
-        >
-          <div
-            class="main-image-wrapper border rounded mb-3 bg-light d-flex justify-content-center align-items-center"
-          >
-            <img
-              [src]="mainImageUrl"
-              [alt]="details.producto.nombre || 'Imagen principal del producto'"
-              class="main-product-image img-fluid"
-              id="mainProductImage"
-            />
+        <div class="col-lg-6 p-3 p-lg-4 d-flex flex-column align-items-center bg-light">
+          <div class="main-image-wrapper border rounded-4 mb-3 bg-white shadow-sm w-100 d-flex justify-content-center align-items-center" style="aspect-ratio: 1/1; overflow: hidden">
+            <img [src]="mainImageUrl" [alt]="details.producto.nombre || 'Imagen principal'" class="img-fluid object-fit-contain w-100 h-100 p-2" />
           </div>
 
-          <div
-            class="thumbnail-gallery d-flex flex-wrap justify-content-center gap-2"
-          >
-            <div
-              class="thumbnail-image-wrapper border rounded d-flex justify-content-center align-items-center"
-              [ngClass]="{ active: mainImageUrl === details.producto.imagen }"
-              (click)="changeMainImage(details.producto.imagen || '')"
-            >
-              <img
-                [src]="details.producto.imagen"
-                [alt]="details.producto.nombre || 'Miniatura del producto'"
-                class="thumbnail-image img-fluid"
-              />
+          <div class="thumbnail-gallery d-flex flex-wrap justify-content-center gap-2 w-100">
+            <div class="thumbnail-image-wrapper border rounded-3 overflow-hidden bg-white shadow-sm cursor-pointer"
+                 [ngClass]="{'border-primary border-2 opacity-100': mainImageUrl === details.producto.imagen, 'opacity-75': mainImageUrl !== details.producto.imagen}"
+                 (click)="changeMainImage(details.producto.imagen || '')">
+              <img [src]="details.producto.imagen" class="img-fluid object-fit-contain w-100 h-100 p-1" />
             </div>
-            <div
-              class="thumbnail-image-wrapper border rounded d-flex justify-content-center align-items-center"
-              *ngFor="let img of ImagenProducts"
-              [ngClass]="{ active: mainImageUrl === img.urlImagen }"
-              (click)="changeMainImage(img.urlImagen)"
-            >
-              <img
-                [src]="img.urlImagen"
-                [alt]="'Miniatura secundaria'"
-                class="thumbnail-image img-fluid"
-              />
+
+            <div class="thumbnail-image-wrapper border rounded-3 overflow-hidden bg-white shadow-sm cursor-pointer"
+                 *ngFor="let img of ImagenProducts"
+                 [ngClass]="{'border-primary border-2 opacity-100': mainImageUrl === img.urlImagen, 'opacity-75': mainImageUrl !== img.urlImagen}"
+                 (click)="changeMainImage(img.urlImagen)">
+              <img [src]="img.urlImagen" class="img-fluid object-fit-contain w-100 h-100 p-1" />
             </div>
           </div>
         </div>
 
-        <div class="col-lg-6 product-info-section-full p-4">
-          <h1 class="product-title mb-3">{{ details.producto.nombre }}</h1>
+        <div class="col-lg-6 p-3 p-lg-4 d-flex flex-column justify-content-start">
+          <span class="badge bg-secondary mb-1 align-self-start">{{ details.producto.marca || "Genérico" }}</span>
+          <h1 class="product-title fw-bold mb-1 text-dark">{{ details.producto.nombre }}</h1>
+          <p class="product-short-description text-muted fs-6 mb-2">{{ details.producto.descripcion || "Sin descripción disponible." }}</p>
 
-          <div class="product-short-description-section mb-3">
-            <p class="product-short-description text-muted">
-              {{ details.producto.descripcion }}
-            </p>
-          </div>
-          <br />
-          <p class="product-price mb-3">{{ details.producto.precio }} Bs.</p>
-
-          <p
-            class="product-availability fw-bold mb-4"
-            [ngClass]="{
-              'text-warning': details.cantidad > 0 && details.cantidad <= 5,
-              'text-success': details.cantidad > 5,
-              'text-danger': details.cantidad === 0
-            }"
-          >
-            <ng-container *ngIf="details.cantidad > 0 && details.cantidad <= 5">
-              Solo hay {{ details.cantidad }} unidad{{
-                details.cantidad === 1 ? "" : "es"
-              }}
-              <span class="text-danger fw-bold">¡Apresúrate!</span>
-            </ng-container>
-            <ng-container *ngIf="details.cantidad > 5"
-              >Hay existencias</ng-container
-            >
-            <ng-container *ngIf="details.cantidad === 0"
-              >Sin stock</ng-container
-            >
-          </p>
-
-          <div
-            class="product-option-group d-flex align-items-center mb-3"
-            *ngIf="details.producto.color"
-          >
-            <label class="option-label fw-semibold me-2">Color:</label>
-            <div class="option-values d-flex align-items-center gap-2">
-              <button
-                class="color-swatch active border rounded-circle"
-                [style.backgroundColor]="
-                  details.producto.color === 'Negro' ? '#000' : '#fff'
-                "
-                [title]="details.producto.color"
-              ></button>
-              <span class="color-name text-muted">{{
-                details.producto.color
-              }}</span>
-            </div>
+          <div class="price-section mb-2">
+            <h2 class="display-6 fw-bolder text-primary mb-0">{{ details.producto.precio | currency: "Bs. " : "symbol" : "1.2-2" }}</h2>
           </div>
 
-          <div class="quantity-selector d-flex align-items-center mb-4">
-            <label for="productQuantity" class="me-2">Cantidad:</label>
-            <input
-              type="number"
-              id="productQuantity"
-              name="productQuantity"
-              min="1"
-              [max]="details.cantidad"
-              [(ngModel)]="cantidadSeleccionada"
-              [disabled]="details.cantidad === 0"
-              class="form-control"
-              style="width: 80px"
-            />
+          <div class="stock-msg-detail mb-3 p-2 rounded" [ngClass]="{'bg-success-subtle': details.cantidad > 5, 'bg-warning-subtle': details.cantidad > 0 && details.cantidad <= 5, 'bg-danger-subtle': details.cantidad === 0}">
+            <span class="fw-bold" [ngClass]="{'text-success': details.cantidad > 5, 'text-warning': details.cantidad > 0 && details.cantidad <= 5, 'text-danger': details.cantidad === 0}">
+               {{ details.cantidad > 5 ? "Stock disponible" : (details.cantidad > 0 ? "¡Solo quedan " + details.cantidad + " unidad(es)!" : "Agotado") }}
+            </span>
           </div>
-          <br />
-          <div class="action-buttons d-flex gap-3 mb-4 flex-wrap">
-            <button
-              style="background-color: #29aaca"
-              class="btn btn-dark add-to-cart-btn flex-grow-1 align-items-center border-0"
-              [disabled]="details.cantidad === 0"
-              (click)="AddProductCarrito(details)"
-            >
-              <i class="fas fa-cart-plus me-2"></i>
-              {{ details.cantidad === 0 ? "Producto no disponible" : "Agregar al carrito" }}
+
+          <div class="d-flex flex-wrap align-items-end gap-2 mb-4 w-100">
+            <button class="btn-cart w-100 p-3 fs-5" type="button"
+                    [ngClass]="{'btn-go-cart': carritoAgregadoMap[details.idStock || 0]}"
+                    (click)="AddProductCarrito(details)" 
+                    [disabled]="details.cantidad === 0">
+              
+              <ng-container *ngIf="details.cantidad > 0 && !carritoAgregadoMap[details.idStock || 0]">
+                <i class="fas fa-cart-plus me-2"></i> Agregar al carrito
+              </ng-container>
+              
+              <ng-container *ngIf="details.cantidad > 0 && carritoAgregadoMap[details.idStock || 0]">
+                <i class="fas fa-shopping-cart me-2"></i> Ir al carrito
+              </ng-container>
+
+              <span *ngIf="details.cantidad === 0">Sin stock</span>
             </button>
           </div>
 
-          <div class="product-meta text-muted border-top pt-3">
-            <span class="d-block mb-1">SKU: {{ details.producto.sku || 'N/D' }}</span>
-            <span class="d-block mb-1"
-              >Categoría: {{ details.producto.categoria.nombre }}</span
-            >
-            <span class="d-block mb-1">Estado: Nuevo</span>
-            <span class="d-block mb-1">Envíos: A toda Tarija</span>
-            <span class="d-block">Marca: {{ details.producto.marca }}</span>
+          <div class="product-meta text-muted border-top pt-2 fs-7 mt-auto">
+            <div class="row g-1">
+              <div class="col-6">
+                <i class="fas fa-tags me-1"></i><strong>Categoría:</strong>
+                {{ details.producto.subcategoria.nombreCategoria || details.producto.subcategoria.nombre || "General" }}
+              </div>
+              <div class="col-6">
+                <i class="fas fa-truck me-1"></i><strong>Envío:</strong> A toda Tarija
+              </div>
+            </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="ficha-tecnica-container bg-white shadow-sm rounded-4 p-3 p-lg-4 mb-4" *ngIf="especificaciones.length > 0 || atributos.length > 0 || caracteristicas.length > 0">
+      <h2 class="ficha-titulo fw-bold mb-3 fs-5">Especificaciones técnicas</h2>
+      <div class="technical-list">
+        <ng-container *ngIf="especificaciones.length > 0">
+          <div class="tech-row d-flex border-bottom" *ngFor="let spec of especificaciones">
+            <div class="tech-label fw-semibold text-dark">{{ spec.tipoPropiedad.nombre }}</div>
+            <div class="tech-value text-secondary">{{ spec.valor }}</div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="atributos.length > 0">
+          <div class="tech-group-title bg-light fw-bold text-dark py-1 px-2 mt-3 border-bottom">Otros Detalles Técnicos</div>
+          <div class="tech-row d-flex border-bottom" *ngFor="let attr of atributos">
+            <div class="tech-label fw-semibold text-dark">{{ attr.tipoPropiedad.nombre }}</div>
+            <div class="tech-value text-secondary">{{ attr.valor }}</div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="caracteristicas.length > 0">
+          <div class="tech-group-title bg-light fw-bold text-dark py-1 px-2 mt-3 border-bottom">Características Especiales</div>
+          <div class="tech-row d-flex border-bottom" *ngFor="let char of caracteristicas">
+            <div class="tech-label fw-semibold text-dark">{{ char.tipoPropiedad.nombre }}</div>
+            <div class="tech-value text-secondary">{{ char.valor }}</div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="bg-white shadow-sm rounded-4 p-4 mb-4" *ngIf="techoProducts.length > 0">
+      <h2 class="fs-5 fw-bold mb-4 border-bottom pb-2 text-dark">
+        Más productos que podrían interesarte
+      </h2>
+
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        <div class="col" *ngFor="let stockItem of techoProducts">
+          <div class="card product-card h-100">
+            <img (click)="verDetalles(stockItem.idStock)" [src]="stockItem.producto.imagen" alt="{{ stockItem.producto.descripcion }}" class="card-img-top cursor-pointer" onerror="this.onerror=null;this.src='https://placehold.co/150x120?text=Sin+imagen'" />
+            <div class="card-body p-3 d-flex flex-column justify-content-between">
+              <div>
+                <h6 class="card-title text-truncate-2 cursor-pointer" [title]="stockItem.producto.nombre" (click)="verDetalles(stockItem.idStock)">
+                  {{ stockItem.producto.nombre }}
+                </h6>
+                <div class="stock-msg mb-2">
+                  {{ stockItem.cantidad >= 1 ? "🟢 En stock" : "🔴 Agotado" }}
+                </div>
+                <div class="price mb-2">{{ stockItem.producto.precio }} Bs.</div>
+                <div class="brand mb-3">Marca {{ stockItem.producto.marca || "Genérico" }}</div>
+              </div>
+              
+              <button class="btn-cart" type="button" 
+                      [ngClass]="{'btn-go-cart': carritoAgregadoMap[stockItem.idStock || 0]}"
+                      (click)="AddProductCarrito(stockItem)" 
+                      [disabled]="stockItem.cantidad === 0">
+                <span *ngIf="stockItem.cantidad > 0 && !carritoAgregadoMap[stockItem.idStock || 0]">Agregar al carrito</span>
+                <span *ngIf="stockItem.cantidad > 0 && carritoAgregadoMap[stockItem.idStock || 0]"><i class="fas fa-shopping-cart me-1"></i> Ir al carrito</span>
+                <span *ngIf="stockItem.cantidad === 0">Sin stock</span>
+              </button>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-4" *ngIf="!esUltimaPagina">
+        <button class="btn btn-outline-secondary rounded-pill px-4 fw-semibold shadow-sm" (click)="cargarMasProductos()" [disabled]="isLoadingMas">
+          <span *ngIf="!isLoadingMas">Ver más artículos</span>
+          <span *ngIf="isLoadingMas">
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Cargando...
+          </span>
+        </button>
       </div>
     </div>
   </div>
 
   <ng-template #loadingOrError>
-    <div *ngIf="isLoading" class="text-center p-4">
-      Cargando detalles del producto...
+    <div *ngIf="isLoading" class="d-flex flex-column justify-content-center align-items-center py-5 min-vh-50">
+      <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem"></div>
+      <p class="mt-3 fw-medium text-secondary">Cargando detalles del producto...</p>
     </div>
-    <div *ngIf="error" class="alert alert-danger p-4">{{ error }}</div>
-    <div
-      *ngIf="!isLoading && !error && !productDetails"
-      class="text-center p-4"
-    >
-      Producto no encontrado o no disponible.
+    <div *ngIf="error" class="alert alert-danger shadow-sm rounded-4 d-flex align-items-center gap-3 p-4 mx-auto mt-4" style="max-width: 600px">
+      <i class="fas fa-exclamation-triangle fs-3"></i>
+      <div>
+        <h4 class="alert-heading mb-1">¡Ups! Algo salió mal.</h4>
+        <p class="mb-0">{{ error }}</p>
+      </div>
+    </div>
+    <div *ngIf="!isLoading && !error && !productDetails" class="text-center py-5">
+      <h3 class="fw-bold text-muted mt-4">Producto no encontrado</h3>
+      <p class="text-secondary">El producto que buscas no existe o ya no está disponible en la tienda.</p>
+      <button class="btn btn-primary mt-2" routerLink="/tienda">Volver a la tienda</button>
     </div>
   </ng-template>
-
-  <!-- SECCIÓN DE PROPIEDADES -->
-  <div class="propiedadesProducto-section bg-light shadow-sm rounded mt-5 p-4">
-    
-    <!-- ESPECIFICACIONES -->
-    <div class="product-specifications mb-5" *ngIf="especificaciones.length > 0">
-      <h2 class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block">
-        Especificaciones
-      </h2>
-      <div class="table-responsive">
-        <table class="table table-striped product-table table-sm">
-          <tbody>
-            <tr *ngFor="let spec of especificaciones">
-              
-              
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ATRIBUTOS -->
-    <div class="product-attributes mb-5" *ngIf="atributos.length > 0">
-      <h2 class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block">
-        Atributos
-      </h2>
-      <ul class="product-list list-unstyled ps-3">
-        <li *ngFor="let attr of atributos" class="mb-2">
-          
-        </li>
-      </ul>
-    </div>
-
-    <!-- CARACTERÍSTICAS -->
-    <div class="product-characteristics" *ngIf="caracteristicas.length > 0">
-      <h2 class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block">
-        Características
-      </h2>
-      <ul class="product-list list-unstyled ps-3">
-        <li *ngFor="let char of caracteristicas" class="mb-2">
-          
-        </li>
-      </ul>
-    </div>
-
-    <!-- MENSAJE SI NO HAY PROPIEDADES -->
-    <div 
-      *ngIf="especificaciones.length === 0 && atributos.length === 0 && caracteristicas.length === 0 && !isLoading" 
-      class="text-center text-muted p-3"
-    >
-      No hay especificaciones adicionales para este producto.
-    </div>
-  </div>
-
-  <!-- PRODUCTOS SIMILARES -->
-  <div class="productosSimilares">
-    <div class="similar-products-section bg-light shadow-sm rounded mt-5 p-4">
-      <h2 class="section-title mb-4 pb-2 border-bottom border-primary d-inline-block">
-        Productos Tecnológicos que Podrían Interesarte
-      </h2>
-      <div class="carousel-wrapper d-flex align-items-center">
-        <button
-          class="carousel-nav-btn left btn btn-dark rounded-circle"
-          (click)="scrollCarousel('left')"
-        >
-          &#10094;
-        </button>
-
-        <div
-          class="carousel-container d-flex flex-nowrap overflow-auto py-2"
-          #carouselContainer
-        >
-          <div
-            class="product-card card shadow-sm me-3 flex-shrink-0"
-            *ngFor="let product of techoProducts"
-          >
-            <div
-              class="product-image-wrapper d-flex justify-content-center align-items-center bg-light"
-            >
-              <img
-                [src]="product.producto.imagen"
-                [alt]="product.producto.nombre"
-                class="product-image img-fluid"
-              />
-            </div>
-            <div
-              class="card-body product-info text-center d-flex flex-column justify-content-between"
-            >
-              <h3 class="product-name card-title fs-5 fw-bold mb-2">
-                {{ product.producto.nombre }}
-              </h3>
-              <p class="product-price fs-4 fw-bolder text-success mb-2">
-                {{ product.producto.precio | currency : "Bs. " : "symbol" : "1.2-2" }}
-              </p>
-              
-              <button
-                class="btn btn-primary add-to-cart-btn-sm d-flex align-items-center justify-content-center gap-2"
-                [disabled]="product.cantidad === 0"
-                (click)="AddProductCarrito(product)"
-              >
-                <i class="fas fa-cart-plus"></i>
-                {{ product.cantidad === 0 ? 'Sin Stock' : 'Añadir' }}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <button
-          class="carousel-nav-btn right btn btn-dark rounded-circle"
-          (click)="scrollCarousel('right')"
-        >
-          &#10095;
-        </button>
-      </div>
-    </div>
-  </div>
 </div>

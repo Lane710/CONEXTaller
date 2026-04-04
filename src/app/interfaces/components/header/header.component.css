@@ -5,9 +5,9 @@
   height: 70px; /* Reducido de 80px */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   color: #29aaca;
-  position: sticky;
+  position: relative; /* Obligatorio para que funcione el z-index */
+  z-index: 1050;
   top: 0;
-  z-index: 1000;
   padding: 0 20px; /* Reducido de 25px */
   box-sizing: border-box;
 }
@@ -162,28 +162,33 @@
 .dropdown-content {
   display: none;
   position: absolute;
-  background-color: #f9f9f9;
-  min-width: 150px; /* Reducido de 160px */
-  box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.15); /* Sombra más sutil */
-  z-index: 1;
-  right: 0;
-  border-radius: 3px; /* Reducido de 4px */
-  padding: 6px 0; /* Reducido de 8px */
+  right: 0; /* Para que se alinee hacia la izquierda del icono del usuario y no se salga de la pantalla */
+  top: 100%; /* Para que aparezca justo debajo del icono */
+  background-color: #ffffff;
+  min-width: 180px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  
+  /* 🔥 AQUÍ ESTÁ LA MAGIA: Un z-index exageradamente alto 🔥 */
+  z-index: 9999 !important; 
+  
+  border-radius: 8px;
+  overflow: hidden;
 }
-
 .dropdown-content a {
-  color: black;
-  padding: 10px 14px; /* Reducido de 12px 16px */
+  color: #333;
+  padding: 12px 16px;
   text-decoration: none;
   display: block;
-  text-align: left;
-  font-size: 14px; /* Reducido */
-  transition: background-color 0.2s ease;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+  cursor: pointer;
 }
 
 .dropdown-content a:hover {
-  background-color: #ddd;
+  background-color: #f1f1f1;
+  color: #29aaca; /* El azul de tu tema */
 }
+
 
 .dropdown:hover .dropdown-content {
   display: block;

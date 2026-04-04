@@ -10,6 +10,11 @@
         <button class="btn btn-outline-primary btn-sm" (click)="generarReporte()" [disabled]="cargando">
           <i class="bi bi-arrow-clockwise"></i> {{ cargando ? 'Generando...' : 'Actualizar' }}
         </button>
+        
+        <button class="btn btn-danger btn-sm text-white" (click)="exportarPDF()" [disabled]="!tieneDatos() || cargando">
+          <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+        </button>
+        
         <button class="btn btn-success btn-sm" (click)="exportarExcel()" [disabled]="!tieneDatos()">
           <i class="bi bi-file-earmark-excel"></i> Exportar Excel
         </button>
@@ -18,29 +23,11 @@
   </div>
 
   <!-- Filtros -->
-  <div class="filtros-section card mb-4">
+ <div class="filtros-section card mb-4">
     <div class="card-body">
       <h5 class="card-title">Filtros del Reporte</h5>
       
       <div class="row g-3 align-items-end">
-        <!-- Fecha Inicio -->
-        <div class="col-md-3">
-          <label class="form-label">Fecha Inicio</label>
-          <input type="date" class="form-control" 
-                 [(ngModel)]="filtros.fechaInicio" 
-                 (change)="validarFechas()"
-                 [max]="filtros.fechaFin">
-        </div>
-
-        <!-- Fecha Fin -->
-        <div class="col-md-3">
-          <label class="form-label">Fecha Fin</label>
-          <input type="date" class="form-control" 
-                 [(ngModel)]="filtros.fechaFin"
-                 (change)="validarFechas()">
-        </div>
-
-        <!-- Tipo de Reporte -->
         <div class="col-md-4">
           <label class="form-label">Tipo de Reporte</label>
           <select class="form-select" [(ngModel)]="filtros.tipoReporte">
@@ -50,7 +37,28 @@
           </select>
         </div>
 
-        <!-- Botón Generar -->
+        <ng-container *ngIf="filtros.tipoReporte !== 'tendencia_estacionalidad'">
+          <div class="col-md-3">
+            <label class="form-label">Fecha Inicio</label>
+            <input type="date" class="form-control" [(ngModel)]="filtros.fechaInicio" (change)="validarFechas()" [max]="filtros.fechaFin">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Fecha Fin</label>
+            <input type="date" class="form-control" [(ngModel)]="filtros.fechaFin" (change)="validarFechas()">
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="filtros.tipoReporte === 'tendencia_estacionalidad'">
+          <div class="col-md-3">
+            <label class="form-label">Año Actual (A comparar)</label>
+            <input type="number" class="form-control" [(ngModel)]="filtros.anioActual">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Año Pasado (Base)</label>
+            <input type="number" class="form-control" [(ngModel)]="filtros.anioPasado">
+          </div>
+        </ng-container>
+
         <div class="col-md-2">
           <button class="btn btn-primary w-100" (click)="generarReporte()" [disabled]="cargando">
             <i class="bi bi-graph-up"></i> Generar
@@ -220,13 +228,14 @@
             <td>#{{ item.idTransaccion }}</td>
             <td>{{ item.clienteCompleto }}</td>
             <td>
-              <span class="badge" [ngClass]="{
-                'bg-success': item.estado === 'COMPLETADO',
-                'bg-warning': item.estado === 'PENDIENTE'
-              }">
-                {{ getTextoEstado(item.estado) }}
-              </span>
-            </td>
+  <span class="badge" [ngClass]="{
+    'bg-success': item.estado === 'COMPLETADO' || item.estado === 'COMPLETADA' || item.estado === 'ENTREGADO',
+    'bg-warning text-dark': item.estado === 'PENDIENTE',
+    'bg-danger': item.estado === 'CANCELADO' || item.estado === 'CANCELADA'
+  }">
+    {{ getTextoEstado(item.estado) | uppercase }}
+  </span>
+</td>
             <td class="text-end">{{ item.totalTransaccion | currency:'Bs. ' }}</td>
             <td class="text-end ganancia-cell">{{ item.gananciaNeta | currency:'Bs. ' }}</td>
             <td class="text-end">{{ item.margenGananciaPercent | number:'1.2-2' }}%</td>

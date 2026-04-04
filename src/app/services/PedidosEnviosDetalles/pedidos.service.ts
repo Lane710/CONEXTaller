@@ -47,4 +47,16 @@ export class PedidosService {
   update(id:number,pedido:pedidos){
     return this.http.put<ApiResponse>(`${this.Url}updateById/${id}`,pedido)
   }
+
+
+  // Nuevo método para confirmar y despachar (pasando a ENTREGADO con códigos)
+ confirmarYDespachar(id: number): Observable<ApiResponse> {
+    return this.http.put<ApiResponse>(`${this.Url}despachar/${id}`, {});
+  }
+
+  // Nuevo método para cancelar enviando la razón
+  cancelarPedidoConRazon(id: number, razon: string): Observable<ApiResponse> {
+    // Enviamos un objeto JSON con la razón al backend
+    return this.http.put<ApiResponse>(`${this.Url}cancelar/${id}`, { razonCancelacion: razon });
+  }
 }

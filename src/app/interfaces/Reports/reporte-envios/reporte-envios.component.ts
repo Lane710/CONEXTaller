@@ -3,7 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { ApiResponse } from '../../../models/api-response';
 import { ReportesService } from '../../../services/Reportes/reportes.service';
-
+import { PdfGeneratorService } from '../../../services/pdf-generator/pdf-generator.service';
 // =========================================================================
 // ========================= 1. INTERFACES DE DATOS ========================
 // =========================================================================
@@ -74,7 +74,7 @@ export class ReporteEnviosComponent implements OnInit {
   busquedaRealizada: boolean = false;
 
   // Inyección de servicios
-  constructor(private reportesService: ReportesService) {
+  constructor(private reportesService: ReportesService,private pdfGenerator: PdfGeneratorService) {
     this.maxDate = this.getTodayAsString();
   }
 
@@ -162,13 +162,9 @@ export class ReporteEnviosComponent implements OnInit {
   private cargarEstadosEnvio(): void {
     // Lista completa de estados de envío
     this.estadosEnvio = [
-      { value: 'PENDIENTE', viewValue: 'Pendiente' },
-      { value: 'PREPARANDO', viewValue: 'Preparando' },
-      { value: 'EN_TRANSITO', viewValue: 'En Tránsito' },
-      { value: 'EN_REPARTO', viewValue: 'En Reparto' },
+       { value: 'PENDIENTE', viewValue: 'Pendiente' },
       { value: 'ENTREGADO', viewValue: 'Entregado' },
-      { value: 'CANCELADO', viewValue: 'Cancelado' },
-      { value: 'DEVUELTO', viewValue: 'Devuelto' }
+      { value: 'CANCELADO', viewValue: 'Cancelado' }
     ];
   }
 
@@ -217,7 +213,21 @@ getTextoEstado(estado: string): string {
 }
 
 exportarPDF(): void {
-  // Implementar lógica de exportación PDF
-  alert('Funcionalidad de exportación PDF en desarrollo');
+    // 1. Preparamos el objeto con las 4 estadísticas
+    const stats = {
+      totalEnvios: this.reporteEnvios.length,
+      costoTotal: this.totalCostoEnvios,
+      entregados: this.getEnviosEntregados(),
+      pendientes: this.getEnviosPendientes()
+    };
+
+    // 2. Llamamos al servicio
+    this.pdfGenerator.exportarReporteEnvios(
+      this.reporteEnvios,
+      stats,
+      this.filtrosEnvios
+    );
+  }
 }
-}
+
+//474100

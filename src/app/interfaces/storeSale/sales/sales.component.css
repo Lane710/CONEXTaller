@@ -1,7 +1,8 @@
 /* Contenedor principal de la página */
-.main-container {
-  max-width: 1500px;
+.container {
+ 
   margin: auto;
+  margin-bottom: 7%;
 }
 
 /* El div que contiene las dos columnas (productos y ticket) */

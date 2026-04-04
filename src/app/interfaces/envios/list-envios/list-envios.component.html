@@ -155,7 +155,7 @@
                         title="Modificar Envío">
                   <img src="/icon_Productos/Listar/Modificar.svg" alt="Modificar" />
                 </button>
-
+<!--
                 <button *ngIf="envio.estado !== 'CANCELADO'"
                         class="btn btn-sm" 
                         data-bs-toggle="modal"
@@ -180,7 +180,7 @@
                         (click)="selectEnvio(envio)"
                         title="Cambiar Estado">
                   <img src="/icon_SaleOnline/ic--outline-change-circle.svg" alt="Cambiar Estado" />
-                </button>
+                </button>-->
               </td>
             </tr>
           </tbody>
@@ -277,15 +277,9 @@
                 </div>
                 <div *ngIf="selectedEnvio.pedido" class="mt-2">
                   <strong class="text-primary">Cliente del Pedido:</strong><br>
-              <!--    {{ selectedEnvio.pedido.usuario.persona.nombre }} 
-                  {{ selectedEnvio.pedido.usuario.persona.apellidop }} 
-                  {{ selectedEnvio.pedido.usuario.persona.apellidom }}
-                </div>
-                <div *ngIf="selectedEnvio.venta" class="mt-2">
-                  <strong class="text-primary">Cliente de la Venta:</strong><br>
-                  {{ selectedEnvio.venta.cliente.nombre }} 
-                  {{ selectedEnvio.venta.cliente.appaterno }} 
-                  {{ selectedEnvio.venta.cliente.apmaterno }}-->
+                  {{ selectedEnvio.pedido.usuario?.persona?.nombre }} 
+                  {{ selectedEnvio.pedido.usuario?.persona?.apellidop }} 
+                  {{ selectedEnvio.pedido.usuario?.persona?.apellidom }}
                 </div>
               </div>
             </div>
@@ -293,20 +287,20 @@
         </div>
 
         <!-- Información del Envío y Destinatario -->
-        <div class="row">
+      <div class="row">
           <div class="col-md-6 mb-4">
             <div class="card border-0 shadow-sm h-100">
               <div class="card-header bg-light py-3">
                 <h6 class="mb-0">Información del Envío</h6>
               </div>
               <div class="card-body">
-                <div class="d-flex justify-content-between border-bottom py-2">
-                  <span class="text-muted">Código Seguimiento:</span>
-                  <span class="fw-semibold">{{ selectedEnvio.codigoSeguimiento || 'N/A' }}</span>
+                <div class="d-flex justify-content-between align-items-start border-bottom py-2 gap-3">
+                  <span class="text-muted text-nowrap">Código Seguimiento:</span>
+                  <span class="fw-semibold text-end text-break">{{ selectedEnvio.codigoSeguimiento || 'N/A' }}</span>
                 </div>
-                <div class="d-flex justify-content-between border-bottom py-2">
-                  <span class="text-muted">Estado:</span>
-                  <span class="badge" [ngClass]="{
+                <div class="d-flex justify-content-between align-items-center border-bottom py-2 gap-3">
+                  <span class="text-muted text-nowrap">Estado:</span>
+                  <span class="badge text-end" [ngClass]="{
                     'bg-warning': selectedEnvio.estado === 'PENDIENTE',
                     'bg-success': selectedEnvio.estado === 'ENTREGADO',
                     'bg-danger': selectedEnvio.estado === 'CANCELADO',
@@ -315,13 +309,17 @@
                     {{ formatEstado(selectedEnvio.estado) }}
                   </span>
                 </div>
-                <div class="d-flex justify-content-between border-bottom py-2">
-                  <span class="text-muted">Empresa:</span>
-                  <span>{{ selectedEnvio.empresaEnvio }}</span>
+                <div class="d-flex justify-content-between align-items-start border-bottom py-2 gap-3">
+                  <span class="text-muted text-nowrap">Empresa:</span>
+                  <span class="text-end text-break">{{ selectedEnvio.empresaEnvio }}</span>
                 </div>
-                <div class="d-flex justify-content-between pt-2">
-                  <span class="text-muted">Fecha de Envío:</span>
-                  <span>{{ selectedEnvio.fechaEnvio | date:'dd/MM/yyyy' }}</span>
+                <div class="d-flex justify-content-between align-items-start border-bottom py-2 gap-3">
+                  <span class="text-muted text-nowrap">Fecha de Envío:</span>
+                  <span class="text-end text-break">{{ selectedEnvio.fechaCreacion | date:'dd/MM/yyyy' }}</span>
+                </div>
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start pt-2 gap-2">
+                  <span class="text-muted">Fecha estimada de entrega:</span>
+                  <span class="text-end fw-medium">{{ selectedEnvio.fechaEntregaEstimada | date:'dd/MM/yyyy' }}</span>
                 </div>
               </div>
             </div>
@@ -333,34 +331,49 @@
                 <h6 class="mb-0">Información del Destinatario</h6>
               </div>
               <div class="card-body">
-                <div class="d-flex justify-content-between border-bottom py-2">
-                  <span class="text-muted">Nombre:</span>
-                  <span class="fw-semibold text-end">{{ selectedEnvio.nombreReceptor }} {{ selectedEnvio.apellidosReceptor }}</span>
+                <div class="d-flex justify-content-between align-items-start border-bottom py-2 gap-3">
+                  <span class="text-muted text-nowrap">Nombre:</span>
+                  <span class="fw-semibold text-end text-break">{{ selectedEnvio.nombreReceptor }} {{ selectedEnvio.apellidosReceptor }}</span>
                 </div>
-                <div class="d-flex justify-content-between border-bottom py-2">
-                  <span class="text-muted">Teléfono:</span>
-                  <span>{{ selectedEnvio.telefonoReceptor }}</span>
+                <div class="d-flex justify-content-between align-items-start border-bottom py-2 gap-3">
+                  <span class="text-muted text-nowrap">Teléfono:</span>
+                  <span class="text-end">{{ selectedEnvio.telefonoReceptor }}</span>
                 </div>
-                <div class="d-flex justify-content-between border-bottom py-2">
-                  <span class="text-muted">Dirección:</span>
+                  <div class="d-flex justify-content-between border-bottom py-2">
+                  <span class="text-muted">Barrio:</span>
 <p class="text-end" style="margin-bottom: 0;">
-  Barrio: {{ selectedEnvio.direccionEnvio.barrio }}
+   {{ selectedEnvio.direccionEnvio.barrio }}
 </p>
-<br>
-<p>
-  Calles:  {{ selectedEnvio.direccionEnvio.direccion }}
-</p>
+
+
                 </div>
-                <div class="d-flex justify-content-between pt-2">
-                  <span class="text-muted">Ciudad:</span>
-                  <span>{{ selectedEnvio.direccionEnvio.ciudad }}</span>
+                <div class="d-flex justify-content-between border-bottom py-2">
+                  <span class="text-muted">Calles:</span>
+ <p>
+   {{ selectedEnvio.direccionEnvio.direccion }}
+</p>
+
+
+                </div>
+
+                <div class="d-flex justify-content-between align-items-start pt-2 gap-3">
+                  <span class="text-muted text-nowrap">Ciudad:</span>
+                  <span class="text-end text-break">{{ selectedEnvio.direccionEnvio.ciudad }}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Sección de Cambio de Estado -->
+
+
+
+
+
+
+
+       
+        <!-- Sección de Cambio de Estado 
         <div class="row" *ngIf="selectedEnvio.estado !== 'CANCELADO'">
           <div class="col-12">
             <div class="card border-0 shadow-sm">
@@ -387,7 +400,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div>-->
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">

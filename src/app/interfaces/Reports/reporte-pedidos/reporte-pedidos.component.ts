@@ -6,6 +6,7 @@ import { forma_pago } from '../../../models/PedidosEnviosDetalles/forma_pago';
 import { ApiResponse } from '../../../models/api-response';
 import { ReportesService } from '../../../services/Reportes/reportes.service';
 import { ReportePedido } from '../../../DTOs/dtosBD/Report/ReportePedido';
+import { PdfGeneratorService } from '../../../services/pdf-generator/pdf-generator.service';
 
 // NOTA: Asumo que tienes un DTO para Pedido similar al de Venta
 
@@ -74,7 +75,8 @@ export class ReportePedidosComponent implements OnInit {
 
   // Inyección de servicios
   constructor(
-    private reportesService: ReportesService 
+    private reportesService: ReportesService,
+    private pdfGenerator: PdfGeneratorService
   ) {
     this.maxDate = this.getTodayAsString();
   }
@@ -191,9 +193,8 @@ export class ReportePedidosComponent implements OnInit {
 
   private cargarEstadosDePedido(): void {
     this.estadosPedido = [
-      { value: 'PROCESANDO', viewValue: 'Procesando' },
-      { value: 'ENVIADO', viewValue: 'Enviado' },
-      { value: 'COMPLETADA', viewValue: 'completada' },
+      { value: 'PENDIENTE', viewValue: 'Pendiente' },
+      { value: 'ENTREGADO', viewValue: 'Entregado' },
       { value: 'CANCELADO', viewValue: 'Cancelado' }
     ];
   }
@@ -201,8 +202,8 @@ export class ReportePedidosComponent implements OnInit {
   private cargarFormasDePago(): void {
     // Simulando formas de pago (usar la lógica real de tu servicio si existe)
     this.formasDePago = [
-      { idFormaPago: 1111, nombre: 'efectivo', estado: 'activo' } as forma_pago,
-      { idFormaPago: 3333, nombre: 'Transferencia por QR', estado: 'activo' } as forma_pago
+      { idFormaPago: 3333, nombre: 'efectivo', estado: 'activo' } as forma_pago,
+      { idFormaPago: 2222, nombre: 'Transferencia por QR', estado: 'activo' } as forma_pago
     ];
   }
 
@@ -227,7 +228,18 @@ getPedidosCompletados(): number {
 }
 
 exportarPDF(): void {
-  // Implementar lógica de exportación PDF
-  alert('Funcionalidad de exportación PDF en desarrollo');
-}
+    // Recopilamos los totales que ya calcula tu componente
+    const totales = {
+      ingresos: this.totalGeneralPedidos,
+      completados: this.getPedidosCompletados(),
+      promedio: this.getPromedioPedido()
+    };
+
+    // Llamamos al servicio pasando los datos estructurados
+    this.pdfGenerator.exportarReportePedidos(
+      this.reportePedidosAgrupado,
+      totales,
+      this.filtrosPedidos
+    );
+  }
 }

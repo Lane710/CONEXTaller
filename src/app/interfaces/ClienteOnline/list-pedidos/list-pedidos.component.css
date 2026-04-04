@@ -1,13 +1,16 @@
-/* ===== ESTILOS GENERALES Y LISTA DE PEDIDOS ===== */
 
+
+/* ===== ESTILOS GENERALES Y LISTA DE PEDIDOS ===== */
 .order-card {
-  border-radius: 1rem;
   transition: all 0.3s ease;
+  margin-bottom: 20px;
+  border-radius: 1rem;
+  overflow: hidden;
 }
 
 .order-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
 }
 
 .container {
@@ -21,7 +24,14 @@
   flex-direction: column;
 }
 
+.pagination .page-item.disabled .page-link {
+  color: #6c757d;
+  pointer-events: none;
+  cursor: default;
+}
+
 .order-header {
+  color: white;
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 1rem 0 0 0;
   display: flex;
@@ -31,13 +41,36 @@
   transition: all 0.3s ease;
 }
 
-.order-info-container {
+.order-header:hover {
+  background: linear-gradient(135deg, #0aa4ca 0%, #088098 100%);
+}
+
+/* PRODUCTOS CONTAINER - LISTA DE PEDIDOS */
+.products-list-container {
+  height: 165px;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+}
+
+.products-list-container.is-expanded {
+  height: 500px;
   padding: 1rem;
 }
 
 .order-footer {
   border-top: 1px solid rgba(0, 0, 0, 0.125);
   background: #f8f9fa;
+}
+
+.product-item {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  transition: all 0.2s ease;
+}
+
+.product-item:hover {
+  background-color: #e9ecef;
+  transform: translateX(2px);
 }
 
 /* Sección de botones de acción */
@@ -52,13 +85,11 @@
   flex-shrink: 0;
 }
 
-/* ===== ESTILOS ESPECÍFICOS PARA EL MODAL DE DETALLES ===== */
-
+/* ===== ESTILOS ESPECÍFICOS PARA EL MODAL DE DETALLES MEJORADO ===== */
 .modal-detalle-pedido {
   border: none;
 }
 
-/* Contenedor principal del modal CORREGIDO CON SCROLL */
 .modal-fixed-height {
   max-height: 85vh;
   min-height: 400px;
@@ -79,104 +110,164 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+  padding: 0;
 }
 
-/* Sección de información - ARRIBA */
-.info-sections-container {
-  flex-shrink: 0;
-  min-height: 200px;
-  max-height: none;
-  overflow: visible;
+/* Indicador de estado */
+.order-status-indicator {
+  width: 8px;
+  height: 50px;
+  border-radius: 4px;
+  background: #6c757d;
+}
+
+.order-status-indicator.status-pendiente {
+  background: #ffc107;
+  box-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+}
+
+.order-status-indicator.status-entregado {
+  background: #198754;
+  box-shadow: 0 0 8px rgba(25, 135, 84, 0.5);
+}
+
+.order-status-indicator.status-cancelado {
+  background: #dc3545;
+  box-shadow: 0 0 8px rgba(220, 53, 69, 0.5);
+}
+
+/* Grid de información mejorada */
+.info-grid {
+  background: #f8f9fa;
+}
+
+.info-card {
   background: white;
-  position: relative;
-  z-index: 2;
-}
-
-.info-sections-container .card {
-  height: auto;
-  min-height: 180px;
-}
-
-.info-sections-container .card-body {
-  overflow: visible;
-  font-size: 0.85rem;
-}
-
-.info-sections-container .fw-semibold {
-  font-size: 0.9rem;
-}
-
-.info-sections-container .text-muted {
-  font-size: 0.75rem;
-}
-
-/* Sección de productos - ABAJO CON SCROLL INTERNO */
-.products-section-container {
-  flex: 1;
-  min-height: 250px;
-  max-height: none;
-  background: #f8f9fa;
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.products-section-container .card {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 250px;
-}
-
-.products-section-container .card-body {
-  flex: 1;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  font-size: 0.85rem;
-  min-height: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Tabla con scroll interno CORREGIDA */
-.table-container-fixed {
-  flex: 1;
-  overflow-y: auto;
-  position: relative;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  min-height: 200px;
+.info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
-.table-container-fixed table {
+.info-card-header {
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.info-card-header i {
+  font-size: 1.25rem;
+  color: #0d6efd;
+}
+
+.info-card-body {
+  padding: 1.25rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed #e9ecef;
+}
+
+.info-row:last-child {
   margin-bottom: 0;
-  flex-grow: 1;
-  min-height: 150px;
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
-/* Header fijo de la tabla */
-.sticky-top {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: #f8f9fa;
-}
-
-.table-container-fixed thead th {
-  border-bottom: 2px solid #dee2e6;
-  position: sticky;
-  top: 0;
-  background: #f8f9fa;
-  z-index: 11;
+.info-label {
   font-size: 0.8rem;
-  font-weight: 600;
-  padding: 0.75rem;
+  font-weight: 500;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.table-container-fixed tbody td {
-  padding: 0.75rem;
+.info-value {
+  font-size: 0.9rem;
+  color: #212529;
+  text-align: right;
+  max-width: 60%;
+  word-break: break-word;
+}
+
+/* Tabla de productos mejorada */
+.products-section {
+  background: white;
+}
+
+.table-responsive-custom {
+  overflow-x: auto;
+  border-radius: 0.75rem;
+  border: 1px solid #e9ecef;
+}
+
+.product-table {
+  margin-bottom: 0;
+}
+
+.product-table thead th {
+  background: #f8f9fa;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #495057;
+  padding: 1rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.product-table tbody td {
+  padding: 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.product-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.product-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: #0d6efd;
+}
+
+.quantity-badge {
+  display: inline-block;
+  min-width: 40px;
+  padding: 0.25rem 0.5rem;
+  background: #e9ecef;
+  border-radius: 20px;
+  font-weight: 600;
   font-size: 0.85rem;
+  color: #495057;
+  text-align: center;
+}
+
+.product-table tfoot td {
+  background: #f8f9fa;
+  font-weight: 600;
+  padding: 1rem;
+  border-top: 2px solid #e9ecef;
 }
 
 /* ===== ESTILOS COMPARTIDOS Y UTILITARIOS ===== */
@@ -219,39 +310,7 @@
   font-size: 0.7rem;
   font-weight: 600;
   padding: 0.4rem 0.75rem;
-}
-
-/* Cards de información */
-.info-item {
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #f8f9fa;
-}
-
-.info-item:last-child {
-  border-bottom: none;
-}
-
-/* Iconos de productos */
-.product-icon {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-  border-radius: 8px;
-  font-size: 0.9rem;
-}
-
-/* Efectos hover en filas */
-.table tbody tr:hover {
-  background-color: rgba(0, 123, 255, 0.03) !important;
-}
-
-/* Header compacto mejorado */
-.modal-header .vr {
-  height: 25px;
-  opacity: 0.3;
+  border-radius: 20px;
 }
 
 /* Scrollbar personalizado para todo el modal */
@@ -260,7 +319,7 @@
 }
 
 .modal-body::-webkit-scrollbar-track {
-  background: #f8f9fa;
+  background: #f1f1f1;
   border-radius: 4px;
 }
 
@@ -271,38 +330,6 @@
 
 .modal-body::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
-}
-
-/* Scrollbar personalizado para tabla interna */
-.table-container-fixed::-webkit-scrollbar {
-  width: 6px;
-}
-
-.table-container-fixed::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
-}
-
-.table-container-fixed::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
-}
-
-.table-container-fixed::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-
-/* Z-index para controlar el orden de apilamiento */
-.position-relative.z-2 {
-  z-index: 2;
-}
-
-.position-relative.z-1 {
-  z-index: 1;
-}
-
-.position-relative.z-3 {
-  z-index: 3;
 }
 
 /* Animación de entrada suave */
@@ -336,6 +363,19 @@
   font-size: 0.9rem;
 }
 
+/* Paginación mejorada */
+.pagination .page-link {
+  font-size: 0.85rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  margin: 0 2px;
+}
+
+.pagination .page-item.active .page-link {
+  background: #0d6efd;
+  border-color: #0d6efd;
+}
+
 /* Textos más pequeños y compactos */
 .text-muted {
   font-size: 0.8rem;
@@ -349,11 +389,24 @@
 .btn {
   font-size: 0.85rem;
   font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+  border: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+
+.btn-outline-secondary:hover {
+  transform: translateY(-1px);
 }
 
 /* ===== MEDIA QUERIES ===== */
-
-/* Media Query para pantallas grandes */
 @media (min-width: 768px) {
   .order-details-section {
     border-right: 1px solid #dee2e6;
@@ -369,55 +422,57 @@
   }
 }
 
-/* Media Query para tablets */
 @media (max-width: 768px) {
   .modal-fixed-height {
     max-height: 90vh;
     margin: 1rem;
   }
-  
   .modal-content {
     max-height: 90vh;
   }
-  
-  .info-sections-container {
-    min-height: 180px;
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
   }
-  
-  .products-section-container {
-    min-height: 220px;
+  .info-value {
+    text-align: left;
+    max-width: 100%;
   }
-  
-  .table-container-fixed {
-    font-size: 0.8rem;
-    min-height: 180px;
+  .products-list-container {
+    height: 180px;
+  }
+  .products-list-container.is-expanded {
+    height: 400px;
   }
 }
 
-/* Media Query para móviles */
 @media (max-width: 576px) {
   .modal-dialog {
     margin: 0.5rem;
   }
-  
   .modal-content {
     border-radius: 8px;
     max-height: 95vh;
   }
-  
   .modal-fixed-height {
     max-height: 95vh;
   }
-  
-  .info-sections-container {
-    min-height: 200px;
+  .info-card-header {
+    padding: 0.75rem 1rem;
   }
-  
-  .products-section-container {
-    min-height: 200px;
+  .info-card-body {
+    padding: 1rem;
   }
-  
-  .table-container-fixed {
-    min-height: 150px;
+  .product-table thead th,
+  .product-table tbody td {
+    padding: 0.75rem;
+  }
+  .products-list-container {
+    height: 150px;
+  }
+  .products-list-container.is-expanded {
+    height: 350px;
   }
 }
+

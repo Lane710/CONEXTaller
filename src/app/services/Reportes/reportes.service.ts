@@ -74,6 +74,30 @@ export class ReportesService {
   }
 
   /**
+   * GET: /reportes/productos/menos-vendidos
+   * Obtiene el reporte de los productos menos vendidos (Top 20).
+   */
+  findReporteMenosVendidos(fechaInicio: string, fechaFin: string, idCategoria?: number): Observable<ApiResponse> {
+    let params = new HttpParams()
+      .set('fechaInicio', fechaInicio)
+      .set('fechaFin', fechaFin);
+
+    if (idCategoria) params = params.append('idCategoria', idCategoria.toString());
+
+    return this.http.get<ApiResponse>(`${this.baseUrl}productos/menos-vendidos`, { params });
+  }
+
+  /**
+   * GET: /reportes/productos/quietos
+   * Obtiene el reporte de productos sin movimiento desde una fecha límite (Capital Estancado).
+   */
+  findReporteProductosQuietos(fechaLimite: string): Observable<ApiResponse> {
+    let params = new HttpParams().set('fechaLimite', fechaLimite);
+    
+    return this.http.get<ApiResponse>(`${this.baseUrl}productos/quietos`, { params });
+  }
+
+  /**
    * GET: /reportes/productos/maestro
    * Obtiene el reporte maestro de productos con filtros opcionales.
    */
@@ -163,5 +187,32 @@ export class ReportesService {
    */
   getTiposReporteGanancias(): Observable<ApiResponse> {
     return this.http.get<ApiResponse>(`${this.gananciasBaseUrl}tipos`);
+  }
+
+  getVentasPorCategoria(fechaInicio: string, fechaFin: string): Observable<ApiResponse> {
+    let params = new HttpParams().set('fechaInicio', fechaInicio).set('fechaFin', fechaFin);
+    return this.http.get<ApiResponse>(`${this.gananciasBaseUrl}tendencias/categorias`, { params });
+  }
+
+  getTransaccionesPorDiaYHora(fechaInicio: string, fechaFin: string): Observable<ApiResponse> {
+    let params = new HttpParams().set('fechaInicio', fechaInicio).set('fechaFin', fechaFin);
+    return this.http.get<ApiResponse>(`${this.gananciasBaseUrl}tendencias/dia-hora`, { params });
+  }
+
+  getEstacionalidad(anioActual: number, anioPasado: number): Observable<ApiResponse> {
+    let params = new HttpParams()
+      .set('anioActual', anioActual.toString())
+      .set('anioPasado', anioPasado.toString());
+    return this.http.get<ApiResponse>(`${this.gananciasBaseUrl}tendencias/estacionalidad`, { params });
+  }
+
+  getResumenPorEstado(fechaInicio: string, fechaFin: string): Observable<ApiResponse> {
+    let params = new HttpParams().set('fechaInicio', fechaInicio).set('fechaFin', fechaFin);
+    return this.http.get<ApiResponse>(`${this.gananciasBaseUrl}tendencias/estados`, { params });
+  }
+
+  getResumenMetodosPago(fechaInicio: string, fechaFin: string): Observable<ApiResponse> {
+    let params = new HttpParams().set('fechaInicio', fechaInicio).set('fechaFin', fechaFin);
+    return this.http.get<ApiResponse>(`${this.gananciasBaseUrl}tendencias/metodos-pago`, { params });
   }
 }

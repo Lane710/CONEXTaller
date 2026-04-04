@@ -8,6 +8,7 @@ export interface pedidos {
   
   // Enviamos/recibimos el objeto usuario (usualmente solo el username en el POST)
   usuario: Partial<usuarios>; 
+  codigoPedido?: string;
   
   // Relación obligatoria con la forma de pago
   formaPago: forma_pago;
@@ -19,6 +20,8 @@ export interface pedidos {
   // Horas (LocalTime -> "HH:mm:ss")
   horaRegistro?: string;
   horaModificacion?: string;
+
+  razonCancelacion?: string;
 
   // Union type para asegurar consistencia con el backend
   estado: 'PENDIENTE' | 'ENTREGADO' | 'CANCELADO';

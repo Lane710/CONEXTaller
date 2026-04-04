@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { ApiResponse } from '../../models/api-response'; // Asegúrate de que esta ruta sea correcta
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { productos } from '../../models/ProductoStockModel/productos'; // Asumiendo que aún necesitas la interfaz productos
 
 // Si ProductosService no se usa en este archivo para 'findAll' o 'findByIdStock',
@@ -21,7 +21,7 @@ export class StockService {
 
   constructor(
     private http: HttpClient,
-    private productosService: ProductosService
+    private productosService: ProductosService,
   ) {} // Mantener productosService si es usado
 
   /**
@@ -64,7 +64,7 @@ export class StockService {
     // Enviar el objeto 'stock' tal como lo recibimos del componente.
     return this.http.put<ApiResponse>(
       `${this.apiUrl}updateById/${idStock}`,
-      stockData
+      stockData,
     );
   }
 
@@ -79,21 +79,21 @@ export class StockService {
 
   addorRestarStockProductos(
     idStock: number,
-    cantidad: number
+    cantidad: number,
   ): Observable<ApiResponse> {
     return this.http.put<ApiResponse>(
       `${this.apiUrl}add-quantity/${idStock}/${cantidad}`,
-      {}
+      {},
     );
   }
 
   ProductoporCategoria(
     num1: number,
     num2: number,
-    num3: number
+    num3: number,
   ): Observable<ApiResponse> {
     return this.http.get<ApiResponse>(
-      `${this.apiUrlP}ProductoCategorias/${num1}/${num2}/${num3}`
+      `${this.apiUrlP}ProductoCategorias/${num1}/${num2}/${num3}`,
     );
   }
 
@@ -132,10 +132,24 @@ export class StockService {
    */
   getProductsByCategoryAndSubcategory(
     idCategoria: number,
-    idSubcategoria: number
+    idSubcategoria: number,
   ): Observable<ApiResponse> {
     return this.http.get<ApiResponse>(
-      `${this.apiUrl}filtrar?idCategoria=${idCategoria}&idSubcategoria=${idSubcategoria}`
+      `${this.apiUrl}filtrar?idCategoria=${idCategoria}&idSubcategoria=${idSubcategoria}`,
     );
+  }
+
+  obtenerTiendaPaginada(
+    page: number = 0,
+    size: number = 12,
+  ): Observable<ApiResponse> {
+    // Usamos HttpParams para construir la URL con los query params
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    return this.http.get<ApiResponse>(`${this.apiUrl}tienda/paginado`, {
+      params,
+    });
   }
 }

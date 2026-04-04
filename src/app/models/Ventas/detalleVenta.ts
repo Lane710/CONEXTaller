@@ -1,6 +1,6 @@
 // src/app/models/VentaModel/detalleVenta.ts
-import { productos } from "../ProductoStockModel/productos";
-import { ventas } from "./ventas";
+import { productos } from '../ProductoStockModel/productos';
+import { ventas } from './ventas';
 
 export interface detalleVenta {
   idDetalleVenta?: number;
@@ -13,6 +13,7 @@ export interface detalleVenta {
 
   cantidad: number;
 
+  precioBase: number;
   // BigDecimal -> number (Precio capturado al momento de la venta)
   precioUnitario: number;
 
@@ -20,5 +21,5 @@ export interface detalleVenta {
   subtotal?: number;
 
   // NOTA: Si vas a usar descuento, debes agregarlo a la entidad detalleVentas.java
-   descuento?: number; 
+  descuento?: number;
 }

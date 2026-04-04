@@ -57,19 +57,6 @@ export class ModificarUsuarioComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.initForm();
 
-    // Actualizar validación de confirmPassword dinámicamente
-    this.usuarioForm.get('password')?.valueChanges.subscribe((passwordValue) => {
-      const confirmPasswordControl = this.usuarioForm.get('confirmPassword');
-      if (passwordValue && passwordValue.trim() !== '') {
-        confirmPasswordControl?.setValidators([Validators.required]);
-      } else {
-        confirmPasswordControl?.clearValidators();
-      }
-      confirmPasswordControl?.updateValueAndValidity();
-      this.usuarioForm.updateValueAndValidity();
-    });
-
-    // Cargar usuario según el username
     this.route.params.subscribe((params) => {
       const usernameFromUrl = params['username'];
       const usernameFromLocalStorage = localStorage.getItem('ModUser');
@@ -95,99 +82,80 @@ export class ModificarUsuarioComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // Limitar selección de fecha máxima (hoy - 18 años)
   setMaxDateAllowed(): void {
     const today = new Date();
     const eighteenYearsAgo = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
     this.maxDateAllowed = this.formatDateForInput(eighteenYearsAgo);
   }
 
-  // Inicialización del formulario con validaciones
   initForm(): void {
-    this.usuarioForm = this.fb.group(
-      {
-        username: [
+    this.usuarioForm = this.fb.group({
+      username: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(5),
+          Validators.maxLength(20),
+          Validators.pattern(/^[a-zA-Z0-9_]+$/),
+        ],
+      ],
+      email: [
+        '',
+        [Validators.required, Validators.email, Validators.pattern(/^[^@\s]+@gmail\.com$/i)],
+      ],
+      persona: this.fb.group({
+        ci: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]{7,20}$/)]],
+        nombre: [
           '',
           [
             Validators.required,
-            Validators.minLength(5),
-            Validators.maxLength(20),
-            Validators.pattern(/^[a-zA-Z0-9_]+$/),
+            Validators.minLength(3),
+            Validators.maxLength(50),
+            Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/),
           ],
         ],
-        password: [
+        apellidoP: [
           '',
           [
-            Validators.minLength(8),
-            Validators.pattern(
-              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]).{8,}$/
-            ),
+            Validators.required,
+            Validators.minLength(3),
+            Validators.maxLength(50),
+            Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/),
           ],
         ],
-        confirmPassword: [''],
-        email: [
+        apellidoM: [
           '',
-          [Validators.required, Validators.email, Validators.pattern(/^[^@\s]+@gmail\.com$/i)],
+          [
+            Validators.minLength(3),
+            Validators.maxLength(50),
+            Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/),
+          ],
         ],
-        persona: this.fb.group({
-          ci: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]{7,20}$/)]],
-          nombre: [
-            '',
-            [
-              Validators.required,
-              Validators.minLength(3),
-              Validators.maxLength(50),
-              Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/),
-            ],
-          ],
-          apellidoP: [
-            '',
-            [
-              Validators.required,
-              Validators.minLength(3),
-              Validators.maxLength(50),
-              Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/),
-            ],
-          ],
-          apellidoM: [
-            '',
-            [
-              Validators.minLength(3),
-              Validators.maxLength(50),
-              Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/),
-            ],
-          ],
-          telefono: ['', [Validators.required, Validators.pattern(/^\d{6,15}$/)]],
-          direccion: ['', [Validators.required, Validators.maxLength(100)]],
-          ciudad: ['', [Validators.required, Validators.maxLength(50)]],
-          departamento: [''],
-          pais: ['', [Validators.required, Validators.maxLength(50)]],
-          codigoPostal: [''],
-          fechaNacimiento: [
-            '',
-            [Validators.required, this.dateNotInFutureValidator(), this.minAgeValidator(18)],
-          ],
-          genero: ['', Validators.required],
-        }),
-      },
-      {
-        validators: this.passwordMatchValidator(),
-      }
-    );
+        telefono: ['', [Validators.pattern(/^\d{6,15}$/)]],
+        direccion: ['', [Validators.maxLength(100)]],
+        ciudad: ['', [Validators.maxLength(50)]],
+        departamento: [''],
+        pais: ['', [Validators.maxLength(50)]],
+        codigoPostal: [''],
+        fechaNacimiento: [
+          '',
+          [Validators.required, this.dateNotInFutureValidator(), this.minAgeValidator(18)],
+        ],
+        genero: ['', Validators.required],
+      }),
+    });
   }
 
-  // Cargar datos del usuario desde el backend
   loadUser(username: string): void {
     this.isLoading = true;
     this.usuariosService
-      .findById(username)
+      .findByIdMod(username)
       .pipe(
         catchError((err: HttpErrorResponse) => {
           this.isLoading = false;
           this.errorMessage =
             'Error al cargar el usuario: ' +
             (err.error?.message || err.message || 'Error desconocido');
-          console.error('Error HTTP al cargar usuario:', err);
           this.showMessageModal();
           return of(null);
         })
@@ -195,7 +163,6 @@ export class ModificarUsuarioComponent implements OnInit, AfterViewInit {
       .subscribe((response: ApiResponse | null) => {
         if (!response || !response.success || !response.data) {
           this.errorMessage = response?.message || 'No se pudo cargar el usuario.';
-          console.error('Error al cargar usuario (backend):', response);
           this.showMessageModal();
           return;
         }
@@ -227,26 +194,12 @@ export class ModificarUsuarioComponent implements OnInit, AfterViewInit {
           },
         });
 
-        this.usuarioForm.get('username')?.disable();
-        this.usuarioForm.get('persona.ci')?.disable();
-        this.usuarioForm.get('email')?.disable();
-        this.usuarioForm.get('persona.telefono')?.disable();
-
+        // NOTA: Se eliminaron los '.disable()' para permitir la edición de username, ci, email y telefono
 
         this.usuarioForm.markAsPristine();
         this.usuarioForm.markAsUntouched();
         this.isLoading = false;
       });
-  }
-
-  // ===== VALIDADORES =====
-
-  passwordMatchValidator(): ValidatorFn {
-    return (group: AbstractControl): ValidationErrors | null => {
-      const password = group.get('password')?.value;
-      const confirm = group.get('confirmPassword')?.value;
-      return password && confirm && password !== confirm ? { passwordMismatch: true } : null;
-    };
   }
 
   dateNotInFutureValidator(): ValidatorFn {
@@ -272,8 +225,6 @@ export class ModificarUsuarioComponent implements OnInit, AfterViewInit {
     };
   }
 
-  // ===== UTILIDADES =====
-
   private formatDateForInput(dateString: string | Date): string {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -290,7 +241,7 @@ export class ModificarUsuarioComponent implements OnInit, AfterViewInit {
   closeMessageModalAndNavigate(): void {
     if (this.messageModal) this.messageModal.hide();
     if (!this.errorMessage && this.successMessage) {
-      this.router.navigate(['/home']);
+      this.router.navigate(['/home/listarUser']);
     } else {
       this.errorMessage = null;
     }
@@ -300,34 +251,30 @@ export class ModificarUsuarioComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/home/listarUser']);
   }
 
-  // ===== MANEJO DE ARCHIVOS =====
-
   onFileSelected(event: Event): void {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files[0]) {
-    const file = input.files[0];
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
 
-    const typeError = this.fileTypeValidator(file);
-    const sizeError = this.fileSizeValidator(file);
+      const typeError = this.fileTypeValidator(file);
+      const sizeError = this.fileSizeValidator(file);
 
-    if (typeError || sizeError) {
-      this.selectedFile = null;
-      this.imageUrl = null;
-      this.errorMessage = `${typeError ? 'Tipo no permitido. ' : ''}${sizeError ? 'Máx. 2MB.' : ''}`;
-      this.showMessageModal();
-      return;
+      if (typeError || sizeError) {
+        this.selectedFile = null;
+        this.imageUrl = null;
+        this.errorMessage = `${typeError ? 'Tipo no permitido. ' : ''}${sizeError ? 'Máx. 2MB.' : ''}`;
+        this.showMessageModal();
+        return;
+      }
+
+      this.selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = () => (this.imageUrl = reader.result);
+      reader.readAsDataURL(file);
+
+      this.usuarioForm.markAsDirty();
     }
-
-    this.selectedFile = file;
-    const reader = new FileReader();
-    reader.onload = () => (this.imageUrl = reader.result);
-    reader.readAsDataURL(file);
-
-    // 👇 Fuerza que Angular considere el formulario como modificado
-    this.usuarioForm.markAsDirty();
   }
-}
-
 
   fileTypeValidator(file: File): ValidationErrors | null {
     const allowed = ['image/jpeg', 'image/png', 'image/gif'];
@@ -339,25 +286,15 @@ export class ModificarUsuarioComponent implements OnInit, AfterViewInit {
     return file.size <= maxSize ? null : { fileSize: true };
   }
 
-  // ===== GUARDAR =====
-
   onModify(): void {
     this.errorMessage = null;
     this.successMessage = '';
-
-    this.usuarioForm.get('username')?.enable();
-    this.usuarioForm.get('persona.ci')?.enable();
-this.usuarioForm.get('email')?.disable();
-        this.usuarioForm.get('persona.telefono')?.disable();
+    
     this.usuarioForm.markAllAsTouched();
 
     if (this.usuarioForm.invalid) {
       this.errorMessage = 'Por favor, corrige los errores del formulario antes de actualizar.';
       this.showMessageModal();
-      this.usuarioForm.get('username')?.disable();
-      this.usuarioForm.get('persona.ci')?.disable();
-      this.usuarioForm.get('email')?.disable();
-        this.usuarioForm.get('persona.telefono')?.disable();
       return;
     }
 
@@ -368,13 +305,13 @@ this.usuarioForm.get('email')?.disable();
       ci: formValue.persona.ci,
       nombre: formValue.persona.nombre,
       apellidop: formValue.persona.apellidoP,
-      apellidom: formValue.persona.apellidoM,
-      telefono: formValue.persona.telefono,
-      direccion: formValue.persona.direccion,
-      ciudad: formValue.persona.ciudad,
-      departamento: formValue.persona.departamento,
-      pais: formValue.persona.pais,
-      codigoPostal: formValue.persona.codigoPostal,
+      apellidom: formValue.persona.apellidoM || null,
+      telefono: formValue.persona.telefono || null,
+      direccion: formValue.persona.direccion || null,
+      ciudad: formValue.persona.ciudad || null,
+      departamento: formValue.persona.departamento || null,
+      pais: formValue.persona.pais || null,
+      codigoPostal: formValue.persona.codigoPostal || null,
       fechaNacimiento: formValue.persona.fechaNacimiento,
       genero: formValue.persona.genero,
       email: formValue.email,
@@ -386,9 +323,10 @@ this.usuarioForm.get('email')?.disable();
 
     const updatedUser: usuarios = {
       username: formValue.username,
-      passwordHash: formValue.password
-        ? formValue.password
-        : this.userToModify!.passwordHash,
+      // 🔥 ENVIAR SIEMPRE VACÍO. 
+      // Al recibir un string vacío, el "if" de tu backend ignorará este campo 
+      // y mantendrá la contraseña original intacta en la base de datos.
+      passwordHash: '', 
       email: formValue.email,
       estado: this.userToModify?.estado,
       fechaCreacion: this.userToModify?.fechaCreacion,
@@ -398,7 +336,7 @@ this.usuarioForm.get('email')?.disable();
 
     forkJoin([
       this.personasService
-        .update(updatedPersona, updatedPersona.ci, this.selectedFile || undefined)
+        .update(updatedPersona, this.userToModify!.persona.ci, this.selectedFile || undefined)
         .pipe(
           catchError((err) =>
             of({
@@ -461,18 +399,15 @@ this.usuarioForm.get('email')?.disable();
       })
       .add(() => {
         this.isLoading = false;
-        this.usuarioForm.get('username')?.disable();
-        this.usuarioForm.get('persona.ci')?.disable();
-        this.usuarioForm.get('email')?.disable();
-        this.usuarioForm.get('persona.telefono')?.disable();
       });
   }
 
   private getErrorMessageFromHttpError(err: HttpErrorResponse, entity: 'persona' | 'usuario'): string {
     if (err.error?.message) return err.error.message;
     if (err.status === 0) return `No se pudo conectar con el servidor (${entity}).`;
-    if (err.status === 409)
-      return `Conflicto de datos (${entity}): nombre de usuario, CI o correo ya en uso.`;
+    // Se actualizó este mensaje para incluir el teléfono
+    if (err.status === 409 || err.status === 400)
+      return `Conflicto de datos (${entity}): nombre de usuario, CI, teléfono o correo ya están en uso.`;
     if (err.status >= 400 && err.status < 500)
       return `Error ${err.status} (${entity}): ${err.error?.detail || 'Datos inválidos.'}`;
     if (err.status >= 500)

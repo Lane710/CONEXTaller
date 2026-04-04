@@ -10,7 +10,7 @@ export interface envios {
   // Relaciones OneToOne (Opcionales en la BD)
   // Partial se usa porque @JsonIgnoreProperties omitirá campos circulares
   pedido?: Partial<pedidos>;
-  venta?: Partial<ventas>;
+  // venta?: Partial<ventas>;
 
   // Relaciones ManyToOne (Obligatorias en la BD: nullable = false)
   direccionEnvio: direccionesEnvio;

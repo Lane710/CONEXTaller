@@ -1,7 +1,6 @@
 /* ===== ESTILOS GENERALES Y LISTA DE PEDIDOS ===== */
 
 .order-card {
-  border-radius: 1rem;
   transition: all 0.3s ease;
 }
 
@@ -44,7 +43,7 @@
 
 /* PRODUCTOS CONTAINER - LISTA DE PEDIDOS */
 .products-list-container {
-  height: 220px;
+  height: 170px;
   overflow-y: auto;
   transition: all 0.3s ease;
 }
@@ -82,16 +81,17 @@
   flex-shrink: 0;
 }
 
-/* ===== ESTILOS ESPECÍFICOS PARA EL MODAL DE DETALLES ===== */
+/* ===== ESTILOS MEJORADOS PARA EL MODAL DE DETALLES ===== */
 
 .modal-detalle-pedido {
   border: none;
 }
 
-/* Contenedor principal del modal CORREGIDO CON SCROLL */
+/* Contenedor principal del modal */
 .modal-fixed-height {
   max-height: 85vh;
   min-height: 400px;
+  height: auto;
 }
 
 .modal-content {
@@ -100,113 +100,303 @@
   height: 100%;
   max-height: 85vh;
   animation: modalSlideIn 0.3s ease-out;
+  overflow: hidden;
 }
 
 .modal-body {
   flex: 1;
-  overflow-y: auto; /* Scroll vertical cuando el contenido excede */
+  overflow-y: auto;
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  min-height: 0; /* Importante para que flex funcione con scroll */
+  min-height: 0;
 }
 
-/* Sección de información - ARRIBA */
+/* Scrollbar personalizado para el modal-body */
+.modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Sección de información */
 .info-sections-container {
   flex-shrink: 0;
-  min-height: 200px;
-  max-height: none; /* Eliminamos límite máximo */
-  overflow: visible;
   background: white;
-  position: relative;
-  z-index: 2;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.info-sections-container .card {
-  height: auto; /* Altura automática */
-  min-height: 180px;
+/* Tarjetas de información mejoradas */
+.info-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.info-sections-container .card-body {
-  overflow: visible;
-  font-size: 0.85rem;
+.info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
 }
 
-.info-sections-container .fw-semibold {
-  font-size: 0.9rem;
+.icon-circle {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  transition: all 0.2s ease;
 }
 
-.info-sections-container .text-muted {
-  font-size: 0.75rem;
-}
-
-/* Sección de productos - ABAJO CON SCROLL INTERNO */
-.products-section-container {
-  flex: 1;
-  min-height: 250px;
-  max-height: none; /* Eliminamos límite máximo */
-  background: #f8f9fa;
-  position: relative;
-  z-index: 1;
+.info-grid {
   display: flex;
   flex-direction: column;
+  gap: 0.75rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.info-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6c757d;
+}
+
+.info-value {
+  font-size: 0.9rem;
+  color: #1e293b;
+  text-align: right;
+  word-break: break-word;
+  max-width: 60%;
+}
+
+/* SECCIÓN DE PRODUCTOS - CON ALTURA PARA 3 PRODUCTOS MÍNIMO */
+.products-section-container {
+  flex: 1;
+  min-height: 280px; /* Aumentado para mostrar al menos 3 productos */
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .products-section-container .card {
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 250px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.products-section-container .card-header {
+  flex-shrink: 0;
+  background: white;
+  padding: 1rem 1.5rem 0 1.5rem !important;
 }
 
 .products-section-container .card-body {
   flex: 1;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
-  font-size: 0.85rem;
-  min-height: 0; /* Importante para scroll interno */
+  padding: 0;
+  min-height: 0;
+  overflow: hidden;
 }
 
-/* Tabla con scroll interno CORREGIDA */
-.table-container-fixed {
+/* CONTENEDOR DE TABLA CON SCROLL VERTICAL - CON ALTURA MÍNIMA */
+.table-container-enhanced {
   flex: 1;
   overflow-y: auto;
+  overflow-x: auto;
   position: relative;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  min-height: 200px; /* Altura mínima para la tabla */
+  min-height: 200px; /* Altura mínima para mostrar al menos 2-3 filas */
+  scrollbar-width: thin;
 }
 
-.table-container-fixed table {
+.table-container-enhanced::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.table-container-enhanced::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 4px;
+}
+
+.table-container-enhanced::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+}
+
+.table-container-enhanced::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Tabla moderna */
+.table-modern {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
   margin-bottom: 0;
-  flex-grow: 1;
-  min-height: 150px;
 }
 
-/* Header fijo de la tabla */
-.sticky-top {
+.table-modern thead {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: #f8f9fa;
+  background-color: #f8fafc;
 }
 
-.table-container-fixed thead th {
-  border-bottom: 2px solid #dee2e6;
+.table-modern thead th {
+  background-color: #f8fafc;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #475569;
+  padding: 1rem 0.75rem;
+  border-bottom: 2px solid #e2e8f0;
   position: sticky;
   top: 0;
-  background: #f8f9fa;
   z-index: 11;
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 0.75rem;
 }
 
-.table-container-fixed tbody td {
-  padding: 0.75rem;
+.table-modern tbody td {
+  padding: 1rem 0.75rem;
   font-size: 0.85rem;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.table-modern tbody tr:hover {
+  background-color: #fef9e3;
+  transition: background-color 0.2s ease;
+}
+
+.table-row-canceled {
+  background-color: #fef2f2;
+  opacity: 0.8;
+}
+
+.table-row-canceled:hover {
+  background-color: #fee2e2 !important;
+}
+
+/* Icono de producto mejorado */
+.product-icon-enhanced {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+  border-radius: 12px;
+  color: #4f46e5;
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
+}
+
+.product-icon-enhanced i {
+  font-size: 1.25rem;
+}
+
+tr:hover .product-icon-enhanced {
+  transform: scale(1.05);
+}
+
+/* Badge de cantidad */
+.badge-quantity {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f1f5f9;
+  color: #1e293b;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  min-width: 40px;
+}
+
+/* Badge de estado mejorado */
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+.badge-status-active {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.badge-status-canceled {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.badge-status i {
+  font-size: 0.7rem;
+}
+
+/* Footer mejorado */
+.modal-footer {
+  flex-shrink: 0;
+  background-color: white;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Botones mejorados */
+.btn {
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+/* Badges en header mejorados */
+.modal-header .badge {
+  font-size: 0.75rem;
+  padding: 0.4rem 1rem;
 }
 
 /* ===== ESTILOS COMPARTIDOS Y UTILITARIOS ===== */
@@ -244,102 +434,6 @@
   margin-left: 0.5rem;
 }
 
-/* Badges mejorados */
-.badge {
-  font-size: 0.7rem;
-  font-weight: 600;
-  padding: 0.4rem 0.75rem;
-}
-
-/* Cards de información */
-.info-item {
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #f8f9fa;
-}
-
-.info-item:last-child {
-  border-bottom: none;
-}
-
-/* Iconos de productos */
-.product-icon {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-  border-radius: 8px;
-  font-size: 0.9rem;
-}
-
-/* Estados de productos en tabla */
-.table-warning {
-  background-color: rgba(255, 193, 7, 0.05) !important;
-}
-
-/* Efectos hover en filas */
-.table tbody tr:hover {
-  background-color: rgba(0, 123, 255, 0.03) !important;
-}
-
-/* Header compacto mejorado */
-.modal-header .vr {
-  height: 25px;
-  opacity: 0.3;
-}
-
-/* Scrollbar personalizado para todo el modal */
-.modal-body::-webkit-scrollbar {
-  width: 8px;
-}
-
-.modal-body::-webkit-scrollbar-track {
-  background: #f8f9fa;
-  border-radius: 4px;
-}
-
-.modal-body::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 4px;
-}
-
-.modal-body::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-
-/* Scrollbar personalizado para tabla interna */
-.table-container-fixed::-webkit-scrollbar {
-  width: 6px;
-}
-
-.table-container-fixed::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
-}
-
-.table-container-fixed::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
-}
-
-.table-container-fixed::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-
-/* Z-index para controlar el orden de apilamiento */
-.position-relative.z-2 {
-  z-index: 2;
-}
-
-.position-relative.z-1 {
-  z-index: 1;
-}
-
-.position-relative.z-3 {
-  z-index: 3;
-}
-
 /* Animación de entrada suave */
 @keyframes modalSlideIn {
   from {
@@ -367,7 +461,8 @@
 }
 
 /* Mejoras para inputs y selects */
-.form-control, .form-select {
+.form-control,
+.form-select {
   font-size: 0.9rem;
 }
 
@@ -383,12 +478,6 @@
 }
 
 .fw-semibold {
-  font-weight: 500;
-}
-
-/* Botones del modal */
-.btn {
-  font-size: 0.85rem;
   font-weight: 500;
 }
 
@@ -416,28 +505,39 @@
     max-height: 90vh;
     margin: 1rem;
   }
-  
+
   .modal-content {
     max-height: 90vh;
   }
-  
+
   .info-sections-container {
-    min-height: 180px;
+    padding: 1rem !important;
   }
-  
+
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .info-value {
+    text-align: left;
+    max-width: 100%;
+  }
+
+  /* Ajuste para tablets */
   .products-section-container {
-    min-height: 220px;
+    min-height: 260px;
   }
-  
-  .table-container-fixed {
-    font-size: 0.8rem;
+
+  .table-container-enhanced {
     min-height: 180px;
   }
-  
+
   .products-list-container {
     height: 180px;
   }
-  
+
   .products-list-container.is-expanded {
     height: 400px;
   }
@@ -448,33 +548,49 @@
   .modal-dialog {
     margin: 0.5rem;
   }
-  
+
   .modal-content {
-    border-radius: 8px;
+    border-radius: 12px;
     max-height: 95vh;
   }
-  
+
   .modal-fixed-height {
     max-height: 95vh;
   }
-  
-  .info-sections-container {
-    min-height: 200px;
-  }
-  
+
+  /* Ajuste para móviles */
   .products-section-container {
-    min-height: 200px;
+    min-height: 240px;
   }
-  
-  .table-container-fixed {
-    min-height: 150px;
+
+  .table-container-enhanced {
+    min-height: 160px;
   }
-  
+
+  .badge-status {
+    padding: 0.25rem 0.6rem;
+    font-size: 0.7rem;
+  }
+
+  .btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
   .products-list-container {
     height: 150px;
   }
-  
+
   .products-list-container.is-expanded {
     height: 350px;
+  }
+
+  .modal-footer .d-flex {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .modal-footer .vr {
+    display: none;
   }
 }

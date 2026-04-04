@@ -17,3 +17,38 @@ export interface ventasDTO {
   descuento:number;
   notas?:string;
 }
+
+
+export interface ReporteVentasPorCategoria {
+  categoria: string;
+  unidadesVendidas: number;
+  totalIngresos: number;
+}
+
+export interface ReporteVentasDiaHora {
+  fecha: string;
+  horaDelDia: number;
+  cantidadTransacciones: number;
+  ingresosTotales: number;
+}
+
+export interface ReporteEstacionalidad {
+  mes: number;
+  ingresosAnioActual: number;
+  ingresosAnioPasado: number;
+  transaccionesAnioActual: number;
+  transaccionesAnioPasado: number;
+}
+
+export interface ReporteEstado {
+  origen: string;
+  estado: string;
+  cantidad: number;
+  totalIngresos: number;
+}
+
+export interface ReporteMetodoPago {
+  metodoPago: string;
+  cantidadTransacciones: number;
+  ingresosTotales: number;
+}

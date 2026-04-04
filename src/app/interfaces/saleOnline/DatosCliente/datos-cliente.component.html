@@ -73,14 +73,14 @@
               placeholder="Número de casa y nombre de calle"
               [ngModel]="usuarioInfo?.persona?.direccion || ''"
               required
-              minlength="5"
+              minlength="2"
               maxlength="150"
               #direccionInput="ngModel"
               [class.is-invalid]="direccionInput.invalid && (direccionInput.dirty || direccionInput.touched)"
             />
             <div *ngIf="direccionInput.invalid && (direccionInput.dirty || direccionInput.touched)" class="text-danger small mt-1">
               <span *ngIf="direccionInput.errors?.['required']">La dirección es obligatoria.</span>
-              <span *ngIf="direccionInput.errors?.['minlength']">Mínimo 5 caracteres.</span>
+              <span *ngIf="direccionInput.errors?.['minlength']">Mínimo 2 caracteres.</span>
               <span *ngIf="direccionInput.errors?.['maxlength']">Máximo 150 caracteres.</span>
             </div>
             <div class="form-text">Velgrano, Espana, Av. la paz y circumbalacion, etc.</div>
@@ -132,7 +132,7 @@
               class="form-control"
               required
               pattern="^[0-9]*$"
-              minlength="8"
+              minlength="7"
               maxlength="15"
               inputmode="numeric"
               [ngModel]="usuarioInfo?.persona?.telefono || ''"
@@ -142,7 +142,7 @@
             <div *ngIf="whatsappInput.invalid && (whatsappInput.dirty || whatsappInput.touched)" class="text-danger small mt-1">
               <span *ngIf="whatsappInput.errors?.['required']">El teléfono es obligatorio.</span>
               <span *ngIf="whatsappInput.errors?.['pattern']">Solo se permiten números.</span>
-              <span *ngIf="whatsappInput.errors?.['minlength']">Mínimo 8 dígitos.</span>
+              <span *ngIf="whatsappInput.errors?.['minlength']">Mínimo 7 dígitos.</span>
               <span *ngIf="whatsappInput.errors?.['maxlength']">Máximo 15 dígitos.</span>
             </div>
           </div>

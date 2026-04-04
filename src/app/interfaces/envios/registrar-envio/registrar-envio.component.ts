@@ -44,7 +44,7 @@ export class RegistrarEnvioComponent implements OnInit, AfterViewInit {
     nombreReceptor: '',
     apellidosReceptor: '',
     telefonoReceptor: '', 
-    venta: undefined,
+   // venta: undefined,
     pedido: undefined,
     direccionEnvio: {
       nombreDestinatario: '',
@@ -95,7 +95,7 @@ export class RegistrarEnvioComponent implements OnInit, AfterViewInit {
       if (idVentaParam) {
         this.origenEnvio = 'Venta';
         this.idOrigen = +idVentaParam;
-        this.envio.venta = { idVenta: this.idOrigen } as ventas;
+        //this.envio.venta = { idVenta: this.idOrigen } as ventas;
         this.envio.pedido = undefined;
         this.cargarDatosVenta(this.idOrigen);
       } else {
@@ -191,7 +191,7 @@ export class RegistrarEnvioComponent implements OnInit, AfterViewInit {
 
           // Nos aseguramos de que el 'idVenta' esté en el objeto final
           if(this.idOrigen) {
-            envioParaGuardar.venta = { idVenta: this.idOrigen } as ventas;
+//            envioParaGuardar.venta = { idVenta: this.idOrigen } as ventas;
             envioParaGuardar.pedido = undefined;
           }
 

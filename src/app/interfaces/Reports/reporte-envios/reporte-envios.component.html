@@ -41,7 +41,7 @@
                  [max]="maxDate">
         </div>
 
-        <!-- Tipo de Origen -->
+        <!-- Tipo de Origen 
         <div class="col-md">
           <label class="form-label">Origen</label>
           <select class="form-select" [(ngModel)]="filtrosEnvios.tipoOrigen">
@@ -50,7 +50,7 @@
               {{ origen.viewValue }}
             </option>
           </select>
-        </div>
+        </div>-->
 
         <!-- Estado de Envío -->
         <div class="col-md">
@@ -63,7 +63,7 @@
           </select>
         </div>
 
-        <!-- Método de Envío -->
+        <!-- Método de Envío 
         <div class="col-md">
           <label class="form-label">Método de Envío</label>
           <select class="form-select" [(ngModel)]="filtrosEnvios.idMetodoEnvio">
@@ -72,7 +72,7 @@
               {{ metodo.nombre }}
             </option>
           </select>
-        </div>
+        </div>-->
 
         <!-- Botón Filtrar -->
         <div class="col-md-auto">
@@ -190,7 +190,7 @@
                 {{ envio.costoEnvio | currency:'Bs. ' }}
               </td>
               <td data-label="Fecha Envío" class="text-center">
-                {{ envio.fechaEnvio | date:'dd/MM/yyyy' }}
+                {{ envio.fechaCreacion| date:'dd/MM/yyyy' }}
               </td>
               <td data-label="Cód. Seguimiento">
                 <code class="codigo-seguimiento">{{ envio.codigoSeguimiento || 'N/A' }}</code>
