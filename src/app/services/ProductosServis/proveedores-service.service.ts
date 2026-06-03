@@ -11,8 +11,8 @@ import { proveedores } from '../../models/ProductoStockModel/proveedores';
 })
 export class ProveedoresService {
 
-  private baseUrl = 'http://localhost:8080/proveedores/'; 
-  private categoriaUrl = 'http://localhost:8080/categorias/'; // 🆕 URL para categorías
+  private baseUrl = 'https://bdconex.onrender.com/proveedores/'; 
+  private categoriaUrl = 'https://bdconex.onrender.com/categorias/'; // 🆕 URL para categorías
 
   constructor(private http: HttpClient) { }
 

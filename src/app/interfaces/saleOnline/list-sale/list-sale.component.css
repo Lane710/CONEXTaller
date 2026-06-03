@@ -107,8 +107,8 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
+  display: flex; /* <-- ESTO ES LO QUE CAUSA EL PROBLEMA */
+  flex-direction: column; /* <-- Y ESTO */
   min-height: 0;
 }
 

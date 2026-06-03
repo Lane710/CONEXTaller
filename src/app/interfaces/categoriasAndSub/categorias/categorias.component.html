@@ -35,9 +35,9 @@
   <!-- Sección de categorías -->
   <section class="categories-section">
     <div class="categories-grid">
-      @for (item of categoriasFiltradas; track item.idCategoria) {
-      <div class="category-item">
-        <!-- Contenedor de imagen con tamaño fijo -->
+     @for (item of categoriasFiltradas; track item.idCategoria) {
+      <div class="category-item" [ngClass]="{'inactive-category': !item.estado}">
+        
         <div class="image-container" (click)="redireccionarSubCategorias(item.idCategoria || 0)">
           <div>
           <img [src]="item.urlImagen" [alt]="item.nombre" class="category-image" 

@@ -7,9 +7,7 @@
         <p class="text-muted mb-0">Gestión y análisis completo del inventario</p>
       </div>
       <div class="header-actions">
-        <button class="btn btn-outline-primary btn-sm" (click)="aplicarFiltros(currentProductReport)" [disabled]="cargandoReporte">
-          <i class="bi bi-arrow-clockwise"></i> {{ cargandoReporte ? 'Actualizando...' : 'Actualizar' }}
-        </button>
+        
         <button class="btn btn-success btn-sm" (click)="exportarPDF()" [disabled]="!tieneDatos()">
           <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
         </button>
@@ -51,9 +49,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h4 class="mb-0">📉 Productos con Bajo Stock</h4>
           <div class="header-actions">
-            <button class="btn btn-primary btn-sm" (click)="aplicarFiltros('bajo_stock')">
-              <i class="bi bi-arrow-clockwise"></i> Actualizar
-            </button>
+            
           </div>
         </div>
 
@@ -170,9 +166,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h4 class="mb-0">🏆 Productos Más Vendidos</h4>
           <div class="header-actions">
-            <button class="btn btn-primary btn-sm" (click)="aplicarFiltros('mas_vendidos')">
-              <i class="bi bi-arrow-clockwise"></i> Actualizar
-            </button>
+            
           </div>
         </div>
 
@@ -297,9 +291,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h4 class="mb-0">📋 Maestro de Productos</h4>
           <div class="header-actions">
-            <button class="btn btn-primary btn-sm" (click)="aplicarFiltros('maestro')">
-              <i class="bi bi-funnel"></i> Filtrar
-            </button>
+           
           </div>
         </div>
 

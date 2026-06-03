@@ -17,7 +17,7 @@ export interface ValidationResult {
 })
 export class CategoriasService {
 
-  private baseUrl = 'http://localhost:8080/categorias/'; 
+  private baseUrl = 'https://bdconex.onrender.com/categorias/'; 
 
   constructor(private http: HttpClient) { }
 

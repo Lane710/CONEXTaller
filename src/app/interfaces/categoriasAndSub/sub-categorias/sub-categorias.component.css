@@ -583,3 +583,27 @@ body {
 .products-list .list-group-item:hover {
   background-color: #f8f9fa;
 }
+
+/* ===== ESTILO PARA SUBCATEGORÍAS INACTIVAS ===== */
+.category-item.inactive-category {
+    border: 2px solid #e74c3c; /* Borde rojo */
+    background-color: #fff9f9; /* Fondo muy sutilmente rojizo */
+}
+
+/* Efecto hover modificado para las inactivas */
+.category-item.inactive-category:hover {
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.2); /* Sombra roja en hover */
+    transform: translateY(-8px);
+}
+
+/* Opcional: Bajar un poco la opacidad de la imagen y ponerle borde rojo al círculo */
+.category-item.inactive-category .image-container {
+    border-color: #fadbd8; 
+    opacity: 0.85;
+    filter: grayscale(40%); /* Le quita un poco de color a la imagen para denotar inactividad */
+}
+
+/* Evitamos que el título se ponga azul al pasar el mouse si está inactiva */
+.category-item.inactive-category:hover .category-name {
+    color: #c0392b; 
+}

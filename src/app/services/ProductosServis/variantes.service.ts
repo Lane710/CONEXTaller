@@ -9,7 +9,7 @@ import { variante } from '../../models/ProductoStockModel/variante';
 })
 export class VariantesService {
 
-  private baseUrl = 'http://localhost:8080/variantes/';
+  private baseUrl = 'https://bdconex.onrender.com/variantes/';
 
   constructor(private http: HttpClient) {}
 

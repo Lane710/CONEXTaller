@@ -7,9 +7,7 @@
         <p class="text-muted mb-0">Analiza el desempeño de los pedidos online</p>
       </div>
       <div class="header-actions">
-        <button class="btn btn-outline-primary btn-sm" (click)="aplicarFiltrosPedidos()" [disabled]="cargandoReporte">
-          <i class="bi bi-arrow-clockwise"></i> {{ cargandoReporte ? 'Actualizando...' : 'Actualizar' }}
-        </button>
+      
         <button class="btn btn-success btn-sm" (click)="exportarPDF()" [disabled]="!reportePedidosAgrupado.length">
           <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
         </button>

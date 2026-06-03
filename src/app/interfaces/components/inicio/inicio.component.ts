@@ -41,10 +41,10 @@ export class InicioComponent implements OnInit, AfterViewInit {
   // Definir las categorías principales
   mainCategories = [
     { id: 1, name: 'Computadoras' },
-    { id: 2, name: 'Periféricos' },
-    { id: 3, name: 'Impresión' },
-    { id: 12, name: 'Componentes' },
-    { id: 5, name: 'Almacenamiento' }
+    { id: 3, name: 'Perifericos' },
+    { id: 2, name: 'Impresion' },
+    { id: 4, name: 'Componentes' },
+    { id: 6, name: 'Almacenamiento' }
   ];
 
   constructor(
@@ -65,24 +65,27 @@ export class InicioComponent implements OnInit, AfterViewInit {
   }
 
   // Cambiado de private a public para poder usarlo en el template
-  loadHomepageData(): void {
+ loadHomepageData(): void {
     this.loading = true;
     this.errorMessage = null;
 
     // Cargar productos recientes
     this.stockService.getLatestProductsWithStock().subscribe({
-      next: (response) => {
-        console.log("Respuesta del servicio:", response)
-        if (response.data) {
-          console.log("aaaaaaaaaaaaaaa",response.data)
-          // CORRECCIÓN 1: Aplicar .slice(0, 15) para limitar los productos recientes
-          this.latestProducts = response.data.slice(0, 15).map((item: StockDTO) => ({
-            ...item,
-            anadidoAlCarrito: false
-          }));
-        }
-        this.loadCategoryProducts();
-      },
+      next: (response) => {
+        console.log("Respuesta del servicio:", response);
+        if (response.data) {
+          
+          // 🔥 NUEVO: Filtramos primero los que están activos en todos sus niveles
+          const productosValidos = response.data.filter((item: any) => this.productoActivoYVisible(item));
+
+          // Aplicamos el slice sobre los ya filtrados
+          this.latestProducts = productosValidos.slice(0, 15).map((item: any) => ({
+            ...item,
+            anadidoAlCarrito: false
+          }));
+        }
+        this.loadCategoryProducts();
+      },
       error: (error) => {
         console.error('Error loading latest products:', error);
         this.errorMessage = 'Error al cargar productos recientes';
@@ -90,7 +93,6 @@ export class InicioComponent implements OnInit, AfterViewInit {
       }
     });
   }
-
   private loadCategoryProducts(): void {
     let loadedCategories = 0;
     const totalCategories = this.mainCategories.length;
@@ -104,9 +106,13 @@ export class InicioComponent implements OnInit, AfterViewInit {
       this.stockService.getProductsByCategory(category.id).subscribe({
         next: (response) => {
           if (response.data && response.data.length > 0) {
-            this.categoryProducts[category.name] = response.data
-              .slice(0, 15) // Solo primeros 5 productos
-              .map((item: StockDTO) => ({
+            
+            // 🔥 NUEVO: Filtramos primero los que están activos en todos sus niveles
+            const productosValidos = response.data.filter((item: any) => this.productoActivoYVisible(item));
+
+            this.categoryProducts[category.name] = productosValidos
+              .slice(0, 15) // Solo primeros 15 productos válidos
+              .map((item: any) => ({
                 ...item,
                 anadidoAlCarrito: false
               }));
@@ -309,5 +315,46 @@ export class InicioComponent implements OnInit, AfterViewInit {
       htmlCarousel.addEventListener('mouseup', handleMouseUp);
       htmlCarousel.addEventListener('mousemove', handleMouseMove);
     });
+  }
+
+  // ==========================================
+  // --- VALIDADOR DE ESTADOS EN CASCADA ---
+  // ==========================================
+  // ==========================================
+  // --- VALIDADOR DE ESTADOS EN CASCADA ---
+  // ==========================================
+  private productoActivoYVisible(item: any): boolean {
+    try {
+      if (!item || !item.producto) return false;
+
+      // Imprimimos el primer producto en consola para que veas qué datos están llegando realmente
+      // Puedes borrar este console.log después de revisar
+      // console.log("Revisando producto:", item.producto.nombre, item.producto);
+
+      // 1. Validar Producto (Rechazar si es explícitamente 0 o false)
+      const estProd = item.producto.estado;
+      if (estProd === 0 || estProd === false || estProd === '0') {
+        return false; 
+      }
+
+      // 2. Validar Subcategoría (Rechazar si existe y es explícitamente false o 0)
+      const subcat = item.producto.subcategoria;
+      if (subcat && (subcat.estado === false || subcat.estado === 0 || subcat.estado === '0')) {
+        return false;
+      }
+
+      // 3. Validar Categoría (Rechazar si existe y es explícitamente false o 0)
+      const cat = subcat?.categoria;
+      if (cat && (cat.estado === false || cat.estado === 0 || cat.estado === '0')) {
+        return false;
+      }
+
+      // Si pasa todas las validaciones anteriores (o si los datos de sub/cat no vinieron en el DTO), se muestra.
+      return true;
+
+    } catch (e) {
+      console.error("Error validando el estado del producto", e);
+      return false; // Por seguridad, si hay error, no lo mostramos
+    }
   }
 }

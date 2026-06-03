@@ -9,10 +9,10 @@ import { ApiResponse } from '../../models/api-response'; // Asegúrate de que es
 export class ReportesService {
   
   // URLS ANTIGUAS
-  private baseUrl = 'http://localhost:8080/reportes/';
+  private baseUrl = 'https://bdconex.onrender.com/reportes/';
   
   // URL NUEVA PARA REPORTES DE GANANCIAS
-  private gananciasBaseUrl = 'http://localhost:8080/api/reportes/ganancias/';
+  private gananciasBaseUrl = 'https://bdconex.onrender.com/api/reportes/ganancias/';
 
   constructor(private http: HttpClient) { }
 

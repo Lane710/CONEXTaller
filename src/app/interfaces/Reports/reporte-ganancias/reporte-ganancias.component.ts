@@ -12,6 +12,7 @@ import { PdfGeneratorService } from '../../../services/pdf-generator/pdf-generat
   styleUrls: ['./reporte-ganancias.component.css']
 })
 export class ReporteGananciasComponent implements OnInit {
+  fechaMaxima: string = '';
 
   // --- Tipos de reporte extendidos (Ganancias + Tendencias) ---
   tiposReporte = [
@@ -59,16 +60,30 @@ export class ReporteGananciasComponent implements OnInit {
     this.inicializarFechas();
   }
 
-  inicializarFechas(): void {
+ inicializarFechas(): void {
     const hoy = new Date();
     const primerDiaMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
-    this.filtros.fechaFin = this.formatearFecha(hoy);
+    
+    // Asignamos la fecha máxima a hoy usando nuestra nueva función
+    this.fechaMaxima = this.formatearFecha(hoy); 
+    
+    this.filtros.fechaFin = this.fechaMaxima;
     this.filtros.fechaInicio = this.formatearFecha(primerDiaMes);
   }
 
-  formatearFecha(fecha: Date): string { return fecha.toISOString().split('T')[0]; }
+ formatearFecha(fecha: Date): string { 
+    const year = fecha.getFullYear();
+    const month = (fecha.getMonth() + 1).toString().padStart(2, '0');
+    const day = fecha.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`; 
+  }
 
-  validarFechas(): void {
+ validarFechas(): void {
+    // Si la fecha fin es mayor a HOY, la forzamos a HOY
+    if (this.filtros.fechaFin > this.fechaMaxima) {
+      this.filtros.fechaFin = this.fechaMaxima;
+    }
+    // Si la fecha inicio es mayor a la fecha fin, la retrocedemos
     if (this.filtros.fechaInicio > this.filtros.fechaFin) {
       this.filtros.fechaInicio = this.filtros.fechaFin;
     }

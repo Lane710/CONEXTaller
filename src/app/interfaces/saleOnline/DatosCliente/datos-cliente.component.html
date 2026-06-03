@@ -147,7 +147,7 @@
             </div>
           </div>
 
-          <div class="col-12">
+         <div class="col-12">
             <label for="email" class="form-label">Dirección de correo electrónico <span class="text-danger">*</span></label>
             <input 
               type="email" 
@@ -156,14 +156,14 @@
               name="email"
               [ngModel]="usuarioInfo?.email || ''"
               required
-              email
+              pattern="^[a-zA-Z0-9._%+\-]+@gmail\.com$"
               maxlength="100"
               #emailInput="ngModel"
               [class.is-invalid]="emailInput.invalid && (emailInput.dirty || emailInput.touched)"
             />
             <div *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)" class="text-danger small mt-1">
               <span *ngIf="emailInput.errors?.['required']">El correo es obligatorio.</span>
-              <span *ngIf="emailInput.errors?.['email']">Debe ser un correo válido.</span>
+              <span *ngIf="emailInput.errors?.['pattern']">El correo debe ser una cuenta de &#64;gmail.com válida.</span>
               <span *ngIf="emailInput.errors?.['maxlength']">Máximo 100 caracteres.</span>
             </div>
           </div>
@@ -270,13 +270,13 @@
           <i class="fas fa-check-circle text-success position-absolute bottom-0 end-0" style="font-size: 1.5rem; background: white; border-radius: 50%;"></i>
         </div>
         
-        <h3 class="fw-bold mb-2">¡Pedido #{{ pedido.idPedido }} Registrado!</h3>
+       <h3 class="fw-bold mb-2">¡Pedido #{{ codigoPedidoConfirmado }} Registrado!</h3>
         <p class="text-muted mb-4">
-          Tu pedido por <strong>{{ totalCarrito }} Bs.</strong> ha sido reservado correctamente. 
+          Tu pedido por <strong>{{ totalPedidoConfirmado }} Bs.</strong> ha sido reservado correctamente. 
           <br><br>
-          <span class="text-dark fw-bold">⚠️ Para procesar el envío, por favor completa tu pago vía QR en nuestro WhatsApp.</span>
+          <span class="text-dark fw-bold">&#9888; Para procesar el envío, por favor completa tu pago vía QR en nuestro WhatsApp.</span>
         </p>
-
+                
         <button 
           type="button" 
           class="btn btn-success btn-lg w-100 mb-3 shadow-sm" 

@@ -63,10 +63,11 @@ pedidoEnDespachoId: number | null = null;
   razonCancelacion: string = ''; // <-- NUEVA VARIABLE
 
 //facturacion
+//facturacion
 procesandoFactura: boolean = false;
-facturaActual: any = null; // <-- NUEVO: Guarda los datos de la factura si ya existe
-  verificandoFactura: boolean = false;
-
+facturaActual: any = null;
+verificandoFactura: boolean = false;
+enviandoCorreo: boolean = false; // <-- NUEVA VARIABLE
   pedidoSeleccionado: PedidoConDetalles | null = null;
   pedidoParaCancelar: pedidos | null = null;
   estadoSeleccionado = '';
@@ -199,39 +200,50 @@ ejecutarDespachoBackend(idPedido: number): void {
     this.applyFiltersAndSort();
   }
 
-  applyFiltersAndSort(): void {
-    let tempPedidos = [...this.allPedidosConDetalles];
+applyFiltersAndSort(): void {
+  let tempPedidos = [...this.allPedidosConDetalles];
 
-    if (this.searchText.trim()) {
-      const term = this.searchText.toLowerCase().trim();
-      tempPedidos = tempPedidos.filter((item) => {
-        const pedidoIdStr = `ped${item.pedido.idPedido}`.toLowerCase();
-        if (pedidoIdStr.includes(term)) return true;
+  // 1. Búsqueda de texto
+  if (this.searchText.trim()) {
+    const term = this.searchText.toLowerCase().trim();
+    tempPedidos = tempPedidos.filter((item) => {
+      const codigoPedidoStr = (item.pedido.codigoPedido || '').toLowerCase();
+      if (codigoPedidoStr.includes(term)) return true;
 
-        const userName = item.pedido.usuario?.username?.toLowerCase() || '';
-        if (userName.includes(term)) return true;
+      const userName = item.pedido.usuario?.username?.toLowerCase() || '';
+      if (userName.includes(term)) return true;
 
-        return item.detallePedidos.some((detalle) =>
-          detalle.producto?.nombre?.toLowerCase().includes(term)
-        );
-      });
-    }
-
-    if (this.filterStatus !== 'todos') {
-      tempPedidos = tempPedidos.filter(
-        (item) => item.pedido.estado === this.filterStatus
+      return item.detallePedidos.some((detalle) =>
+        detalle.producto?.nombre?.toLowerCase().includes(term)
       );
-    }
-
-    tempPedidos.sort((a, b) => {
-      const dateA = new Date(a.pedido.fechaPedido || '').getTime();
-      const dateB = new Date(b.pedido.fechaPedido || '').getTime();
-      return this.sortDirection === 'reciente' ? dateB - dateA : dateA - dateB;
     });
-
-    this.filteredPedidosConDetalles = tempPedidos;
-    this.updatePagination();
   }
+
+  // 2. Filtro por estado
+  if (this.filterStatus !== 'todos') {
+    tempPedidos = tempPedidos.filter(
+      (item) => item.pedido.estado === this.filterStatus
+    );
+  }
+
+  // 🔥 3. ORDENAMIENTO CORREGIDO (Fecha + Hora) 🔥
+  tempPedidos.sort((a, b) => {
+    // Armamos un string ISO válido combinando la fecha y la hora (Ej: "2023-10-25T14:30:00")
+    // Si algún dato falta, le asignamos un valor base para que no se rompa la fecha.
+    const fechaHoraA = `${a.pedido.fechaPedido || '1970-01-01'}T${a.pedido.horaRegistro || '00:00:00'}`;
+    const fechaHoraB = `${b.pedido.fechaPedido || '1970-01-01'}T${b.pedido.horaRegistro || '00:00:00'}`;
+
+    // Convertimos el string a milisegundos para una comparación matemática exacta
+    const timeA = new Date(fechaHoraA).getTime();
+    const timeB = new Date(fechaHoraB).getTime();
+
+    // Si 'reciente', el mayor (más nuevo) va primero. Si no, al revés.
+    return this.sortDirection === 'reciente' ? timeB - timeA : timeA - timeB;
+  });
+
+  this.filteredPedidosConDetalles = tempPedidos;
+  this.updatePagination();
+}
 
   onSearch(): void {
     this.currentPage = 1; 
@@ -542,4 +554,59 @@ async ProcesarFactura(pedidoData: PedidoConDetalles): Promise<void> {
       }
     });
   }
+  
+
+
+  // ==========================================
+  // --- LÓGICA DE ENVÍO DE CORREO ---
+  // ==========================================
+ async enviarFacturaPorCorreo(pedidoData: PedidoConDetalles): Promise<void> {
+    if (!pedidoData || !this.facturaActual) return;
+
+    // Obtenemos el correo del cliente desde el objeto usuario
+    const emailDestino = pedidoData.pedido.usuario?.email;
+
+    if (!emailDestino) {
+      this.mostrarMensaje(
+        'Atención', 
+        'El cliente no tiene un correo electrónico registrado para enviar la factura.', 
+        'warning'
+      );
+      return;
+    }
+
+    this.enviandoCorreo = true;
+
+    try {
+      // 1. Generamos el archivo PDF pero en formato Blob (memoria)
+      // *Nota: Ver el Paso 3 abajo para saber cómo hacer esto en tu PDFacturaService*
+      const pdfBlob: Blob = await this.pdfFacturaService.obtenerPdfBlob(pedidoData, this.facturaActual);
+      
+      // 2. Le damos un nombre al archivo (Ej: Factura_PED15.pdf)
+      const fileName = `Factura_PED${pedidoData.pedido.idPedido}.pdf`;
+
+      // 3. Enviamos los datos al backend usando tu FacturacionService
+      this.facturacionService.enviarFacturaCorreo(emailDestino, pdfBlob, fileName).subscribe({
+        next: (response: any) => {
+          this.enviandoCorreo = false;
+          this.mostrarMensaje(
+            '¡Correo Enviado!', 
+            `La factura de la tienda ha sido enviada exitosamente a ${emailDestino}.`, 
+            'success'
+          );
+        },
+        error: (err) => {
+          this.enviandoCorreo = false;
+          this.mostrarMensaje('Error', 'Hubo un problema al intentar enviar el correo. Revisa la consola.', 'warning');
+          console.error('Error enviando correo', err);
+        }
+      });
+
+    } catch (error) {
+      this.enviandoCorreo = false;
+      this.mostrarMensaje('Error', 'No se pudo generar el archivo PDF para adjuntar.', 'warning');
+      console.error('Error generando Blob del PDF', error);
+    }
+  }
+  
 }

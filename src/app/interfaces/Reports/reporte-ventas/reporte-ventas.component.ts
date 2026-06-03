@@ -169,19 +169,25 @@ export class ReporteVentasComponent implements OnInit {
   // ================== UTILIDADES Y FILTROS =========================
   // =================================================================
   
-  validarFechas(): void {
+ validarFechas(): void {
+    // Si la fecha fin es mayor a HOY, la forzamos a HOY
+    if (this.filtrosVentas.fechaFin > this.maxDate) {
+      this.filtrosVentas.fechaFin = this.maxDate;
+    }
+    // Si la fecha inicio es mayor a la fecha fin, la retrocedemos
     if (this.filtrosVentas.fechaInicio > this.filtrosVentas.fechaFin) {
       this.filtrosVentas.fechaInicio = this.filtrosVentas.fechaFin;
     }
   }
 
-  private inicializarFiltrosDeVentas(): void {
-    const hoy = this.getTodayAsString();
+private inicializarFiltrosDeVentas(): void {
+    const hoy = new Date();
     const hace30Dias = new Date();
-    hace30Dias.setDate(hace30Dias.getDate() - 30);
+    hace30Dias.setDate(hoy.getDate() - 30);
 
-    this.filtrosVentas.fechaFin = hoy;
-    this.filtrosVentas.fechaInicio = hace30Dias.toISOString().split('T')[0];
+    // Asignamos usando el formateador local
+    this.filtrosVentas.fechaFin = this.formatearFechaLocal(hoy);
+    this.filtrosVentas.fechaInicio = this.formatearFechaLocal(hace30Dias);
   }
   
   private cargarDatosParaFiltrosDeVentas(): void {
@@ -218,9 +224,15 @@ export class ReporteVentasComponent implements OnInit {
       }
     });
   }
-
+private formatearFechaLocal(fecha: Date): string {
+    const year = fecha.getFullYear();
+    const month = (fecha.getMonth() + 1).toString().padStart(2, '0');
+    const day = fecha.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+  
   private getTodayAsString(): string {
-    return new Date().toISOString().split('T')[0];
+    return this.formatearFechaLocal(new Date());
   }
 
   // --- MÉTODOS PARA ESTADÍSTICAS HTML ---

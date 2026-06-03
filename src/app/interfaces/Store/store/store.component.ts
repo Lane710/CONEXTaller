@@ -12,6 +12,7 @@ import { categorias } from '../../../models/ProductoStockModel/categorias'; // I
 import { subcategoria } from '../../../models/ProductoStockModel/subcategorias'; // Importar el modelo de subcategoría
 import { switchMap } from 'rxjs/operators'; // Necesario para encadenar observables
 import { SubcategoriaService } from '../../../services/ProductosServis/subcategoria-service.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-store',
@@ -49,7 +50,8 @@ export class StoreComponent implements OnInit {
     private stockService: StockService,
     private carritoService: CarritoService,
     private categoriasService: CategoriasService, // Inyectar
-    private subcategoriaService: SubcategoriaService // Inyectar
+    private subcategoriaService: SubcategoriaService, // Inyectar
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -211,50 +213,44 @@ export class StoreComponent implements OnInit {
   // ============== MÉTODO FALTANTE ==============
   /** 🔹 Agregar producto al carrito */
   /** 🔹 Agregar producto al carrito - VERSIÓN CORREGIDA */
-agregarAlCarrito(prod: StockDTO): void {
-  console.log('Intentando agregar al carrito:', prod);
-  
-  // Verificar que el producto tenga stock disponible
-  if (!prod.cantidad || prod.cantidad <= 0) {
-    alert('❌ Producto sin stock disponible');
-    return;
+/** 🔹 Agregar producto al carrito - VERSIÓN SIN ALERTAS */
+  agregarAlCarrito(prod: StockDTO): void {
+    console.log('Intentando agregar al carrito:', prod);
+    
+    // Verificar que el producto tenga stock disponible
+    if (!prod.cantidad || prod.cantidad <= 0) {
+      console.warn('Producto sin stock disponible');
+      return; // Salimos silenciosamente o puedes dejar un console.warn
+    }
+
+    // Construir el objeto detalleCarrito según lo que espera tu backend
+    const nuevoDetalle: DetalleCarrito = {
+      idDetalleCarrito: 0, // 0 para nuevo detalle
+      cantidad: 1,
+      stock: prod,
+      subtotal: (prod.producto.precio ?? 0),
+      precioUnitario: (prod.producto.precio ?? 0)
+    };
+
+    this.carritoService.agregarProductoACarrito(this.usuarioActual, nuevoDetalle).subscribe({
+      next: (res: ApiResponse) => {
+        if (res.success) {
+          // AQUÍ ES LA MAGIA: En lugar de alert(), solo cambiamos el estado
+          prod.anadidoAlCarrito = true;
+        } else {
+          console.error(`Error: ${res.message || 'No se pudo agregar al carrito'}`);
+        }
+      },
+      error: (err) => {
+        console.error('Error al añadir al carrito', err);
+      }
+    });
   }
 
-  // Construir el objeto detalleCarrito según lo que espera tu backend
-  const nuevoDetalle: DetalleCarrito = {
-    idDetalleCarrito: 0, // 0 para nuevo detalle
-    cantidad: 1,
-    stock: prod,
-    subtotal: (prod.producto.precio ?? 0),
-    precioUnitario: (prod.producto.precio ?? 0)
-  };
-
-  console.log('Detalle a enviar:', nuevoDetalle);
-
-  this.carritoService.agregarProductoACarrito(this.usuarioActual, nuevoDetalle).subscribe({
-    next: (res: ApiResponse) => {
-      console.log('Respuesta del servidor:', res);
-      if (res.success) {
-        alert(`✅ ${prod.producto.nombre} añadido al carrito`);
-      } else {
-        alert(`❌ Error: ${res.message || 'No se pudo agregar al carrito'}`);
-      }
-    },
-    error: (err) => {
-      console.error('Error completo:', err);
-      console.error('Error status:', err.status);
-      console.error('Error message:', err.message);
-      console.error('Error response:', err.error);
-      
-      let errorMessage = '❌ Error al añadir al carrito';
-      if (err.error?.message) {
-        errorMessage += `: ${err.error.message}`;
-      } else if (err.message) {
-        errorMessage += `: ${err.message}`;
-      }
-      alert(errorMessage);
-    }
-  });
-}
+  /** 🔹 Navegar al carrito cuando el botón cambia de estado */
+  irAlCarrito(): void {
+    // Asegúrate de que '/carrito' sea la ruta real configurada en tu app-routing.module.ts
+    this.router.navigate(['/home/Carrito']); 
+  }
   // ==============================================
 }

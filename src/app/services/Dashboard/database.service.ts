@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class DatabaseService {
-  private apiUrl = 'http://localhost:3000';
+  private apiUrl = 'https://bdconex.onrender.com';
 
   constructor(private http: HttpClient) {}
 

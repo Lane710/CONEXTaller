@@ -11,7 +11,7 @@ import { UnidadesFisicas } from '../../models/ProductoStockModel/UnidadesFisicas
 export class UnidadesFisicasService {
 
   // URL base coincidiendo con tu @RequestMapping("/unidades-fisicas")
-  private apiUrl = 'http://localhost:8080/unidades-fisicas';
+  private apiUrl = 'https://bdconex.onrender.com/unidades-fisicas';
 
   constructor(private http: HttpClient) { }
 

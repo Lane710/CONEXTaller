@@ -422,344 +422,385 @@
     </div>
   </div>
 
-<div
-  class="modal fade"
-  id="modalDetallesPedido"
-  tabindex="-1"
-  aria-labelledby="modalDetallesPedidoLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-xl modal-dialog-centered modal-fixed-height">
-    <div
-      class="modal-content rounded-4 shadow-lg border-0 modal-detalle-pedido"
-      *ngIf="pedidoSeleccionado"
-    >
-      <!-- HEADER MEJORADO -->
-      <div class="modal-header border-0 py-3 px-4 bg-white rounded-top-4">
-        <div class="d-flex justify-content-between align-items-center w-100">
-          <div class="d-flex align-items-center gap-3">
-            <div>
-              <h5
-                class="modal-title fw-bold text-dark mb-0"
-                id="modalDetallesPedidoLabel"
-              >
-                📋 Detalles del Pedido
-              </h5>
-              <div class="d-flex gap-2 mt-1">
-                <small class="text-muted">
-                  <i class="bi bi-calendar3 me-1"></i>
-                  {{
-                    pedidoSeleccionado.pedido.fechaPedido | date: "dd/MM/yyyy"
-                  }}
-                  a las
-                  {{
-                    pedidoSeleccionado.pedido.horaRegistro || "00:00"
-                      | slice: 0 : 5
-                  }}
-                </small>
+  <div
+    class="modal fade"
+    id="modalDetallesPedido"
+    tabindex="-1"
+    aria-labelledby="modalDetallesPedidoLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-fixed-height">
+      <div
+        class="modal-content rounded-4 shadow-lg border-0 modal-detalle-pedido"
+        *ngIf="pedidoSeleccionado"
+      >
+        <!-- HEADER MEJORADO -->
+        <div class="modal-header border-0 py-3 px-4 bg-white rounded-top-4">
+          <div class="d-flex justify-content-between align-items-center w-100">
+            <div class="d-flex align-items-center gap-3">
+              <div>
+                <h5
+                  class="modal-title fw-bold text-dark mb-0"
+                  id="modalDetallesPedidoLabel"
+                >
+                  📋 Detalles del Pedido
+                </h5>
+                <div class="d-flex gap-2 mt-1">
+                  <small class="text-muted">
+                    <i class="bi bi-calendar3 me-1"></i>
+                    {{
+                      pedidoSeleccionado.pedido.fechaPedido | date: "dd/MM/yyyy"
+                    }}
+                    a las
+                    {{
+                      pedidoSeleccionado.pedido.horaRegistro || "00:00"
+                        | slice: 0 : 5
+                    }}
+                  </small>
+                </div>
               </div>
-            </div>
-            <div class="vr opacity-25"></div>
-            <div>
-              <span
-                class="badge fw-semibold px-3 py-2 rounded-pill shadow-sm"
-                [ngClass]="{
-                  'bg-warning text-dark': pedidoSeleccionado.pedido.estado === 'PENDIENTE',
-                  'bg-success': pedidoSeleccionado.pedido.estado === 'ENTREGADO',
-                  'bg-danger': pedidoSeleccionado.pedido.estado === 'CANCELADO',
-                }"
-              >
-                <i
-                  class="bi me-1"
-                  [class]="{
-                    'bi-clock-history': pedidoSeleccionado.pedido.estado === 'PENDIENTE',
-                    'bi-check-circle-fill': pedidoSeleccionado.pedido.estado === 'ENTREGADO',
-                    'bi-x-circle-fill': pedidoSeleccionado.pedido.estado === 'CANCELADO',
+              <div class="vr opacity-25"></div>
+              <div>
+                <span
+                  class="badge fw-semibold px-3 py-2 rounded-pill shadow-sm"
+                  [ngClass]="{
+                    'bg-warning text-dark':
+                      pedidoSeleccionado.pedido.estado === 'PENDIENTE',
+                    'bg-success':
+                      pedidoSeleccionado.pedido.estado === 'ENTREGADO',
+                    'bg-danger':
+                      pedidoSeleccionado.pedido.estado === 'CANCELADO',
                   }"
-                ></i>
-                {{ pedidoSeleccionado.pedido.estado | lowercase | titlecase }}
-              </span>
+                >
+                  <i
+                    class="bi me-1"
+                    [class]="{
+                      'bi-clock-history':
+                        pedidoSeleccionado.pedido.estado === 'PENDIENTE',
+                      'bi-check-circle-fill':
+                        pedidoSeleccionado.pedido.estado === 'ENTREGADO',
+                      'bi-x-circle-fill':
+                        pedidoSeleccionado.pedido.estado === 'CANCELADO',
+                    }"
+                  ></i>
+                  {{ pedidoSeleccionado.pedido.estado | lowercase | titlecase }}
+                </span>
+              </div>
             </div>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Cerrar"
+            ></button>
           </div>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Cerrar"
-          ></button>
         </div>
-      </div>
 
-      <div class="modal-body p-0 d-flex flex-column">
-        <!-- SECCIÓN DE INFORMACIÓN MEJORADA -->
-        <div class="info-sections-container p-4 border-bottom">
-          <div class="row g-4">
-            <!-- Tarjeta Información del Pedido -->
-            <div class="col-md-6">
-              <div class="card border-0 shadow-sm h-100 rounded-4 info-card">
-                <div class="card-body p-4">
-                  <div class="d-flex align-items-center gap-2 mb-4">
-                    <div class="icon-circle bg-primary bg-opacity-10">
-                      <i class="bi bi-receipt text-primary fs-5"></i>
+        <div class="modal-body p-0 d-flex flex-column">
+          <!-- SECCIÓN DE INFORMACIÓN MEJORADA -->
+          <div class="info-sections-container p-4 border-bottom">
+            <div class="row g-4">
+              <!-- Tarjeta Información del Pedido -->
+              <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100 rounded-4 info-card">
+                  <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                      <div class="icon-circle bg-primary bg-opacity-10">
+                        <i class="bi bi-receipt text-primary fs-5"></i>
+                      </div>
+                      <h6 class="mb-0 fw-bold text-dark">
+                        Información del Pedido
+                      </h6>
                     </div>
-                    <h6 class="mb-0 fw-bold text-dark">Información del Pedido</h6>
+                    <div class="info-grid">
+                      <div class="info-row">
+                        <span class="info-label">ID Pedido</span>
+                        <span class="info-value fw-semibold"
+                          >PED{{ pedidoSeleccionado.pedido.idPedido }}</span
+                        >
+                      </div>
+                      <div class="info-row">
+                        <span class="info-label">Fecha Registro</span>
+                        <span class="info-value">{{
+                          pedidoSeleccionado.pedido.fechaPedido +
+                            "T" +
+                            (pedidoSeleccionado.pedido.horaRegistro ||
+                              "00:00:00") | date: "dd/MM/yyyy HH:mm"
+                        }}</span>
+                      </div>
+                      <div class="info-row">
+                        <span class="info-label">Forma de Pago</span>
+                        <span class="info-value">{{
+                          pedidoSeleccionado.pedido.formaPago.nombre ||
+                            "No especificado"
+                        }}</span>
+                      </div>
+                      <div class="info-row border-0 pt-2">
+                        <span class="info-label fw-bold text-success"
+                          >Total</span
+                        >
+                        <span class="info-value fw-bold text-success fs-4">
+                          Bs
+                          {{ pedidoSeleccionado.pedido.totalPedido || "0.00" }}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <div class="info-grid">
-                    <div class="info-row">
-                      <span class="info-label">ID Pedido</span>
-                      <span class="info-value fw-semibold">PED{{ pedidoSeleccionado.pedido.idPedido }}</span>
+                </div>
+              </div>
+
+              <!-- Tarjeta Información del Cliente -->
+              <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100 rounded-4 info-card">
+                  <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                      <div class="icon-circle bg-info bg-opacity-10">
+                        <i class="bi bi-person-circle text-info fs-5"></i>
+                      </div>
+                      <h6 class="mb-0 fw-bold text-dark">
+                        Información del Cliente
+                      </h6>
                     </div>
-                    <div class="info-row">
-                      <span class="info-label">Fecha Registro</span>
-                      <span class="info-value">{{
-                        pedidoSeleccionado.pedido.fechaPedido +
-                          "T" +
-                          (pedidoSeleccionado.pedido.horaRegistro ||
-                            "00:00:00") | date: "dd/MM/yyyy HH:mm"
-                      }}</span>
-                    </div>
-                    <div class="info-row">
-                      <span class="info-label">Forma de Pago</span>
-                      <span class="info-value">{{
-                        pedidoSeleccionado.pedido.formaPago.nombre ||
-                          "No especificado"
-                      }}</span>
-                    </div>
-                    <div class="info-row border-0 pt-2">
-                      <span class="info-label fw-bold text-success">Total</span>
-                      <span class="info-value fw-bold text-success fs-4">
-                        Bs {{ pedidoSeleccionado.pedido.totalPedido || "0.00" }}
-                      </span>
+                    <div class="info-grid">
+                      <div class="info-row">
+                        <span class="info-label">Usuario</span>
+                        <span class="info-value">{{
+                          pedidoSeleccionado.pedido.usuario.username || "N/A"
+                        }}</span>
+                      </div>
+                      <div class="info-row">
+                        <span class="info-label">Email</span>
+                        <span class="info-value">{{
+                          pedidoSeleccionado.pedido.usuario.email ||
+                            "No disponible"
+                        }}</span>
+                      </div>
+                      <div class="info-row">
+                        <span class="info-label">Nombre Completo</span>
+                        <span class="info-value">
+                          {{
+                            pedidoSeleccionado.pedido.usuario.persona?.nombre ||
+                              ""
+                          }}
+                          {{
+                            pedidoSeleccionado.pedido.usuario.persona
+                              ?.apellidop || ""
+                          }}
+                          {{
+                            pedidoSeleccionado.pedido.usuario.persona
+                              ?.apellidom || ""
+                          }}
+                        </span>
+                      </div>
+                      <div class="info-row">
+                        <span class="info-label">Teléfono</span>
+                        <span class="info-value">
+                          <i class="bi bi-whatsapp text-success me-1"></i>
+                          {{
+                            pedidoSeleccionado.pedido.usuario.persona
+                              ?.telefono || "No disponible"
+                          }}
+                        </span>
+                      </div>
+                      <div class="info-row border-0">
+                        <span class="info-label">Ubicación</span>
+                        <span class="info-value">
+                          <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+                          {{
+                            pedidoSeleccionado.pedido.usuario.persona?.ciudad ||
+                              ""
+                          }},
+                          {{
+                            pedidoSeleccionado.pedido.usuario.persona?.pais ||
+                              ""
+                          }}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- Tarjeta Información del Cliente -->
-            <div class="col-md-6">
-              <div class="card border-0 shadow-sm h-100 rounded-4 info-card">
-                <div class="card-body p-4">
-                  <div class="d-flex align-items-center gap-2 mb-4">
-                    <div class="icon-circle bg-info bg-opacity-10">
-                      <i class="bi bi-person-circle text-info fs-5"></i>
-                    </div>
-                    <h6 class="mb-0 fw-bold text-dark">Información del Cliente</h6>
-                  </div>
-                  <div class="info-grid">
-                    <div class="info-row">
-                      <span class="info-label">Usuario</span>
-                      <span class="info-value">{{
-                        pedidoSeleccionado.pedido.usuario.username || "N/A"
-                      }}</span>
-                    </div>
-                    <div class="info-row">
-                      <span class="info-label">Email</span>
-                      <span class="info-value">{{
-                        pedidoSeleccionado.pedido.usuario.email ||
-                          "No disponible"
-                      }}</span>
-                    </div>
-                    <div class="info-row">
-                      <span class="info-label">Nombre Completo</span>
-                      <span class="info-value">
-                        {{
-                          pedidoSeleccionado.pedido.usuario.persona?.nombre ||
-                            ""
-                        }}
-                        {{
-                          pedidoSeleccionado.pedido.usuario.persona
-                            ?.apellidop || ""
-                        }}
-                        {{
-                          pedidoSeleccionado.pedido.usuario.persona
-                            ?.apellidom || ""
-                        }}
-                      </span>
-                    </div>
-                    <div class="info-row">
-                      <span class="info-label">Teléfono</span>
-                      <span class="info-value">
-                        <i class="bi bi-whatsapp text-success me-1"></i>
-                        {{
-                          pedidoSeleccionado.pedido.usuario.persona
-                            ?.telefono || "No disponible"
-                        }}
-                      </span>
-                    </div>
-                    <div class="info-row border-0">
-                      <span class="info-label">Ubicación</span>
-                      <span class="info-value">
-                        <i class="bi bi-geo-alt-fill text-danger me-1"></i>
-                        {{
-                          pedidoSeleccionado.pedido.usuario.persona?.ciudad ||
-                            ""
-                        }},
-                        {{
-                          pedidoSeleccionado.pedido.usuario.persona?.pais ||
-                            ""
-                        }}
-                      </span>
-                    </div>
-                  </div>
+          <!-- SECCIÓN DE PRODUCTOS MEJORADA -->
+          <div class="products-section-container flex-grow-1 p-4 bg-light">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+              <div class="card-header bg-transparent border-0 pt-4 pb-0 px-4">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0 fw-bold text-dark">
+                    <i class="bi bi-box-seam me-2 text-primary"></i>
+                    Productos del Pedido
+                    <span class="badge bg-primary rounded-pill ms-2">{{
+                      pedidoSeleccionado.detallePedidos.length || 0
+                    }}</span>
+                  </h6>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- SECCIÓN DE PRODUCTOS MEJORADA -->
-        <div class="products-section-container flex-grow-1 p-4 bg-light">
-          <div class="card border-0 shadow-sm rounded-4 h-100">
-            <div class="card-header bg-transparent border-0 pt-4 pb-0 px-4">
-              <div class="d-flex justify-content-between align-items-center">
-                <h6 class="mb-0 fw-bold text-dark">
-                  <i class="bi bi-box-seam me-2 text-primary"></i>
-                  Productos del Pedido
-                  <span class="badge bg-primary rounded-pill ms-2">{{
-                    pedidoSeleccionado.detallePedidos.length || 0
-                  }}</span>
-                </h6>
-              </div>
-            </div>
-            <div class="card-body p-0">
-              <div class="table-container-enhanced">
-                <table class="table table-modern align-middle mb-0">
-                  <thead>
-                    <tr>
-                      <th class="ps-4">Producto</th>
-                      <th class="text-center">Cantidad</th>
-                      <th class="text-center">Precio Unit.</th>
-                      <th class="text-center">Subtotal</th>
-                      <th class="text-center pe-4">Estado</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <ng-container
-                      *ngIf="
-                        pedidoSeleccionado.detallePedidos &&
-                          pedidoSeleccionado.detallePedidos.length > 0;
-                        else sinProductos
-                      "
-                    >
-                      <tr
-                        *ngFor="
-                          let detalle of pedidoSeleccionado.detallePedidos;
-                          trackBy: trackByDetalleId
-                        "
-                        [class.table-row-canceled]="detalle?.estado === 'CANCELADO'"
-                      >
-                        <td class="ps-4">
-                          <div class="d-flex align-items-center">
-                            <div class="product-icon-enhanced me-3">
-                              <i class="bi bi-cube-fill"></i>
-                            </div>
-                            <div>
-                              <div class="fw-semibold text-dark mb-1">
-                                {{
-                                  detalle?.producto?.nombre ||
-                                    "Producto no disponible"
-                                }}
-                              </div>
-                              <small class="text-muted">
-                                SKU: {{ detalle?.producto?.sku || "N/A" }}
-                              </small>
-                            </div>
-                          </div>
-                        </td>
-                        <td class="text-center">
-                          <span class="badge-quantity">
-                            {{ detalle?.cantidad || 0 }}
-                          </span>
-                        </td>
-                        <td class="text-center fw-semibold text-dark">
-                          Bs {{ detalle?.precioUnitario || "0.00" }}
-                        </td>
-                        <td class="text-center fw-bold text-primary">
-                          Bs {{ detalle?.subtotal || "0.00" }}
-                        </td>
-                        <td class="text-center pe-4">
-                          <span
-                            class="badge-status"
-                            [class.badge-status-active]="detalle?.estado !== 'CANCELADO'"
-                            [class.badge-status-canceled]="detalle?.estado === 'CANCELADO'"
-                          >
-                            <i
-                              [class]="
-                                detalle?.estado === 'CANCELADO'
-                                  ? 'bi bi-x-circle'
-                                  : 'bi bi-check-circle'
-                              "
-                            ></i>
-                            {{
-                              detalle?.estado === "CANCELADO"
-                                ? "Cancelado"
-                                : "Activo"
-                            }}
-                          </span>
-                        </td>
-                      </tr>
-                    </ng-container>
-                    <ng-template #sinProductos>
+              <div class="card-body p-0">
+                <div class="table-container-enhanced">
+                  <table class="table table-modern align-middle mb-0">
+                    <thead>
                       <tr>
-                        <td colspan="5" class="text-center py-5">
-                          <div class="text-muted">
-                            <i class="bi bi-inbox display-4 d-block mb-3 opacity-25"></i>
-                            No hay productos en este pedido
-                          </div>
-                        </td>
+                        <th class="ps-4">Producto</th>
+                        <th class="text-center">Cantidad</th>
+                        <th class="text-center">Precio Unit.</th>
+                        <th class="text-center">Subtotal</th>
+                        <th class="text-center pe-4">Estado</th>
                       </tr>
-                    </ng-template>
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      <ng-container
+                        *ngIf="
+                          pedidoSeleccionado.detallePedidos &&
+                            pedidoSeleccionado.detallePedidos.length > 0;
+                          else sinProductos
+                        "
+                      >
+                        <tr
+                          *ngFor="
+                            let detalle of pedidoSeleccionado.detallePedidos;
+                            trackBy: trackByDetalleId
+                          "
+                          [class.table-row-canceled]="
+                            detalle?.estado === 'CANCELADO'
+                          "
+                        >
+                          <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                              <div class="product-icon-enhanced me-3">
+                                <i class="bi bi-cube-fill"></i>
+                              </div>
+                              <div>
+                                <div class="fw-semibold text-dark mb-1">
+                                  {{
+                                    detalle?.producto?.nombre ||
+                                      "Producto no disponible"
+                                  }}
+                                </div>
+                                <small class="text-muted">
+                                  SKU: {{ detalle?.producto?.sku || "N/A" }}
+                                </small>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                            <span class="badge-quantity">
+                              {{ detalle?.cantidad || 0 }}
+                            </span>
+                          </td>
+                          <td class="text-center fw-semibold text-dark">
+                            Bs {{ detalle?.precioUnitario || "0.00" }}
+                          </td>
+                          <td class="text-center fw-bold text-primary">
+                            Bs {{ detalle?.subtotal || "0.00" }}
+                          </td>
+                          <td class="text-center pe-4">
+                            <span
+                              class="badge-status"
+                              [class.badge-status-active]="
+                                detalle?.estado !== 'CANCELADO'
+                              "
+                              [class.badge-status-canceled]="
+                                detalle?.estado === 'CANCELADO'
+                              "
+                            >
+                              <i
+                                [class]="
+                                  detalle?.estado === 'CANCELADO'
+                                    ? 'bi bi-x-circle'
+                                    : 'bi bi-check-circle'
+                                "
+                              ></i>
+                              {{
+                                detalle?.estado === "CANCELADO"
+                                  ? "Cancelado"
+                                  : "Activo"
+                              }}
+                            </span>
+                          </td>
+                        </tr>
+                      </ng-container>
+                      <ng-template #sinProductos>
+                        <tr>
+                          <td colspan="5" class="text-center py-5">
+                            <div class="text-muted">
+                              <i
+                                class="bi bi-inbox display-4 d-block mb-3 opacity-25"
+                              ></i>
+                              No hay productos en este pedido
+                            </div>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- FOOTER MEJORADO -->
-      <div class="modal-footer border-0 py-3 px-4 bg-white rounded-bottom-4">
-        <div class="d-flex justify-content-between align-items-center w-100">
-          <div></div>
-          <div class="d-flex gap-3 align-items-center">
-            <div class="text-end">
-              <small class="text-muted d-block">Total del Pedido</small>
-              <span class="fw-bold text-dark fs-5">
-                {{ pedidoSeleccionado.pedido.totalPedido }} Bs
-              </span>
-            </div>
-            <div class="vr opacity-25"></div>
-            <div class="d-flex gap-2">
+        <!-- FOOTER MEJORADO -->
+        <!-- FOOTER MEJORADO CORREGIDO -->
+        <div class="modal-footer border-0 py-3 px-4 bg-white rounded-bottom-4">
+          <div class="d-flex justify-content-between align-items-center w-100 flex-wrap gap-3">
+            
+            <!-- Botón de Correo -->
+            <div>
               <button
+                *ngIf="facturaActual"
                 type="button"
-                class="btn btn-outline-secondary px-4 rounded-pill"
-                data-bs-dismiss="modal"
+                class="btn btn-outline-info px-4 rounded-pill shadow-sm d-flex align-items-center"
+                (click)="enviarFacturaPorCorreo(pedidoSeleccionado)"
+                [disabled]="enviandoCorreo"
               >
-                <i class="bi bi-x-lg me-2"></i>Cerrar
+                <span *ngIf="enviandoCorreo" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <i *ngIf="!enviandoCorreo" class="bi bi-envelope-paper me-2"></i>
+                <span *ngIf="enviandoCorreo">Enviando...</span>
+                <span *ngIf="!enviandoCorreo">Enviar al Correo</span>
               </button>
-              <button
-  type="button"
-  class="btn px-4 rounded-pill shadow-sm d-flex align-items-center"
-  [ngClass]="facturaActual ? 'btn-success' : 'btn-primary'"
-  (click)="ProcesarFactura(pedidoSeleccionado)" 
-  [disabled]="pedidoSeleccionado.pedido.estado !== 'ENTREGADO' || verificandoFactura"
->
-  <span *ngIf="verificandoFactura" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-  
-  <i *ngIf="!verificandoFactura" class="bi me-2" [ngClass]="facturaActual ? 'bi-printer' : 'bi-receipt'"></i>
-  
-  <span *ngIf="verificandoFactura">Verificando...</span>
-  <span *ngIf="!verificandoFactura">{{ facturaActual ? 'Imprimir Factura' : 'Generar Factura' }}</span>
-</button>
             </div>
+
+            <!-- Totales y Botones de Acción -->
+            <div class="d-flex gap-3 align-items-center">
+              <div class="text-end">
+                <small class="text-muted d-block">Total del Pedido</small>
+                <span class="fw-bold text-dark fs-5">
+                  {{ pedidoSeleccionado.pedido.totalPedido }} Bs
+                </span>
+              </div>
+              <div class="vr opacity-25"></div>
+              <div class="d-flex gap-2">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary px-4 rounded-pill"
+                  data-bs-dismiss="modal"
+                >
+                  <i class="bi bi-x-lg me-2"></i>Cerrar
+                </button>
+                <button
+                  type="button"
+                  class="btn px-4 rounded-pill shadow-sm d-flex align-items-center"
+                  [ngClass]="facturaActual ? 'btn-success' : 'btn-primary'"
+                  (click)="ProcesarFactura(pedidoSeleccionado)" 
+                  [disabled]="pedidoSeleccionado.pedido.estado !== 'ENTREGADO' || verificandoFactura"
+                >
+                  <span *ngIf="verificandoFactura" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  <i *ngIf="!verificandoFactura" class="bi me-2" [ngClass]="facturaActual ? 'bi-printer' : 'bi-receipt'"></i>
+                  <span *ngIf="verificandoFactura">Verificando...</span>
+                  <span *ngIf="!verificandoFactura">{{ facturaActual ? 'Imprimir Factura' : 'Generar Factura' }}</span>
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-
+      
+  
   <div
     class="modal fade"
     id="modalMensajeGeneral"
@@ -837,15 +878,33 @@
   >
   </app-modal-scan>
 </div>
-<div class="modal fade" id="loadingFacturaModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div
+  class="modal fade"
+  id="loadingFacturaModal"
+  tabindex="-1"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+>
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg">
-      <div class="modal-body text-center p-5">
-        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+      <!-- Aquí está la clave para centrarlo con tu CSS -->
+      <div class="modal-body d-flex flex-column align-items-center justify-content-center text-center p-5">
+        
+        <div
+          class="spinner-border text-primary mb-3"
+          style="width: 3.5rem; height: 3.5rem"
+          role="status"
+        >
           <span class="visually-hidden">Procesando...</span>
         </div>
-        <h5 class="mt-4 fw-bold text-dark">Emitiendo Factura</h5>
-        <p class="text-muted mb-0">Componiendo el archivo PDF y conectando con el SIAT. Por favor, espera unos segundos...</p>
+        
+        <h5 class="fw-bold text-dark">Emitiendo Factura</h5>
+        <p class="text-muted mb-0">
+          Componiendo el archivo PDF y conectando con el SIAT. Por favor, espera
+          unos segundos...
+        </p>
+        
       </div>
     </div>
   </div>

@@ -241,14 +241,14 @@ export class ModificarUsuarioComponent implements OnInit, AfterViewInit {
   closeMessageModalAndNavigate(): void {
     if (this.messageModal) this.messageModal.hide();
     if (!this.errorMessage && this.successMessage) {
-      this.router.navigate(['/home/listarUser']);
+      this.router.navigate(['/home']);
     } else {
       this.errorMessage = null;
     }
   }
 
   goToUserList(): void {
-    this.router.navigate(['/home/listarUser']);
+    this.router.navigate(['/home']);
   }
 
   onFileSelected(event: Event): void {

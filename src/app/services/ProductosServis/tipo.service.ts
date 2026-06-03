@@ -8,7 +8,7 @@ import { tipo } from '../../models/ProductoStockModel/tipo';
   providedIn: 'root'
 })
 export class TipoService {
-  private baseUrl = 'http://localhost:8080/tipos/';
+  private baseUrl = 'https://bdconex.onrender.com/tipos/';
 
   constructor(private http: HttpClient) {}
 

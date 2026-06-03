@@ -13,8 +13,8 @@ import { RegistrarSubcategoriaComponent } from '../interfaces/categoriasAndSub/s
 
 
 export const productsRoutes: Routes = [
-  { path: 'listarProductos', component: ListarComponent, canActivate:[authGuard],data:{roles:['administrador']}},
-  { path: 'RegistrarProduc', component: RegistrarComponent , canActivate:[authGuard],data:{roles:['administrador']}},
+  { path: 'listarProductos', component: ListarComponent, canActivate:[authGuard]},
+  { path: 'RegistrarProduc', component: RegistrarComponent , canActivate:[authGuard]},
   { path: 'modificarProduc/:id', component: ModificarComponent , canActivate:[authGuard]},
   { path: 'pru', component: PruebaComponent },
   { path: 'DetailProduct/:id', component: DetallesComponent , canActivate:[authGuard]},

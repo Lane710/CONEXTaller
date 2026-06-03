@@ -111,24 +111,27 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.errorMessage = 'Token no recibido';
         }
       },
-      error: (errorResponse: HttpErrorResponse) => {
+     error: (errorResponse: HttpErrorResponse) => {
         this.isLoading = false;
         if (errorResponse.status === 429) {
-          // --- SECCIÓN MODIFICADA ---
           const message = errorResponse.error?.message || 'Demasiados intentos de inicio de sesión fallidos.';
-          const match = message.match(/(\d+)\ssegundos/); // El backend sigue enviando segundos
+          const match = message.match(/(\d+)\ssegundos/);
           let delaySeconds = 0;
           if (match && match[1]) {
             delaySeconds = parseInt(match[1], 10);
           }
           this.remainingTime = delaySeconds;
           
-          // ¡Aquí usamos la nueva función de formateo por PRIMERA VEZ!
           this.throttlingMessage = `Demasiados intentos. Podrás intentarlo de nuevo en ${this.formatTime(this.remainingTime)}.`;
-          
           this.startCountdown();
-          // --- FIN SECCIÓN MODIFICADA ---
-        } else if (errorResponse.status === 401 || errorResponse.status === 403) {
+          
+        } 
+        // --- ¡AQUÍ ESTÁ LA MAGIA! CAPTURAMOS EL USUARIO INACTIVO ---
+        else if (errorResponse.status === 403 && errorResponse.error?.message === 'Cuenta deshabilitada') {
+          this.errorMessage = 'Tu cuenta ha sido deshabilitada por un administrador. Contacta con soporte.';
+        } 
+        // ------------------------------------------------------------
+        else if (errorResponse.status === 401 || errorResponse.status === 403) {
           this.errorMessage = 'Nombre de usuario o contraseña incorrectos.';
         } else if (errorResponse.status >= 500) {
           this.errorMessage = 'Error interno del servidor. Inténtalo más tarde.';

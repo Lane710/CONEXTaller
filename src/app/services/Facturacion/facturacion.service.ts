@@ -10,23 +10,31 @@ export class FacturacionService {
 
   constructor(private http: HttpClient) { }
 
-  // Llama al endpoint de pedido online
   emitirFacturaPedidoOnline(idPedido: number): Observable<any> {
     return this.http.post(`${this.baseUrl}/pedido/${idPedido}`, {});
   }
 
-  // Llama al endpoint de venta en tienda (para cuando lo necesites en otro módulo)
   emitirFacturaVentaFisica(idVenta: number): Observable<any> {
     return this.http.post(`${this.baseUrl}/venta/${idVenta}`, {});
   }
 
-  // NUEVO: Consulta si ya existe una factura para este pedido
   obtenerFacturaPedido(idPedido: number): Observable<any> {
     return this.http.get(`${this.baseUrl}/pedido/${idPedido}`);
   }
 
-  // Añade este método a tu FacturacionService
   obtenerFacturaVenta(idVenta: number): Observable<any> {
     return this.http.get(`${this.baseUrl}/venta/${idVenta}`);
+  }
+
+  // --- NUEVO MÉTODO PARA ENVIAR CORREO ---
+  enviarFacturaCorreo(email: string, pdfFile: Blob, fileName: string): Observable<any> {
+    const formData = new FormData();
+    
+    // Los nombres 'email' y 'pdf' deben coincidir EXACTAMENTE con los @RequestParam del backend
+    formData.append('email', email);
+    formData.append('pdf', pdfFile, fileName);
+
+    // Cuando usas FormData, Angular automáticamente configura el Content-Type a 'multipart/form-data'
+    return this.http.post(`${this.baseUrl}/enviar-correo`, formData);
   }
 }

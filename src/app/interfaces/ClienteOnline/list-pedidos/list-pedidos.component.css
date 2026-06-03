@@ -1,4 +1,14 @@
 
+body:not(.modal-open) {
+  overflow: auto !important;
+  padding-right: 0 !important;
+}
+
+/* Si el fondo oscuro se queda pegado, esto asegura que al menos no bloquee los clicks */
+.modal-backdrop.show {
+  opacity: 0.5;
+}
+
 
 /* ===== ESTILOS GENERALES Y LISTA DE PEDIDOS ===== */
 .order-card {

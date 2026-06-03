@@ -8,7 +8,7 @@ import { ventas } from '../../models/Ventas/ventas';
   providedIn: 'root',
 })
 export class VentasService {
-  private apiUrl = 'http://localhost:8080/ventas/';
+  private apiUrl = 'https://bdconex.onrender.com/ventas/';
 
   constructor(private http: HttpClient) {}
 

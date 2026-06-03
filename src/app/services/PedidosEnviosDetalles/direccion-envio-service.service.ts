@@ -9,7 +9,7 @@ import { direccionesEnvio } from '../../models/PedidosEnviosDetalles/direcciones
 })
 export class DireccionEnvioService {
 
-  private Url='http://localhost:8080/direcciones-envio/';
+  private Url='https://bdconex.onrender.com/direcciones-envio/';
 
   constructor( private http:HttpClient) { }
  

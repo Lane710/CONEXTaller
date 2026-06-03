@@ -15,6 +15,7 @@
 
   <nav class="sidebar-nav">
     <ul class="list-unstyled">
+      
       <li class="nav-item-sidebar">
         <a
           routerLink="/home/inicio"
@@ -27,71 +28,45 @@
       </li>
 
       <li
-        class="nav-item-sidebar dropdown"
+        class="nav-item-sidebar"
         *ngIf="
           authService.hasRole('administrador') ||
-          authService.hasRole('dueno') ||
+          authService.hasRole('duena') ||
           authService.hasRole('trabajador')
         "
       >
         <a
-          class="nav-link-sidebar dropdown-toggle"
-          id="inventarioDropdown"
-          role="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
+          class="nav-link-sidebar"
+          routerLink="/home/listarProductos"
+          routerLinkActive="active"
+          (click)="cerrarMenuAlNavegar()"
         >
           <span class="icon">📦</span>
           <span class="text">Gestionar Inventario</span>
         </a>
-        <ul class="dropdown-menu" aria-labelledby="inventarioDropdown">
-          <li>
-            <a
-              class="dropdown-item"
-              routerLink="/home/listarProductos"
-              routerLinkActive="active"
-              (click)="cerrarMenuAlNavegar()"
-            >
-              Listar Productos
-            </a>
-          </li>
-        </ul>
       </li>
 
       <li
-        class="nav-item-sidebar dropdown"
+        class="nav-item-sidebar"
         *ngIf="
           authService.hasRole('administrador') ||
-          authService.hasRole('dueno') ||
+          authService.hasRole('duena') ||
           authService.hasRole('trabajador')
         "
       >
         <a
-          class="nav-link-sidebar dropdown-toggle"
-          id="CategoriasDropdown"
-          role="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
+          class="nav-link-sidebar"
+          routerLink="/home/Categorias"
+          routerLinkActive="active"
+          (click)="cerrarMenuAlNavegar()"
         >
           <span class="icon">📁</span>
           <span class="text">Gestionar Categorias</span>
         </a>
-        <ul class="dropdown-menu" aria-labelledby="CategoriasDropdown">
-          <li>
-            <a
-              class="dropdown-item"
-              routerLink="/home/Categorias"
-              routerLinkActive="active"
-              (click)="cerrarMenuAlNavegar()"
-            >
-              Listar Categorias
-            </a>
-          </li>
-        </ul>
       </li>
 
       <li
-        class="nav-item-sidebar dropdown"
+        class="nav-item-sidebar"
         *ngIf="
           authService.hasRole('administrador') ||
           authService.hasRole('duena') ||
@@ -99,72 +74,33 @@
         "
       >
         <a
-          class="nav-link-sidebar dropdown-toggle"
-          href="#"
-          id="enviosDropdown"
-          role="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
+          class="nav-link-sidebar"
+          routerLink="/home/envios/list-envios"
+          routerLinkActive="active"
+          (click)="cerrarMenuAlNavegar()"
         >
           <span class="icon">🚚</span>
           <span class="text">Gestionar Envíos</span>
         </a>
-        <ul class="dropdown-menu" aria-labelledby="enviosDropdown">
-          <li>
-            <a
-              class="dropdown-item"
-              routerLink="/home/envios/list-envios"
-              routerLinkActive="active"
-              (click)="cerrarMenuAlNavegar()"
-            >
-              Listar Envío
-            </a>
-          </li>
-        </ul>
       </li>
 
       <li
-        class="nav-item-sidebar dropdown"
+        class="nav-item-sidebar"
         *ngIf="
           authService.hasRole('administrador') ||
           authService.hasRole('duena') ||
-          authService.hasRole('trabajador') ||
-          authService.hasRole('cliente')
+          authService.hasRole('trabajador')
         "
       >
         <a
-          class="nav-link-sidebar dropdown-toggle"
-          href="#"
-          id="pedidosDropdown"
-          role="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
+          class="nav-link-sidebar"
+          routerLink="/home/pedidoOnline/Listado"
+          routerLinkActive="active"
+          (click)="cerrarMenuAlNavegar()"
         >
           <span class="icon">📝</span>
           <span class="text">Gestionar Pedidos</span>
         </a>
-        <ul class="dropdown-menu" aria-labelledby="pedidosDropdown">
-          <li>
-            <a
-              class="dropdown-item"
-              routerLink="/home/pedidoOnline/Listado"
-              routerLinkActive="active"
-              (click)="cerrarMenuAlNavegar()"
-            >
-              Listar Pedidos
-            </a>
-          </li>
-          <li *ngIf="authService.hasRole('cliente')">
-            <a
-              class="dropdown-item"
-              routerLink="/pedidos/crear"
-              routerLinkActive="active"
-              (click)="cerrarMenuAlNavegar()"
-            >
-              Crear Pedido
-            </a>
-          </li>
-        </ul>
       </li>
 
       <li
@@ -211,230 +147,82 @@
       </li>
 
       <li
-        class="nav-item-sidebar dropdown"
+        class="nav-item-sidebar"
         *ngIf="
-          authService.hasRole('administrador') || authService.hasRole('duena')
+          authService.hasRole('administrador') || 
+          authService.hasRole('duena')
         "
       >
         <a
-          class="nav-link-sidebar dropdown-toggle"
-          id="usuariosDropdown"
-          role="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
+          class="nav-link-sidebar"
+          routerLink="/home/listarUser"
+          routerLinkActive="active"
+          (click)="cerrarMenuAlNavegar()"
         >
           <span class="icon">👥</span>
           <span class="text">Gestionar Usuarios</span>
         </a>
-        <ul class="dropdown-menu" aria-labelledby="usuariosDropdown">
-          <li>
-            <a
-              class="dropdown-item"
-              routerLink="/home/listarUser"
-              routerLinkActive="active"
-              (click)="cerrarMenuAlNavegar()"
-            >
-              Listar Usuarios
-            </a>
-          </li>
-        </ul>
       </li>
 
       <li
-        class="nav-item-sidebar dropdown"
+        class="nav-item-sidebar"
         *ngIf="
-          authService.hasRole('administrador') || authService.hasRole('duena')
+          authService.hasRole('administrador') || 
+          authService.hasRole('duena')
         "
       >
         <a
-          class="nav-link-sidebar dropdown-toggle"
-          href="#"
-          id="reportesDropdown"
-          role="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
+          class="nav-link-sidebar"
+          routerLink="/home/Reportes"
+          routerLinkActive="active"
+          (click)="cerrarMenuAlNavegar()"
         >
           <span class="icon">📊</span>
           <span class="text">Generar Reportes</span>
         </a>
-        <ul class="dropdown-menu" aria-labelledby="reportesDropdown">
-          <li>
-            <a
-              class="dropdown-item"
-              routerLink="/home/Reportes"
-              routerLinkActive="active"
-              (click)="cerrarMenuAlNavegar()"
-            >
-              Generar Reportes
-            </a>
-          </li>
-        </ul>
       </li>
 
       <li
-        class="nav-item-sidebar dropdown"
+        class="nav-item-sidebar"
         *ngIf="
           authService.hasRole('administrador') ||
-          authService.hasRole('duena') ||
-          authService.hasRole('trabajador') ||
-          authService.hasRole('cliente')
+          authService.hasRole('duena')
         "
       >
         <a
-          class="nav-link-sidebar dropdown-toggle"
-          href="#"
-          id="facturasDropdown"
-          role="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          <span class="icon">🧾</span>
-          <span class="text">Gestionar Facturas</span>
-        </a>
-        <ul class="dropdown-menu" aria-labelledby="facturasDropdown">
-          <li
-            *ngIf="
-              authService.hasRole('administrador') ||
-              authService.hasRole('duena')
-            "
-          >
-            <a
-              class="dropdown-item"
-              routerLink="/facturas/crear"
-              routerLinkActive="active"
-              (click)="cerrarMenuAlNavegar()"
-            >
-              Crear Factura
-            </a>
-          </li>
-          <li>
-            <a
-              class="dropdown-item"
-              routerLink="/facturas/consultar"
-              routerLinkActive="active"
-              (click)="cerrarMenuAlNavegar()"
-            >
-              Consultar Facturas
-            </a>
-          </li>
-        </ul>
-      </li>
-
-      <li
-        class="nav-item-sidebar dropdown"
-        *ngIf="
-          authService.hasRole('administrador') ||
-          authService.hasRole('duena') ||
-          authService.hasRole('proveedor')
-        "
-      >
-        <a
-          class="nav-link-sidebar dropdown-toggle"
-          href="#"
-          id="proveedoresDropdown"
-          role="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
+          class="nav-link-sidebar"
+          routerLink="/home/listaProveedores"
+          routerLinkActive="active"
+          (click)="cerrarMenuAlNavegar()"
         >
           <span class="icon">🏢</span>
           <span class="text">Gestionar Proveedores</span>
         </a>
-        <ul class="dropdown-menu" aria-labelledby="proveedoresDropdown">
-          <li>
-            <a
-              class="dropdown-item"
-              routerLink="/home/listaProveedores"
-              routerLinkActive="active"
-              (click)="cerrarMenuAlNavegar()"
-            >
-              Listar Proveedores
-            </a>
-          </li>
-          <li
-            *ngIf="
-              authService.hasRole('administrador') ||
-              authService.hasRole('duena')
-            "
-          >
-            <a
-              class="dropdown-item"
-              routerLink="/home/registrarProveedores"
-              routerLinkActive="active"
-              (click)="cerrarMenuAlNavegar()"
-            >
-              Registrar Proveedor
-            </a>
-          </li>
-        </ul>
+      </li>
+
+      <li
+        class="nav-item-sidebar"
+        *ngIf="authService.hasRole('Cliente')"
+      >
+        <a
+          class="nav-link-sidebar"
+          routerLink="/home/cliente/PedidosEnvios"
+          routerLinkActive="active"
+          (click)="cerrarMenuAlNavegar()"
+        >
+          <span class="icon">📝</span>
+          <span class="text">Historial de Pedidos</span>
+        </a>
       </li>
 
       <li
         class="nav-item-sidebar dropdown"
         *ngIf="authService.hasRole('Cliente')"
       >
-        <a
-          class="nav-link-sidebar dropdown-toggle"
-          href="#"
-          id="pedidosClienteDropdown"
-          role="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          <span class="icon">📝</span>
-          <span class="text">Historial de Pedidos</span>
-        </a>
-        <ul class="dropdown-menu" aria-labelledby="pedidosClienteDropdown">
-          <li>
-            <a
-              class="dropdown-item"
-              routerLink="/home/cliente/PedidosEnvios"
-              routerLinkActive="active"
-              (click)="cerrarMenuAlNavegar()"
-            >
-              Historial de mis pedidos
-            </a>
-          </li>
-        </ul>
+    
+       
       </li>
 
-      <li
-        class="nav-item-sidebar dropdown"
-        *ngIf="authService.hasRole('cliente')"
-      >
-        <a
-          class="nav-link-sidebar dropdown-toggle"
-          href="#"
-          id="enviosClienteDropdown"
-          role="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          <span class="icon">🚚</span>
-          <span class="text">Gestionar Envíos</span>
-        </a>
-        <ul class="dropdown-menu" aria-labelledby="enviosClienteDropdown">
-          <li>
-            <a
-              class="dropdown-item"
-              routerLink="/home/envios/listado"
-              routerLinkActive="active"
-              (click)="cerrarMenuAlNavegar()"
-            >
-              Listar Envío
-            </a>
-          </li>
-          <li>
-            <a
-              class="dropdown-item"
-              routerLink="/envios/rastrear"
-              routerLinkActive="active"
-              (click)="cerrarMenuAlNavegar()"
-            >
-              Registar envío
-            </a>
-          </li>
-        </ul>
-      </li>
     </ul>
   </nav>
 

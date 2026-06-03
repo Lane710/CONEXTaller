@@ -8,7 +8,7 @@ import { pedidos } from '../../models/PedidosEnviosDetalles/pedidos';
   providedIn: 'root',
 })
 export class PedidosService {
-  private Url = 'http://localhost:8080/pedidos/';
+  private Url = 'https://bdconex.onrender.com/pedidos/';
 
   constructor(private http: HttpClient) {}
 
@@ -22,7 +22,7 @@ export class PedidosService {
 
   actualizarEstado(id: number, nuevoEstado: string): Observable<ApiResponse> {
     // La URL debe coincidir con el endpoint de tu backend:
-    // http://localhost:8080/pedidos/actualizarEstado/{id}/{nuevoEstado}
+    // https://bdconex.onrender.com/pedidos/actualizarEstado/{id}/{nuevoEstado}
     return this.http.put<ApiResponse>(
       `${this.Url}actualizarEstado/${id}/${nuevoEstado}`,
       {}

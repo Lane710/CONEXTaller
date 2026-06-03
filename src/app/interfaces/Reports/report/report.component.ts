@@ -15,7 +15,6 @@ import { ReporteGananciasComponent } from '../reporte-ganancias/reporte-ganancia
   imports: [
     CommonModule, 
     ReporteVentasComponent, 
-    ReporteGenericoComponent, 
     ReportePedidosComponent, 
     ReporteProductosComponent, 
     ReporteEnviosComponent,
@@ -34,7 +33,6 @@ export class ReportComponent implements OnInit {
     { id: 'pedidos', label: 'Pedidos', active: false },
     { id: 'productos', label: 'Productos', active: false },
     { id: 'envios', label: 'Envíos', active: false },
-    { id: 'facturas', label: 'Facturas', active: false },
   ];
 
   constructor() {}

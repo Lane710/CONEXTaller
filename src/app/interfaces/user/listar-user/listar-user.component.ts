@@ -30,7 +30,7 @@ export class ListarUserComponent implements OnInit, AfterViewInit {
   allUsers: usuarios[] = [];
   filteredUsers: usuarios[] = [];
   personas: personas[] = [];
-
+usuarioLogueado: string = '';
   // Propiedades de estado de la UI
   isLoading: boolean = false;
   errorMessage: string | null = null;
@@ -81,6 +81,7 @@ export class ListarUserComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
+   this.usuarioLogueado = localStorage.getItem('current_username') || ''; 
     this.loadAllData();
   }
 
@@ -153,6 +154,9 @@ export class ListarUserComponent implements OnInit, AfterViewInit {
   /**
    * Aplica los filtros y el ordenamiento a la lista de usuarios.
    */
+ /**
+   * Aplica los filtros y el ordenamiento a la lista de usuarios.
+   */
   applyFiltersAndSort(): void {
     let tempUsers = [...this.allUsers]; // Siempre empezar con TODOS los usuarios
 
@@ -183,11 +187,28 @@ export class ListarUserComponent implements OnInit, AfterViewInit {
       );
     }
 
-    // 4. Ordenamiento por fecha de creación (asc o desc)
+    // 🔥 4. Ordenamiento por fecha de creación (Fecha + Hora EXACTA) 🔥
     tempUsers.sort((a, b) => {
-      const dateA = new Date(a.fechaCreacion || 0).getTime();
-      const dateB = new Date(b.fechaCreacion || 0).getTime();
-      return this.sortDirection === 'reciente' ? dateB - dateA : dateA - dateB;
+      // Tomamos la fecha del backend, si no existe usamos la fecha origen de Unix
+      // Si la fechaRegistro es un objeto Date en el backend, Angular podría recibirlo como string.
+      let rawDateA = a.fechaCreacion ? String(a.fechaCreacion) : '1970-01-01T00:00:00';
+      let rawDateB = b.fechaCreacion ? String(b.fechaCreacion) : '1970-01-01T00:00:00';
+
+      // Si el formato viene con espacio (ej: '2024-04-08 17:00:00'), reemplazamos el espacio por 'T'
+      if (rawDateA.includes(' ') && !rawDateA.includes('T')) {
+        rawDateA = rawDateA.replace(' ', 'T');
+      }
+      if (rawDateB.includes(' ') && !rawDateB.includes('T')) {
+        rawDateB = rawDateB.replace(' ', 'T');
+      }
+
+      // Convertimos a milisegundos
+      const timeA = new Date(rawDateA).getTime();
+      const timeB = new Date(rawDateB).getTime();
+
+      // Aplicar dirección del orden: 
+      // 'reciente' (Descendente) = Mayor a menor
+      return this.sortDirection === 'reciente' ? timeB - timeA : timeA - timeB;
     });
 
     this.filteredUsers = tempUsers; // Actualizar la lista filtrada completa
@@ -334,7 +355,18 @@ export class ListarUserComponent implements OnInit, AfterViewInit {
    * Abre el modal para cambiar el rol del usuario
    * @param user El usuario seleccionado
    */
-  abrirModalCambiarRol(user: usuarios): void {
+ abrirModalCambiarRol(user: usuarios): void {
+    // 1. PRIMERO validamos que no sea el mismo usuario
+    if (user.username === this.usuarioLogueado) {
+      this.showModalMessage(
+        'Acción denegada', 
+        'Por razones de seguridad, no puedes modificar tu propio rol.', 
+        false
+      );
+      return; // Detiene la ejecución aquí
+    }
+
+    // 2. SI PASA la validación, entonces preparamos los datos y abrimos el modal
     this.usuarioSeleccionado = user;
     this.nuevoRolSeleccionado = '';
     this.cambiarRolUsuarioModal?.show();

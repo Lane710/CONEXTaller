@@ -112,7 +112,7 @@ export class ListarComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getStocks(): void {
+getStocks(): void {
     this.isLoading = true;
     this.errorMessage = null;
     this.stockService.findAll().subscribe({
@@ -121,15 +121,27 @@ export class ListarComponent implements OnInit, AfterViewInit {
           
           const stockData = response.data as stock[];
 
-          // 1. Ordenar la lista (del más nuevo al más viejo)
+          // 🔥 1. Ordenar la lista (Fecha + Hora exacta) 🔥
           stockData.sort((a, b) => {
-            const dateA = a.producto?.fechaRegistro
-              ? new Date(a.producto.fechaRegistro).getTime()
-              : 0;
-            const dateB = b.producto?.fechaRegistro
-              ? new Date(b.producto.fechaRegistro).getTime()
-              : 0;
-            return dateB - dateA; // Descendente
+            // Verificamos si existe la fechaRegistro en el producto
+            let rawDateA = a.producto?.fechaRegistro || '1970-01-01T00:00:00';
+            let rawDateB = b.producto?.fechaRegistro || '1970-01-01T00:00:00';
+
+            // Si la fecha viene del backend pero NO tiene una 'T' (ej: "2023-10-25 14:30:00"),
+            // reemplazamos el espacio por una 'T' para que JavaScript lo lea como ISO 8601.
+            if (rawDateA.includes(' ') && !rawDateA.includes('T')) {
+              rawDateA = rawDateA.replace(' ', 'T');
+            }
+            if (rawDateB.includes(' ') && !rawDateB.includes('T')) {
+              rawDateB = rawDateB.replace(' ', 'T');
+            }
+
+            // Convertimos a milisegundos para comparar con precisión
+            const timeA = new Date(rawDateA).getTime();
+            const timeB = new Date(rawDateB).getTime();
+
+            // Descendente: El más nuevo / reciente primero
+            return timeB - timeA; 
           });
 
           this.stocks = stockData;

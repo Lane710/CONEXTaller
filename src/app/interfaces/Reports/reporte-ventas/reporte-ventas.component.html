@@ -8,14 +8,7 @@
         </p>
       </div>
       <div class="header-actions">
-        <button
-          class="btn btn-outline-primary btn-sm me-2"
-          (click)="aplicarFiltrosVentas()"
-          [disabled]="cargandoReporte"
-        >
-          <i class="bi bi-arrow-clockwise"></i>
-          {{ cargandoReporte ? "Cargando..." : "Actualizar" }}
-        </button>
+       
         <button
           class="btn btn-success btn-sm"
           (click)="exportarPDF()"

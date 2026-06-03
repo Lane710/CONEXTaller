@@ -16,8 +16,8 @@ export class StockService {
   // Renombrado a StockService
 
   // ¡IMPORTANTE! Asegúrate de que este puerto y ruta base sean correctos para tu backend de stock.
-  private apiUrl = 'http://localhost:8080/stock/'; // URL del API actualizada a /stock/
-  private apiUrlP = 'http://localhost:8080/productos/';
+  private apiUrl = 'https://bdconex.onrender.com/stock/'; // URL del API actualizada a /stock/
+  private apiUrlP = 'https://bdconex.onrender.com/productos/';
 
   constructor(
     private http: HttpClient,

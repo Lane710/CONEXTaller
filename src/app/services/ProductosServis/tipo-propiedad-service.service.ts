@@ -12,7 +12,7 @@ import { tipoPropiedad } from '../../models/ProductoStockModel/tipoPropiedad';
 export class TipoPropiedadService {
 
   // La URL base debe coincidir con el @RequestMapping del backend
-  private baseUrl = 'http://localhost:8080/tipo-propiedades/'; 
+  private baseUrl = 'https://bdconex.onrender.com/tipo-propiedades/'; 
 
   constructor(private http: HttpClient) { }
 

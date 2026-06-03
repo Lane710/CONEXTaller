@@ -191,13 +191,19 @@
     />
   </button>
   <!-- Nuevo botón para cambiar rol -->
-  <button class="btn btn-sm me-1" (click)="abrirModalCambiarRol(user)">
-    <img
-      src="/userCrud/carbon--group-access.svg" 
-      alt="Cambiar rol"
-      style="width: 30px; height: 30px; vertical-align: middle"
-    />
-  </button>
+<button 
+  class="btn btn-sm me-1" 
+  (click)="abrirModalCambiarRol(user)"
+  [disabled]="user.username === usuarioLogueado"
+  [title]="user.username === usuarioLogueado ? 'No puedes cambiar tu propio rol' : 'Cambiar rol'"
+>
+  <img
+    src="/userCrud/carbon--group-access.svg" 
+    alt="Cambiar rol"
+    style="width: 30px; height: 30px; vertical-align: middle"
+    [ngStyle]="{'opacity': user.username === usuarioLogueado ? '0.4' : '1'}"
+  />
+</button>
   <button
     [class]="user.estado === 1 ? 'btn btn-sm' : 'btn btn-sm'"
     (click)="abrirModalConfirmacionUsuario(user)"

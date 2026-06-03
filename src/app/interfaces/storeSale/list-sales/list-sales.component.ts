@@ -357,7 +357,7 @@ selectVentaModalDetalle(sale: ventas): void {
   }
   // ... (El resto de la lógica de filtrado y paginación se mantiene igual)
 
-  applyFiltersAndSort(): void {
+ applyFiltersAndSort(): void {
     let tempVentas = [...this.allVentas];
 
     // 1. Filtrado por texto (ID o nombre del cliente)
@@ -370,10 +370,8 @@ selectVentaModalDetalle(sale: ventas): void {
       );
     }
     
-
     // 2. Filtrado por estado
     if (this.filterStatus !== 'todos') {
-      // Map filterStatus to venta.estado values (uppercase)
       const statusMap: { [key: string]: string } = {
         completada: 'COMPLETADA',
         pendiente: 'PENDIENTE',
@@ -383,15 +381,18 @@ selectVentaModalDetalle(sale: ventas): void {
       tempVentas = tempVentas.filter((venta) => venta.estado === mappedStatus);
     }
 
-    // 3. Ordenamiento por fecha
+    // 🔥 3. ORDENAMIENTO CORREGIDO (Fecha + Hora exacta) 🔥
     tempVentas.sort((a, b) => {
-      const dateA = new Date(a.fechaVenta || '').getTime();
-      const dateB = new Date(b.fechaVenta || '').getTime();
-      if (this.sortDirection === 'reciente') {
-        return dateB - dateA;
-      } else {
-        return dateA - dateB;
-      }
+      // Concatenamos la fechaVenta y la horaVenta con la 'T' para formato ISO
+      const fechaHoraA = `${a.fechaVenta || '1970-01-01'}T${a.horaVenta || '00:00:00'}`;
+      const fechaHoraB = `${b.fechaVenta || '1970-01-01'}T${b.horaVenta || '00:00:00'}`;
+
+      // Obtenemos los milisegundos exactos
+      const timeA = new Date(fechaHoraA).getTime();
+      const timeB = new Date(fechaHoraB).getTime();
+
+      // Ordenamos según la dirección seleccionada
+      return this.sortDirection === 'reciente' ? timeB - timeA : timeA - timeB;
     });
 
     this.filteredVentas = tempVentas;
@@ -519,8 +520,13 @@ selectVentaModalDetalle(sale: ventas): void {
       return;
     }
 
-    // ADAPTADOR: Transformamos los datos de la Venta para que el PDFacturaService 
-    // crea que es un Pedido y lo dibuje sin errores.
+   
+    if (this.esClienteAnonimo(ventaData.venta)) {
+      this.mostrarMensaje('Acción denegada', 'No se puede generar factura para un cliente anónimo.', 'warning');
+      return;
+    }
+
+    
     const dataParaPDF = {
       pedido: {
         fechaPedido: ventaData.venta.fechaVenta,
@@ -534,7 +540,7 @@ selectVentaModalDetalle(sale: ventas): void {
       }))
     };
 
-    // ¿YA EXISTE? -> IMPRIMIR
+   
     if (this.facturaActual) {
       try {
         await this.pdfFacturaService.generarFacturaPDF(dataParaPDF, this.facturaActual);
@@ -575,5 +581,13 @@ selectVentaModalDetalle(sale: ventas): void {
         this.mostrarMensaje('Error SIAT', mensaje, 'warning'); 
       }
     });
+  }
+esClienteAnonimo(venta: ventas): boolean {
+    if (!venta || !venta.cliente) return true;
+    
+    const ci = venta.cliente.ci?.trim();
+    const nombre = venta.cliente.persona?.nombre?.trim().toUpperCase();
+
+    return ci === '0' || nombre === 'S/N' || nombre === 'ANONIMO';
   }
 }

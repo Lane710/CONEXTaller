@@ -12,8 +12,8 @@ import { DetalleCarrito } from '../../models/CartModel/DetalleCarrito';
 })
 export class CarritoService {
 
-  private baseUrl = 'http://localhost:8080/carrito/';
-  private baseUrl2 = 'http://localhost:8080/detalle-carrito/';
+  private baseUrl = 'https://bdconex.onrender.com/carrito/';
+  private baseUrl2 = 'https://bdconex.onrender.com/detalle-carrito/';
 
   constructor(private http: HttpClient) { }
 

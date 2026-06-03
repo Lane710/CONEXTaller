@@ -16,6 +16,7 @@
           <label class="form-check-label">{{ cat.nombre }}</label>
         </div>
       </div>
+      
 <!--
       <div *ngIf="categoriasSeleccionadasIds.length === 1 && subcategoriasDisponibles.length > 0" class="filter-group">
         <h6 class="fw-semibold mb-2 text-muted">Subcategorías</h6>
@@ -87,13 +88,13 @@
           </div>
           
           <!-- Botones -->
-          <div class="mt-auto">
+         <div class="mt-auto">
             <button class="btn-cart w-100 mb-2" 
-                    (click)="agregarAlCarrito(item)"
-                    [disabled]="item.cantidad === 0"
+                    (click)="item.anadidoAlCarrito ? irAlCarrito() : agregarAlCarrito(item)"
+                    [disabled]="item.cantidad === 0 && !item.anadidoAlCarrito"
                     [class.added]="item.anadidoAlCarrito">
               <span *ngIf="!item.anadidoAlCarrito">🛒 Añadir al carrito</span>
-              <span *ngIf="item.anadidoAlCarrito">✅ Añadido</span>
+              <span *ngIf="item.anadidoAlCarrito">🛒 Ir al carrito</span>
             </button>
           </div>
         </div>

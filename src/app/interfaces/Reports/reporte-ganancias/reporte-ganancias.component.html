@@ -7,16 +7,9 @@
         <p class="text-muted mb-0">Analiza el desempeño financiero de tu negocio</p>
       </div>
       <div class="d-flex gap-2">
-        <button class="btn btn-outline-primary btn-sm" (click)="generarReporte()" [disabled]="cargando">
-          <i class="bi bi-arrow-clockwise"></i> {{ cargando ? 'Generando...' : 'Actualizar' }}
-        </button>
-        
+       
         <button class="btn btn-danger btn-sm text-white" (click)="exportarPDF()" [disabled]="!tieneDatos() || cargando">
           <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
-        </button>
-        
-        <button class="btn btn-success btn-sm" (click)="exportarExcel()" [disabled]="!tieneDatos()">
-          <i class="bi bi-file-earmark-excel"></i> Exportar Excel
         </button>
       </div>
     </div>
@@ -44,7 +37,7 @@
           </div>
           <div class="col-md-3">
             <label class="form-label">Fecha Fin</label>
-            <input type="date" class="form-control" [(ngModel)]="filtros.fechaFin" (change)="validarFechas()">
+            <input type="date" class="form-control" [(ngModel)]="filtros.fechaFin" (change)="validarFechas()" [max]="filtros.fechaFin">
           </div>
         </ng-container>
 

@@ -7,7 +7,7 @@ import { ApiResponse } from '../../models/api-response';
   providedIn: 'root'
 })
 export class AsignacionUnidadesService {
-  private apiUrl = 'http://localhost:8080/asignaciones/';
+  private apiUrl = 'https://bdconex.onrender.com/asignaciones/';
 
   constructor(private http: HttpClient) { }
 

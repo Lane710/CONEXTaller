@@ -31,7 +31,7 @@ declare var bootstrap: any;
   imports: [NgFor, NgIf, FormsModule],
   templateUrl: './datos-cliente.component.html',
   styleUrl: './datos-cliente.component.css',
-})
+})  
 export class DatosClienteComponent implements OnInit {
   // Variables Globales
   username: string = localStorage.getItem('current_username') || '';
@@ -43,6 +43,8 @@ export class DatosClienteComponent implements OnInit {
   errorMessage: string = '';
   departamentoDefault: string = 'Tarija';
   numeroTienda: string = '59175135309';
+  totalPedidoConfirmado: number = 0; 
+  codigoPedidoConfirmado: string = '';
   // Información del usuario
   usuarioInfo: usuarios | null = null;
   // Nueva variable para guardar el link generado antes de borrar el carrito
@@ -470,83 +472,66 @@ export class DatosClienteComponent implements OnInit {
       .pipe(
         switchMap((pedidoGuardado: ApiResponse) => {
           if (!pedidoGuardado.success || !pedidoGuardado.data) {
-            throw new Error(
-              'Error al guardar el pedido (incl. detalles): ' +
-                pedidoGuardado.message,
-            );
+            throw new Error('Error al guardar el pedido: ' + pedidoGuardado.message);
           }
 
-          const pedidoId = (pedidoGuardado.data as pedidos).idPedido;
+          // Convertimos a 'any' por si 'codigoPedido' no está en tu interface TypeScript aún
+          const pedidoGuardadoObj = pedidoGuardado.data as any; 
+          const pedidoId = pedidoGuardadoObj.idPedido;
 
           if (!pedidoId) {
             throw new Error('El ID del pedido guardado no fue retornado.');
           }
 
+          // 🔥 CAPTURAMOS EL CÓDIGO DEL PEDIDO AQUÍ 🔥
+          // Nota: Si en tu backend de Java la variable se llama diferente (ej: 'codigo'), cámbialo aquí.
+          // Usamos pedidoId como respaldo por si falla.
+          this.codigoPedidoConfirmado = pedidoGuardadoObj.codigoPedido || pedidoId.toString();
+
           this.pedido.idPedido = pedidoId;
           this.envio.pedido = { ...this.pedido, idPedido: pedidoId };
 
-          console.log(
-            `Pedido (y detalles) guardado con ID: ${pedidoId}. Procediendo con Envío (Stock omitido).`,
-          );
-
-          // --- SECCIÓN ELIMINADA: Ya no calculamos ni ejecutamos stockUpdates ---
+          console.log(`Pedido guardado. Procediendo con Envío.`);
 
           // 2. Guardamos la Dirección de Envío
           return this.direccionEnvioS.save(this.direccionEnvio).pipe(
             switchMap((direccionGuardada: ApiResponse) => {
               if (!direccionGuardada.success || !direccionGuardada.data) {
-                throw new Error(
-                  'Error al guardar la dirección de envío: ' +
-                    direccionGuardada.message,
-                );
+                throw new Error('Error al guardar la dirección: ' + direccionGuardada.message);
               }
 
-              const direccionGuardadaObj =
-                direccionGuardada.data as direccionesEnvio;
-              const direccionId = direccionGuardadaObj.idDireccionEnvio;
-
+              const direccionId = (direccionGuardada.data as direccionesEnvio).idDireccionEnvio;
+              
               if (!direccionId) {
-                throw new Error(
-                  'El ID de la dirección guardada no fue retornado.',
-                );
+                throw new Error('El ID de la dirección no fue retornado.');
               }
 
-              this.envio.direccionEnvio = {
-                ...this.direccionEnvio,
-                idDireccionEnvio: direccionId,
-              };
-
-              console.log(`Dirección de envío guardada con ID: ${direccionId}`);
+              this.envio.direccionEnvio = { ...this.direccionEnvio, idDireccionEnvio: direccionId };
 
               // 3. Guardamos la información del Envío
               return this.enviosS.save(this.envio);
-            }),
+            })
           );
-        }),
+        })
       )
       .subscribe({
         next: (response) => {
           this.isLoading = false;
           console.log('Pedido y envío registrados exitosamente.', response);
 
-          // 🔥 NUEVO: PREPARAMOS EL MENSAJE AQUÍ MISMO ANTES DE VACIAR EL CARRITO
+          // 🔥 CONGELAMOS EL TOTAL AQUÍ ANTES DE VACIAR EL CARRITO 🔥
+          this.totalPedidoConfirmado = this.totalCarrito;
+
+          // Preparamos WhatsApp usando los datos congelados
           this.prepararMensajeWhatsApp();
 
-          // 4. Limpiamos el carrito (Visual y base de datos)
+          // 4. Limpiamos el carrito
           this.limpiarCarrito();
           this.mostrarModalExito();
         },
         error: (err: HttpErrorResponse) => {
           this.isLoading = false;
-          console.error(
-            'Error durante la secuencia de registro del pedido:',
-            err,
-          );
-
-          const errorMsg =
-            err.error?.message ||
-            err.message ||
-            'Ocurrió un error al procesar el pedido.';
+          const errorMsg = err.error?.message || err.message || 'Ocurrió un error al procesar el pedido.';
           this.mostrarErrorModal(errorMsg);
         },
       });
@@ -555,7 +540,7 @@ export class DatosClienteComponent implements OnInit {
 
   // 1. Método que arma y guarda el mensaje ANTES de limpiar el carrito
   prepararMensajeWhatsApp(): void {
-    const idPedido = this.pedido.idPedido || 'N/A';
+    const idPedido = this.codigoPedidoConfirmado || 'N/A';
     const nombreCliente = this.usuarioInfo?.persona?.nombre || 'Cliente';
     const total = this.totalCarrito;
 
@@ -618,7 +603,8 @@ export class DatosClienteComponent implements OnInit {
   }
 
   validarEmail(email: string): boolean {
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    // Se cambia la Regex genérica por la estricta de Gmail
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
     return emailRegex.test(email);
   }
 

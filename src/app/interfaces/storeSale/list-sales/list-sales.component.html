@@ -219,16 +219,22 @@
                 >
                   <img src="icon_Ventas/codigoProduct.svg" alt="" />
                 </button>
-                <button class="btn btn-sm" (click)="selectVenta(sale)">
-                  <img
-                    [src]="
-                      sale?.estado === 'CANCELADA'
-                        ? '/icon_Productos/Listar/habilitar.svg'
-                        : '/icon_Productos/Listar/deshabilitar.svg'
-                    "
-                    alt="Estado del producto"
-                  />
-                </button>
+               <button 
+  class="btn btn-sm" 
+  (click)="selectVenta(sale)"
+  [disabled]="sale.estado === 'CANCELADA'"
+  [title]="sale.estado === 'CANCELADA' ? 'La venta está cancelada y no se puede habilitar' : 'Cancelar Venta'"
+>
+  <img
+    [src]="
+      sale?.estado === 'CANCELADA'
+        ? '/icon_Productos/Listar/deshabilitar.svg'
+        : '/icon_Productos/Listar/deshabilitar.svg'
+    "
+    alt="Estado de la venta"
+    ngStyle="{'opacity': sale.estado === 'CANCELADA' ? '0.5' : '1'}"
+  />
+</button>
                <!-- <button
                   class="btn btn-sm"
                   (click)="registrarEnvio(sale)"
@@ -666,7 +672,7 @@
         </div>
       </div>
 
-      <div class="modal-footer">
+     <div class="modal-footer">
         <button
           type="button"
           class="btn btn-outline-secondary"
@@ -674,19 +680,20 @@
         >
           <i class="fas fa-times me-2"></i>Cerrar
         </button>
-        <button
-  type="button"
-  class="btn px-4 shadow-sm d-flex align-items-center"
-  [ngClass]="facturaActual ? 'btn-success' : 'btn-primary'"
-  (click)="ProcesarFactura(ventaSeleccionada)" 
-  [disabled]="ventaSeleccionada.venta.estado !== 'COMPLETADA' || verificandoFactura"
->
-  <span *ngIf="verificandoFactura" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-  <i *ngIf="!verificandoFactura" class="fas me-2" [ngClass]="facturaActual ? 'fa-print' : 'fa-receipt'"></i>
-  
-  <span *ngIf="verificandoFactura">Verificando...</span>
-  <span *ngIf="!verificandoFactura">{{ facturaActual ? 'Imprimir Factura' : 'Generar Factura' }}</span>
-</button>
+       <button
+          type="button"
+          class="btn px-4 shadow-sm d-flex align-items-center"
+          [ngClass]="facturaActual ? 'btn-success' : 'btn-primary'"
+          (click)="ProcesarFactura(ventaSeleccionada)" 
+          [disabled]="ventaSeleccionada.venta.estado !== 'COMPLETADA' || verificandoFactura || esClienteAnonimo(ventaSeleccionada.venta)"
+          [title]="esClienteAnonimo(ventaSeleccionada.venta) ? 'No se puede facturar a clientes anónimos' : ''"
+        >
+          <span *ngIf="verificandoFactura" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          <i *ngIf="!verificandoFactura" class="fas me-2" [ngClass]="facturaActual ? 'fa-print' : 'fa-receipt'"></i>
+          
+          <span *ngIf="verificandoFactura">Verificando...</span>
+          <span *ngIf="!verificandoFactura">{{ facturaActual ? 'Imprimir Factura' : 'Generar Factura' }}</span>
+        </button>
       </div>
     </div>
   </div>

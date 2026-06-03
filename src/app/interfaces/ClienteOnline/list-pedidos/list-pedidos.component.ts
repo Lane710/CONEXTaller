@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Renderer2 } from '@angular/core';
 import {
   CommonModule,
   DatePipe,
@@ -20,20 +20,13 @@ interface PedidoConDetalles {
   pedido: pedidos;
   detallePedidos: detallePedido[];
   isExpanded?: boolean;
-  cargandoDetalles?: boolean; // Para mostrar estado de carga
+  cargandoDetalles?: boolean;
 }
 
 @Component({
   selector: 'app-list-pedidos',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-   
-    TitleCasePipe,
-    LowerCasePipe,
-    SlicePipe,
-  ],
+  imports: [CommonModule, FormsModule, TitleCasePipe, LowerCasePipe, SlicePipe],
   templateUrl: './list-pedidos.component.html',
   styleUrls: ['./list-pedidos.component.css'],
 })
@@ -42,9 +35,9 @@ export class ListPedidosComponent implements OnInit {
   allPedidosConDetalles: PedidoConDetalles[] = [];
   filteredPedidosConDetalles: PedidoConDetalles[] = [];
 
-  //numero de pedidos
   numeroTienda: string = '59175135309';
-  // Variables de paginación y filtros
+  
+  // Paginación
   currentPage = 1;
   itemsPerPage = 5;
   totalPages = 0;
@@ -55,7 +48,7 @@ export class ListPedidosComponent implements OnInit {
   filterStatus: 'PENDIENTE' | 'ENTREGADO' | 'CANCELADO' | 'todos' = 'todos';
   sortDirection: 'reciente' | 'antiguo' = 'reciente';
 
-  // Variables para modales
+  // Variables Modales
   envioSeleccionado: envios | null = null;
   ListaDetallePedidoSelec: detallePedido[] = [];
   pedidoSeleccionado: pedidos | null = null;
@@ -66,6 +59,7 @@ export class ListPedidosComponent implements OnInit {
     private pedidosS: PedidosService,
     private enviosS: EnviosService,
     private detallePedidoS: DetallePedidosService,
+    private renderer: Renderer2
   ) {}
 
   ngOnInit(): void {
@@ -74,23 +68,18 @@ export class ListPedidosComponent implements OnInit {
 
   listadoPedidos() {
     const usernameFromLocalStorage = localStorage.getItem('current_username');
-
     if (usernameFromLocalStorage) {
-      this.pedidosS
-        .getListadoProductosPorPedidoUsuario(usernameFromLocalStorage)
-        .subscribe({
-          next: (response) => {
-            this.pedidosOriginal = response.data || [];
-            this.cargarDetallesParaPedidos(this.pedidosOriginal);
-          },
-          error: (error) => console.error('Error al obtener pedidos:', error),
-        });
+      this.pedidosS.getListadoProductosPorPedidoUsuario(usernameFromLocalStorage).subscribe({
+        next: (response) => {
+          this.pedidosOriginal = response.data || [];
+          this.cargarDetallesParaPedidos(this.pedidosOriginal);
+        },
+        error: (error) => console.error('Error al obtener pedidos:', error),
+      });
     }
   }
 
-  // Nuevo método para cargar detalles de todos los pedidos
   cargarDetallesParaPedidos(pedidosList: pedidos[]) {
-    // Inicializar array con pedidos vacíos
     this.allPedidosConDetalles = pedidosList.map((pedido) => ({
       pedido: pedido,
       detallePedidos: [],
@@ -98,30 +87,20 @@ export class ListPedidosComponent implements OnInit {
       cargandoDetalles: true,
     }));
 
-    // Cargar detalles para cada pedido
-    pedidosList.forEach((pedido, index) => {
+    pedidosList.forEach((pedido) => {
       if (pedido.idPedido) {
         this.detallePedidoS.getById(pedido.idPedido).subscribe({
           next: (response) => {
-            // Actualizar los detalles del pedido correspondiente
-            const pedidoIndex = this.allPedidosConDetalles.findIndex(
-              (p) => p.pedido.idPedido === pedido.idPedido,
-            );
+            const pedidoIndex = this.allPedidosConDetalles.findIndex((p) => p.pedido.idPedido === pedido.idPedido);
             if (pedidoIndex !== -1) {
-              this.allPedidosConDetalles[pedidoIndex].detallePedidos =
-                response.data || [];
+              this.allPedidosConDetalles[pedidoIndex].detallePedidos = response.data || [];
               this.allPedidosConDetalles[pedidoIndex].cargandoDetalles = false;
             }
-            this.applyFiltersAndSort(); // Re-aplicar filtros después de cargar
+            this.applyFiltersAndSort();
           },
           error: (error) => {
-            console.error(
-              `Error al cargar detalles del pedido ${pedido.idPedido}:`,
-              error,
-            );
-            const pedidoIndex = this.allPedidosConDetalles.findIndex(
-              (p) => p.pedido.idPedido === pedido.idPedido,
-            );
+            console.error(`Error al cargar detalles del pedido ${pedido.idPedido}:`, error);
+            const pedidoIndex = this.allPedidosConDetalles.findIndex((p) => p.pedido.idPedido === pedido.idPedido);
             if (pedidoIndex !== -1) {
               this.allPedidosConDetalles[pedidoIndex].cargandoDetalles = false;
             }
@@ -129,11 +108,6 @@ export class ListPedidosComponent implements OnInit {
         });
       }
     });
-  }
-
-  prepararLista(pedidosList: pedidos[]) {
-    // Este método ya no se usa directamente, usamos cargarDetallesParaPedidos
-    this.cargarDetallesParaPedidos(pedidosList);
   }
 
   // --- Filtros y Paginación ---
@@ -153,62 +127,42 @@ export class ListPedidosComponent implements OnInit {
     this.applyFiltersAndSort();
   }
 
-  applyFiltersAndSort(): void {
+ applyFiltersAndSort(): void {
     let tempPedidos = [...this.allPedidosConDetalles];
 
-    const statusPriority: { [key: string]: number } = {
-      PENDIENTE: 1,
-      ENTREGADO: 2,
-      CANCELADO: 3,
-    };
-
+    // 1. Aplicar filtro de búsqueda por texto (ID o Producto)
     if (this.searchText.trim()) {
       const term = this.searchText.toLowerCase().trim();
       tempPedidos = tempPedidos.filter((item) => {
-        // Buscar por ID del pedido
         const pedidoIdStr = `ped${item.pedido.idPedido}`.toLowerCase();
-
-        // Buscar en nombres de productos
         const productosMatch = item.detallePedidos.some((detalle) =>
-          detalle.producto.nombre.toLowerCase().includes(term),
+          detalle.producto.nombre.toLowerCase().includes(term)
         );
-
         return pedidoIdStr.includes(term) || productosMatch;
       });
     }
 
+    // 2. Aplicar filtro por estado (si no es 'todos')
     if (this.filterStatus !== 'todos') {
-      tempPedidos = tempPedidos.filter(
-        (item) => item.pedido.estado === this.filterStatus,
-      );
+      tempPedidos = tempPedidos.filter((item) => item.pedido.estado === this.filterStatus);
     }
 
-    // 🔥 AQUÍ ESTÁ LA MAGIA: ORDENAMIENTO POR ESTADO, FECHA Y HORA 🔥
+    // 3. Ordenar ESTRICTAMENTE por Fecha y Hora
     tempPedidos.sort((a, b) => {
-      const estadoA = a.pedido.estado || '';
-      const estadoB = b.pedido.estado || '';
-
-      // 1. Primero agrupa por prioridad de Estado (Pendiente > Entregado > Cancelado)
-      if (statusPriority[estadoA] !== statusPriority[estadoB]) {
-        return statusPriority[estadoA] - statusPriority[estadoB];
-      }
-
-      // 2. Luego ordena por Fecha + Hora exacta
-      // Concatenamos la fecha y la hora (con un formato seguro: YYYY-MM-DDTHH:mm:ss)
+      // Concatenamos fecha y hora para tener un valor exacto
       const fechaHoraA = `${a.pedido.fechaPedido || '1970-01-01'}T${a.pedido.horaRegistro || '00:00:00'}`;
       const fechaHoraB = `${b.pedido.fechaPedido || '1970-01-01'}T${b.pedido.horaRegistro || '00:00:00'}`;
 
       const dateA = new Date(fechaHoraA).getTime();
       const dateB = new Date(fechaHoraB).getTime();
 
-      // Si sortDirection es 'reciente', el mayor (más nuevo) va primero
+      // Dependiendo de sortDirection, ordenamos de más reciente a más antiguo o viceversa
       return this.sortDirection === 'reciente' ? dateB - dateA : dateA - dateB;
     });
 
     this.filteredPedidosConDetalles = tempPedidos;
     this.updatePagination();
   }
-
   ordenarPorFechaReciente(): void {
     this.sortDirection = 'reciente';
     this.currentPage = 1;
@@ -222,11 +176,8 @@ export class ListPedidosComponent implements OnInit {
   }
 
   updatePagination(): void {
-    this.totalPages = Math.ceil(
-      this.filteredPedidosConDetalles.length / this.itemsPerPage,
-    );
-    if (this.currentPage > this.totalPages && this.totalPages > 0)
-      this.currentPage = this.totalPages;
+    this.totalPages = Math.ceil(this.filteredPedidosConDetalles.length / this.itemsPerPage);
+    if (this.currentPage > this.totalPages && this.totalPages > 0) this.currentPage = this.totalPages;
     else if (this.totalPages === 0) this.currentPage = 1;
     this.generatePaginationPages();
   }
@@ -261,45 +212,119 @@ export class ListPedidosComponent implements OnInit {
     this.pages = pages;
   }
 
-  // --- Modales y Acciones ---
-  verEnvio(idPedido: number) {
-    this.envioSeleccionado = null;
-    this.enviosS.findByPedidoId(idPedido).subscribe({
-      next: (response) => (this.envioSeleccionado = response.data || null),
-      error: () => (this.envioSeleccionado = null),
-    });
+  // ==========================================
+  // MANEJO DE MODALES LIMPIO
+  // ==========================================
+  
+  private abrirModal(modalId: string) {
+    const modalEl = document.getElementById(modalId);
+    if (modalEl) {
+      let modal = bootstrap.Modal.getInstance(modalEl);
+      if (!modal) {
+        modal = new bootstrap.Modal(modalEl);
+      }
+      modal.show();
+    }
   }
 
+  private cerrarModal(modalId: string) {
+    const modalEl = document.getElementById(modalId);
+    if (modalEl) {
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      if (modal) {
+        modal.hide();
+      }
+    }
+  }
+
+  limpiarEstadoModales() {
+    this.renderer.removeClass(document.body, 'modal-open');
+    this.renderer.setStyle(document.body, 'overflow', '');
+    this.renderer.setStyle(document.body, 'padding-right', '');
+    const backdrops = document.getElementsByClassName('modal-backdrop');
+    while (backdrops.length > 0) {
+      backdrops[0].parentNode?.removeChild(backdrops[0]);
+    }
+  }
+
+  // --- Acciones ---
   verDetalles(pedido: pedidos) {
     this.pedidoSeleccionado = pedido;
-    // Buscar los detalles del pedido en allPedidosConDetalles
-    const pedidoConDetalles = this.allPedidosConDetalles.find(
-      (p) => p.pedido.idPedido === pedido.idPedido,
-    );
+    const pedidoConDetalles = this.allPedidosConDetalles.find((p) => p.pedido.idPedido === pedido.idPedido);
     this.ListaDetallePedidoSelec = pedidoConDetalles?.detallePedidos || [];
 
     if (this.ListaDetallePedidoSelec.length === 0 && pedido.idPedido) {
-      // Si no hay detalles, cargarlos
       this.detallePedidoS.getById(pedido.idPedido).subscribe({
         next: (response) => {
           this.ListaDetallePedidoSelec = response.data;
-          // Actualizar también en allPedidosConDetalles
-          const index = this.allPedidosConDetalles.findIndex(
-            (p) => p.pedido.idPedido === pedido.idPedido,
-          );
+          const index = this.allPedidosConDetalles.findIndex((p) => p.pedido.idPedido === pedido.idPedido);
           if (index !== -1) {
             this.allPedidosConDetalles[index].detallePedidos = response.data;
           }
+          this.abrirModal('detallePedidoModal');
         },
         error: (error) => console.error('Error al obtener detalles:', error),
       });
+    } else {
+      this.abrirModal('detallePedidoModal');
     }
   }
-contactarWhatsApp(item: PedidoConDetalles): void {
+
+  verEnvio(idPedido: number) {
+    // Cierra el modal de detalle primero
+    this.cerrarModal('detallePedidoModal');
+    this.envioSeleccionado = null;
+
+    this.enviosS.findByPedidoId(idPedido).subscribe({
+      next: (response) => {
+        this.envioSeleccionado = response.data || null;
+        // Esperamos a que cierre el anterior (aprox 400ms) antes de abrir el nuevo
+        setTimeout(() => this.abrirModal('detalleEnvioModal'), 400);
+      },
+      error: () => {
+        this.envioSeleccionado = null;
+        setTimeout(() => this.abrirModal('detalleEnvioModal'), 400);
+      },
+    });
+  }
+
+  prepararCancelacion(pedido: pedidos) {
+    this.pedidoParaCancelar = pedido;
+    this.razonCancelacion = '';
+    this.abrirModal('confirmarCancelacionModal');
+  }
+
+  confirmarCancelacion() {
+    if (this.pedidoParaCancelar && this.pedidoParaCancelar.idPedido) {
+      const razonFinal = this.razonCancelacion.trim() !== '' 
+                          ? this.razonCancelacion.trim() 
+                          : 'Cancelado por el cliente sin especificar motivo';
+
+      this.pedidosS.cancelarPedidoConRazon(this.pedidoParaCancelar.idPedido, razonFinal).subscribe({
+        next: () => {
+          this.cerrarModal('confirmarCancelacionModal');
+          
+          // Limpieza forzosa porque recargamos la lista
+          setTimeout(() => {
+            this.limpiarEstadoModales();
+            this.pedidoParaCancelar = null;
+            this.razonCancelacion = '';
+            this.listadoPedidos();
+          }, 300);
+        },
+        error: (error) => {
+          console.error('Error al cancelar:', error);
+          this.cerrarModal('confirmarCancelacionModal');
+          setTimeout(() => this.limpiarEstadoModales(), 300);
+        },
+      });
+    }
+  }
+
+  contactarWhatsApp(item: PedidoConDetalles): void {
     const idPedido = item.pedido.codigoPedido || '#PED' + item.pedido.idPedido;
     const total = item.pedido.totalPedido;
 
-    // Construimos la lista de productos si están disponibles en la vista
     let listaProductos = '';
     if (item.detallePedidos && item.detallePedidos.length > 0) {
       item.detallePedidos.forEach((detalle) => {
@@ -309,7 +334,6 @@ contactarWhatsApp(item: PedidoConDetalles): void {
       listaProductos = '- (Los detalles están en el sistema)\n';
     }
 
-    // Armamos el mensaje adaptado para una consulta de pedido existente
     const mensajeBruto = 
       `*CONSULTA DE PEDIDO WEB - ${idPedido}*\n\n` +
       `Hola, me comunico para consultar sobre el estado de mi pedido:\n\n` +
@@ -318,46 +342,10 @@ contactarWhatsApp(item: PedidoConDetalles): void {
       `*TOTAL: Bs ${total}*\n\n` +
       `Por favor, necesito más información. Quedo atento/a.`;
 
-    // Codificamos y abrimos la URL en una nueva pestaña
     const mensajeCodificado = encodeURIComponent(mensajeBruto);
     const enlaceWhatsAppDefinitivo = `https://wa.me/${this.numeroTienda}?text=${mensajeCodificado}`;
     
     window.open(enlaceWhatsAppDefinitivo, '_blank');
-  }
-  prepararCancelacion(pedido: pedidos) {
-    this.pedidoParaCancelar = pedido;
-    this.razonCancelacion = '';
-  }
-
-  confirmarCancelacion() {
-    if (this.pedidoParaCancelar && this.pedidoParaCancelar.idPedido) {
-      
-      // Si el cliente no escribió nada, enviamos un texto por defecto
-      // (Opcional: Si tu backend acepta strings vacíos o nulos, puedes enviar this.razonCancelacion directamente)
-      const razonFinal = this.razonCancelacion.trim() !== '' 
-                          ? this.razonCancelacion.trim() 
-                          : 'Cancelado por el cliente sin especificar motivo';
-
-      this.pedidosS
-        .cancelarPedidoConRazon(
-          this.pedidoParaCancelar.idPedido,
-          razonFinal,
-        )
-        .subscribe({
-          next: () => {
-            const modalElement = document.getElementById(
-              'confirmarCancelacionModal',
-            );
-            const modal = bootstrap.Modal.getInstance(modalElement);
-            if (modal) modal.hide();
-
-            this.pedidoParaCancelar = null;
-            this.razonCancelacion = '';
-            this.listadoPedidos(); // Recargar la lista
-          },
-          error: (error) => console.error('Error al cancelar:', error),
-        });
-    }
   }
 
   trackByPedidoId(index: number, item: PedidoConDetalles): number {

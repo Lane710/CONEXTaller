@@ -84,10 +84,13 @@ export class AuthService {
     return true;
   }
 
-  public hasRole(role: string): boolean {
-    const userState = this.userStateSubject.value;
-    return userState.role === role;
-  }
+ hasRole(roleName: string): boolean {
+  const currentRole = this.userStateSubject.value.role;
+  if (!currentRole) return false;
+  
+  // Compara convirtiendo ambos a minúsculas
+  return currentRole.toLowerCase() === roleName.toLowerCase();
+}
 
   public getRole(): string | null {
     const userState = this.userStateSubject.value;

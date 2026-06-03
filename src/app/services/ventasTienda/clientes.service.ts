@@ -9,7 +9,7 @@ import { clientes } from '../../models/Ventas/clientes';
 })
 export class ClientesService {
 
-  private apiUrl = 'http://localhost:8080/clientes/';
+  private apiUrl = 'https://bdconex.onrender.com/clientes/';
 
   constructor(private http: HttpClient) { }
 

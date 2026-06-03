@@ -31,10 +31,7 @@
       <app-reporte-envios *ngSwitchCase="'envios'"></app-reporte-envios>
 
       <!-- REPORTE DE FACTURAS (mantiene el genérico) -->
-      <ng-template [ngSwitchCase]="'facturas'">
-        <app-reporte-generico [reportName]="'Facturas'"></app-reporte-generico>
-      </ng-template>
-      
+   
       <div *ngSwitchDefault class="alert alert-warning mt-3">
         Seleccione un tipo de reporte para comenzar.
       </div>

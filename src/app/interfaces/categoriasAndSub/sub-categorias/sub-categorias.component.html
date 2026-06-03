@@ -38,9 +38,9 @@
   <!-- Sección de subcategorías -->
   <section class="categories-section">
     <div class="categories-grid">
-      @for (item of subcategoriasFiltradas; track item.idSubcategoria) {
-      <div class="category-item" (click)="abrirModalDetalles(item)">
-        <!-- Contenedor de imagen con tamaño fijo -->
+    @for (item of subcategoriasFiltradas; track item.idSubcategoria) {
+      <div class="category-item" [ngClass]="{'inactive-category': !item.estado}" (click)="abrirModalDetalles(item)">
+        
         <div class="image-container">
           <img [src]="item.urlImagen" [alt]="item.nombre" class="category-image" 
                (error)="item.urlImagen = 'assets/images/placeholder.jpg'"/>
