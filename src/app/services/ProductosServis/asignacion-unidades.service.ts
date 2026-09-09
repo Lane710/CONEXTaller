@@ -7,7 +7,7 @@ import { ApiResponse } from '../../models/api-response';
   providedIn: 'root'
 })
 export class AsignacionUnidadesService {
-  private apiUrl = 'https://bdconex.onrender.com/asignaciones/';
+  private apiUrl = 'https://conex-api-backend.duckdns.org/asignaciones/';
 
   constructor(private http: HttpClient) { }
 

@@ -8,7 +8,7 @@ import { detalleVenta } from '../../models/Ventas/detalleVenta';
   providedIn: 'root',
 })
 export class DetalleVentasService {
-  private apiUrl = 'https://bdconex.onrender.com/detalleventas/';
+  private apiUrl = 'https://conex-api-backend.duckdns.org/detalleventas/';
 
   constructor(private http: HttpClient) {}
 

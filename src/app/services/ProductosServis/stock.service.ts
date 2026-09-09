@@ -16,8 +16,8 @@ export class StockService {
   // Renombrado a StockService
 
   // ¡IMPORTANTE! Asegúrate de que este puerto y ruta base sean correctos para tu backend de stock.
-  private apiUrl = 'https://bdconex.onrender.com/stock/'; // URL del API actualizada a /stock/
-  private apiUrlP = 'https://bdconex.onrender.com/productos/';
+  private apiUrl = 'https://conex-api-backend.duckdns.org/stock/'; // URL del API actualizada a /stock/
+  private apiUrlP = 'https://conex-api-backend.duckdns.org/productos/';
 
   constructor(
     private http: HttpClient,

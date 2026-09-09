@@ -9,7 +9,7 @@ import { ApiResponse } from '../../../models/api-response';
   providedIn: 'root'
 })
 export class ProductoValorPropiedadService {
-  private baseUrl = 'https://bdconex.onrender.com/producto-valores-propiedad/';
+  private baseUrl = 'https://conex-api-backend.duckdns.org/producto-valores-propiedad/';
 
   constructor(private http: HttpClient) { }
 

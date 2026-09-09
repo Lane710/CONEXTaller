@@ -10,7 +10,7 @@ import { detallePedido } from '../../models/PedidosEnviosDetalles/detallePedido'
 export class DetallePedidosService {
 
   // URL base para el servicio de pedidos, asegúrate de que sea la correcta.
-  private apiUrl = 'https://bdconex.onrender.com/detalle-pedidos/';
+  private apiUrl = 'https://conex-api-backend.duckdns.org/detalle-pedidos/';
 
   constructor(private http: HttpClient) { }
 

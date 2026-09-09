@@ -9,7 +9,7 @@ import { direccionesEnvio } from '../../models/PedidosEnviosDetalles/direcciones
 })
 export class DireccionEnvioService {
 
-  private Url='https://bdconex.onrender.com/direcciones-envio/';
+  private Url='https://conex-api-backend.duckdns.org/direcciones-envio/';
 
   constructor( private http:HttpClient) { }
  

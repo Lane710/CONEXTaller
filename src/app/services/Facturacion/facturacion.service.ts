@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class FacturacionService {
-  private baseUrl = 'http://localhost:8080/api/facturacion';
+  private baseUrl = 'https://conex-api-backend.duckdns.org/api/facturacion';
 
   constructor(private http: HttpClient) { }
 

@@ -12,7 +12,7 @@ import { forma_pago } from '../../models/PedidosEnviosDetalles/forma_pago';
 })
 export class FormaPagoService {
   
-  private apiUrl = 'https://bdconex.onrender.com/formas-pago/'; // Reemplaza la URL si es necesario
+  private apiUrl = 'https://conex-api-backend.duckdns.org/formas-pago/'; // Reemplaza la URL si es necesario
 
   constructor(private http: HttpClient) { }
 

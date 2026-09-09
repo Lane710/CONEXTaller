@@ -22,9 +22,9 @@ export interface LoginResponse {
 })
 export class UsuariosService {
   // ¡MUY IMPORTANTE! Cambia el puerto a 8081
-  private apiUrl = 'https://bdconex.onrender.com/usuarios/';
-  private apiUrlRoles = 'https://bdconex.onrender.com/roles/';
-  private loginAuthUrl = 'https://bdconex.onrender.com/user/'; // Asegúrate de que esta ruta sea correcta para tu login
+  private apiUrl = 'https://conex-api-backend.duckdns.org/usuarios/';
+  private apiUrlRoles = 'https://conex-api-backend.duckdns.org/roles/';
+  private loginAuthUrl = 'https://conex-api-backend.duckdns.org/user/'; // Asegúrate de que esta ruta sea correcta para tu login
 
   
   constructor(private http: HttpClient) {}

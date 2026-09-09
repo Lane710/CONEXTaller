@@ -17,7 +17,7 @@ export interface ValidationResult {
 })
 export class CategoriasService {
 
-  private baseUrl = 'https://bdconex.onrender.com/categorias/'; 
+  private baseUrl = 'https://conex-api-backend.duckdns.org/categorias/'; 
 
   constructor(private http: HttpClient) { }
 

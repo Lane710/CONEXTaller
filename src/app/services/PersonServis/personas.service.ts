@@ -12,7 +12,7 @@ import { ApiResponse } from '../../models/api-response';
 export class PersonasService {
 
   // ¡IMPORTANTE! Asegúrate de que el puerto aquí coincida con tu backend (8080 en tu configuración de Spring Boot)
-  private apiUrl = 'https://bdconex.onrender.com/personas/';
+  private apiUrl = 'https://conex-api-backend.duckdns.org/personas/';
 
   constructor(private http: HttpClient) { }
 

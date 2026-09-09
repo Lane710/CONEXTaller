@@ -9,10 +9,10 @@ import { ApiResponse } from '../../models/api-response'; // Asegúrate de que es
 export class ReportesService {
   
   // URLS ANTIGUAS
-  private baseUrl = 'https://bdconex.onrender.com/reportes/';
+  private baseUrl = 'https://conex-api-backend.duckdns.org/reportes/';
   
   // URL NUEVA PARA REPORTES DE GANANCIAS
-  private gananciasBaseUrl = 'https://bdconex.onrender.com/api/reportes/ganancias/';
+  private gananciasBaseUrl = 'https://conex-api-backend.duckdns.org/api/reportes/ganancias/';
 
   constructor(private http: HttpClient) { }
 

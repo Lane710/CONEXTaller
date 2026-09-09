@@ -12,8 +12,8 @@ import { DetalleCarrito } from '../../models/CartModel/DetalleCarrito';
 })
 export class CarritoService {
 
-  private baseUrl = 'https://bdconex.onrender.com/carrito/';
-  private baseUrl2 = 'https://bdconex.onrender.com/detalle-carrito/';
+  private baseUrl = 'https://conex-api-backend.duckdns.org/carrito/';
+  private baseUrl2 = 'https://conex-api-backend.duckdns.org/detalle-carrito/';
 
   constructor(private http: HttpClient) { }
 

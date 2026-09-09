@@ -11,7 +11,7 @@ import { ApiResponse } from '../../../models/api-response';
 })
 export class ProductoImagenService {
 
-  private baseUrl = 'https://bdconex.onrender.com/producto-imagenes'; // Ajusta la URL base de tu backend
+  private baseUrl = 'https://conex-api-backend.duckdns.org/producto-imagenes'; // Ajusta la URL base de tu backend
 
   constructor(private http: HttpClient) { }
 

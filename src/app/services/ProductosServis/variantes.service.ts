@@ -9,7 +9,7 @@ import { variante } from '../../models/ProductoStockModel/variante';
 })
 export class VariantesService {
 
-  private baseUrl = 'https://bdconex.onrender.com/variantes/';
+  private baseUrl = 'https://conex-api-backend.duckdns.org/variantes/';
 
   constructor(private http: HttpClient) {}
 

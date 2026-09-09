@@ -8,7 +8,7 @@ import { pedidos } from '../../models/PedidosEnviosDetalles/pedidos';
   providedIn: 'root',
 })
 export class PedidosService {
-  private Url = 'https://bdconex.onrender.com/pedidos/';
+  private Url = 'https://conex-api-backend.duckdns.org/pedidos/';
 
   constructor(private http: HttpClient) {}
 

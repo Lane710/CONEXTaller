@@ -13,9 +13,9 @@ export class ProductosService {
 
   // ¡IMPORTANTE! Asegúrate de que el puerto aquí coincida con tu backend (8080 o 8081)
   // He puesto 8081 según tu instrucción, pero si tu backend sigue en 8080, cámbialo.
-  private apiUrl = 'https://bdconex.onrender.com/productos/';
-  private apiUrlCategoria = 'https://bdconex.onrender.com/categorias/';
-  private apiUrlProveedor = 'https://bdconex.onrender.com/proveedores/';
+  private apiUrl = 'https://conex-api-backend.duckdns.org/productos/';
+  private apiUrlCategoria = 'https://conex-api-backend.duckdns.org/categorias/';
+  private apiUrlProveedor = 'https://conex-api-backend.duckdns.org/proveedores/';
 
   constructor(private http: HttpClient) { }
 
