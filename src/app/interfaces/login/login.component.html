@@ -1,9 +1,4 @@
 
-
-
-
-
-
 <div class="login-container">
   <div class="login-card">
     <div class="login-branding">
@@ -15,6 +10,13 @@
     </div>
     <div class="login-form-area">
       <h2 class="welcome-title">Bienvenido de nuevo</h2>
+
+      <!-- Credenciales de prueba para el Portafolio -->
+      <div class="demo-credentials" style="background-color: #eef2f5; border-left: 4px solid #0d6efd; padding: 12px; border-radius: 4px; margin-bottom: 20px; font-size: 0.9em; text-align: center; color: #333;">
+        Si no tienes una cuenta, puedes usar las siguientes credenciales de prueba<br>
+        Usuario: <strong>vendedor_01</strong> <br>
+        Contraseña: <strong>Contra12/</strong>
+      </div>
 
       <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
         {{ errorMessage }}
