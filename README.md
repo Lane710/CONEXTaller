@@ -44,8 +44,14 @@ Si estás revisando este portafolio, puedes probar el sistema con las siguientes
 ---
 
 ## 📸 Vistas del Sistema
+vista del home:
+<img width="1920" height="5525" alt="HomePoductos" src="https://github.com/user-attachments/assets/901bd285-7b3b-490c-b9c5-60248aea7fad" />
+vista de menu inicio
+<img width="1744" height="921" alt="inicioAPP" src="https://github.com/user-attachments/assets/b0d49cc6-d34f-4253-aff2-c7fc61f6b908" />
+vista productos
+<img width="1920" height="1806" alt="Productos" src="https://github.com/user-attachments/assets/d2efccec-5c3e-45b2-a32f-92773ab6707b" />
 
-*(Nota para Leandro: Aquí puedes arrastrar y soltar 2 o 3 capturas de pantalla de tu sistema funcionando, como la pantalla de login, el listado de productos o el dashboard)*
+
 
 ![Login Conex](URL_DE_TU_IMAGEN_AQUI)
 
