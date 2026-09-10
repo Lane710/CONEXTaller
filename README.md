@@ -1,59 +1,60 @@
-# FrontEndTaller3
+# 🛒 Sistema Web de Gestión Comercial — Conex
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.11.
+![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 
-## Development server
+Plataforma web integral (SPA) desarrollada para la gestión de inventario, ventas, pedidos y envíos, digitalizando por completo los procesos de una tienda tecnológica local.
 
-To start a local development server, run:
+🔗 **Enlace del Proyecto en vivo:** [conex-taller.vercel.app](https://conex-taller.vercel.app/home/inicio)
 
-```bash
-ng serve
-```
+---
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## 🔐 Acceso de Prueba (Demo)
+Si estás revisando este portafolio, puedes probar el sistema con las siguientes credenciales:
+- **Usuario:** `vendedor_01`
+- **Contraseña:** `Contra12/`
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## 🚀 Características Principales
 
-```bash
-ng generate component component-name
-```
+- **Gestión de Inventario:** Control estricto de stock, productos y categorías.
+- **Proceso de Ventas:** Interfaz fluida para realizar ventas en tienda física y gestionar pedidos online.
+- **Roles y Permisos:** Control de acceso basado en roles (Administrador, Dueña, Trabajador, Cliente) asegurado con JWT.
+- **Facturación y Reportes:** Generación automática de reportes en PDF y facturación electrónica.
+- **Pagos Modernos:** Integración para facilitar pagos automatizados mediante códigos QR.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
-```
+## 💻 Tecnologías Utilizadas
 
-## Building
+### Frontend
+* **Framework:** Angular 19
+* **Lenguaje:** TypeScript, HTML5, CSS3
+* **Despliegue:** Vercel
 
-To build the project run:
+### Backend (API REST)
+* **Framework:** Spring Boot (Java)
+* **Seguridad:** JSON Web Tokens (JWT)
+* **Base de Datos:** PostgreSQL
+* **Despliegue:** Servidor VPS configurado con Nginx
 
-```bash
-ng build
-```
+---
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## 📸 Vistas del Sistema
 
-## Running unit tests
+*(Nota para Leandro: Aquí puedes arrastrar y soltar 2 o 3 capturas de pantalla de tu sistema funcionando, como la pantalla de login, el listado de productos o el dashboard)*
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+![Login Conex](URL_DE_TU_IMAGEN_AQUI)
 
-```bash
-ng test
-```
+---
 
-## Running end-to-end tests
+## ⚙️ Instalación Local (Desarrollo)
 
-For end-to-end (e2e) testing, run:
+Si deseas correr este proyecto en tu entorno local:
 
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+1. Clona este repositorio:
+   ```bash
+   git clone (https://github.com/Lane710/CONEXTaller)
