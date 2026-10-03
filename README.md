@@ -1,4 +1,4 @@
-<img width="1280" height="1764" alt="Screenshot 2026-10-02 at 22-00-18 Conex Store" src="https://github.com/user-attachments/assets/37b1514c-dcb5-4805-8b69-695885bf54a4" /># 🛒 Sistema Web de Gestión Comercial — Conex
+# 🛒 Sistema Web de Gestión Comercial — Conex
 
 ![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
@@ -54,10 +54,8 @@ vista de menu producto:
 <img width="1258" height="1284" alt="Screenshot 2026-10-02 at 22-01-10 Conex Store" src="https://github.com/user-attachments/assets/22f81802-ba36-4afa-a620-c686a625ef02" />
 
 
-vista productos:
-<img width="1920" height="1806" alt="Productos" src="https://github.com/user-attachments/assets/d2efccec-5c3e-45b2-a32f-92773ab6707b" />
 
-![Login Conex](URL_DE_TU_IMAGEN_AQUI)
+
 
 ---
 
