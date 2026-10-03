@@ -1,315 +1,312 @@
-/* app-header.component.css */
-.contenedor_header {
+/* Modern Tech Store Header */
+.conex-navbar {
   width: 100%;
-  background-color: white;
-  height: 70px; /* Reducido de 80px */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  color: #29aaca;
-  position: relative; /* Obligatorio para que funcione el z-index */
-  z-index: 1050;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--conex-border, #e2e8f0);
+  height: 68px;
+  position: sticky;
   top: 0;
-  padding: 0 20px; /* Reducido de 25px */
-  box-sizing: border-box;
+  z-index: 1050;
+  box-shadow: 0 4px 16px -4px rgba(15, 23, 42, 0.05);
+  transition: all 0.25s ease;
 }
 
-.header_principal {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1200px; /* Reducido de 1300px */
-  margin: 0 auto;
+.navbar-container {
+  max-width: 1320px;
   height: 100%;
-  padding: 0; /* Ya se maneja en .contenedor_header */
-  box-sizing: border-box;
-}
-
-.header_izquierda {
+  margin: 0 auto;
+  padding: 0 1.5rem;
   display: flex;
   align-items: center;
-  gap: 10px; /* Reducido de 12px */
+  justify-content: space-between;
 }
 
-.menu-toggle-button {
-  background: none;
-  border: none;
-  font-size: 28px; /* Reducido de 30px */
-  color: #29aaca;
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
-  outline: none;
-  transition: transform 0.3s ease;
-}
-
-.menu-toggle-button:hover {
-  transform: scale(1.1);
-}
-
-.icono_logo {
-  font-size: 28px; /* Reducido de 30px */
-  font-weight: bolder;
-  color: #29aaca;
-}
-
-.header_izquierda h1 {
-  margin: 0;
-  font-size: 30px; /* Reducido de 32px */
-  color: #29aaca;
-  font-weight: bold;
-}
-
-.header_navegacion {
+/* Left: Sidebar toggle + Logo */
+.navbar-brand-section {
   display: flex;
-  gap: 30px; /* Reducido de 35px */
+  align-items: center;
+  gap: 0.85rem;
 }
 
-.nav_item {
+.sidebar-toggle-btn {
+  background: transparent;
+  border: 1px solid var(--conex-border, #e2e8f0);
+  color: var(--conex-text-main, #0f172a);
+  width: 38px;
+  height: 38px;
+  border-radius: var(--conex-radius-sm, 8px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sidebar-toggle-btn:hover {
+  background-color: var(--conex-primary-light, #f0f9ff);
+  border-color: var(--conex-primary-border, #bae6fd);
+  color: var(--conex-primary, #0284c7);
+  transform: scale(1.04);
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
   text-decoration: none;
-  color: #29aaca;
-  font-size: 17px; /* Reducido de 18px */
-  font-weight: 500;
-  padding: 4px 0; /* Reducido de 5px */
-  transition: color 0.3s ease, transform 0.2s ease;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-.nav_item:hover {
-  color: #29aaca;
-  transform: translateY(-2px);
-}
-
-.header_derecha {
+.logo-symbol {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+  color: #ffffff;
   display: flex;
   align-items: center;
-  /* El orden de los elementos se controla con el HTML */
-  gap: 20px; /* Reducido de 25px - Este gap ahora aplicará entre .iconos_usuario y .search-container */
+  justify-content: center;
+  font-size: 1.15rem;
+  box-shadow: 0 4px 10px rgba(2, 132, 199, 0.35);
+  transition: transform 0.25s ease;
 }
 
-.search-container {
+.brand-logo:hover .logo-symbol {
+  transform: rotate(-6deg) scale(1.06);
+}
+
+.logo-text {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--conex-text-main, #0f172a);
+}
+
+.logo-accent {
+  color: var(--conex-primary, #0284c7);
+}
+
+/* Center: Navigation */
+.navbar-navigation {
   display: flex;
   align-items: center;
-  background-color: transparent;
-  flex-shrink: 0;
+  gap: 1.5rem;
 }
 
-.search-input {
-  padding: 7px 12px; /* Reducido de 8px 15px */
-  border: 1px solid #29aaca;
-  border-radius: 18px 0 0 18px; /* Ajustado por el padding */
-  border-right: none;
-  font-size: 15px; /* Reducido de 16px */
-  width: 200px; /* Reducido de 220px */
-  background-color: rgba(255, 255, 255, 0.2);
-  color: #29aaca;
-  outline: none;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+.nav-link-item {
+  color: var(--conex-text-body, #475569);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.93rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--conex-radius-sm, 8px);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
 }
 
-.search-input::placeholder {
-  color: rgba(41, 170, 202, 0.7);
+.nav-link-item:hover {
+  color: var(--conex-primary, #0284c7);
+  background-color: var(--conex-primary-light, #f0f9ff);
 }
 
-.search-input:focus {
-  border-color: #29aaca;
-  background-color: rgba(255, 255, 255, 0.3);
-  border-radius: 5px;
+.nav-link-item.nav-active {
+  color: var(--conex-primary, #0284c7);
+  background-color: var(--conex-primary-light, #f0f9ff);
+  font-weight: 700;
 }
 
-.search-button {
-  padding: 7px 16px; /* Reducido de 8px 18px */
-  background-color: #29aaca;
-  color: white;
-  border: none;
-  border-radius: 0 18px 18px 0; /* Ajustado por el padding */
-  cursor: pointer;
-  font-size: 15px; /* Reducido de 16px */
-  font-weight: bold;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.search-button:hover {
-  background-color: #218cb7;
-  transform: scale(1.05);
-}
-
-.iconos_usuario {
+/* Right: User + Cart Actions */
+.navbar-actions {
   display: flex;
-  gap: 18px; /* Reducido de 20px - Gap entre los iconos de usuario, búsqueda y carrito */
-  color: #29aaca;
+  align-items: center;
+  gap: 0.9rem;
 }
 
-/* Espacio extra entre el icono de carrito y el siguiente elemento (la barra de búsqueda) */
-.cart-icon {
-    margin-right: 20px; /* Ajusta este valor para más o menos espacio */
-}
-
-
-.icono_header {
-  width: 30px; /* Reducido de 32px */
-  height: 30px; /* Reducido de 32px */
+.action-icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--conex-radius-pill, 9999px);
+  background: transparent;
+  border: 1px solid var(--conex-border, #e2e8f0);
+  color: var(--conex-text-main, #0f172a);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  text-decoration: none;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-icon-btn:hover {
+  background-color: var(--conex-primary-light, #f0f9ff);
+  border-color: var(--conex-primary-border, #bae6fd);
+  color: var(--conex-primary, #0284c7);
+  transform: translateY(-1px);
+}
+
+/* User Profile Dropdown */
+.user-dropdown-wrapper {
+  position: relative;
+}
+
+.user-profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #f8fafc;
+  border: 1px solid var(--conex-border, #e2e8f0);
+  border-radius: var(--conex-radius-pill, 9999px);
+  padding: 0.3rem 0.8rem 0.3rem 0.35rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.user-profile-trigger:hover {
+  background: var(--conex-primary-light, #f0f9ff);
+  border-color: var(--conex-primary-border, #bae6fd);
+}
+
+.user-avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--conex-primary, #0284c7) 0%, #0ea5e9 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+}
+
+.username-label {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--conex-text-main, #0f172a);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdown-arrow {
+  font-size: 0.75rem;
+  color: var(--conex-text-muted, #64748b);
   transition: transform 0.2s ease;
 }
 
-.icono_header:hover {
-  transform: scale(1.15);
+.user-dropdown-wrapper:hover .dropdown-arrow {
+  transform: rotate(180deg);
 }
 
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-content {
+/* Dropdown Menu Popup */
+.user-dropdown-menu {
   display: none;
   position: absolute;
-  right: 0; /* Para que se alinee hacia la izquierda del icono del usuario y no se salga de la pantalla */
-  top: 100%; /* Para que aparezca justo debajo del icono */
-  background-color: #ffffff;
-  min-width: 180px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  
-  /* 🔥 AQUÍ ESTÁ LA MAGIA: Un z-index exageradamente alto 🔥 */
-  z-index: 9999 !important; 
-  
-  border-radius: 8px;
-  overflow: hidden;
+  right: 0;
+
+  background: #ffffff;
+  min-width: 210px;
+  border-radius: var(--conex-radius-md, 12px);
+  border: 1px solid var(--conex-border, #e2e8f0);
+  box-shadow: 0 16px 32px -4px rgba(15, 23, 42, 0.12);
+  padding: 0.5rem;
+  z-index: 9999;
+  animation: dropdownAnim 0.2s ease forwards;
 }
-.dropdown-content a {
-  color: #333;
-  padding: 12px 16px;
+
+@keyframes dropdownAnim {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.user-dropdown-wrapper:hover .user-dropdown-menu {
+  display: block;
+}
+
+.dropdown-header-info {
+  padding: 0.5rem 0.8rem;
+}
+
+.user-display-name {
+  color: var(--conex-text-main, #0f172a);
+  font-size: 0.95rem;
+}
+
+.dropdown-link-item {
+  display: flex;
+  align-items: center;
+  padding: 0.55rem 0.8rem;
+  border-radius: var(--conex-radius-xs, 6px);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--conex-text-body, #334155);
   text-decoration: none;
-  display: block;
-  font-size: 0.9rem;
-  transition: background-color 0.2s;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-.dropdown-content a:hover {
-  background-color: #f1f1f1;
-  color: #29aaca; /* El azul de tu tema */
+.dropdown-link-item:hover {
+  background-color: var(--conex-primary-light, #f0f9ff);
+  color: var(--conex-primary, #0284c7);
 }
 
-
-.dropdown:hover .dropdown-content {
-  display: block;
+.logout-link:hover {
+  background-color: var(--conex-danger-light, #fef2f2);
+  color: var(--conex-danger, #ef4444);
 }
 
-/* Media Queries existentes, ajustados proporcionalmente */
-@media (max-width: 992px) {
-  .contenedor_header {
-    height: 65px;
-    padding: 0 15px;
-  }
-  .header_principal {
-    max-width: 960px;
-  }
-  .header_izquierda h1 {
-    font-size: 28px;
-  }
-  .header_navegacion {
-    gap: 20px;
-  }
-  .nav_item {
-    font-size: 16px;
-  }
-  .search-input {
-    width: 180px;
-    font-size: 14px;
-  }
-  .search-button {
-    font-size: 14px;
-  }
-  .icono_header {
-    width: 28px;
-    height: 28px;
-  }
-  .cart-icon { /* Ajuste para responsividad */
-    margin-right: 15px;
-  }
+/* Login CTA Button */
+.login-cta-btn {
+  background: linear-gradient(135deg, var(--conex-primary, #0284c7) 0%, #0ea5e9 100%);
+  color: #ffffff;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.52rem 1.15rem;
+  border-radius: var(--conex-radius-pill, 9999px);
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+  transition: all 0.2s ease;
 }
 
+.login-cta-btn:hover {
+  background: linear-gradient(135deg, var(--conex-primary-hover, #0369a1) 0%, var(--conex-primary, #0284c7) 100%);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.45);
+  transform: translateY(-1px);
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-  .contenedor_header {
+  .conex-navbar {
     height: 60px;
   }
-  .header_izquierda h1 {
-    font-size: 24px;
-  }
-  .header_navegacion {
-    display: none; /* Oculta navegación en pantallas pequeñas para ahorrar espacio */
-  }
-  .search-container {
-    flex-grow: 1; /* Permite que el input crezca */
-    order: 2; /* Cambia el orden en pantallas pequeñas para que la búsqueda esté después de los iconos */
-  }
-  .search-input {
-    width: 100%; /* Ocupa el ancho disponible */
-    border-radius: 18px; /* Input redondo completo */
-    border-right: 1px solid #29aaca; /* Vuelve el borde derecho */
-  }
-  .search-button {
-    display: none; /* Oculta el botón "Buscar" y usa solo el icono de búsqueda del usuario */
-  }
-  .iconos_usuario {
-    gap: 15px;
-    order: 1; /* Asegura que los iconos estén antes de la búsqueda en pantallas pequeñas */
-  }
-  .icono_header {
-    width: 26px;
-    height: 26px;
-  }
-  .cart-icon { /* Ajuste para responsividad */
-    margin-right: 10px; /* Reduce el espacio en móvil si es necesario */
-  }
-}
 
-@media (max-width: 480px) {
-  .contenedor_header {
-    height: 55px;
-    padding: 0 10px;
+  .navbar-container {
+    padding: 0 1rem;
   }
-  .header_izquierda h1 {
-    font-size: 20px;
-  }
-  .menu-toggle-button {
-    font-size: 24px;
-  }
-  .search-input {
-    padding: 6px 10px;
-    font-size: 13px;
-  }
-  .icono_header {
-    width: 24px;
-    height: 24px;
-  }
-  .cart-icon { /* Ajuste para responsividad */
-    margin-right: 8px; /* Último ajuste para espacio en móvil */
-  }
-}
-.boton_iniciar_sesion {
-  background-color: transparent; /* Fondo transparente */
-  color: #29aaca; /* Color de texto azul (similar a Tailwind blue-600) */
-  font-weight: 600; /* Texto semi-negrita */
-  padding: 0.5rem 1rem; /* Relleno vertical y horizontal */
-  border-radius: 9999px; /* Bordes completamente redondeados */
-  display: flex; /* Para alinear el icono y el texto */
-  align-items: center; /* Alineación vertical al centro */
-  gap: 0.5rem; /* Espacio entre el icono y el texto */
-  transition: color 0.15s ease-in-out; /* Transición suave para el color */
-  border: none; /* Elimina el borde por defecto del botón */
-  cursor: pointer; /* Cambia el cursor al pasar por encima */
-}
 
-.boton_iniciar_sesion:hover {
-  color: #29aaca; /* Color de texto azul oscuro al pasar el cursor (similar a blue-700) */
-}
+  .navbar-navigation {
+    display: none;
+  }
 
-/* Estilos para el SVG del icono dentro del botón */
-.boton_iniciar_sesion svg {
-  width: 20px;
-  height: 20px;
-  stroke: currentColor; /* El color del icono sigue el color del texto */
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  .logo-text {
+    font-size: 1.15rem;
+  }
 }

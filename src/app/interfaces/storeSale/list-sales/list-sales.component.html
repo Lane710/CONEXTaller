@@ -195,11 +195,11 @@
               </td>
               <td data-label="Estado">
                 <span
-                  class="badge"
+                  class="badge rounded-pill px-3 py-1 fw-semibold"
                   [ngClass]="{
-                    'bg-success': sale.estado === 'COMPLETADA',
-                    'bg-warning text-dark': sale.estado === 'PENDIENTE',
-                    'bg-danger': sale.estado === 'CANCELADA',
+                    'bg-success-subtle text-success-emphasis': sale.estado === 'COMPLETADA',
+                    'bg-warning-subtle text-warning-emphasis': sale.estado === 'PENDIENTE',
+                    'bg-danger-subtle text-danger-emphasis': sale.estado === 'CANCELADA'
                   }"
                 >
                   {{ sale.estado | titlecase }}

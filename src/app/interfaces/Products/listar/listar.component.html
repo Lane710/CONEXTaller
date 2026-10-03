@@ -191,19 +191,20 @@
                     }}
                   </td>
                   <td data-label="Stock" style="text-align: center">
-                    <span class="badge bg-info text-dark">{{
+                    <span class="badge rounded-pill px-3 py-1 fw-bold bg-primary-subtle text-primary">{{
                       item.cantidad
                     }}</span>
                   </td>
-                  <td data-label="Precio Unitario">
+                  <td data-label="Precio Unitario" class="fw-semibold text-dark">
                     {{ producto.precio | currency: "Bs " : "symbol" : "1.2-2" }}
                   </td>
                   <td data-label="Estado">
                     <span
-                      [class]="
+                      class="badge rounded-pill px-3 py-1 fw-semibold"
+                      [ngClass]="
                         producto?.estado === 1
-                          ? 'badge bg-success'
-                          : 'badge bg-danger'
+                          ? 'bg-success-subtle text-success-emphasis'
+                          : 'bg-danger-subtle text-danger-emphasis'
                       "
                     >
                       {{ producto?.estado === 1 ? "Activo" : "Inactivo" }}

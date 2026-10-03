@@ -141,7 +141,10 @@
               <td data-label="Email">{{ proveedor.emailContacto }}</td>
               <td data-label="Ciudad">{{ proveedor.ciudad }}</td>
               <td data-label="Estado">
-                <span [class]="proveedor.estado ? 'badge bg-success' : 'badge bg-danger'">
+                <span
+                  class="badge rounded-pill px-3 py-1 fw-semibold"
+                  [ngClass]="proveedor.estado ? 'bg-success-subtle text-success-emphasis' : 'bg-danger-subtle text-danger-emphasis'"
+                >
                   {{ proveedor.estado ? 'Activo' : 'Inactivo' }}
                 </span>
               </td>

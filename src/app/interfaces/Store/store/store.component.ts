@@ -6,22 +6,28 @@ import { CategoriasService } from '../../../services/ProductosServis/categorias.
 import { ApiResponse } from '../../../models/api-response';
 import { DetalleCarrito } from '../../../models/CartModel/DetalleCarrito';
 import { StockDTO } from '../../../DTOs/Produc/StockDTO';
-import { NgFor, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { categorias } from '../../../models/ProductoStockModel/categorias'; // Importar el modelo de categoría
 import { subcategoria } from '../../../models/ProductoStockModel/subcategorias'; // Importar el modelo de subcategoría
 import { switchMap } from 'rxjs/operators'; // Necesario para encadenar observables
 import { SubcategoriaService } from '../../../services/ProductosServis/subcategoria-service.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-store',
   standalone:true,
-  imports:[NgIf,NgFor,FormsModule],
+  imports:[CommonModule,FormsModule,RouterLink],
   templateUrl: './store.component.html',
   styleUrls: ['./store.component.css']
 })
 export class StoreComponent implements OnInit {
+
+  verDetalles(stock: StockDTO): void {
+    if (stock.idStock) {
+      this.router.navigate(['/home/DetailProduct', stock.idStock]);
+    }
+  }
 
   productos: StockDTO[] = [];
   productosFiltrados: StockDTO[] = []; // Se mantiene, aunque el filtro principal será por backend

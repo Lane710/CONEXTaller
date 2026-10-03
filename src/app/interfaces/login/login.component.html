@@ -1,89 +1,148 @@
-
-<div class="login-container">
-  <div class="login-card">
-    <div class="login-branding">
-      <h1 class="branding-title">
-        TIENDA CONEX <br />
-        TECNOLOGÍA Y MÁS
-      </h1>
-      <img src="/CONEX/CONEX.jpg" alt="Logo de CONEX" class="branding-logo" />
-    </div>
-    <div class="login-form-area">
-      <h2 class="welcome-title">Bienvenido de nuevo</h2>
-
-      <!-- Credenciales de prueba para el Portafolio -->
-      <div class="demo-credentials" style="background-color: #eef2f5; border-left: 4px solid #0d6efd; padding: 12px; border-radius: 4px; margin-bottom: 20px; font-size: 0.9em; text-align: center; color: #333;">
-        Si no tienes una cuenta, puedes usar las siguientes credenciales de prueba<br>
-        Usuario: <strong>vendedor_01</strong> <br>
-        Contraseña: <strong>Contra12/</strong>
-      </div>
-
-      <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
-        {{ errorMessage }}
-      </div>
-      <div *ngIf="successMessage" class="alert alert-success" role="alert">
-        {{ successMessage }}
-      </div>
-      
-      <div *ngIf="throttlingMessage" class="alert alert-warning" role="alert">
-        {{ throttlingMessage }}
-      </div>
-
-      <form [formGroup]="loginForm" (ngSubmit)="login()" class="login-form">
-        <div class="form-group">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Nombre de Usuario"
-            formControlName="username"
-            [class.is-invalid]="f['username'].invalid && f['username'].touched"
-          />
-          <div *ngIf="f['username'].invalid && f['username'].touched" class="invalid-feedback">
-            El nombre de usuario es obligatorio.
-          </div>
-        </div>
-
-        <div class="form-group password-group">
-          <div class="password-input-container">
-            <input
-              [type]="showPassword ? 'text' : 'password'"
-              class="form-control password-input"
-              placeholder="Contraseña"
-              formControlName="password"
-              [class.is-invalid]="f['password'].invalid && f['password'].touched"
-            />
-            <button 
-              type="button" 
-              class="password-toggle-btn"
-              (click)="togglePasswordVisibility()"
-              [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-            >
-             <i class="password-icon" [class.visible]="showPassword">
+<div class="login-page-wrapper d-flex align-items-center justify-content-center py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-10 col-lg-9 col-xl-8">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden login-card-container">
+          <div class="row g-0">
+            
+            <!-- Branding Panel Izquierdo -->
+            <div class="col-md-5 d-flex flex-column justify-content-center align-items-center text-center p-4 p-lg-5 branding-panel text-white position-relative" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+              <div class="brand-badge mb-3">
+                <span class="badge bg-white bg-opacity-25 text-white rounded-pill px-3 py-1 fw-semibold small">
+                  Tienda Oficial
+                </span>
+              </div>
+              
+              <div class="logo-wrapper mb-4 p-2 bg-white rounded-circle shadow">
                 <img 
-                  [src]="showPassword ? '/icon_login/mdi--eye-off-outline.svg' : '/icon_login/hugeicons--eye.svg'" 
-                  [alt]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-                  class="icon-image"
+                  src="/CONEX/CONEX.jpg" 
+                  alt="Logo Conex" 
+                  class="rounded-circle"
+                  style="width: 110px; height: 110px; object-fit: cover;"
                 />
-              </i>
-            </button>
-          </div>
-          <div *ngIf="f['password'].invalid && f['password'].touched" class="invalid-feedback">
-            La contraseña es obligatoria.
+              </div>
+
+              <h3 class="fw-bold mb-2 text-white">CONEX STORE</h3>
+              <p class="text-white-50 small mb-0">
+                Tecnología, equipamiento y gestión comercial de vanguardia.
+              </p>
+              
+              <!-- Subtle decorative element -->
+              <div class="branding-circle-bg"></div>
+            </div>
+
+            <!-- Formulario Panel Derecho -->
+            <div class="col-md-7 p-4 p-lg-5 bg-white d-flex flex-column justify-content-center">
+              <div class="mb-4">
+                <h4 class="fw-bold text-dark mb-1">Bienvenido de nuevo</h4>
+                <p class="text-muted small mb-0">Ingresa tus credenciales para acceder al sistema</p>
+              </div>
+
+              <!-- Banner de credenciales de demostración -->
+              <div class="demo-box p-3 rounded-3 mb-4 border border-primary-subtle bg-light">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <i class="bi bi-info-circle-fill text-primary"></i>
+                  <span class="small fw-bold text-dark">Credenciales de Acceso Demo:</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center small text-secondary">
+                  <span>Usuario: <strong class="text-dark">vendedor_01</strong></span>
+                  <span>Clave: <strong class="text-dark">Contra12/</strong></span>
+                </div>
+              </div>
+
+              <!-- Alertas dinámicas -->
+              <div *ngIf="errorMessage" class="alert alert-danger py-2 small d-flex align-items-center rounded-3 border-0 shadow-sm" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                <div>{{ errorMessage }}</div>
+              </div>
+
+              <div *ngIf="successMessage" class="alert alert-success py-2 small d-flex align-items-center rounded-3 border-0 shadow-sm" role="alert">
+                <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                <div>{{ successMessage }}</div>
+              </div>
+
+              <div *ngIf="throttlingMessage" class="alert alert-warning py-2 small d-flex align-items-center rounded-3 border-0 shadow-sm" role="alert">
+                <i class="bi bi-clock-history me-2 fs-5"></i>
+                <div>{{ throttlingMessage }}</div>
+              </div>
+
+              <!-- Formulario Reactivo -->
+              <form [formGroup]="loginForm" (ngSubmit)="login()" class="login-form">
+                
+                <!-- Usuario -->
+                <div class="mb-3">
+                  <label class="form-label small fw-semibold text-secondary">Nombre de Usuario</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-person"></i></span>
+                    <input
+                      type="text"
+                      class="form-control border-start-0"
+                      placeholder="vendedor_01"
+                      formControlName="username"
+                      [class.is-invalid]="f['username'].invalid && f['username'].touched"
+                    />
+                  </div>
+                  <div *ngIf="f['username'].invalid && f['username'].touched" class="text-danger small mt-1">
+                    El nombre de usuario es obligatorio.
+                  </div>
+                </div>
+
+                <!-- Contraseña -->
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label class="form-label small fw-semibold text-secondary mb-0">Contraseña</label>
+                    <a routerLink="/verificable" class="text-primary small text-decoration-none fw-semibold">
+                      ¿Olvidaste tu contraseña?
+                    </a>
+                  </div>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-lock"></i></span>
+                    <input
+                      [type]="showPassword ? 'text' : 'password'"
+                      class="form-control border-start-0 border-end-0"
+                      placeholder="••••••••"
+                      formControlName="password"
+                      [class.is-invalid]="f['password'].invalid && f['password'].touched"
+                    />
+                    <button 
+                      type="button" 
+                      class="input-group-text bg-light border-start-0 text-muted"
+                      (click)="togglePasswordVisibility()"
+                      [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                    >
+                      <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
+                    </button>
+                  </div>
+                  <div *ngIf="f['password'].invalid && f['password'].touched" class="text-danger small mt-1">
+                    La contraseña es obligatoria.
+                  </div>
+                </div>
+
+                <!-- Botón de Inicio de Sesión -->
+                <button
+                  type="submit"
+                  class="btn btn-primary btn-lg w-100 rounded-pill py-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 mb-3 mt-4"
+                  [disabled]="isLoading || loginForm.invalid || remainingTime > 0"
+                >
+                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status"></span>
+                  <i *ngIf="!isLoading" class="bi bi-box-arrow-in-right"></i>
+                  <span>{{ isLoading ? 'Verificando...' : 'Iniciar Sesión' }}</span>
+                </button>
+
+                <!-- Registro -->
+                <div class="text-center mt-3">
+                  <span class="text-muted small">¿Aún no tienes una cuenta? </span>
+                  <a routerLink="/registrar" class="text-primary small fw-bold text-decoration-none">
+                    Crear una cuenta
+                  </a>
+                </div>
+
+              </form>
+            </div>
+
           </div>
         </div>
-
-        <button
-          type="submit"
-          class="btn btn-primary login-btn"
-          [disabled]="isLoading || loginForm.invalid || remainingTime > 0"
-        >
-          <span *ngIf="!isLoading">Login</span>
-          <span *ngIf="isLoading">Cargando...</span>
-        </button>
-      </form>
-
-      <a routerLink="/verificable" class="forgot-password-link" routerLink="/verificacion">Olvidé mi contraseña</a>
-      <button class="btn btn-secondary register-btn" routerLink="/registrar">Registrarse</button>
+      </div>
     </div>
   </div>
 </div>

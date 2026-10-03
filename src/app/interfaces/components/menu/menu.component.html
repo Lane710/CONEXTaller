@@ -1,21 +1,33 @@
-
 <div class="sidebar-container" [ngClass]="{ active: sidebarActive }">
+  <!-- Sidebar Header Profile Card -->
   <div class="sidebar-header">
-    <img
-      [src]="fotoPerfil"
-      alt="Foto de Perfil"
-      class="profile-picture"
-      onerror="this.src = 'https://placehold.co/100x100?text=User'"
-    />
-    <p class="profile-name">{{ nombreCompleto || username }}</p>
-    <p *ngIf="userRole" class="user-role badge bg-primary text-white mt-1">
-      {{ userRole }}
-    </p>
-    <p *ngIf="!userRole" class="user-role text-muted small">Sin rol asignado</p>
+    <button class="sidebar-close-btn d-lg-none" (click)="closeSidebarEvent.emit()" aria-label="Cerrar menú">
+      <i class="bi bi-x-lg"></i>
+    </button>
+    <div class="profile-avatar-wrapper">
+      <img
+        [src]="fotoPerfil"
+        alt="Foto de Perfil"
+        class="profile-picture"
+        onerror="this.src = 'https://placehold.co/100x100?text=User'"
+      />
+      <span class="online-indicator"></span>
+    </div>
+    <div class="profile-info-block text-center mt-2">
+      <p class="profile-name text-truncate" [title]="nombreCompleto || username">{{ nombreCompleto || username }}</p>
+      <span *ngIf="userRole" class="badge bg-primary user-role-badge">
+        <i class="bi bi-shield-check me-1"></i>{{ userRole | titlecase }}
+      </span>
+      <span *ngIf="!userRole" class="badge bg-secondary user-role-badge">
+        Sin rol asignado
+      </span>
+    </div>
   </div>
 
+  <!-- Navigation Menu Links -->
   <nav class="sidebar-nav">
-    <ul class="list-unstyled">
+    <div class="sidebar-section-label">Navegación</div>
+    <ul class="nav-list">
       
       <li class="nav-item-sidebar">
         <a
@@ -24,10 +36,12 @@
           routerLinkActive="active"
           (click)="cerrarMenuAlNavegar()"
         >
-          <span class="icon">🏠</span> <span class="text">Home</span>
+          <span class="nav-icon"><i class="bi bi-house-door"></i></span>
+          <span class="nav-text">Inicio</span>
         </a>
       </li>
 
+      <!-- Admin / Dueña / Trabajador: Inventario -->
       <li
         class="nav-item-sidebar"
         *ngIf="
@@ -42,11 +56,12 @@
           routerLinkActive="active"
           (click)="cerrarMenuAlNavegar()"
         >
-          <span class="icon">📦</span>
-          <span class="text">Gestionar Inventario</span>
+          <span class="nav-icon"><i class="bi bi-box-seam"></i></span>
+          <span class="nav-text">Inventario</span>
         </a>
       </li>
 
+      <!-- Admin / Dueña / Trabajador: Categorias -->
       <li
         class="nav-item-sidebar"
         *ngIf="
@@ -61,11 +76,12 @@
           routerLinkActive="active"
           (click)="cerrarMenuAlNavegar()"
         >
-          <span class="icon">📁</span>
-          <span class="text">Gestionar Categorias</span>
+          <span class="nav-icon"><i class="bi bi-folder2-open"></i></span>
+          <span class="nav-text">Categorías</span>
         </a>
       </li>
 
+      <!-- Admin / Dueña / Trabajador: Envios -->
       <li
         class="nav-item-sidebar"
         *ngIf="
@@ -80,11 +96,12 @@
           routerLinkActive="active"
           (click)="cerrarMenuAlNavegar()"
         >
-          <span class="icon">🚚</span>
-          <span class="text">Gestionar Envíos</span>
+          <span class="nav-icon"><i class="bi bi-truck"></i></span>
+          <span class="nav-text">Gestión de Envíos</span>
         </a>
       </li>
 
+      <!-- Admin / Dueña / Trabajador: Pedidos Online -->
       <li
         class="nav-item-sidebar"
         *ngIf="
@@ -99,59 +116,53 @@
           routerLinkActive="active"
           (click)="cerrarMenuAlNavegar()"
         >
-          <span class="icon">📝</span>
-          <span class="text">Gestionar Pedidos</span>
+          <span class="nav-icon"><i class="bi bi-bag-check"></i></span>
+          <span class="nav-text">Pedidos Online</span>
         </a>
       </li>
 
+      <!-- Admin / Dueña / Trabajador: Ventas Dropdown -->
       <li
-        class="nav-item-sidebar dropdown"
+        class="nav-item-sidebar dropdown-nav-item"
         *ngIf="
           authService.hasRole('administrador') ||
           authService.hasRole('duena') ||
           authService.hasRole('trabajador')
         "
       >
-        <a
-          class="nav-link-sidebar dropdown-toggle"
-          href="#"
-          id="ventasDropdown"
-          role="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          <span class="icon">💰</span>
-          <span class="text">Gestionar Ventas</span>
-        </a>
-        <ul class="dropdown-menu" aria-labelledby="ventasDropdown">
+        <div class="sidebar-dropdown-header">
+          <span class="nav-icon"><i class="bi bi-cash-stack"></i></span>
+          <span class="nav-text">Ventas en Tienda</span>
+          <i class="bi bi-chevron-down sub-arrow"></i>
+        </div>
+        <ul class="sidebar-submenu">
           <li>
             <a
-              class="dropdown-item"
+              class="submenu-link"
               routerLink="/home/preVentasTienda"
               routerLinkActive="active"
               (click)="cerrarMenuAlNavegar()"
             >
-              Realizar Venta
+              <i class="bi bi-plus-circle me-2"></i> Realizar Venta (POS)
             </a>
           </li>
           <li>
             <a
-              class="dropdown-item"
+              class="submenu-link"
               routerLink="/home/listadoVentasStore"
               routerLinkActive="active"
               (click)="cerrarMenuAlNavegar()"
             >
-              Listar de Ventas
+              <i class="bi bi-card-list me-2"></i> Historial de Ventas
             </a>
           </li>
         </ul>
       </li>
 
+      <!-- Admin: Usuarios -->
       <li
         class="nav-item-sidebar"
-        *ngIf="
-          authService.hasRole('administrador') 
-        "
+        *ngIf="authService.hasRole('administrador')"
       >
         <a
           class="nav-link-sidebar"
@@ -159,11 +170,12 @@
           routerLinkActive="active"
           (click)="cerrarMenuAlNavegar()"
         >
-          <span class="icon">👥</span>
-          <span class="text">Gestionar Usuarios</span>
+          <span class="nav-icon"><i class="bi bi-people"></i></span>
+          <span class="nav-text">Usuarios y Roles</span>
         </a>
       </li>
 
+      <!-- Admin / Dueña: Reportes -->
       <li
         class="nav-item-sidebar"
         *ngIf="
@@ -177,15 +189,16 @@
           routerLinkActive="active"
           (click)="cerrarMenuAlNavegar()"
         >
-          <span class="icon">📊</span>
-          <span class="text">Generar Reportes</span>
+          <span class="nav-icon"><i class="bi bi-bar-chart-line"></i></span>
+          <span class="nav-text">Reportes de Negocio</span>
         </a>
       </li>
 
+      <!-- Admin / Dueña: Proveedores -->
       <li
         class="nav-item-sidebar"
         *ngIf="
-          authService.hasRole('administrador') ||
+          authService.hasRole('administrador') || 
           authService.hasRole('duena')
         "
       >
@@ -195,11 +208,12 @@
           routerLinkActive="active"
           (click)="cerrarMenuAlNavegar()"
         >
-          <span class="icon">🏢</span>
-          <span class="text">Gestionar Proveedores</span>
+          <span class="nav-icon"><i class="bi bi-building"></i></span>
+          <span class="nav-text">Proveedores</span>
         </a>
       </li>
 
+      <!-- Cliente: Historial de Pedidos -->
       <li
         class="nav-item-sidebar"
         *ngIf="authService.hasRole('Cliente')"
@@ -210,23 +224,19 @@
           routerLinkActive="active"
           (click)="cerrarMenuAlNavegar()"
         >
-          <span class="icon">📝</span>
-          <span class="text">Historial de Pedidos</span>
+          <span class="nav-icon"><i class="bi bi-clock-history"></i></span>
+          <span class="nav-text">Mis Pedidos y Envíos</span>
         </a>
-      </li>
-
-      <li
-        class="nav-item-sidebar dropdown"
-        *ngIf="authService.hasRole('Cliente')"
-      >
-    
-       
       </li>
 
     </ul>
   </nav>
 
+  <!-- Sidebar Footer -->
   <div class="sidebar-footer">
-    <p>© 2025 CONEX</p>
+    <div class="app-version-tag">
+      <span class="brand-tag">CONEX STORE</span>
+      <span class="version-tag">v2.5 Tech Edition</span>
+    </div>
   </div>
 </div>

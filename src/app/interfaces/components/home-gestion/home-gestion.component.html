@@ -1,43 +1,170 @@
-<div class="inicio-container">
-  <section class="hero-section">
-    <h1>¡Bienvenido a CONEX!</h1>
-    <p class="tagline">Tu conexión con la tecnología y la eficiencia.</p>
-  </section>
+<div class="gestion-wrapper py-4">
+  <div class="container">
+    <!-- Hero Banner -->
+    <div class="hero-admin p-4 p-md-5 mb-5 rounded-4 text-white position-relative overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #0284c7 0%, #075985 100%);">
+      <div class="row align-items-center position-relative z-1">
+        <div class="col-lg-8">
+          <span class="badge bg-white bg-opacity-20 text-white rounded-pill px-3 py-2 fw-semibold mb-3">
+            <i class="bi bi-shield-check me-1"></i>Portal de Gestión & Operaciones
+          </span>
+          <h1 class="display-5 fw-bold mb-3">¡Bienvenido al Panel CONEX!</h1>
+          <p class="lead text-white-50 mb-4">
+            Plataforma centralizada para la administración de inventario, facturación en punto de venta, despacho de pedidos web y seguimiento comercial.
+          </p>
+          <div class="d-flex flex-wrap gap-2">
+            <a routerLink="/home/dashboard" class="btn btn-light rounded-pill px-4 py-2 fw-bold text-primary shadow-sm">
+              <i class="bi bi-speedometer2 me-1"></i>Ver Dashboard
+            </a>
+            <a routerLink="/home/preVentasTienda" class="btn btn-outline-light rounded-pill px-4 py-2 fw-semibold">
+              <i class="bi bi-cart3 me-1"></i>Punto de Venta
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="hero-decoration-circle"></div>
+    </div>
 
-  <section class="about-section">
-    <div class="about-content">
-      <h2>¿Qué es CONEX?</h2>
-      <p>
-        **CONEX** es tu tienda online de confianza especializada en la venta y gestión de productos tecnológicos y servicios innovadores. Nacimos con la misión de ser el puente que conecta a nuestros clientes con las soluciones más avanzadas y fiables del mercado. Desde la comodidad de tu hogar, podrás acceder a un catálogo extenso y disfrutar de una experiencia de compra sin igual.
-      </p>
-      <p>
-        Nos dedicamos a simplificar tu vida digital, ofreciéndote no solo productos de alta calidad, sino también herramientas y sistemas para una gestión eficiente de tus necesidades. ¡En CONEX, la tecnología está al alcance de tu mano!
-      </p>
+    <!-- Accesos Rápidos de Gestión -->
+    <div class="mb-5">
+      <h4 class="fw-bold text-dark mb-4 d-flex align-items-center">
+        <i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>
+        Módulos Principales
+      </h4>
+      <div class="row g-3">
+        <div class="col-6 col-md-4 col-lg-2">
+          <a routerLink="/home/dashboard" class="card module-card text-center p-3 border-0 shadow-sm rounded-4 text-decoration-none h-100">
+            <div class="icon-circle bg-primary-subtle text-primary mx-auto mb-2">
+              <i class="bi bi-graph-up fs-4"></i>
+            </div>
+            <span class="fw-bold text-dark small d-block">Dashboard</span>
+            <small class="text-muted" style="font-size: 0.7rem;">Métricas en vivo</small>
+          </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+          <a routerLink="/home/preVentasTienda" class="card module-card text-center p-3 border-0 shadow-sm rounded-4 text-decoration-none h-100">
+            <div class="icon-circle bg-success-subtle text-success mx-auto mb-2">
+              <i class="bi bi-cash-stack fs-4"></i>
+            </div>
+            <span class="fw-bold text-dark small d-block">Caja / Venta</span>
+            <small class="text-muted" style="font-size: 0.7rem;">Facturación POS</small>
+          </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+          <a routerLink="/home/listadoProduc" class="card module-card text-center p-3 border-0 shadow-sm rounded-4 text-decoration-none h-100">
+            <div class="icon-circle bg-info-subtle text-info mx-auto mb-2">
+              <i class="bi bi-box-seam fs-4"></i>
+            </div>
+            <span class="fw-bold text-dark small d-block">Productos</span>
+            <small class="text-muted" style="font-size: 0.7rem;">Control de stock</small>
+          </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+          <a routerLink="/home/listadoSaleOnline" class="card module-card text-center p-3 border-0 shadow-sm rounded-4 text-decoration-none h-100">
+            <div class="icon-circle bg-warning-subtle text-warning mx-auto mb-2">
+              <i class="bi bi-bag-check fs-4"></i>
+            </div>
+            <span class="fw-bold text-dark small d-block">Pedidos Web</span>
+            <small class="text-muted" style="font-size: 0.7rem;">Compras online</small>
+          </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+          <a routerLink="/home/listadoEnvios" class="card module-card text-center p-3 border-0 shadow-sm rounded-4 text-decoration-none h-100">
+            <div class="icon-circle bg-danger-subtle text-danger mx-auto mb-2">
+              <i class="bi bi-truck fs-4"></i>
+            </div>
+            <span class="fw-bold text-dark small d-block">Envíos</span>
+            <small class="text-muted" style="font-size: 0.7rem;">Despacho local</small>
+          </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+          <a routerLink="/home/listadoUser" class="card module-card text-center p-3 border-0 shadow-sm rounded-4 text-decoration-none h-100">
+            <div class="icon-circle bg-purple-subtle text-primary mx-auto mb-2">
+              <i class="bi bi-people-fill fs-4"></i>
+            </div>
+            <span class="fw-bold text-dark small d-block">Usuarios</span>
+            <small class="text-muted" style="font-size: 0.7rem;">Roles y accesos</small>
+          </a>
+        </div>
+      </div>
     </div>
-    <div class="about-image">
-      <img src="/Imagenes_requeridas/robotConex.png" style="width: 400px; height: 400px;" alt="Imagen de Tecnología CONEX">
-    </div>
-  </section>
 
-  <section class="features-section">
-    <h3>Lo que hacemos en CONEX:</h3>
-    <div class="feature-grid">
-      <div class="feature-item">
-        <h4>Venta de Productos</h4>
-        <p>Ofrecemos una amplia gama de dispositivos electrónicos, componentes, accesorios y gadgets de última generación para satisfacer todas tus demandas tecnológicas.</p>
-      </div>
-      <div class="feature-item">
-        <h4>Gestión Eficiente</h4>
-        <p>Proveemos soluciones de software y sistemas para optimizar la gestión de inventarios, pedidos, envíos, ventas y compras, tanto para usuarios finales como para empresas.</p>
-      </div>
-      <div class="feature-item">
-        <h4>Soporte y Asesoría</h4>
-        <p>Nuestro equipo de expertos está siempre listo para brindarte el mejor soporte técnico y asesoramiento personalizado, asegurando que tomes las mejores decisiones.</p>
-      </div>
-      <div class="feature-item">
-        <h4>Innovación Constante</h4>
-        <p>Estamos siempre al tanto de las últimas tendencias y avances tecnológicos para garantizar que nuestro catálogo y servicios estén siempre a la vanguardia.</p>
+    <!-- Sección Acerca de CONEX con Robot Mascota -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 mb-5 bg-white">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+          <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 fw-bold mb-2">Identidad Corporativa</span>
+          <h2 class="fw-bold text-dark mb-3">¿Qué representa CONEX?</h2>
+          <p class="text-secondary leading-relaxed mb-3">
+            <strong>CONEX</strong> es tu ecosistema tecnológico de confianza especializado en la venta, distribución y gestión de productos electrónicos, periféricos y equipamiento informático de última generación.
+          </p>
+          <p class="text-secondary leading-relaxed mb-4">
+            Diseñado con estándares de alta disponibilidad, Conex unifica la experiencia omnicanal conectando las compras web con la gestión comercial en sucursal física, control en tiempo real de números de serie y logística de entrega confiable.
+          </p>
+          <div class="d-flex align-items-center gap-4">
+            <div>
+              <h4 class="fw-bold text-primary mb-0">100%</h4>
+              <small class="text-muted">Garantía oficial</small>
+            </div>
+            <div class="vr opacity-25"></div>
+            <div>
+              <h4 class="fw-bold text-primary mb-0">24/7</h4>
+              <small class="text-muted">Tienda disponible</small>
+            </div>
+            <div class="vr opacity-25"></div>
+            <div>
+              <h4 class="fw-bold text-primary mb-0">Rápido</h4>
+              <small class="text-muted">Despacho seguro</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5 text-center">
+          <img src="/Imagenes_requeridas/robotConex.png" alt="Mascota Conex" class="img-fluid rounded-4" style="max-height: 320px; object-fit: contain;">
+        </div>
       </div>
     </div>
-  </section>
+
+    <!-- Pilares del Sistema -->
+    <div class="mb-4">
+      <h4 class="fw-bold text-dark mb-4 text-center">Pilares del Ecosistema CONEX</h4>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+          <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+            <div class="icon-circle bg-primary-subtle text-primary mb-3">
+              <i class="bi bi-pc-display fs-4"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-2">Venta de Productos</h5>
+            <p class="text-muted small mb-0">Catálogo actualizado con especificaciones de hardware, accesorios y dispositivos líderes.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+            <div class="icon-circle bg-success-subtle text-success mb-3">
+              <i class="bi bi-speedometer fs-4"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-2">Gestión Eficiente</h5>
+            <p class="text-muted small mb-0">Manejo ágil de stock, series, alertas de agotamiento y facturación en tiempo real.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+            <div class="icon-circle bg-info-subtle text-info mb-3">
+              <i class="bi bi-headset fs-4"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-2">Soporte y Atención</h5>
+            <p class="text-muted small mb-0">Canal directo de WhatsApp y correo para resolver dudas y coordinar entregas.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+            <div class="icon-circle bg-warning-subtle text-warning mb-3">
+              <i class="bi bi-lightning-charge fs-4"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-2">Innovación Constante</h5>
+            <p class="text-muted small mb-0">Actualizaciones de arquitectura e interfaz moderna con el más alto rendimiento.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>

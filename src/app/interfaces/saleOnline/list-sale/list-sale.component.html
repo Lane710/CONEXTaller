@@ -77,35 +77,40 @@
           <div class="card-body p-0 d-flex flex-column flex-md-row">
             <div class="order-details-section flex-grow-1">
               <div
-                class="order-header p-3 d-flex justify-content-between align-items-center cursor-pointer"
+                class="order-header p-3 d-flex justify-content-between align-items-center cursor-pointer bg-white"
                 [ngClass]="{
-                  'bg-danger-subtle': item.pedido.estado === 'CANCELADO',
-                  'bg-secondary-subtle text-dark':
-                    item.pedido.estado !== 'CANCELADO',
+                  'border-start border-4 border-danger': item.pedido.estado === 'CANCELADO',
+                  'border-start border-4 border-success': item.pedido.estado === 'ENTREGADO',
+                  'border-start border-4 border-warning': item.pedido.estado === 'PENDIENTE'
                 }"
                 (click)="item.isExpanded = !item.isExpanded"
               >
                 <div class="d-flex align-items-center gap-3">
-                  <h5 class="mb-0 fw-bold">
-                    {{ item.pedido.codigoPedido }}
-                  </h5>
-                  <small class="text-muted">
-                    {{ item.pedido.fechaPedido | date: "dd/MM/yyyy" }}
-                  </small>
+                  <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle p-2 text-primary" style="width: 40px; height: 40px;">
+                    <i class="bi bi-box-seam"></i>
+                  </div>
+                  <div>
+                    <h6 class="mb-0 fw-bold text-dark">
+                      {{ item.pedido.codigoPedido }}
+                    </h6>
+                    <small class="text-muted">
+                      <i class="bi bi-calendar3 me-1"></i>{{ item.pedido.fechaPedido | date: "dd/MM/yyyy" }}
+                    </small>
+                  </div>
                 </div>
                 <div class="d-flex align-items-center gap-2">
                   <span
-                    class="badge me-2"
+                    class="badge rounded-pill px-3 py-1 fw-semibold"
                     [ngClass]="{
-                      'bg-warning': item.pedido.estado === 'PENDIENTE',
-                      'bg-success': item.pedido.estado === 'ENTREGADO',
-                      'bg-danger': item.pedido.estado === 'CANCELADO',
+                      'bg-warning-subtle text-warning-emphasis': item.pedido.estado === 'PENDIENTE',
+                      'bg-success-subtle text-success-emphasis': item.pedido.estado === 'ENTREGADO',
+                      'bg-danger-subtle text-danger-emphasis': item.pedido.estado === 'CANCELADO'
                     }"
                   >
                     {{ item.pedido.estado | lowercase | titlecase }}
                   </span>
                   <i
-                    class="bi"
+                    class="bi text-muted ms-1"
                     [ngClass]="
                       item.isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'
                     "

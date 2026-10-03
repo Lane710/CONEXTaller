@@ -1,41 +1,48 @@
-<div class="container mt-4">
-  <h2 class="mb-4">Reportes de Negocio</h2>
+<div class="container py-4">
+  <!-- Encabezado -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 bg-white p-3 rounded-4 shadow-sm border">
+    <div>
+      <h3 class="fw-bold text-dark mb-0 d-flex align-items-center">
+        <i class="bi bi-file-earmark-bar-graph-fill text-primary me-2"></i>
+        Centro de Reportes y Análisis
+      </h3>
+      <span class="text-muted small">Visualización y exportación de métricas de ventas, stock, pedidos y márgenes de ganancia</span>
+    </div>
+  </div>
 
   <!-- NAVEGACIÓN (TABS) -->
-  <ul class="nav nav-tabs" role="tablist">
-    <li class="nav-item" *ngFor="let tab of reportTabs" role="presentation">
-      <button
-        class="nav-link"
-        [class.active]="tab.id === currentReport"
-        (click)="setActiveReport(tab.id)"
-        type="button"
-        role="tab"
-        [attr.aria-controls]="tab.id"
-        [attr.aria-selected]="tab.id === currentReport"
-      >
-        {{ tab.label }}
-      </button>
-    </li>
-  </ul>
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="card-header bg-white border-bottom p-2">
+      <ul class="nav nav-pills gap-1" role="tablist">
+        <li class="nav-item" *ngFor="let tab of reportTabs" role="presentation">
+          <button
+            class="nav-link rounded-pill px-4 py-2 fw-semibold"
+            [class.active]="tab.id === currentReport"
+            (click)="setActiveReport(tab.id)"
+            type="button"
+            role="tab"
+            [attr.aria-controls]="tab.id"
+            [attr.aria-selected]="tab.id === currentReport"
+          >
+            {{ tab.label }}
+          </button>
+        </li>
+      </ul>
+    </div>
 
-  <!-- CONTENIDO DINÁMICO -->
-  <div class="tab-content bg-white p-3 border border-top-0 rounded-bottom">
-    <div class="contenido-dinamico" [ngSwitch]="currentReport">
-      
-      <!-- REPORTE DE GANANCIAS - ACTUALIZADO -->
-      <app-reporte-ganancias *ngSwitchCase="'ganancias'"></app-reporte-ganancias> <!-- ← CAMBIA ESTO -->
+    <!-- CONTENIDO DINÁMICO -->
+    <div class="card-body p-4 bg-white">
+      <div class="contenido-dinamico" [ngSwitch]="currentReport">
+        <app-reporte-ganancias *ngSwitchCase="'ganancias'"></app-reporte-ganancias>
+        <app-reporte-ventas *ngSwitchCase="'ventas'"></app-reporte-ventas>
+        <app-reporte-pedidos *ngSwitchCase="'pedidos'"></app-reporte-pedidos> 
+        <app-reporte-productos *ngSwitchCase="'productos'"></app-reporte-productos>
+        <app-reporte-envios *ngSwitchCase="'envios'"></app-reporte-envios>
 
-      <app-reporte-ventas *ngSwitchCase="'ventas'"></app-reporte-ventas>
-      <app-reporte-pedidos *ngSwitchCase="'pedidos'"></app-reporte-pedidos> 
-      <app-reporte-productos *ngSwitchCase="'productos'"></app-reporte-productos>
-      <app-reporte-envios *ngSwitchCase="'envios'"></app-reporte-envios>
-
-      <!-- REPORTE DE FACTURAS (mantiene el genérico) -->
-   
-      <div *ngSwitchDefault class="alert alert-warning mt-3">
-        Seleccione un tipo de reporte para comenzar.
+        <div *ngSwitchDefault class="alert alert-warning rounded-3 border-0 shadow-sm">
+          <i class="bi bi-info-circle me-2"></i>Seleccione un tipo de reporte para comenzar.
+        </div>
       </div>
-
     </div>
   </div>
 </div>

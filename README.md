@@ -44,10 +44,7 @@ Si estás revisando este portafolio, puedes probar el sistema con las siguientes
 ---
 
 ## 📸 Vistas del Sistema
-
-*(Nota para Leandro: Aquí puedes arrastrar y soltar 2 o 3 capturas de pantalla de tu sistema funcionando, como la pantalla de login, el listado de productos o el dashboard)*
-
-![Login Conex](URL_DE_TU_IMAGEN_AQUI)
+vista del home: 
 
 ---
 

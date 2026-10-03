@@ -1,0 +1,19 @@
+.qr-wrapper {
+  background-color: var(--conex-bg-app, #f8fafc);
+  min-height: calc(100vh - 200px);
+}
+
+.qr-box {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.qr-box:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 25px rgba(2, 132, 199, 0.15) !important;
+}
+
+@media (min-width: 768px) {
+  .border-end-md {
+    border-right: 1px solid #e2e8f0;
+  }
+}

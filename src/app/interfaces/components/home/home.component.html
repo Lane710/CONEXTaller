@@ -7,15 +7,24 @@
   <div class="content-wrapper">
     <app-spinner></app-spinner> 
     
+    <!-- Offcanvas/Sidebar Menu -->
     <app-menu 
       [sidebarActive]="sidebarActive"
       (closeSidebarEvent)="sidebarActive = false"
     ></app-menu>
     
+    <!-- Backdrop for mobile/tablet when sidebar is open -->
+    <div 
+      class="sidebar-backdrop" 
+      [class.active]="sidebarActive"
+      (click)="sidebarActive = false"
+      aria-label="Cerrar menú"
+    ></div>
+
     <main class="main-content" [ngClass]="{'sidebar-active': sidebarActive}">
       <router-outlet></router-outlet>
     </main>
   </div>
 
- <app-footer></app-footer>
+  <app-footer></app-footer>
 </div>

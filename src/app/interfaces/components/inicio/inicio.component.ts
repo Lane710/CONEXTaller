@@ -6,7 +6,7 @@ import {
   ElementRef,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgFor, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { StockService } from '../../../services/ProductosServis/stock.service';
 import { CarritoService } from '../../../services/CartServis/carrito.service';
 import { DetalleCarrito } from '../../../models/CartModel/DetalleCarrito';
@@ -17,7 +17,7 @@ declare var bootstrap: any;
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [NgFor, NgIf],
+  imports: [CommonModule],
   templateUrl: './inicio.component.html',
   styleUrls: ['./inicio.component.css'],
 })

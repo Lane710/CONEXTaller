@@ -14,17 +14,17 @@
   <div class="page-header">
     <h1>Listado de Categorías</h1>
     <div class="header-controls">
-      <button class="btn-primary" (click)="redireccionarRegistro()">
-        <span class="btn-icon">+</span>
-        Registrar Nueva Categoría
+      <button class="btn btn-primary rounded-pill px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-2" (click)="redireccionarRegistro()">
+        <i class="bi bi-plus-lg"></i>
+        <span>Registrar Nueva Categoría</span>
       </button>
-      <div class="search-container">
-        <span class="search-icon">🔍</span>
+      <div class="search-container position-relative">
+        <span class="search-icon"><i class="bi bi-search"></i></span>
         <input type="text" placeholder="Buscar categoría..." #searchInput (input)="aplicarFiltros(searchInput.value)">
       </div>
       <div class="filter-container">
         <select class="filter-select" #estadoSelect (change)="aplicarFiltros(searchInput.value, estadoSelect.value)">
-          <option value="todos">Todos</option>
+          <option value="todos">Todos los estados</option>
           <option value="activo">Activos</option>
           <option value="inactivo">Inactivos</option>
         </select>

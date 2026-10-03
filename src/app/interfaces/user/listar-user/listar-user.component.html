@@ -169,10 +169,15 @@
               <td data-label="Usuario">{{ user.username }}</td>
               <td data-label="Email">{{ user.email }}</td>
               <td data-label="Rol">
-                {{ user.rol.nombreRol }}
+                <span class="badge rounded-pill px-3 py-1 fw-semibold bg-primary-subtle text-primary">
+                  {{ user.rol.nombreRol }}
+                </span>
               </td>
               <td data-label="Estado">
-                <span [class]="user.estado === 1 ? 'badge bg-success' : 'badge bg-danger'">
+                <span
+                  class="badge rounded-pill px-3 py-1 fw-semibold"
+                  [ngClass]="user.estado === 1 ? 'bg-success-subtle text-success-emphasis' : 'bg-danger-subtle text-danger-emphasis'"
+                >
                   {{ user.estado === 1 ? 'Activo' : 'Inactivo' }}
                 </span>
               </td>

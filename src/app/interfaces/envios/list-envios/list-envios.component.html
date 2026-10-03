@@ -132,11 +132,11 @@
                 {{ envio.fechaCreacion | date : "dd/MM/yyyy" }}
               </td>
               <td data-label="Estado">
-                <span class="badge" [ngClass]="{
-                  'bg-warning': envio.estado === 'PENDIENTE',
-                  'bg-success': envio.estado === 'ENTREGADO',
-                  'bg-danger': envio.estado === 'CANCELADO',
-                  'bg-info': envio.estado === 'DEVUELTO'
+                <span class="badge rounded-pill px-3 py-1 fw-semibold" [ngClass]="{
+                  'bg-warning-subtle text-warning-emphasis': envio.estado === 'PENDIENTE',
+                  'bg-success-subtle text-success-emphasis': envio.estado === 'ENTREGADO',
+                  'bg-danger-subtle text-danger-emphasis': envio.estado === 'CANCELADO',
+                  'bg-info-subtle text-info-emphasis': envio.estado === 'DEVUELTO'
                 }">
                   {{ formatEstado(envio.estado) }}
                 </span>
