@@ -1,4 +1,4 @@
-# 🛒 Sistema Web de Gestión Comercial — Conex
+<img width="1280" height="1764" alt="Screenshot 2026-10-02 at 22-00-18 Conex Store" src="https://github.com/user-attachments/assets/37b1514c-dcb5-4805-8b69-695885bf54a4" /># 🛒 Sistema Web de Gestión Comercial — Conex
 
 ![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
@@ -45,11 +45,14 @@ Si estás revisando este portafolio, puedes probar el sistema con las siguientes
 
 ## 📸 Vistas del Sistema
 
-vista del home:
-<img width="1920" height="5525" alt="HomePoductos" src="https://github.com/user-attachments/assets/901bd285-7b3b-490c-b9c5-60248aea7fad" />
+vista del inicio:
 
-vista de menu inicio:
-<img width="1744" height="921" alt="inicioAPP" src="https://github.com/user-attachments/assets/b0d49cc6-d34f-4253-aff2-c7fc61f6b908" />
+<img width="1280" height="1764" alt="Screenshot 2026-10-02 at 22-00-18 Conex Store" src="https://github.com/user-attachments/assets/b5877354-6ca7-4ce3-90e2-b3852dfb3624" />
+
+
+vista de menu producto:
+<img width="1258" height="1284" alt="Screenshot 2026-10-02 at 22-01-10 Conex Store" src="https://github.com/user-attachments/assets/22f81802-ba36-4afa-a620-c686a625ef02" />
+
 
 vista productos:
 <img width="1920" height="1806" alt="Productos" src="https://github.com/user-attachments/assets/d2efccec-5c3e-45b2-a32f-92773ab6707b" />
